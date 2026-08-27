@@ -8,11 +8,11 @@ Setup (finite-sum / empirical risk):
     L(w) = (1/N) sum_i L_i(w)
 
 Full-batch GD:
-    w <- w - lr * grad L(w)          # exact but costs O(N) every step
+    w <- w - lr * grad L(w)          # exact but costs O(N) every SGD step
 
 Minibatch SGD:
     pick a random batch B of size b
-    w <- w - lr * grad L_B(w)        # noisy, costs O(b) every step
+    w <- w - lr * grad L_B(w)        # noisy, costs O(b) every SGD step
 
 Intuition this lecture makes visible:
   1) Why introduce minibatches (cost vs progress)
@@ -159,7 +159,7 @@ GZ = A_BAR * GX ** 2 + B_BAR * GY ** 2
 # -------------------------------------------------------
 fig1, axes1 = new_figure(1, 2)
 fig1.suptitle(
-    "Step 1: Why minibatches?  Cheap noisy steps vs one expensive exact step",
+    "Step 1: Why minibatches?  Cheap noisy SGD steps vs one expensive exact SGD step",
     fontsize=FS_FIGURE_TITLE, fontweight="bold",
 )
 
@@ -171,8 +171,8 @@ ax.axis("off")
 ax.set_title("Compute budget intuition", fontsize=FS_AX_TITLE)
 
 boxes = [
-    (0.25, 5.2, 4.65, 2.0, "#f8d7da", "Full-batch GD\n1 step = touch all N examples\nexact direction, slow cadence"),
-    (5.10, 5.2, 4.65, 2.0, "#d4edda", "Minibatch SGD\n1 step = touch b << N examples\nnoisy direction, fast cadence"),
+    (0.25, 5.2, 4.65, 2.0, "#f8d7da", "Full-batch GD\n1 SGD step = touch all N examples\nexact direction, slow cadence"),
+    (5.10, 5.2, 4.65, 2.0, "#d4edda", "Minibatch SGD\n1 SGD step = touch b << N examples\nnoisy direction, fast cadence"),
     # Align with the combined left/right of the two top boxes: [0.25, 9.75]
     (0.25, 1.2, 9.50, 3.2, "#fff3cd",
      "Same wall-clock / data-touch budget:\n"
@@ -214,7 +214,7 @@ ax.grid(True, alpha=0.3, which="both")
 add_note(
     ax,
     "Minibatches are not just a hack:\n"
-    "they buy MORE update steps\n"
+    "they buy MORE SGD steps\n"
     "per unit of data/compute.",
     x=0.98, y=0.55, va="top",
 )
@@ -340,7 +340,7 @@ ax = axes3[1]
 ax.plot(loss_full_path, color="k", lw=2.6, label="full GD")
 ax.plot(loss_b32, color="royalblue", lw=2.2, label="SGD b=32")
 ax.plot(loss_b4, color="crimson", lw=2.0, label="SGD b=4")
-ax.set_xlabel("step", fontsize=FS_AXIS)
+ax.set_xlabel("SGD step", fontsize=FS_AXIS)
 ax.set_ylabel(r"full-batch loss $L(w)$", fontsize=FS_AXIS)
 ax.set_title("Loss along the path", fontsize=FS_AX_TITLE)
 ax.tick_params(axis="both", labelsize=FS_TICK)
@@ -365,7 +365,7 @@ show_maximized(fig3)
 # -------------------------------------------------------
 fig4, axes4 = new_figure(1, 2)
 fig4.suptitle(
-    "Step 4: Convergence intuition -- SGD works when the step is not too bold",
+    "Step 4: Convergence intuition -- SGD works when the SGD step is not too bold",
     fontsize=FS_FIGURE_TITLE, fontweight="bold",
 )
 
@@ -376,7 +376,7 @@ colors_lr = ["seagreen", "royalblue", "darkorange", "crimson"]
 for lr, c in zip(lrs, colors_lr):
     _, losses = run_sgd(X0, lr=lr, steps=120, batch_size=8, seed=3)
     ax.plot(losses, color=c, lw=2.3, label=rf"lr={lr:g}")
-ax.set_xlabel("step", fontsize=FS_AXIS)
+ax.set_xlabel("SGD step", fontsize=FS_AXIS)
 ax.set_ylabel(r"$L(w)$", fontsize=FS_AXIS)
 ax.set_title("SGD (b=8): learning rate scan", fontsize=FS_AX_TITLE)
 ax.tick_params(axis="both", labelsize=FS_TICK)
@@ -430,7 +430,7 @@ add_note(
     "enough lr => E[L] trends down.\n"
     "Too large lr voids that.\n\n"
     "SGD does NOT promise\n"
-    "monotone decrease every step.",
+    "monotone decrease every SGD step.",
     x=0.02, y=0.50, ha="left", va="center", facecolor="white",
 )
 
@@ -495,7 +495,7 @@ rows = [
     (5.8, "#dceaff", "Sharp curvature (large Hessian)\n"
      "Same lr overshoots more -- like a stiff spring."),
     (3.5, "#f8d7da", "Gradient noise (small batch)\n"
-     "Pushes you sideways each step; large lr amplifies that."),
+     "Pushes you sideways each SGD step; large lr amplifies that."),
     (1.2, "#d4edda", "Practical knobs\n"
      "decrease lr, increase batch, add momentum (130_momentum.py),\n"
      "or normalize/scale features (160_normalization.py)."),
@@ -509,15 +509,15 @@ show_maximized(fig5)
 
 
 # -------------------------------------------------------
-# FIGURE 6: Why batch size is important -- bias/variance of the update
+# FIGURE 6: Why batch size is important -- bias/variance of the gradient update
 # -------------------------------------------------------
 fig6, axes6 = new_figure(1, 2)
 fig6.suptitle(
-    "Step 6: Batch size sets the noise floor and the useful step size",
+    "Step 6: Batch size sets the noise floor and the useful SGD step size",
     fontsize=FS_FIGURE_TITLE, fontweight="bold",
 )
 
-# Left: late-training loss floor vs batch size (fixed lr)
+# Left: late-mini-batch loss floor vs batch size (fixed lr)
 ax = axes6[0]
 bs = np.array([1, 2, 4, 8, 16, 32, 64, 128])
 floors = []
@@ -531,7 +531,7 @@ ax.plot(bs, floors, "o-", color="crimson", lw=2.5, ms=8)
 ax.set_xscale("log", base=2)
 ax.set_yscale("log")
 ax.set_xlabel("batch size b", fontsize=FS_AXIS)
-ax.set_ylabel("late-training loss floor", fontsize=FS_AXIS)
+ax.set_ylabel("late-mini-batch loss floor", fontsize=FS_AXIS)
 ax.set_title(r"Fixed lr=0.15: larger $b$ => lower noise floor", fontsize=FS_AX_TITLE)
 ax.tick_params(axis="both", labelsize=FS_TICK)
 ax.grid(True, alpha=0.3, which="both")
@@ -548,7 +548,7 @@ add_note(
 # Right: steps-to-target vs batch size under equal-example budget framing
 ax = axes6[1]
 target = 0.02
-# For each batch size, how many steps until median loss < target (cap steps)
+# For each batch size, how many SGD steps until median loss < target (cap steps)
 steps_needed = []
 for b in bs:
     need = []
@@ -574,11 +574,11 @@ ax2.tick_params(axis="y", labelsize=FS_TICK, colors="darkorange")
 
 add_note(
     ax,
-    "Tiny batches: more steps\n"
+    "Tiny batches: more SGD steps\n"
     "but each is cheap -- and\n"
     "sometimes MORE total data\n"
     "touches because of noise.\n\n"
-    "Huge batches: fewer steps,\n"
+    "Huge batches: fewer SGD steps,\n"
     "each expensive; closer to GD.",
     x=0.02, y=0.12, ha="left", va="bottom", facecolor="white",
 )
@@ -598,13 +598,13 @@ Finite-sum objective on N={N_DATA} ravine examples:
   L(w) = mean_i (a_i x^2 + b_i y^2),   optimum at 0.
 
 1) Why minibatches?
-   Full-batch GD is exact but spends O(N) before every update.
-   SGD spends O(b), so you can take many more steps per unit compute.
-   Often those extra noisy steps win on a fixed data-touch budget.
+   Full-batch GD is exact but spends O(N) before every gradient update.
+   SGD spends O(b), so you can take many more SGD steps per unit compute.
+   Often those extra noisy SGD steps win on a fixed data-touch budget.
 
 2) What "convergence" means here
    With a small enough learning rate, the EXPECTED loss trends downward
-   for smooth objectives -- but individual steps can go up.
+   for smooth objectives -- but individual SGD steps can go up.
    SGD typically converges to a NOISE BALL around the optimum when lr
    is held constant; decaying lr (or larger batches) shrinks that ball.
 
@@ -617,7 +617,7 @@ Finite-sum objective on N={N_DATA} ravine examples:
 4) Why batch size matters
    Gradient noise scales ~ 1/sqrt(b).
    Larger b: smoother path, lower late-training floor (at fixed lr),
-   but fewer steps per unit compute and less "useful noise".
+   but fewer SGD steps per unit compute and less "useful noise".
    In practice: pick b for hardware efficiency, then tune lr
    (and often scale lr when you scale b).
 

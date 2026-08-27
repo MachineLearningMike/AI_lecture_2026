@@ -7,7 +7,7 @@ The simplest PyTorch training loop: one weight, no bias.
 
 Data: a few (x, y) pairs near the line y = 2x.
 Train w by gradient descent on mean squared error.
-An animation shows the prediction line fitting the data step by step.
+An animation shows the prediction line fitting the data one SGD step at a time.
 
 Companion to 030_model.py (adds bias / richer models).
 """
@@ -85,9 +85,9 @@ loss_fn = nn.MSELoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=0.005)
 
 # -------------------------------------------------------
-# Train -- record w and loss every step (including init)
+# Train -- record w and loss every SGD step (including init)
 # -------------------------------------------------------
-STEPS = 100
+SGD_STEPS = 100
 xs_line = torch.linspace(0.5, 5.5, 50).unsqueeze(1)
 
 with torch.no_grad():
@@ -95,7 +95,7 @@ with torch.no_grad():
     loss_hist = [loss_fn(model(x), y).item()]
     pred_hist = [model(xs_line).squeeze(1).clone()]
 
-for step in range(STEPS):
+for sgd_step in range(SGD_STEPS):
     y_hat = model(x)
     loss = loss_fn(y_hat, y)
     optimizer.zero_grad()
@@ -151,9 +151,9 @@ loss_line, = ax_loss.plot([], [], color="seagreen", lw=2.5)
 loss_dot, = ax_loss.plot([], [], "o", color="seagreen", ms=8)
 ax_loss.set_xlim(0, len(loss_hist) - 1)
 ax_loss.set_ylim(0.0, max(loss_hist) * 1.1 + 1e-6)
-ax_loss.set_xlabel("step", fontsize=FS_AXIS)
+ax_loss.set_xlabel("SGD step", fontsize=FS_AXIS)
 ax_loss.set_ylabel("MSE", fontsize=FS_AXIS)
-ax_loss.set_title("Training loss", fontsize=FS_AX_TITLE)
+ax_loss.set_title("Mini-batch loss", fontsize=FS_AX_TITLE)
 ax_loss.tick_params(axis="both", labelsize=FS_TICK)
 ax_loss.grid(True, alpha=0.3)
 
@@ -178,7 +178,7 @@ def update_anim(frame):
     loss_line.set_data(steps, loss_hist[: frame + 1])
     loss_dot.set_data([frame], [loss_hist[frame]])
     hud.set_text(
-        f"step {frame}/{n_frames - 1}\n"
+        f"SGD step {frame}/{n_frames - 1}\n"
         f"w = {w_hist[frame]:.3f}\n"
         f"MSE = {loss_hist[frame]:.3f}"
     )

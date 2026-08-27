@@ -170,9 +170,9 @@ fig2.suptitle(
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
-n_steps = 10
+n_sgd_steps = 10
 masks = np.stack(
-    [np.random.default_rng(s).random(n_units) < p_keep for s in range(n_steps)],
+    [np.random.default_rng(s).random(n_units) < p_keep for s in range(n_sgd_steps)],
     axis=0,
 )
 # show as a binary grid: rows=steps, cols=units
@@ -181,7 +181,7 @@ im = ax2.imshow(masks.astype(float), aspect='auto', cmap=cmap, vmin=0, vmax=1)
 ax2.set_xlabel('hidden unit', fontsize=FS_AXIS)
 ax2.set_ylabel('training step (minibatch)', fontsize=FS_AXIS)
 ax2.set_title('Green = kept, gray = dropped', fontsize=FS_AX_TITLE)
-ax2.set_yticks(range(n_steps))
+ax2.set_yticks(range(n_sgd_steps))
 ax2.set_xticks(range(n_units))
 ax2.tick_params(axis='both', labelsize=FS_TICK)
 ax2.text(
@@ -307,14 +307,14 @@ ax.grid(True, alpha=0.3)
 ax = axes3[1]
 ax.plot(loss_nodrop, color='crimson', linewidth=2.2, label='no dropout')
 ax.plot(loss_drop, color='royalblue', linewidth=2.2, label=r'dropout $p=0.5$')
-ax.set_title('Training loss', fontsize=FS_AX_TITLE)
-ax.set_xlabel('step', fontsize=FS_AXIS)
+ax.set_title('Mini-batch loss', fontsize=FS_AX_TITLE)
+ax.set_xlabel('SGD step', fontsize=FS_AXIS)
 ax.set_ylabel('MSE', fontsize=FS_AXIS)
 ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'Dropout usually raises\n'
-    'train loss (harder fit)\n'
+    'mini-batch loss (harder fit)\n'
     'but can lower true risk.\n\n'
     'Regularization often\n'
     'looks like "worse"\n'

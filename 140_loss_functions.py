@@ -206,7 +206,7 @@ def fit_gd(loss_name, theta0, lr, steps):
 
 
 THETA0 = np.array([0.0, 2.5])  # shared init, away from the true line
-STEPS = 200
+SGD_STEPS = 200
 # Per-loss learning rates so each can move meaningfully
 # (MAE grads are ~O(1), MSE grads scale with residual size)
 LR = {
@@ -216,7 +216,7 @@ LR = {
 }
 
 results = {
-    name: fit_gd(name, THETA0, LR[name], STEPS)
+    name: fit_gd(name, THETA0, LR[name], SGD_STEPS)
     for name in LOSSES
 }
 
@@ -292,7 +292,7 @@ ax2.plot(x_line, W_TRUE * x_line + B_TRUE, 'k--', linewidth=2.0,
          label='true line', zorder=1)
 
 # Ghost trajectories: intermediate predictions along GD (diversity of paths)
-traj_steps = np.linspace(0, STEPS, 8, dtype=int)
+traj_steps = np.linspace(0, SGD_STEPS, 8, dtype=int)
 for name, cfg in LOSSES.items():
     path = results[name]['path']
     for s in traj_steps[:-1]:
@@ -344,9 +344,9 @@ for name, cfg in LOSSES.items():
     L = results[name]['losses']
     ax.plot(L / L[0], color=cfg['color'], linewidth=2.5,
             label=rf'{name} (lr={LR[name]:g})')
-ax.set_xlabel('gradient step', fontsize=FS_AXIS)
+ax.set_xlabel('SGD step', fontsize=FS_AXIS)
 ax.set_ylabel(r'loss / loss$_0$  (own units)', fontsize=FS_AXIS)
-ax.set_title('Normalized training loss', fontsize=FS_AX_TITLE)
+ax.set_title('Normalized mini-batch loss', fontsize=FS_AX_TITLE)
 ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
@@ -362,7 +362,7 @@ ax = axes3[1]
 for name, cfg in LOSSES.items():
     ax.plot(results[name]['grad_norms'], color=cfg['color'],
             linewidth=2.5, label=name)
-ax.set_xlabel('gradient step', fontsize=FS_AXIS)
+ax.set_xlabel('SGD step', fontsize=FS_AXIS)
 ax.set_ylabel(r'$\|\nabla_\theta L\|$', fontsize=FS_AXIS)
 ax.set_title('Gradient magnitude over training', fontsize=FS_AX_TITLE)
 ax.tick_params(axis='both', labelsize=FS_TICK)
@@ -436,7 +436,7 @@ print(f"""
 Setup: fit y ~ w x + b on n={N} points with {len(outlier_idx)} outliers.
 Shared init theta0 = (w,b) = ({THETA0[0]:g}, {THETA0[1]:g}), plain GD.
 
-Final parameters after {STEPS} steps:
+Final parameters after {SGD_STEPS} SGD steps:
 """)
 for name in LOSSES:
     th = results[name]['theta']

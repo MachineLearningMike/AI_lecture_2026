@@ -6,23 +6,23 @@ Train a model with Gradient Descent: full-batch vs mini-batch.
 Same data, same model, same learning rate. Only the batch size changes:
 
   full-batch GD:
-      each gradient step uses all N examples
+      each SGD step uses all N examples
       -> exact gradient of full-batch loss L(... ; w)
 
   mini-batch GD:          (what deep learning usually calls "SGD")
-      each gradient step uses b << N examples
+      each SGD step uses b << N examples
       -> noisy estimate of that same gradient
 
 What to watch:
   1) Full-batch loss L(... ; w) for mini-batch GD trends to the SAME limit as full-batch GD.
   2) The mini-batch curve is NOT stable -- it jitters around that limit.
-  3) Mini-batch GD is economic: each gradient step is cheap, so you buy MORE
-     gradient steps per unit of data/compute.
+  3) Mini-batch GD is economic: each SGD step is cheap, so you buy MORE
+     SGD steps per unit of data/compute.
 
-Terminology matches 141_stochastic_gradient_descent.py:
-  full-batch loss L(... ; w), mini-batch loss, gradient step, examples touched.
+Terminology matches 144_SGD_concept.py:
+  full-batch loss L(... ; w), mini-batch loss, SGD step, examples touched.
 
-Companion to 020_torch_training.py and 141_stochastic_gradient_descent.py.
+Companion to 020_torch_training.py and 144_SGD_concept.py.
 """
 
 from __future__ import annotations
@@ -106,14 +106,14 @@ def add_note(ax, text, x=0.98, y=0.98, ha="right", va="top", facecolor="lightyel
 #   mini-batch loss       -- mean loss on the current mini-batch only
 #   theoretical floor     -- best attainable L(... ; w) for this model/data (demo only:
 #                            computed via least squares because model is linear+MSE)
-#   gradient step         -- one optimizer.step()
+#   SGD step         -- one optimizer.step()
 #   examples touched      -- training rows used so far (compute proxy)
 # -------------------------------------------------------
 N = 512
 D = 4
 B = 16                   # mini-batch size
 LR = 0.08
-N_STEPS = 180            # fair compare #1: same number of gradient steps
+N_SGD_STEPS = 180            # fair compare #1: same number of SGD steps
 DATA_BUDGET = N * 12     # fair compare #2: same number of examples touched
 
 X_np = RNG.normal(size=(N, D)).astype(np.float32)
@@ -149,14 +149,14 @@ def params_vec(model):
     return torch.cat([model.weight.data.reshape(-1), model.bias.data.reshape(-1)]).numpy().copy()
 
 
-def train_gd(n_steps, batch_size, lr=LR, seed=0):
+def train_gd(n_sgd_steps, batch_size, lr=LR, seed=0):
     """
     Gradient descent with a fixed batch size.
     batch_size == N  -> full-batch GD
     batch_size <  N  -> mini-batch GD
     """
     model = make_model()
-    # torch.optim.SGD here means "plain gradient step"; batch size is our choice.
+    # torch.optim.SGD here means "plain SGD step"; batch size is our choice.
     opt = torch.optim.SGD(model.parameters(), lr=lr)
     g = torch.Generator().manual_seed(seed)
 
@@ -165,7 +165,7 @@ def train_gd(n_steps, batch_size, lr=LR, seed=0):
     params = [params_vec(model)]
     examples_touched = [0]
 
-    for t in range(n_steps):
+    for t in range(n_sgd_steps):
         if batch_size >= N:
             xb, yb = X, y
             used = N
@@ -194,7 +194,7 @@ def train_gd(n_steps, batch_size, lr=LR, seed=0):
 
 
 def train_until_data_budget(batch_size, budget, lr=LR, seed=0):
-    """Run until examples_touched >= budget. Record full-batch loss after each gradient step."""
+    """Run until examples_touched >= budget. Record full-batch loss after each SGD step."""
     model = make_model()
     opt = torch.optim.SGD(model.parameters(), lr=lr)
     g = torch.Generator().manual_seed(seed)
@@ -202,7 +202,7 @@ def train_until_data_budget(batch_size, budget, lr=LR, seed=0):
     L_hist = [full_batch_loss(model)]
     examples_touched = [0]
     touched = 0
-    n_steps = 0
+    n_sgd_steps = 0
 
     while touched < budget:
         if batch_size >= N:
@@ -219,21 +219,21 @@ def train_until_data_budget(batch_size, budget, lr=LR, seed=0):
         opt.step()
 
         touched += used
-        n_steps += 1
+        n_sgd_steps += 1
         L_hist.append(full_batch_loss(model))
         examples_touched.append(touched)
 
-    return np.array(L_hist), np.array(examples_touched), n_steps
+    return np.array(L_hist), np.array(examples_touched), n_sgd_steps
 
 
 # Precompute shared trajectories
 print(f"Training {LABEL_FULL} and {LABEL_MINI} ...")
-_, L_full, _, _, params_full = train_gd(N_STEPS, batch_size=N, seed=0)
-_, L_mini, mini_L_mini, _, params_mini = train_gd(N_STEPS, batch_size=B, seed=7)
-L_full_budget, ex_full_budget, steps_full_budget = train_until_data_budget(
+_, L_full, _, _, params_full = train_gd(N_SGD_STEPS, batch_size=N, seed=0)
+_, L_mini, mini_L_mini, _, params_mini = train_gd(N_SGD_STEPS, batch_size=B, seed=7)
+L_full_budget, ex_full_budget, sgd_steps_full_budget = train_until_data_budget(
     batch_size=N, budget=DATA_BUDGET, seed=1,
 )
-L_mini_budget, ex_mini_budget, steps_mini_budget = train_until_data_budget(
+L_mini_budget, ex_mini_budget, sgd_steps_mini_budget = train_until_data_budget(
     batch_size=B, budget=DATA_BUDGET, seed=7,
 )
 
@@ -250,7 +250,7 @@ L_floor = float(np.mean((X1 @ w_star - y_np) ** 2))
 # -------------------------------------------------------
 fig1, axes1 = new_figure(1, 2)
 fig1.suptitle(
-    "Step 1: Full-batch GD vs mini-batch GD -- same gradient-step rule, different batch size",
+    "Step 1: Full-batch GD vs mini-batch GD -- same SGD-step rule, different batch size",
     fontsize=FS_FIGURE_TITLE, fontweight="bold",
 )
 
@@ -258,7 +258,7 @@ ax = axes1[0]
 ax.set_xlim(0, 10)
 ax.set_ylim(0, 10)
 ax.axis("off")
-ax.set_title("One gradient step: how much data enters the gradient?", fontsize=FS_AX_TITLE)
+ax.set_title("One SGD step: how much data enters the gradient?", fontsize=FS_AX_TITLE)
 
 boxes = [
     (0.4, 6.2, 4.4, 3.0, "#dceaff",
@@ -276,7 +276,7 @@ boxes = [
      r"$L(\ldots; w)=\frac{1}{N}\sum_i \ell(f_w(x_i), y_i)$" + "\n"
      "where w = model parameters (weights + bias).\n\n"
      "Mini-batch GD does not change the objective --\n"
-     "only how we estimate its gradient each gradient step."),
+     "only how we estimate its gradient each SGD step."),
 ]
 for x0, y0, w, h, color, text in boxes:
     ax.add_patch(plt.Rectangle((x0, y0), w, h, facecolor=color, edgecolor="k", lw=2))
@@ -286,38 +286,38 @@ for x0, y0, w, h, color, text in boxes:
 ax = axes1[1]
 modes = [LABEL_FULL, LABEL_MINI]
 cost = [N, B]
-steps_per_pass = [1, N // B]
+sgd_steps_per_pass = [1, N // B]
 x = np.arange(len(modes))
 width = 0.35
 # One color per METRIC (not per method) -- only two series in the legend.
-C_EXAMPLES = "#c0392b"   # examples / gradient step
-C_STEPS = "#2471a3"      # gradient steps / pass over data
+C_EXAMPLES = "#c0392b"   # examples / SGD step
+C_STEPS = "#2471a3"      # SGD steps / pass over data
 ax.bar(x - width / 2, cost, width, color=C_EXAMPLES, edgecolor="k", lw=0.8)
 ax2 = ax.twinx()
-ax2.bar(x + width / 2, steps_per_pass, width, color=C_STEPS, edgecolor="k", lw=0.8)
+ax2.bar(x + width / 2, sgd_steps_per_pass, width, color=C_STEPS, edgecolor="k", lw=0.8)
 ax.set_xticks(x)
 ax.set_xticklabels([f"full-batch\nGD", f"mini-batch\nGD (b={B})"], fontsize=FS_TICK)
-ax.set_ylabel("examples touched per gradient step", fontsize=FS_AXIS, color=C_EXAMPLES)
-ax2.set_ylabel("gradient steps per pass over the dataset", fontsize=FS_AXIS, color=C_STEPS)
+ax.set_ylabel("examples touched per SGD step", fontsize=FS_AXIS, color=C_EXAMPLES)
+ax2.set_ylabel("SGD steps per pass over the dataset", fontsize=FS_AXIS, color=C_STEPS)
 ax.tick_params(axis="y", labelsize=FS_TICK, colors=C_EXAMPLES)
 ax2.tick_params(axis="y", labelsize=FS_TICK, colors=C_STEPS)
-ax.set_title("Why mini-batch GD is cheaper per gradient step", fontsize=FS_AX_TITLE)
+ax.set_title("Why mini-batch GD is cheaper per SGD step", fontsize=FS_AX_TITLE)
 ax.set_ylim(0, max(cost) * 1.35)
-ax2.set_ylim(0, max(steps_per_pass) * 1.45)
+ax2.set_ylim(0, max(sgd_steps_per_pass) * 1.45)
 ax.legend(
     handles=[
-        Patch(facecolor=C_EXAMPLES, edgecolor="k", label="examples / gradient step"),
-        Patch(facecolor=C_STEPS, edgecolor="k", label="gradient steps / pass over data"),
+        Patch(facecolor=C_EXAMPLES, edgecolor="k", label="examples / SGD step"),
+        Patch(facecolor=C_STEPS, edgecolor="k", label="SGD steps / pass over data"),
     ],
     loc="upper left", fontsize=FS_LEGEND,
 )
 add_note(
     ax,
     "Economy:\n"
-    f"1 full-batch gradient step\n"
+    f"1 full-batch SGD step\n"
     f"touches {N} examples.\n"
     f"Same cost buys\n"
-    f"{N // B} mini-batch gradient steps.",
+    f"{N // B} mini-batch SGD steps.",
     x=0.98, y=0.98, ha="right", va="top",
 )
 
@@ -326,11 +326,11 @@ show_maximized(fig1)
 
 
 # -------------------------------------------------------
-# FIGURE 2: Same number of gradient steps -- same limit, unstable path
+# FIGURE 2: Same number of SGD steps -- same limit, unstable path
 # -------------------------------------------------------
 fig2, axes2 = new_figure(1, 2)
 fig2.suptitle(
-    "Step 2: Same number of gradient steps\n"
+    "Step 2: Same number of SGD steps\n"
     "Mini-batch GD reaches the same limit, but jitters",
     fontsize=FS_FIGURE_TITLE, fontweight="bold",
 )
@@ -338,17 +338,17 @@ fig2.suptitle(
 ax = axes2[0]
 steps = np.arange(len(L_full))
 # BOTH curves are full-batch loss L(... ; w) of each method's current weights.
-# The crimson line is NOT the mini-batch training loss (see right panel).
+# The crimson line is NOT the mini-batch loss (see right panel).
 ax.plot(steps, L_full, color="k", lw=2.6,
         label=rf"{LABEL_FULL}:  $L(\ldots; w)$ of its weights")
 ax.plot(steps, L_mini, color="crimson", lw=1.8, alpha=0.85,
         label=rf"{LABEL_MINI}:  $L(\ldots; w)$ of its weights")
 ax.axhline(L_floor, color="0.4", ls="--", lw=1.6,
            label=fr"theoretical floor of $L(\ldots; w)$  ({L_floor:.3f})")
-ax.set_xlabel(f"gradient step  (same count = {N_STEPS} for both)", fontsize=FS_AXIS)
+ax.set_xlabel(f"SGD step  (same count = {N_SGD_STEPS} for both)", fontsize=FS_AXIS)
 ax.set_ylabel(r"full-batch loss $L(\ldots; w)$  (whole dataset)", fontsize=FS_AXIS)
 ax.set_title(
-    r"Both curves are $L(\ldots; w)$ -- not mini-batch training loss",
+    r"Both curves are $L(\ldots; w)$ -- not mini-batch loss",
     fontsize=FS_AX_TITLE - 2,
 )
 ax.set_yscale("log")
@@ -358,16 +358,16 @@ ax.grid(True, alpha=0.3, which="both")
 add_note(
     ax,
     "Same x: both methods take\n"
-    f"exactly {N_STEPS} gradient steps.\n\n"
+    f"exactly {N_SGD_STEPS} SGD steps.\n\n"
     "Same y: L(... ; w) = mean loss on\n"
     "ALL N examples, where w =\n"
     "model parameters. The red\n"
     "line is ALSO L(... ; w), just for\n"
     "parameters from mini-batch GD.\n"
     "It is NOT the mini-batch loss\n"
-    "used inside the update.\n\n"
+    "used inside the gradient update.\n\n"
     "Why compute L(... ; w) at all?\n"
-    "Not to take the step -- only\n"
+    "Not to take the SGD step -- only\n"
     "to see if mini-batch GD is\n"
     "really lowering the objective.\n"
     "Similar final L(... ; w) is the\n"
@@ -381,9 +381,9 @@ ax.plot(steps, mini_L_mini, color="darkorange", lw=1.2, alpha=0.75,
         label="mini-batch loss (current batch only)")
 ax.plot(steps, L_mini, color="crimson", lw=2.2, label=r"full-batch loss $L(\ldots; w)$")
 ax.axhline(L_floor, color="0.4", ls="--", lw=1.6, label=r"theoretical floor of $L(\ldots; w)$")
-ax.set_xlabel("gradient step", fontsize=FS_AXIS)
+ax.set_xlabel("SGD step", fontsize=FS_AXIS)
 ax.set_ylabel("loss", fontsize=FS_AXIS)
-ax.set_title("Mini-batch loss drives the step; L(... ; w) scores the result", fontsize=FS_AX_TITLE - 2)
+ax.set_title("Mini-batch loss drives the SGD step; L(... ; w) scores the result", fontsize=FS_AX_TITLE - 2)
 ax.set_yscale("log")
 ax.tick_params(axis="both", labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND, loc="upper right")
@@ -392,11 +392,11 @@ add_note(
     ax,
     "Mini-batch loss: noisy look\n"
     "at b rows -- used to BUILD\n"
-    "the gradient for this step.\n\n"
+    "the gradient for this SGD step.\n\n"
     "Full-batch loss L(... ; w): score\n"
     "of the CURRENT w on all data.\n"
     "Needed for fair comparison,\n"
-    "not for taking the step.",
+    "not for taking the SGD step.",
     x=0.98, y=0.50, ha="right", va="center",
 )
 
@@ -409,15 +409,15 @@ show_maximized(fig2)
 # -------------------------------------------------------
 fig3, axes3 = new_figure(1, 2)
 fig3.suptitle(
-    "Step 3: Same data budget -- mini-batch GD buys many cheap gradient steps",
+    "Step 3: Same data budget -- mini-batch GD buys many cheap SGD steps",
     fontsize=FS_FIGURE_TITLE, fontweight="bold",
 )
 
 ax = axes3[0]
 ax.plot(ex_full_budget, L_full_budget, color="k", lw=2.6,
-        label=f"{LABEL_FULL}  ({steps_full_budget} gradient steps)")
+        label=f"{LABEL_FULL}  ({sgd_steps_full_budget} SGD steps)")
 ax.plot(ex_mini_budget, L_mini_budget, color="crimson", lw=1.9, alpha=0.9,
-        label=f"{LABEL_MINI}  ({steps_mini_budget} gradient steps)")
+        label=f"{LABEL_MINI}  ({sgd_steps_mini_budget} SGD steps)")
 ax.axhline(L_floor, color="0.4", ls="--", lw=1.6, label=r"theoretical floor of $L(\ldots; w)$")
 ax.set_xlabel("examples touched (compute proxy)", fontsize=FS_AXIS)
 ax.set_ylabel(r"full-batch loss $L(\ldots; w)$", fontsize=FS_AXIS)
@@ -432,14 +432,14 @@ add_note(
     "you paid to touch.\n\n"
     "Mini-batch GD spends that\n"
     "budget on MANY more\n"
-    "gradient steps, so it\n"
+    "SGD steps, so it\n"
     "usually reaches the\n"
     "floor of L(... ; w) sooner.",
     x=0.98, y=0.68, ha="right", va="top",
 )
 
 ax = axes3[1]
-labels = ["after equal\n# gradient steps", "after equal\n# examples touched"]
+labels = ["after equal\n# SGD steps", "after equal\n# examples touched"]
 full_vals = [L_full[-1], L_full_budget[-1]]
 mini_vals = [L_mini[-1], L_mini_budget[-1]]
 x = np.arange(len(labels))
@@ -457,14 +457,14 @@ ax.legend(fontsize=FS_LEGEND, loc="upper left", framealpha=0.95)
 ax.grid(True, alpha=0.3, axis="y", which="both")
 add_note(
     ax,
-    "Equal # gradient steps\n"
+    "Equal # SGD steps\n"
     "favors full-batch GD\n"
-    "(each step sees all data).\n\n"
+    "(each SGD step sees all data).\n\n"
     "Equal # examples touched\n"
     "favors mini-batch GD\n"
-    "(many cheap gradient steps).\n"
+    "(many cheap SGD steps).\n"
     "Practice budgets by data,\n"
-    "not by gradient-step count.",
+    "not by SGD-step count.",
     x=0.02, y=0.68, ha="left", va="top",
 )
 
@@ -506,12 +506,12 @@ add_note(
 )
 
 ax = axes4[1]
-late = slice(-(N_STEPS // 3), None)
+late = slice(-(N_SGD_STEPS // 3), None)
 t_late = np.arange(len(L_full))[late]
 ax.plot(t_late, L_full[late], color="k", lw=2.6, label=LABEL_FULL)
 ax.plot(t_late, L_mini[late], color="crimson", lw=2.0, label=LABEL_MINI)
 ax.axhline(L_floor, color="0.4", ls="--", lw=1.6, label=r"theoretical floor of $L(\ldots; w)$")
-ax.set_xlabel("gradient step", fontsize=FS_AXIS)
+ax.set_xlabel("SGD step", fontsize=FS_AXIS)
 ax.set_ylabel(r"full-batch loss $L(\ldots; w)$", fontsize=FS_AXIS)
 ax.set_title("Late training: stability vs noise floor", fontsize=FS_AX_TITLE)
 ax.tick_params(axis="both", labelsize=FS_TICK)
@@ -526,7 +526,7 @@ add_note(
     "(noise floor).\n\n"
     "That ball is usually close\n"
     "enough -- and each\n"
-    "gradient step was much\n"
+    "SGD step was much\n"
     "cheaper.",
     x=0.02, y=0.98, ha="left", va="top",
 )
@@ -546,29 +546,29 @@ Setup: linear model on N={N} examples (D={D}), MSE full-batch loss L(... ; w).
 Theoretical floor of L(... ; w) ~ {L_floor:.4f}
   (via least squares only because this demo is linear+MSE)
 
-Glossary (same as 141):
+Glossary (same as 144):
   w                     model parameters; CONDITION in L(... ; w)
   full-batch GD         batch size = N
   mini-batch GD         batch size = b  (deep learning usually calls this "SGD")
   full-batch loss L(... ; w)  mean loss on the WHOLE dataset
   mini-batch loss       mean loss on the current mini-batch only
   theoretical floor     best attainable L(... ; w) for this model/data
-  gradient step         one optimizer.step()
+  SGD step         one optimizer.step()
   examples touched      total training rows used so far
 
-After {N_STEPS} gradient steps:
+After {N_SGD_STEPS} SGD steps:
   {LABEL_FULL:20s}  L(... ; w) = {L_full[-1]:.4f}
   {LABEL_MINI:20s}  L(... ; w) = {L_mini[-1]:.4f}
 
 After {DATA_BUDGET} examples touched:
-  {LABEL_FULL:20s}  {steps_full_budget} gradient steps, L(... ; w) = {L_full_budget[-1]:.4f}
-  {LABEL_MINI:20s}  {steps_mini_budget} gradient steps, L(... ; w) = {L_mini_budget[-1]:.4f}
+  {LABEL_FULL:20s}  {sgd_steps_full_budget} SGD steps, L(... ; w) = {L_full_budget[-1]:.4f}
+  {LABEL_MINI:20s}  {sgd_steps_mini_budget} SGD steps, L(... ; w) = {L_mini_budget[-1]:.4f}
 
 Takeaways:
   1) Mini-batch GD minimizes the SAME full-batch loss L(... ; w) as full-batch GD.
   2) Convergence is in trend -- the mini-batch curve is not monotone-stable.
-  3) Economy: cheap noisy gradient steps buy more progress per unit of data.
+  3) Economy: cheap noisy SGD steps buy more progress per unit of data.
   4) Late training: expect a noise floor unless you grow b or decay the lr.
 
-Next: 130_momentum.py (smoother gradient steps), 160_normalization.py (better conditioning).
+Next: 130_momentum.py (smoother SGD steps), 160_normalization.py (better conditioning).
 """)

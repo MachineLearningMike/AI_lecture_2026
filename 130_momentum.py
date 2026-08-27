@@ -11,7 +11,7 @@ SGD with momentum:
     v <- beta * v + g_t
     x <- x - lr * v
 
-Minibatches make g_t jitter every step. Momentum keeps a running
+Minibatches make g_t jitter every SGD step. Momentum keeps a running
 average of those noisy pushes, so the "ball" can keep rolling in a
 consistent direction instead of shaking in place.
 
@@ -107,7 +107,7 @@ def add_vcenter_legend_and_note(ax, note, facecolor='white'):
 # Finite-sum ravine loss (each "example" has its own curvature)
 #   L_i(x,y) = a_i x^2 + b_i y^2
 #   L      = mean_i L_i
-# Minibatch gradient uses a random subset -> noisy direction each step.
+# Minibatch gradient uses a random subset -> noisy direction each SGD step.
 # -------------------------------------------------------
 A_MEAN, B_MEAN = 5.0, 0.2
 N_DATA = 128
@@ -174,11 +174,11 @@ def run_momentum(x0, lr, beta, batches):
 
 
 X0 = np.array([1.0, 1.0])
-STEPS = 80
+SGD_STEPS = 80
 LR = 0.05
 BETA = 0.9
 
-batches = make_batch_schedule(STEPS, BATCH_SIZE, seed=7)
+batches = make_batch_schedule(SGD_STEPS, BATCH_SIZE, seed=7)
 path_sgd, grads_sgd = run_sgd(X0, LR, batches)
 path_mom, vel_mom, grads_mom = run_momentum(X0, LR, BETA, batches)
 
@@ -238,7 +238,7 @@ fig2.suptitle(
 ax = axes2[0]
 ax.plot(loss_path(path_sgd), color='crimson', linewidth=2.5, label='SGD loss')
 ax.plot(loss_path(path_mom), color='royalblue', linewidth=2.5, label='Momentum loss')
-ax.set_xlabel('step', fontsize=FS_AXIS)
+ax.set_xlabel('SGD step', fontsize=FS_AXIS)
 ax.set_ylabel(r'$L(x,y)$ (full batch)', fontsize=FS_AXIS)
 ax.set_title('Full-batch loss along the path', fontsize=FS_AX_TITLE)
 ax.tick_params(axis='both', labelsize=FS_TICK)
@@ -259,14 +259,14 @@ ax.plot(vel_mom[1:, 0], color='royalblue', linewidth=2.2,
 ax.plot(vel_mom[1:, 1], color='seagreen', linewidth=2.2,
         label=r'Momentum $v_y$')
 ax.axhline(0, color='k', linewidth=0.8, alpha=0.4)
-ax.set_xlabel('step', fontsize=FS_AXIS)
+ax.set_xlabel('SGD step', fontsize=FS_AXIS)
 ax.set_ylabel('component', fontsize=FS_AXIS)
 ax.set_title('Noisy gradient vs momentum velocity', fontsize=FS_AX_TITLE)
 ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     r'$v \leftarrow \beta v + g_{batch}$' + '\n\n'
-    'g_x chatters every step.\n'
+    'g_x chatters every SGD step.\n'
     'v_x is a low-pass filter\n'
     'of that chatter.',
 )
@@ -281,7 +281,7 @@ show_maximized(fig2)
 # -------------------------------------------------------
 fig3, axes3 = new_figure(1, 2)
 fig3.suptitle(
-    'Step 3: Minibatch SGD vs momentum update',
+    'Step 3: Minibatch SGD vs momentum gradient update',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -293,7 +293,7 @@ ax.text(
     r'$g_t = \nabla L_{\mathcal{B}_t}(x_t)$' + '\n'
     r'(random minibatch $\mathcal{B}_t$)' + '\n\n'
     r'$x_{t+1} = x_t - \eta\, g_t$' + '\n\n'
-    'Noisy push every step.\n'
+    'Noisy push every SGD step.\n'
     'The ball oscillates.',
     transform=ax.transAxes, ha='center', va='center', fontsize=FS_AXIS,
     bbox=dict(boxstyle='round', facecolor='#ffe8e8', alpha=0.95),
@@ -394,7 +394,7 @@ def update_anim(i):
     pt_m.center = (path_mom[i, 0], path_mom[i, 1])
 
     # arrows use the gradient/velocity that produced the step into this state
-    j = min(i, STEPS - 1)
+    j = min(i, SGD_STEPS - 1)
     g = grads_sgd[j]
     v = vel_mom[j + 1] if i > 0 else vel_mom[0]
 
@@ -407,7 +407,7 @@ def update_anim(i):
     arr_v.xy = (path_mom[i, 0] + v_scale * v[0], path_mom[i, 1] + v_scale * v[1])
 
     hud.set_text(
-        f'step {i}/{n_anim - 1}   batch={BATCH_SIZE}/{N_DATA}\n'
+        f'SGD step {i}/{n_anim - 1}   batch={BATCH_SIZE}/{N_DATA}\n'
         f'L_SGD = {loss_full(path_sgd[i]):.3f}\n'
         f'L_Mom = {loss_full(path_mom[i]):.3f}\n'
         f'|g_batch| = {np.linalg.norm(g):.2f}\n'
@@ -450,8 +450,8 @@ Finite-sum ravine loss:
   L_i = a_i x^2 + b_i y^2 ,   L = mean_i L_i
   mean(a_i)~{np.mean(a_i):.2f} (steep), mean(b_i)~{np.mean(b_i):.2f} (shallow)
 
-Each update uses a random minibatch of {BATCH_SIZE}/{N_DATA} examples, so
-the gradient jitters from step to step (stochastic oscillation).
+Each gradient update uses a random minibatch of {BATCH_SIZE}/{N_DATA} examples, so
+the gradient jitters from SGD step to SGD step (stochastic oscillation).
 
 Minibatch SGD:
   x <- x - lr * g_batch          # ball shakes with every batch
@@ -463,7 +463,7 @@ Momentum:
 
 Both optimizers in this demo share the SAME minibatch schedule.
 
-Final full-batch losses after {STEPS} steps:
+Final full-batch losses after {SGD_STEPS} SGD steps:
   SGD      L = {loss_full(path_sgd[-1]):.6f}
   Momentum L = {loss_full(path_mom[-1]):.6f}
 """)
