@@ -1,5 +1,5 @@
 """
-250_softmax.py
+231_softmax.py
 
 Softmax: differentiable, nonlinear normalization of a vector.
 
@@ -42,6 +42,7 @@ from _config import (
     apply_rcparams,
 )
 apply_rcparams(plt)
+from matplotlib.widgets import Slider
 import numpy as np
 
 np.random.seed(42)
@@ -457,6 +458,96 @@ show_maximized(fig6)
 
 
 # -------------------------------------------------------
+# FIGURE 7: Interactive -- fixed logits, live temperature slider
+# -------------------------------------------------------
+# Specific logits held fixed; only tau moves. Watch the distribution reshape.
+Z_LIVE = np.array([2.5, 1.2, 0.4, -0.3, -1.5], dtype=float)
+LABELS_LIVE = ['A', 'B', 'C', 'D', 'E']
+COLORS_LIVE = plt.cm.viridis(np.linspace(0.15, 0.85, len(Z_LIVE)))
+TAU0 = 1.0
+
+fig7 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
+fig7.suptitle(
+    r'Step 7: Interactive -- fixed logits $z$, drag temperature $\tau$',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+fig7.subplots_adjust(left=0.07, right=0.98, bottom=0.22, top=0.88, wspace=0.28)
+
+ax7a = fig7.add_subplot(1, 2, 1)
+ax7b = fig7.add_subplot(1, 2, 2)
+
+# Left: fixed logits (never change)
+bars_z = ax7a.bar(LABELS_LIVE, Z_LIVE, color=COLORS_LIVE, edgecolor='k')
+ax7a.axhline(0, color='0.35', lw=1)
+ax7a.set_ylabel(r'logit $z_i$ (fixed)', fontsize=FS_AXIS)
+ax7a.set_title('Specific logits (held fixed)', fontsize=FS_AX_TITLE)
+ax7a.tick_params(axis='both', labelsize=FS_TICK)
+ax7a.grid(True, axis='y', alpha=0.3)
+for i, zi in enumerate(Z_LIVE):
+    ax7a.text(i, zi + (0.12 if zi >= 0 else -0.25), f'{zi:.1f}',
+              ha='center', va='bottom' if zi >= 0 else 'top', fontsize=FS_ANNOT - 1)
+ax7a.text(
+    0.02, 0.98,
+    r'$z = [' + ', '.join(f'{zi:g}' for zi in Z_LIVE) + r']$' + '\n'
+    'Only $\\tau$ changes on the right.',
+    transform=ax7a.transAxes, va='top', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+)
+
+# Right: live softmax bars
+p0 = softmax(Z_LIVE, tau=TAU0)
+bars_p = ax7b.bar(LABELS_LIVE, p0, color=COLORS_LIVE, edgecolor='k')
+ax7b.set_ylim(0, 1.05)
+ax7b.set_ylabel(r'$p_i=\mathrm{softmax}(z/\tau)_i$', fontsize=FS_AXIS)
+ax7b.set_title('Distribution under current $\\tau$', fontsize=FS_AX_TITLE)
+ax7b.tick_params(axis='both', labelsize=FS_TICK)
+ax7b.grid(True, axis='y', alpha=0.3)
+value_texts = [
+    ax7b.text(i, p0[i] + 0.02, f'{p0[i]:.2f}', ha='center', va='bottom',
+              fontsize=FS_ANNOT - 1)
+    for i in range(len(Z_LIVE))
+]
+hud7 = ax7b.text(
+    0.98, 0.98, '',
+    transform=ax7b.transAxes, va='top', ha='right', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.95),
+)
+
+ax_tau = fig7.add_axes([0.20, 0.08, 0.60, 0.05])
+# log-spaced feel via slider on log10(tau)
+slider_tau = Slider(
+    ax_tau, r'$\tau$', 0.05, 8.0,
+    valinit=TAU0, valstep=0.05,
+)
+
+
+def _update_tau(_=None):
+    tau = float(slider_tau.val)
+    p = softmax(Z_LIVE, tau=tau)
+    for bar, pi, txt in zip(bars_p, p, value_texts):
+        bar.set_height(pi)
+        txt.set_y(pi + 0.02)
+        txt.set_text(f'{pi:.2f}')
+    ent = float(-np.sum(p * np.log(p + 1e-12)))
+    hud7.set_text(
+        rf'$\tau = {tau:.2f}$' + '\n'
+        f'argmax mass = {p.max():.3f}\n'
+        f'entropy = {ent:.3f} nats\n'
+        + ('peaky / near-argmax' if tau < 0.4 else
+           'soft / near-uniform' if tau > 3.0 else
+           'intermediate')
+    )
+    fig7.canvas.draw_idle()
+
+
+slider_tau.on_changed(_update_tau)
+_update_tau()
+
+print("Step 7: drag the temperature slider; logits stay fixed.")
+show_maximized(fig7)
+
+
+# -------------------------------------------------------
 # KEY INSIGHTS
 # -------------------------------------------------------
 # Temperature extremes for the demo vector
@@ -473,6 +564,10 @@ Demo logits z = {Z.tolist()}
   tau=1:    p = {np.round(P, 4).tolist()}   sum={P.sum():.6f}
   tau=0.15: p = {np.round(p_cold, 4).tolist()}   (near one-hot / deterministic)
   tau=8:    p = {np.round(p_hot, 4).tolist()}   (near uniform)
+
+Interactive Step 7 logits:
+  z = {Z_LIVE.tolist()}
+  Drag tau to see the same z go from peaky to nearly uniform.
 
 What it is:
   Differentiable NONLINEAR normalization of a vector.

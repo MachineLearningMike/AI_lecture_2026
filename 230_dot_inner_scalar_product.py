@@ -1,7 +1,7 @@
 """
 230_dot_inner_scalar_product.py
 
-Dot / inner / scalar product -- geometric meaning.
+Dot / inner / scalar product -- same operation on R^n, three names.
 
 For vectors x, y in R^n:
 
@@ -9,6 +9,11 @@ For vectors x, y in R^n:
             =  |x| |y| cos(theta)
 
 where theta = angle(x, y).
+
+Why three names (same number on standard R^n):
+  * Dot product     -- notation x·y; common in calc / ML
+  * Scalar product  -- stresses that the result is a scalar (vs cross product)
+  * Inner product   -- abstract <x,y>; also for functions / Hilbert spaces
 
 Intuition:
   * Project y onto the direction of x:  length of that shadow is |y| cos(theta)
@@ -106,12 +111,13 @@ shadow = float(unit(x) @ y)  # = |y| cos(theta)
 
 
 # -------------------------------------------------------
-# FIGURE 1: Algebraic vs geometric reading of the dot
+# FIGURE 1: Definition, then why three names, then geometry
 # -------------------------------------------------------
-fig1, axes1 = plt.subplots(1, 2, figsize=screen_figsize(), dpi=FIGURE_DPI)
+fig1, axes1 = plt.subplots(1, 3, figsize=screen_figsize(), dpi=FIGURE_DPI)
 fig1.suptitle(
-    r'Step 1: $\langle x,y\rangle = x_1 y_1 + x_2 y_2 = |x||y|\cos\theta$',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    r'Step 1: Definition  $\langle x,y\rangle = \sum_i x_i y_i = |x||y|\cos\theta$'
+    '  -- and why three names',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
 ax = axes1[0]
@@ -121,13 +127,15 @@ ax.quiver(0, 0, x[0], x[1], angles='xy', scale_units='xy', scale=1,
           color='#c0392b', width=0.012, label=r'$x$')
 ax.quiver(0, 0, y[0], y[1], angles='xy', scale_units='xy', scale=1,
           color='#2471a3', width=0.012, label=r'$y$')
-# component products as annotation
 ax.text(
     0.02, 0.98,
-    rf'Algebra (coordinates):' + '\n'
-    rf'$\langle x,y\rangle = x_1 y_1 + x_2 y_2$' + '\n'
-    rf'$= ({x[0]:.1f})({y[0]:.1f}) + ({x[1]:.1f})({y[1]:.1f})$' + '\n'
-    rf'$= {dot_xy:.2f}$',
+    'Mathematical definition\n'
+    r'(standard $\mathbb{R}^n$):' + '\n\n'
+    rf'$\langle x,y\rangle = \sum_i x_i y_i$' + '\n'
+    rf'$= ({x[0]:.1f})({y[0]:.1f})$'
+    rf'$+ ({x[1]:.1f})({y[1]:.1f})$' + '\n'
+    rf'$= {dot_xy:.2f}$' + '\n\n'
+    r'Also $= |x||y|\cos\theta$.',
     transform=ax.transAxes, va='top', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
@@ -136,24 +144,59 @@ ax.set_ylim(-0.5, 3.2)
 ax.set_aspect('equal')
 ax.set_xlabel(r'$e_1$', fontsize=FS_AXIS)
 ax.set_ylabel(r'$e_2$', fontsize=FS_AXIS)
-ax.set_title('Coordinate formula', fontsize=FS_AX_TITLE)
+ax.set_title('1) Coordinate definition', fontsize=FS_AX_TITLE)
 ax.legend(fontsize=FS_LEGEND, loc='lower right')
 ax.grid(True, alpha=0.3)
 ax.tick_params(labelsize=FS_TICK)
 
+# Why three names for the same number on R^n
 ax = axes1[1]
+ax.set_xlim(0, 10)
+ax.set_ylim(0, 10)
+ax.axis('off')
+ax.set_title('2) Same number -- three names', fontsize=FS_AX_TITLE)
+name_boxes = [
+    (0.35, 6.55, 9.3, 2.9, '#fdebd0',
+     'Dot product   $x \\cdot y$\n'
+     'Meaning: the "dot" notation; multiply matching\n'
+     'coordinates and add.\n'
+     'Usage: vector calc, physics, ML ("dot-product\n'
+     'attention", cosine via a dot).'),
+    (0.35, 3.45, 9.3, 2.9, '#d6eaf8',
+     'Scalar product\n'
+     'Meaning: the result is a SCALAR (one number),\n'
+     'not a vector -- unlike the cross / vector product.\n'
+     'Usage: physics texts (esp. European); stresses\n'
+     'output type.'),
+    (0.35, 0.35, 9.3, 2.9, '#d5f5e3',
+     'Inner product   $\\langle x, y \\rangle$\n'
+     'Meaning: abstract bilinear form with axioms\n'
+     '(linear, symmetric, positive-definite).\n'
+     'Usage: linear algebra / Hilbert spaces; same\n'
+     'idea for functions, e.g. $\\langle f,g\\rangle=\\int f g$.'),
+]
+for x0, y0, w, h, color, text in name_boxes:
+    ax.add_patch(plt.Rectangle((x0, y0), w, h, facecolor=color, edgecolor='k', lw=1.8))
+    ax.text(x0 + w / 2, y0 + h / 2, text, ha='center', va='center',
+            fontsize=FS_ANNOT - 1, fontweight='bold')
+ax.text(
+    0.5, 0.02,
+    r'On $\mathbb{R}^n$ with the standard basis these three names denote THE SAME operation.',
+    transform=ax.transAxes, ha='center', va='bottom', fontsize=FS_ANNOT - 1,
+    bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
+)
+
+ax = axes1[2]
 ax.axhline(0, color='0.7', lw=1)
 ax.axvline(0, color='0.7', lw=1)
 ax.quiver(0, 0, x[0], x[1], angles='xy', scale_units='xy', scale=1,
           color='#c0392b', width=0.012, label=r'$x$')
 ax.quiver(0, 0, y[0], y[1], angles='xy', scale_units='xy', scale=1,
           color='#2471a3', width=0.012, label=r'$y$')
-# projection of y onto x
 ax.plot([0, proj_y_on_x[0]], [0, proj_y_on_x[1]], color='#1e8449', lw=3.0,
         label=r'proj$_x y$')
 ax.plot([y[0], proj_y_on_x[0]], [y[1], proj_y_on_x[1]],
         color='0.4', lw=1.5, ls='--')
-# angle arc
 arc = Arc((0, 0), 1.2, 1.2,
           theta1=np.degrees(np.arctan2(x[1], x[0])),
           theta2=np.degrees(np.arctan2(y[1], y[0])),
@@ -168,7 +211,7 @@ ax.text(
     rf'   $= {shadow:.2f}$' + '\n'
     r'3) Multiply by $|x|$' + '\n'
     rf'   $\langle x,y\rangle = |x|\,|y|\cos\theta = {dot_xy:.2f}$',
-    transform=ax.transAxes, va='top', fontsize=FS_ANNOT,
+    transform=ax.transAxes, va='top', fontsize=FS_ANNOT - 1,
     bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.95),
 )
 ax.set_xlim(-0.5, 4.0)
@@ -176,7 +219,7 @@ ax.set_ylim(-0.5, 3.2)
 ax.set_aspect('equal')
 ax.set_xlabel(r'$e_1$', fontsize=FS_AXIS)
 ax.set_ylabel(r'$e_2$', fontsize=FS_AXIS)
-ax.set_title('Projection / angle formula', fontsize=FS_AX_TITLE)
+ax.set_title('3) Projection / angle reading', fontsize=FS_AX_TITLE)
 ax.legend(fontsize=FS_LEGEND, loc='lower right')
 ax.grid(True, alpha=0.3)
 ax.tick_params(labelsize=FS_TICK)

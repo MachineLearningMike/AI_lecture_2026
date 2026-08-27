@@ -4,9 +4,13 @@
 Intuition for Batch Normalization vs Layer Normalization.
 
 Both re-center and re-scale activations to roughly zero-mean / unit-variance,
-THEN allow the network to re-learn a mild scale/shift (gamma, beta):
+THEN allow the network to re-learn a scale/shift (gamma, beta):
 
-    y = gamma * (x - mean) / sqrt(var + eps) + beta
+    x_hat = (x - mean) / sqrt(var + eps)     # fixed standardize
+    y     = gamma * x_hat + beta             # learnable affine
+
+Default gamma=1, beta=0 keeps the standardized behavior.
+Learned gamma, beta can recover the old scale/shift -- or invent a new one.
 
 The difference is WHICH AXIS the mean/var are computed over:
 
@@ -372,11 +376,87 @@ show_maximized(fig4)
 
 
 # -------------------------------------------------------
-# FIGURE 5: Tiny training cartoon -- loss curvature / scales
+# FIGURE 5: gamma/beta -- keep standardized behavior XOR learn new affine
+# -------------------------------------------------------
+# For one feature under BN:  x_hat = (x-mu)/sigma,  y = gamma x_hat + beta.
+#   (gamma, beta) = (1, 0)     -> keep pure normalized behavior
+#   (gamma, beta) = (sigma, mu) -> undo BN: y ~= x  (original scale/shift)
+#   other (gamma, beta)         -> any new scale/shift on the unit axis
 # -------------------------------------------------------
 fig5, axes5 = new_figure(1, 2)
 fig5.suptitle(
-    'Step 5: Normalization makes the loss landscape less awkwardly stretched',
+    r'Step 5: $\gamma,\beta$ keep the option of "just normalize" AND open new scale/shift',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+
+feat_demo = 5
+x_feat = X[:, feat_demo]
+mu_f = float(x_feat.mean())
+sig_f = float(x_feat.std() + 1e-12)
+x_hat_f = (x_feat - mu_f) / sig_f
+
+# Three affine readouts of the same x_hat
+y_keep = 1.0 * x_hat_f + 0.0                    # default init: standardized
+y_orig = sig_f * x_hat_f + mu_f                  # recover original (~ identity)
+gamma_new, beta_new = 2.2, -1.5
+y_new = gamma_new * x_hat_f + beta_new           # a new learned scale/shift
+
+ax = axes5[0]
+ax.axis('off')
+ax.set_title('Formula: standardize, then optional affine', fontsize=FS_AX_TITLE)
+ax.text(
+    0.5, 0.55,
+    r'$\hat x = \dfrac{x-\mu}{\sqrt{\sigma^2+\varepsilon}}$'
+    '\n\n'
+    r'$y = \gamma\,\hat x + \beta$'
+    '\n\n'
+    r'$\bullet\ \gamma=1,\ \beta=0$'
+    '   keeps standardized behavior'
+    '\n'
+    r'$\bullet\ \gamma=\sigma,\ \beta=\mu$'
+    '   recovers original $x$ (approx.)'
+    '\n'
+    r'$\bullet\ \gamma,\beta$ free'
+    '   learn ANY new scale & shift'
+    '\n\n'
+    'So BN/LN do not permanently erase scale/shift capacity:\n'
+    'they fix a clean coordinate, then let the net re-paint affine.',
+    transform=ax.transAxes, ha='center', va='center', fontsize=FS_AXIS - 1,
+    bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.96),
+)
+
+ax = axes5[1]
+idx = np.arange(B)
+ax.plot(idx, x_feat, 'o-', color='0.45', lw=2.0, label=r'raw $x$')
+ax.plot(idx, y_keep, 's-', color='seagreen', lw=2.2, label=r'$\gamma=1,\beta=0$ (keep norm)')
+ax.plot(idx, y_orig, '^-', color='royalblue', lw=2.2, label=r'$\gamma=\sigma,\beta=\mu$ (≈ original)')
+ax.plot(idx, y_new, 'D-', color='crimson', lw=2.2,
+        label=rf'$\gamma={gamma_new:g},\beta={beta_new:g}$ (new)')
+ax.axhline(0, color='k', alpha=0.3)
+ax.set_xlabel('batch index', fontsize=FS_AXIS)
+ax.set_ylabel('activation (one BN feature)', fontsize=FS_AXIS)
+ax.set_title('Same $\\hat x$; different $(\\gamma,\\beta)$ readouts', fontsize=FS_AX_TITLE)
+ax.tick_params(axis='both', labelsize=FS_TICK)
+ax.legend(fontsize=FS_LEGEND, loc='best')
+ax.grid(True, alpha=0.3)
+ax.text(
+    0.02, 0.02,
+    rf'feature {feat_demo}:  $\mu={mu_f:.2f}$,  $\sigma={sig_f:.2f}$' + '\n'
+    r'green $\approx$ unit scale; blue tracks raw; red is a new affine.',
+    transform=ax.transAxes, va='bottom', ha='left', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+)
+
+plt.tight_layout()
+show_maximized(fig5)
+
+
+# -------------------------------------------------------
+# FIGURE 6: Tiny training cartoon -- loss curvature / scales
+# -------------------------------------------------------
+fig6, axes6 = new_figure(1, 2)
+fig6.suptitle(
+    'Step 6: Normalization makes the loss landscape less awkwardly stretched',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -390,7 +470,7 @@ def bowl(w1, w2, s1, s2):
 w = np.linspace(-3, 3, 200)
 W1, W2 = np.meshgrid(w, w)
 
-ax = axes5[0]
+ax = axes6[0]
 Z = bowl(W1, W2, s1=4.0, s2=0.4)
 cs = ax.contour(W1, W2, Z, levels=15, cmap='Reds')
 ax.plot(0, 0, 'k*', markersize=12)
@@ -410,7 +490,7 @@ ax.set_aspect('equal')
 ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, alpha=0.3)
 
-ax = axes5[1]
+ax = axes6[1]
 Z2 = bowl(W1, W2, s1=1.0, s2=1.0)
 ax.contour(W1, W2, Z2, levels=15, cmap='Blues')
 ax.plot(0, 0, 'k*', markersize=12)
@@ -439,7 +519,7 @@ ax.text(
 )
 
 plt.tight_layout()
-show_maximized(fig5)
+show_maximized(fig6)
 
 
 # -------------------------------------------------------
@@ -449,8 +529,15 @@ print("\n" + "=" * 60)
 print("BATCH NORM vs LAYER NORM")
 print("=" * 60)
 print(f"""
-Shared formula:
-  y = gamma * (x - mean) / sqrt(var + eps) + beta
+Shared formula (two stages):
+  x_hat = (x - mean) / sqrt(var + eps)     # standardize
+  y     = gamma * x_hat + beta             # learnable scale/shift
+
+  gamma=1, beta=0  -> keep standardized behavior
+  gamma=sigma, beta=mu -> recover original x (approx.) for that axis
+  free gamma, beta -> learn a NEW scale and shift on the unit axis
+
+  So normalization does not remove affine capacity: it reparameterizes it.
 
 Difference = the reduction axes for mean/var:
 
@@ -468,8 +555,8 @@ Demo matrix shape: batch={B}, features={F}
 
 Why it helps:
   1) Keeps activation magnitudes in a friendly range
-  2) Makes loss landscapes less awkwardly stretched (Step 5)
-  3) gamma/beta still let the net undo normalization if useful
+  2) Makes loss landscapes less awkwardly stretched (Step 6)
+  3) gamma/beta keep "original-like" behavior available AND allow new affines (Step 5)
 
 Rule of thumb:
   CNNs / large vision batches  -> BatchNorm is classic

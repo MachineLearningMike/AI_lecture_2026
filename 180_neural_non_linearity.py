@@ -5,9 +5,10 @@ How neural nets create non-linearity and non-linear manifolds.
 
 Key facts:
   1) Stacking linear layers WITHOUT activations is still just ONE linear map.
-  2) Pointwise non-linearities (ReLU, tanh, ...) break that collapse.
-  3) The result is a piecewise warping of space: linear regions glued into a
-     flexible non-linear manifold / decision boundary.
+  2) Pointwise non-linearities (ReLU, GELU, SiLU, tanh, ...) break that collapse.
+  3) One activated neuron only reshapes HEIGHT along parallel contour lines.
+  4) Mixing several neurons (and stacking layers) bends those contours into
+     curved level sets -- a non-linear manifold in input space.
 
 Companion to 030_model.py (simple vs complex net) and 150_inductive_bias.py.
 """
@@ -94,8 +95,26 @@ def relu(z):
     return np.maximum(0.0, z)
 
 
+def leaky_relu(z, alpha=0.1):
+    return np.where(z > 0.0, z, alpha * z)
+
+
 def tanh(z):
     return np.tanh(z)
+
+
+def sigmoid(z):
+    return 1.0 / (1.0 + np.exp(-np.clip(z, -40.0, 40.0)))
+
+
+def gelu(z):
+    # Common tanh approximation used in many DL libraries
+    return 0.5 * z * (1.0 + np.tanh(np.sqrt(2.0 / np.pi) * (z + 0.044715 * z ** 3)))
+
+
+def silu(z):
+    # Swish / SiLU: z * sigmoid(z) -- common in modern conv / MLP blocks
+    return z * sigmoid(z)
 
 
 def linear_forward(X, weights):
@@ -224,45 +243,189 @@ show_maximized(fig1)
 
 
 # -------------------------------------------------------
-# FIGURE 2: Activation functions -- local non-linear gadgets
+# FIGURE 2: Typical Deep Learning activations (1D profiles)
 # -------------------------------------------------------
-fig2, axes2 = new_figure(1, 3)
+fig2, axes2 = new_figure(2, 3)
 fig2.suptitle(
-    'Step 2: Activations are the source of non-linearity',
+    'Step 2: Typical activations in Deep Learning',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
-z = np.linspace(-3, 3, 400)
+z = np.linspace(-3.5, 3.5, 500)
 acts = [
-    ('ReLU', relu(z), 'royalblue', 'max(0,z)\npiecewise linear'),
-    ('tanh', tanh(z), 'darkorange', 'saturates at ±1\nsmooth bends'),
-    ('sigmoid', 1 / (1 + np.exp(-z)), 'seagreen', 'squashes to (0,1)\nsmooth gates'),
+    ('ReLU', relu(z), 'royalblue',
+     'max(0, z)\nCNNs / MLPs default.\nHard hinge; sparse.'),
+    ('Leaky ReLU', leaky_relu(z), 'dodgerblue',
+     'alpha*z if z<0\nKeeps a small slope\nso negatives are not dead.'),
+    ('GELU', gelu(z), 'darkorange',
+     'Smooth ReLU-like\nTransformers / BERT.\nSoft probabilistic gate.'),
+    ('SiLU / Swish', silu(z), 'crimson',
+     'z * sigmoid(z)\nModern conv / MLP.\nSmooth, non-monotone tip.'),
+    ('tanh', tanh(z), 'seagreen',
+     'Saturates at +/-1\nClassic RNNs / gated\nunits; zero-centered.'),
+    ('sigmoid', sigmoid(z), 'purple',
+     'Squashes to (0,1)\nGates & old nets.\nRare as hidden act now.'),
 ]
-for ax, (name, y, color, note) in zip(axes2, acts):
-    ax.plot(z, y, color=color, linewidth=3.0)
+for ax, (name, yv, color, note) in zip(axes2.ravel(), acts):
+    ax.plot(z, yv, color=color, linewidth=3.0)
     ax.axhline(0, color='k', alpha=0.25)
     ax.axvline(0, color='k', alpha=0.25)
     ax.set_title(name, fontsize=FS_AX_TITLE)
-    ax.set_xlabel('z', fontsize=FS_AXIS)
-    ax.set_ylabel('activation', fontsize=FS_AXIS)
+    ax.set_xlabel('pre-activation z', fontsize=FS_AXIS)
+    ax.set_ylabel(r'$\sigma(z)$', fontsize=FS_AXIS)
     ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.grid(True, alpha=0.3)
     ax.text(
-        0.98, 0.05, note,
-        transform=ax.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
+        0.02, 0.98, note,
+        transform=ax.transAxes, ha='left', va='top', fontsize=FS_ANNOT - 1,
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.92),
     )
 
-plt.tight_layout()
+fig2.tight_layout(rect=[0, 0, 1, 0.94])
 show_maximized(fig2)
 
 
 # -------------------------------------------------------
-# FIGURE 3: Layer-by-layer manifold warping (ReLU net)
+# FIGURE 3: One neuron -- surfaces and contour lines
 # -------------------------------------------------------
-fig3, axes3 = new_figure(1, 4)
+# A monotone activation of ONE linear form keeps PARALLEL contour lines.
+# Non-linearity shows up as uneven spacing / clipping of the HEIGHT, not as bent contours.
+fig3, axes3 = new_figure(2, 3)
 fig3.suptitle(
-    'Step 3: Depth + ReLU progressively folds the input manifold',
+    'Step 3: One neuron -- surfaces and contour lines (still parallel)',
+    fontsize=FS_FIGURE_TITLE, fontweight='bold',
+)
+
+xs = np.linspace(-2.5, 2.5, 160)
+ys = np.linspace(-2.5, 2.5, 160)
+XXS, YYS = np.meshgrid(xs, ys)
+# Fixed linear pre-activation: a tilted plane
+Zlin = 1.15 * XXS + 0.85 * YYS - 0.15
+
+surface_specs = [
+    ('Linear score  z = w·x+b', Zlin, 'The raw plane.\nContour lines =\nparallel hyperplanes.'),
+    ('ReLU(z)', relu(Zlin), 'Hinges flat below 0.\nContours still parallel;\nnegative half is dead.'),
+    ('GELU(z)', gelu(Zlin), 'Soft hinge.\nSame parallel family;\nsmoother height ramp.'),
+    ('SiLU(z)', silu(Zlin), 'Slight undershoot\nfor z<0.\nContours still straight.'),
+    ('tanh(z)', tanh(Zlin), 'Saturates both sides.\nContours crowd near\nthe decision band.'),
+    ('sigmoid(z)', sigmoid(Zlin), 'Soft step to (0,1).\nLevel sets = same\nparallel lines.'),
+]
+
+for ax, (title, field, note) in zip(axes3.ravel(), surface_specs):
+    vmax = float(np.max(np.abs(field))) + 1e-6
+    im = ax.contourf(XXS, YYS, field, levels=18, cmap='coolwarm',
+                     vmin=-vmax, vmax=vmax, alpha=0.95)
+    cs = ax.contour(XXS, YYS, field, levels=10, colors='k', linewidths=0.9, alpha=0.75)
+    ax.clabel(cs, inline=True, fontsize=FS_TICK - 3, fmt='%.1f')
+    ax.set_title(title, fontsize=FS_AX_TITLE - 2)
+    ax.set_xlabel(r'$x_1$', fontsize=FS_AXIS)
+    ax.set_ylabel(r'$x_2$', fontsize=FS_AXIS)
+    ax.set_aspect('equal')
+    ax.tick_params(axis='both', labelsize=FS_TICK - 2)
+    ax.text(
+        0.02, 0.02, note,
+        transform=ax.transAxes, ha='left', va='bottom', fontsize=FS_ANNOT - 1,
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.92),
+    )
+
+axes3[0, 0].text(
+    0.02, 0.98,
+    'Key: for ONE unit, activation\n'
+    'warps HEIGHT along the plane.\n'
+    'Contour lines do NOT bend yet.',
+    transform=axes3[0, 0].transAxes, ha='left', va='top', fontsize=FS_ANNOT - 1,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+)
+
+fig3.tight_layout(rect=[0, 0, 1, 0.94])
+show_maximized(fig3)
+
+
+# -------------------------------------------------------
+# FIGURE 4: Many neurons -- curved contour manifolds
+# -------------------------------------------------------
+fig4, axes4 = new_figure(1, 3)
+fig4.suptitle(
+    'Step 4: Many neurons bend the contours into a non-linear manifold',
+    fontsize=FS_FIGURE_TITLE, fontweight='bold',
+)
+
+# Several units with DIFFERENT orientations; mix them into a scalar field
+rng_act = np.random.default_rng(5)
+n_units = 5
+W_u = rng_act.normal(0, 1.0, size=(n_units, 2))
+W_u /= np.linalg.norm(W_u, axis=1, keepdims=True) + 1e-8
+b_u = rng_act.uniform(-0.8, 0.8, size=n_units)
+a_u = rng_act.normal(0, 1.0, size=n_units)  # output mixing weights
+
+pre = XXS[..., None] * W_u[:, 0] + YYS[..., None] * W_u[:, 1] + b_u  # (H,W,U)
+
+
+def mix_field(act_fn):
+    return np.tensordot(act_fn(pre), a_u, axes=([2], [0]))
+
+
+mix_specs = [
+    ('Sum of ReLUs', mix_field(relu),
+     'Piecewise-linear\nlandscape.\nLevel sets kink\nat hinge boundaries.'),
+    ('Sum of GELUs', mix_field(gelu),
+     'Same recipe,\nsmoother hills.\nContours curve\nwithout sharp folds.'),
+    ('Sum of tanhs', mix_field(tanh),
+     'Bounded bumps.\nSaturating units\nmake soft ridges\nand closed bowls.'),
+]
+
+for ax, (title, field, note) in zip(axes4, mix_specs):
+    vmax = float(np.percentile(np.abs(field), 99)) + 1e-6
+    ax.contourf(XXS, YYS, field, levels=20, cmap='coolwarm',
+                vmin=-vmax, vmax=vmax, alpha=0.95)
+    cs = ax.contour(XXS, YYS, field, levels=12, colors='k', linewidths=1.0, alpha=0.8)
+    ax.clabel(cs, inline=True, fontsize=FS_TICK - 3, fmt='%.1f')
+    # Draw each unit's zero line (the hinge / decision of that neuron)
+    for u in range(n_units):
+        # w0 x + w1 y + b = 0  =>  y = -(w0 x + b)/w1
+        if abs(W_u[u, 1]) > 1e-6:
+            xline = np.linspace(-2.5, 2.5, 50)
+            yline = -(W_u[u, 0] * xline + b_u[u]) / W_u[u, 1]
+            mask = (yline >= -2.5) & (yline <= 2.5)
+            ax.plot(xline[mask], yline[mask], color='0.25', ls='--', lw=1.0, alpha=0.55)
+    ax.set_title(title, fontsize=FS_AX_TITLE)
+    ax.set_xlabel(r'$x_1$', fontsize=FS_AXIS)
+    ax.set_ylabel(r'$x_2$', fontsize=FS_AXIS)
+    ax.set_xlim(-2.5, 2.5)
+    ax.set_ylim(-2.5, 2.5)
+    ax.set_aspect('equal')
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    ax.text(
+        0.02, 0.02, note,
+        transform=ax.transAxes, ha='left', va='bottom', fontsize=FS_ANNOT - 1,
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.92),
+    )
+
+axes4[0].plot([], [], color='0.25', ls='--', lw=1.0, label='each unit zero-line')
+axes4[0].legend(loc='upper right', fontsize=FS_LEGEND)
+axes4[2].text(
+    0.98, 0.98,
+    'Intuition:\n'
+    'each activation paints\n'
+    'a soft half-space.\n'
+    'Their SUM makes curved\n'
+    'contour manifolds.\n'
+    'Depth then warps those\n'
+    'again (next step).',
+    transform=axes4[2].transAxes, ha='right', va='top', fontsize=FS_ANNOT - 1,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+)
+
+fig4.tight_layout(rect=[0, 0, 1, 0.94])
+show_maximized(fig4)
+
+
+# -------------------------------------------------------
+# FIGURE 5: Layer-by-layer manifold warping (ReLU net)
+# -------------------------------------------------------
+fig5, axes5 = new_figure(1, 4)
+fig5.suptitle(
+    'Step 5: Depth + ReLU progressively folds the input manifold',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -279,7 +442,7 @@ stage_data.append(('After Linear+ReLU 2', H.copy()))
 H = H @ W3 + b3
 stage_data.append(('After final Linear', H.copy()))
 
-for ax, (title, Hstage) in zip(axes3, stage_data):
+for ax, (title, Hstage) in zip(axes5, stage_data):
     ax.scatter(Hstage[:, 0], Hstage[:, 1], c=angles, cmap=cmap, s=10, alpha=0.9)
     # also draw coarse warped grid for structure
     n = XX.shape[0]
@@ -293,37 +456,38 @@ for ax, (title, Hstage) in zip(axes3, stage_data):
     ax.tick_params(axis='both', labelsize=FS_TICK - 2)
     ax.grid(True, alpha=0.25)
 
-axes3[0].text(
+axes5[0].text(
     0.02, 0.02,
     'Color = input angle.\n'
     'Watch neighborhoods\n'
     'stretch, fold, stack.',
-    transform=axes3[0].transAxes, ha='left', va='bottom', fontsize=FS_ANNOT,
+    transform=axes5[0].transAxes, ha='left', va='bottom', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
 
-plt.tight_layout()
-show_maximized(fig3)
+fig5.tight_layout(rect=[0, 0, 1, 0.94])
+show_maximized(fig5)
 
 
 # -------------------------------------------------------
-# FIGURE 4: Decision boundary -- linear vs non-linear classifier
+# FIGURE 6: Decision boundary -- linear vs non-linear classifier
 # -------------------------------------------------------
-# Two interlocking moons-like blobs via simple construction
-n_each = 120
-t = RNG.uniform(0, np.pi, n_each)
-r = RNG.normal(1.0, 0.12, n_each)
-moon1 = np.stack([r * np.cos(t), r * np.sin(t)], axis=1) + np.array([0.0, 0.15])
-moon2 = np.stack([1.0 - r * np.cos(t), 0.5 - r * np.sin(t)], axis=1) + np.array([-0.2, -0.2])
-X_cls = np.vstack([moon1, moon2])
+# Concentric rings: NO straight line can separate them -- ReLU can.
+n_each = 220
+ang = RNG.uniform(0, 2 * np.pi, n_each)
+r_in = RNG.normal(0.55, 0.07, n_each)
+r_out = RNG.normal(1.55, 0.08, n_each)
+ring0 = np.stack([r_in * np.cos(ang), r_in * np.sin(ang)], axis=1)
+ring1 = np.stack([r_out * np.cos(ang), r_out * np.sin(ang)], axis=1)
+X_cls = np.vstack([ring0, ring1])
 y_cls = np.array([0] * n_each + [1] * n_each)
 
 
-def train_classifier(use_relu, steps=1500, lr=0.15, H=20, seed=0):
+def train_classifier(use_relu, steps=4000, lr=0.12, H=48, seed=0):
     rng = np.random.default_rng(seed)
-    W1 = rng.normal(0, 0.5, size=(2, H))
+    W1 = rng.normal(0, 0.6, size=(2, H))
     b1 = np.zeros(H)
-    W2 = rng.normal(0, 0.5, size=(H, 1))
+    W2 = rng.normal(0, 0.6, size=(H, 1))
     b2 = np.zeros(1)
 
     def forward(X):
@@ -332,9 +496,10 @@ def train_classifier(use_relu, steps=1500, lr=0.15, H=20, seed=0):
         logits = (h @ W2 + b2).ravel()
         return logits, h, z1
 
-    for _ in range(steps):
+    for t in range(steps):
+        # Mild lr decay helps the ReLU net settle a clean ring boundary.
+        step_lr = lr * (0.4 + 0.6 * (1.0 - t / steps))
         logits, h, z1 = forward(X_cls)
-        # sigmoid BCE grad
         p = 1 / (1 + np.exp(-np.clip(logits, -20, 20)))
         dlogits = (p - y_cls) / len(y_cls)
         dW2 = h.T @ dlogits[:, None]
@@ -346,69 +511,82 @@ def train_classifier(use_relu, steps=1500, lr=0.15, H=20, seed=0):
             dz1 = dh
         dW1 = X_cls.T @ dz1
         db1 = dz1.sum(axis=0)
-        W1 -= lr * dW1
-        b1 -= lr * db1
-        W2 -= lr * dW2
-        b2 -= lr * db2
+        W1 -= step_lr * dW1
+        b1 -= step_lr * db1
+        W2 -= step_lr * dW2
+        b2 -= step_lr * db2
 
     return (W1, b1, W2, b2), forward
 
 
-fig4, axes4 = new_figure(1, 2)
-fig4.suptitle(
-    'Step 4: Non-linear features make non-linear decision manifolds',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
+fig6, axes6 = new_figure(1, 2)
+fig6.suptitle(
+    'Step 6: Concentric rings -- a linear boundary MUST fail; ReLU can close a loop',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
-xx = np.linspace(-1.5, 2.2, 200)
-yy = np.linspace(-1.2, 1.6, 200)
+xx = np.linspace(-2.2, 2.2, 260)
+yy = np.linspace(-2.2, 2.2, 260)
 XXC, YYC = np.meshgrid(xx, yy)
 grid = np.stack([XXC.ravel(), YYC.ravel()], axis=1)
 cmap_bg = ListedColormap(['#f5c6c6', '#c6d4f5'])
 
 configs = [
-    (False, 'Linear net (no activation)\nboundary must be a hyperplane', axes4[0]),
-    (True, 'MLP with ReLU\nboundary can curve / fold', axes4[1]),
+    (False, 'Linear net (no activation)\nboundary = straight cut -- hopeless here', axes6[0]),
+    (True, 'MLP with ReLU\nboundary can form a closed ring', axes6[1]),
 ]
 
+accs = []
 for use_relu, title, ax in configs:
-    params, forward = train_classifier(use_relu=use_relu, seed=1)
+    params, forward = train_classifier(use_relu=use_relu, seed=2)
     logits_g, _, _ = forward(grid)
+    logits_data, _, _ = forward(X_cls)
+    acc = float(np.mean((logits_data > 0).astype(int) == y_cls))
+    accs.append(acc)
     Z = (logits_g > 0).astype(float).reshape(XXC.shape)
     ax.contourf(XXC, YYC, Z, levels=[-0.1, 0.5, 1.1], cmap=cmap_bg, alpha=0.9)
     ax.contour(XXC, YYC, logits_g.reshape(XXC.shape), levels=[0.0],
-               colors='k', linewidths=2.0)
+               colors='k', linewidths=2.4)
     ax.scatter(X_cls[y_cls == 0, 0], X_cls[y_cls == 0, 1],
-               s=18, c='crimson', edgecolor='k', linewidth=0.2, label='class 0')
+               s=16, c='crimson', edgecolor='k', linewidth=0.15, label='inner ring')
     ax.scatter(X_cls[y_cls == 1, 0], X_cls[y_cls == 1, 1],
-               s=18, c='royalblue', edgecolor='k', linewidth=0.2, label='class 1')
-    ax.set_title(title, fontsize=FS_AX_TITLE - 2)
+               s=16, c='royalblue', edgecolor='k', linewidth=0.15, label='outer ring')
+    ax.set_title(title + f'\ntrain accuracy = {100 * acc:.0f}%', fontsize=FS_AX_TITLE - 2)
     ax.set_xlabel(r'$x_1$', fontsize=FS_AXIS)
     ax.set_ylabel(r'$x_2$', fontsize=FS_AXIS)
     ax.set_aspect('equal')
     ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.grid(True, alpha=0.25)
-    ax.legend(loc='lower left', fontsize=FS_LEGEND)
+    ax.legend(loc='upper left', fontsize=FS_LEGEND)
 
-axes4[1].text(
-    0.98, 0.98,
+axes6[0].text(
+    0.98, 0.02,
+    'Any hyperplane cuts\n'
+    'BOTH rings.\n'
+    f'Accuracy stuck ~{100 * accs[0]:.0f}%.',
+    transform=axes6[0].transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+)
+axes6[1].text(
+    0.98, 0.02,
     'Black curve = decision\n'
     'manifold in input space.\n'
-    'ReLU lets it bend.',
-    transform=axes4[1].transAxes, ha='right', va='top', fontsize=FS_ANNOT,
+    'ReLU pieces assemble\n'
+    f'into a loop (~{100 * accs[1]:.0f}%).',
+    transform=axes6[1].transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
 
-plt.tight_layout()
-show_maximized(fig4)
+fig6.tight_layout(rect=[0, 0, 1, 0.94])
+show_maximized(fig6)
 
 
 # -------------------------------------------------------
-# FIGURE 5: 1D curve approximation by piecewise linear ReLU net
+# FIGURE 7: 1D curve approximation by piecewise linear ReLU net
 # -------------------------------------------------------
-fig5, ax5 = new_figure()
-fig5.suptitle(
-    'Step 5: ReLU nets build non-linear curves from linear pieces',
+fig7, ax7 = new_figure()
+fig7.suptitle(
+    'Step 7: ReLU nets build non-linear curves from linear pieces',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -432,17 +610,17 @@ coef, *_ = np.linalg.lstsq(Phi, y, rcond=None)
 y_hat = Phi @ coef
 
 # Also show a few individual ReLU bumps (scaled)
-ax5.plot(x, y, 'k--', lw=2.5, label='target non-linear curve')
-ax5.plot(x, y_hat, color='royalblue', lw=2.8, label=f'ReLU expansion (H={H})')
+ax7.plot(x, y, 'k--', lw=2.5, label='target non-linear curve')
+ax7.plot(x, y_hat, color='royalblue', lw=2.8, label=f'ReLU expansion (H={H})')
 for j in range(0, H, 5):
-    ax5.plot(x, coef[j] * relu(scales[j] * (x - centers[j])),
+    ax7.plot(x, coef[j] * relu(scales[j] * (x - centers[j])),
              color='0.6', lw=1.0, alpha=0.8)
-ax5.plot([], [], color='0.6', lw=1.0, label='individual ReLU pieces')
-ax5.set_xlabel('x', fontsize=FS_AXIS)
-ax5.set_ylabel('y', fontsize=FS_AXIS)
-ax5.tick_params(axis='both', labelsize=FS_TICK)
+ax7.plot([], [], color='0.6', lw=1.0, label='individual ReLU pieces')
+ax7.set_xlabel('x', fontsize=FS_AXIS)
+ax7.set_ylabel('y', fontsize=FS_AXIS)
+ax7.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
-    ax5,
+    ax7,
     'Each ReLU is a hinged\n'
     'linear piece.\n\n'
     'A weighted sum of many\n'
@@ -450,10 +628,10 @@ add_vcenter_legend_and_note(
     'smooth non-linear\n'
     'manifolds / curves.',
 )
-ax5.grid(True, alpha=0.3)
+ax7.grid(True, alpha=0.3)
 
-plt.tight_layout()
-show_maximized(fig5)
+fig7.tight_layout(rect=[0, 0, 1, 0.94])
+show_maximized(fig7)
 
 
 # -------------------------------------------------------
@@ -474,17 +652,23 @@ print(f"""
    Max |difference| between 3-layer linear net and single product map
    on the demo grid: {err:.2e}
 
-2) Activations stop the collapse:
-      ReLU / tanh / sigmoid applied between layers make the overall
-      map NON-linear. Straight grids become folded manifolds.
+2) Typical DL activations (ReLU, Leaky ReLU, GELU, SiLU, tanh, sigmoid)
+   are pointwise maps on the pre-activation z = w·x+b.
+   They stop the linear collapse when placed BETWEEN layers.
 
-3) Geometry:
-      - ReLU nets are piecewise-linear: space splits into polyhedral
-        regions; inside each region the map is affine.
-      - Stacking layers creates richer folds => curved decision
-        boundaries and flexible data manifolds.
+3) Contour / surface intuition:
+   - ONE activated neuron: contour lines stay PARALLEL (same as the
+     linear score). Non-linearity only reshapes the HEIGHT profile
+     (hard hinge, soft hinge, saturation, ...).
+   - MANY neurons with different orientations: their weighted sum
+     bends level sets into CURVED contour manifolds.
+   - DEPTH then warps those manifolds again (fold, stretch, stack).
 
-4) Why this matters:
+4) Geometry of ReLU nets:
+      Piecewise-linear: space splits into polyhedral regions; inside
+      each region the map is affine. GELU/SiLU are smooth cousins.
+
+5) Why this matters:
       Real data often lie on non-linear manifolds (circles, moons,
       speech, images). Non-linear nets can straighten / separate them;
       purely linear models cannot.

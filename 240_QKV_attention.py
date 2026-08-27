@@ -219,13 +219,16 @@ for b, s in zip(bars, scores):
     ax.text(b.get_x() + b.get_width() / 2, s + 0.05, f'{s:.2f}',
             ha='center', va='bottom', fontsize=FS_ANNOT - 1)
 ax.text(
-    0.02, 0.98,
-    'Same geometry as 155:\n'
-    'dot product = length x\n'
-    'shadow agreement.\n'
-    'Scaling by 1/sqrt(d) keeps\n'
-    'softmax well-behaved.',
-    transform=ax.transAxes, va='top', fontsize=FS_ANNOT,
+    0.02, 0.02,
+    r'If $q_j,k_j$ iid $\sim\mathcal{N}(0,1)$:' + '\n'
+    r'$q\cdot k=\sum_{j=1}^{d} q_j k_j$' + '\n'
+    r'$\mathrm{Var}(q_j k_j)=1$'
+    r'  $\Rightarrow$  $\mathrm{Var}(q\cdot k)=d$' + '\n'
+    r'$\mathrm{Var}(q\cdot k/\sqrt{d})=1$'
+    '  (O(1) / normalized scale).\n'
+    r'Without $1/\sqrt{d}$, scores grow like'
+    r' $\sqrt{d}$ and softmax saturates.',
+    transform=ax.transAxes, va='bottom', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.95),
 )
 
@@ -506,6 +509,12 @@ Algorithm:
   scores_i = <q, k_i> / sqrt(d)
   alpha    = softmax(scores)          # attention weights
   output   = sum_i alpha_i * v_i      # draw value ~ similarity
+
+Why /sqrt(d)  (normalized score scale):
+  Assume components q_j, k_j iid ~ N(0,1), independent across j.
+  Then q·k = sum_j q_j k_j,  E[q_j k_j]=0,  Var(q_j k_j)=E[q_j^2]E[k_j^2]=1,
+  so Var(q·k)=d.  Scaling gives Var(q·k / sqrt(d))=1 -- O(1) inputs to softmax,
+  instead of scores that wander like sqrt(d) and push softmax into saturation.
 
 Toy lookup demo:
   query q = {QUERY.tolist()}
