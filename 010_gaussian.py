@@ -243,7 +243,7 @@ show_maximized(fig2)
 # FIGURE 3: DISTRIBUTION OF SAMPLE MEANS (same x-scale)
 # For Gaussian data, sample means are exactly N(0, (1/√n)²) = N(0, 1/n).
 # The narrowing shows the Standard Error shrinking — not CLT "kicking in".
-# (See 030_central_limit_theorem.py for CLT with non-Gaussian sources.)
+# (See 040_central_limit_theorem.py for CLT with non-Gaussian sources.)
 # -------------------------------------------------------
 fig3, axes3 = plt.subplots(2, 3, figsize=screen_figsize(), dpi=FIGURE_DPI)
 fig3.suptitle(
@@ -339,7 +339,7 @@ The CLT says: the distribution of SAMPLE MEANS approaches a Gaussian
 even when the underlying data are NOT Gaussian (given large enough n).
 
 Figure 3 above uses a Gaussian source, so the means are already exactly
-normal for every n -- look at 030_central_limit_theorem.py for the real CLT
+normal for every n -- look at 040_central_limit_theorem.py for the real CLT
 demo with Uniform / Exponential / Bimodal sources.
 
 Why this matters in practice:
