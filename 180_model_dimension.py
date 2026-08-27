@@ -92,7 +92,8 @@ def add_note(ax, text, x=0.98, y=0.46, ha='right', va='top', facecolor='white'):
 # -------------------------------------------------------
 # Parameter accounting for a GPT-style Transformer
 #
-# Complete formula (sinusoidal / no learned PE; Pre-LN block):
+# Param formula (sinusoidal / no learned PE; Pre-LN blocks):
+#   embedding + per-block terms; ignores final ln_f (~2d) and other smalls.
 #
 #   Let d = d_model,  L = n_layers,  V = vocab_size,
 #       d_ff = expansion width (default 4d).
@@ -252,12 +253,13 @@ show_maximized(fig1)
 
 
 # -------------------------------------------------------
-# FIGURE 2: Complete formula for P(d)
+# FIGURE 2: Parameter formula for P(d)
 # -------------------------------------------------------
 fig2, ax2 = new_figure()
 fig2.suptitle(
-    r'Step 2: Complete parameter formula in terms of $d=d_{\mathrm{model}}$',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    r'Step 2: Parameter formula in terms of $d=d_{\mathrm{model}}$ '
+    r'(embed + blocks; ignores final LN)',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 ax2.axis('off')
 ax2.text(

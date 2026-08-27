@@ -163,7 +163,7 @@ add_note(
     'Every layer contributes\n'
     'an additive edit to the\n'
     'SAME stream.',
-    y=0.98, va='top', facecolor='lightyellow',
+    y=0.50, va='center', facecolor='lightyellow',
 )
 
 ax = axes1[1]
@@ -279,8 +279,9 @@ states = np.stack(states, axis=0)  # (L+1, T, 2)
 
 fig3, axes3 = new_figure(1, 2)
 fig3.suptitle(
-    'Step 3: Each token has a residual stream; attention ADDS cross-token messages',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    'Step 3: Each token has a residual stream;\n'
+    'attention ADDS cross-token messages',
+    fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
 )
 
 ax = axes3[0]
@@ -328,7 +329,7 @@ add_note(
     y=0.98, va='top', facecolor='lightyellow',
 )
 
-plt.tight_layout()
+plt.tight_layout(rect=[0, 0, 1, 0.90])
 show_maximized(fig3)
 
 
@@ -363,7 +364,7 @@ add_note(
     'replaces features.\n'
     'It is an integrator that\n'
     'accumulates features.',
-    y=0.98, va='top', facecolor='lightyellow',
+    y=0.50, va='center', facecolor='lightyellow',
 )
 
 ax = axes4[1]
@@ -477,7 +478,7 @@ add_note(
     r'$= I + \partial F_l/\partial x_l$' + '\n\n'
     'The I term is the\n'
     'additive highway.',
-    y=0.98, va='top', facecolor='lightyellow',
+    y=0.98 - 1.0 / 3.0, va='top', facecolor='lightyellow',
 )
 
 ax = axes6[1]
@@ -577,7 +578,7 @@ add_note(
     'into the stream -- and\n'
     'can be read out after\n'
     'training.',
-    y=0.98, va='top', facecolor='lightyellow',
+    y=0.02, va='bottom', facecolor='lightyellow',
 )
 
 plt.tight_layout()

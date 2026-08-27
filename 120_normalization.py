@@ -14,7 +14,7 @@ The difference is WHICH AXIS the mean/var are computed over:
     LayerNorm  -- for each SAMPLE (token), pool over the FEATURES
 
 Companion to 020_model.py (deeper nets need stable activation scales) and
-090_mementum.py / 100_loss_functions.py (optimization geometry).
+090_momentum.py / 100_loss_functions.py (optimization geometry).
 """
 
 import matplotlib.pyplot as plt

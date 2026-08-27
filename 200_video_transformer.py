@@ -211,7 +211,7 @@ ax.tick_params(axis='both', labelsize=FS_AXIS)
 add_note(
     ax,
     'ViT-style:\n'
-    'tokenize each frame,\n'
+    'patchify each frame,\n'
     'then somehow fuse time.\n'
     f'Total if naive: T*N = {T * N_SPATIAL}',
     y=0.02, va='bottom', facecolor='lightyellow',
@@ -266,11 +266,6 @@ for t in range(T):
     toks, _ = extract_spatial_patches(video[t])
     frame_tokens.append(toks)
 frame_tokens = np.stack(frame_tokens, axis=0)  # (T, N, d)
-d_tok = frame_tokens.shape[-1]
-
-# Joint tokens: flatten time and space
-joint_tokens = frame_tokens.reshape(T * N_SPATIAL, d_tok)
-attn_joint = attention_map(joint_tokens)
 
 # Divided: space-only within a frame, time-only within a patch location
 attn_space = attention_map(frame_tokens[2])  # frame t=2 spatial attention

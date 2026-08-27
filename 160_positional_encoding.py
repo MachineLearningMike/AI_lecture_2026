@@ -21,8 +21,9 @@ Properties worth remembering:
     5) Extrapolates to sequence lengths longer than those seen in training
 
 RoPE (rotary PE) applies the SAME rotation idea directly to Q/K instead
-of adding a PE vector. Intuition is clean; practical advantage over
-classical sinusoidal PE is small -- same geometric family.
+of adding a PE vector. Same geometric family as sinusoidal PE; RoPE is
+the usual choice in modern decoder LLMs because relative phase lives in
+the attention logit and pairs well with length-transfer recipes.
 
 Companion to 150_transformer.py and 200_video_transformer.py.
 """
@@ -207,10 +208,10 @@ cbar.set_label('PE value', fontsize=FS_ANNOT)
 cbar.ax.tick_params(labelsize=FS_ANNOT)
 add_note(
     ax2,
-    'Left dims: low frequency\n'
-    '(slow waves along pos).\n\n'
-    'Right dims: high frequency\n'
+    'Left dims: high frequency\n'
     '(rapid oscillation).\n\n'
+    'Right dims: low frequency\n'
+    '(slow waves along pos).\n\n'
     'Together: unique code\n'
     'for every position.',
     y=0.98, va='top', facecolor='lightyellow',
@@ -315,11 +316,8 @@ ax.plot(np.cos(theta), np.sin(theta), color='0.7', lw=1.0, label='unit circle')
 # sample a few positions
 sample_pos = [0, 5, 10, 20, 35]
 colors = plt.cm.viridis(np.linspace(0.1, 0.9, len(sample_pos)))
-omega = 1.0 / (BASE ** (dim / D_MODEL))
 for p, c in zip(sample_pos, colors):
-    x = np.cos(omega * p)  # match PE cos/sin pairing roughly for illustration
-    y = np.sin(omega * p)
-    # actual PE uses sin on even, cos on odd -- plot that pair
+    # PE uses sin on even, cos on odd -- plot that pair
     y_s, x_c = PE[p, dim], PE[p, dim + 1]
     ax.scatter([x_c], [y_s], s=70, color=c, zorder=3, label=f'pos={p}')
     ax.plot([0, x_c], [0, y_s], color=c, lw=1.5)
@@ -675,7 +673,7 @@ ax.text(
     '      put distance into attention logits directly\n'
     '  • RoPE (LLaMA / many modern LLMs)\n'
     '      rotate Q/K by position -- same geometry family\n'
-    '      (see Step 9: little advantage vs sinusoidal)\n'
+    '      (see Step 9: tradeoffs vs sinusoidal)\n'
     '  • ALiBi\n'
     '      simple distance penalty; strong length transfer\n'
     '  • No PE + causal mask only\n'
@@ -692,7 +690,7 @@ show_maximized(fig8)
 
 
 # -------------------------------------------------------
-# FIGURE 9: RoPE intuition -- and little advantage vs sinusoidal
+# FIGURE 9: RoPE intuition -- same family as sinusoidal, different tradeoffs
 # -------------------------------------------------------
 def rope_rotate_2d(xy, pos, omega):
     """Rotate 2D vectors by angle = pos * omega (RoPE on one pair)."""
@@ -704,7 +702,7 @@ def rope_rotate_2d(xy, pos, omega):
 
 fig9, axes9 = new_figure(1, 2)
 fig9.suptitle(
-    'Step 9: RoPE intuition -- same rotations as sinusoidal, little extra gain',
+    'Step 9: RoPE intuition -- same rotations as sinusoidal, different packaging',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
@@ -762,7 +760,7 @@ add_note(
     y=0.98, va='top', facecolor='lightyellow',
 )
 
-# Right: same relative structure as sinusoidal; little advantage
+# Right: same relative structure as sinusoidal; packaging tradeoffs
 ax = axes9[1]
 # Demonstrate: score vs relative distance is identical for any absolute anchor
 rel = np.arange(-20, 21)
@@ -794,17 +792,17 @@ ax.legend(fontsize=FS_LEGEND, loc='best')
 ax.grid(True, alpha=0.3)
 add_note(
     ax,
-    'Intuition: elegant.\n\n'
-    'But sinusoidal PE\n'
-    'already encodes the\n'
-    'SAME idea:\n'
+    'Shared geometry:\n'
     '  PE(p+k)=R_k PE(p)\n'
-    'relative = rotation.\n\n'
-    'RoPE moves that\n'
-    'rotation onto Q/K.\n'
-    'Little advantage over\n'
-    'classical sinusoidal\n'
-    'add-PE for most work.',
+    '  relative = rotation.\n\n'
+    'RoPE puts that\n'
+    'rotation on Q/K so\n'
+    'relative phase is in\n'
+    'the attention logit.\n\n'
+    'Tradeoff: sinusoidal\n'
+    'add-PE is simple to\n'
+    'teach; RoPE is the\n'
+    'usual modern default.',
     y=0.98, va='top', facecolor='lightyellow',
 )
 
@@ -812,7 +810,7 @@ fig9.text(
     0.5, 0.02,
     'Sinusoidal: add PE to x, then learn relative from PE geometry.   |   '
     'RoPE: bake the same rotations into Q/K so relative is automatic.\n'
-    'Same inductive bias family; RoPE is a packaging choice, not a new principle -- little advantage over sinusoidal PE.',
+    'Same inductive-bias family; RoPE is preferred in many decoder LLMs for relative logits / length recipes -- not a wholly new principle.',
     ha='center', va='bottom', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.96),
 )
@@ -905,13 +903,13 @@ RoPE (rotary positional embedding) -- intuition:
       (R_m q)^T (R_n k) = q^T R_(n-m) k
   Demo: scores for query at m=0 vs m=10 overlay (max |diff|={rope_rel_err:.2e}).
 
-RoPE vs sinusoidal -- little advantage:
+RoPE vs sinusoidal -- tradeoffs:
   Sinusoidal PE already uses the same multi-frequency rotation geometry
-  (PE(p+k) = R_k PE(p)). RoPE just applies those rotations to Q/K so
-  relative structure is automatic in the dot product.
-  Same inductive-bias family; RoPE is a packaging choice popular in
-  modern LLMs, not a fundamentally stronger principle than sinusoidal
-  add-PE for understanding (or most practical gains).
+  (PE(p+k) = R_k PE(p)). RoPE applies those rotations to Q/K so relative
+  structure is automatic in the attention logit.
+  Same inductive-bias family. Sinusoidal add-PE is parameter-free and
+  great for teaching; RoPE is the usual choice in current GPT-style
+  models and pairs well with modern length-transfer recipes.
 
 Uniqueness check:
   Distinct PE rows among first {N_POS} positions: {uniq}/{N_POS}

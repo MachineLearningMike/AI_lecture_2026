@@ -224,8 +224,12 @@ anim = animation.FuncAnimation(
 )
 
 print(f'Saving animation to {OUT_PATH} ...')
-anim.save(OUT_PATH, writer=animation.PillowWriter(fps=FPS))
-print(f'Saved: {OUT_PATH}')
+try:
+    anim.save(OUT_PATH, writer=animation.PillowWriter(fps=FPS))
+    print(f'Saved: {OUT_PATH}')
+except Exception as exc:
+    print(f'Skipping GIF export ({OUT_PATH.name}): {exc}')
+    print('Install pillow to enable animation export: pip install pillow')
 
 # Also show interactively when a GUI backend is available
 try:

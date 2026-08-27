@@ -3,6 +3,58 @@ import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
 
+FS_FIGURE_TITLE = 28
+FS_AX_TITLE = 22
+FS_AXIS = 16
+FS_ANNOT = 14
+FS_LEGEND = 14
+
+SCREEN_FRACTION = 0.95
+FIGURE_DPI = 120
+
+plt.rcParams.update({
+    "figure.titlesize": FS_FIGURE_TITLE,
+    "axes.titlesize": FS_AX_TITLE,
+    "axes.labelsize": FS_AXIS,
+    "xtick.labelsize": FS_AXIS,
+    "ytick.labelsize": FS_AXIS,
+    "legend.fontsize": FS_LEGEND,
+    "figure.dpi": FIGURE_DPI,
+})
+
+
+def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
+    try:
+        import tkinter as tk
+        root = tk.Tk()
+        root.withdraw()
+        w = root.winfo_screenwidth()
+        h = root.winfo_screenheight()
+        root.destroy()
+        return (w / dpi * fraction, h / dpi * fraction)
+    except Exception:
+        return (16 * fraction / 0.95, 9 * fraction / 0.95)
+
+
+def show_maximized(fig):
+    fig.set_dpi(FIGURE_DPI)
+    fig.set_size_inches(screen_figsize(), forward=True)
+    fig.canvas.draw_idle()
+    manager = getattr(fig.canvas, "manager", None)
+    if manager is not None:
+        try:
+            manager.window.state("zoomed")
+        except Exception:
+            try:
+                manager.window.showMaximized()
+            except Exception:
+                try:
+                    manager.frame.Maximize(True)
+                except Exception:
+                    pass
+    plt.show()
+
+
 # =======================================================
 # CONFIGURATION: Toggle between Simple and Complex Model
 # =======================================================
@@ -125,17 +177,18 @@ X_sorted_np = X_sorted.numpy()
 Y_true_sorted_np = Y_true_sorted.numpy()
 X_grid_np = X_grid.numpy()
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
-fig.suptitle(f'Model: {model_name}', fontsize=14, fontweight='bold')
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=screen_figsize(), dpi=FIGURE_DPI)
+fig.suptitle(f'Model: {model_name}', fontsize=FS_FIGURE_TITLE, fontweight='bold')
 
 ax1.scatter(X_np, Y_np, alpha=0.3, label='Data with Noise', color='blue', s=5)
 ax1.plot(X_sorted_np, Y_true_sorted_np, color='green', linewidth=2,
          label='True Function', alpha=0.8)
 ax1.plot(X_grid_np, preds_before, color='red', linewidth=2, label='AI Guesses')
-ax1.set_title('BEFORE Training (Random Guesses)')
-ax1.set_xlabel('X')
-ax1.set_ylabel('Y')
-ax1.legend()
+ax1.set_title('BEFORE Training (Random Guesses)', fontsize=FS_AX_TITLE)
+ax1.set_xlabel('X', fontsize=FS_AXIS)
+ax1.set_ylabel('Y', fontsize=FS_AXIS)
+ax1.tick_params(axis='both', labelsize=FS_AXIS)
+ax1.legend(fontsize=FS_LEGEND)
 ax1.grid(True, alpha=0.3)
 ax1.set_ylim(-50, 150)
 
@@ -178,49 +231,54 @@ ax2.scatter(X_np, Y_np, alpha=0.3, label='Data with Noise', color='blue', s=5)
 ax2.plot(X_sorted_np, Y_true_sorted_np, color='green', linewidth=2,
          label='True Function', alpha=0.8)
 ax2.plot(X_grid_np, preds_after, color='red', linewidth=2, label='AI Predictions')
-ax2.set_title('AFTER Training')
-ax2.set_xlabel('X')
-ax2.set_ylabel('Y')
-ax2.legend()
+ax2.set_title('AFTER Training', fontsize=FS_AX_TITLE)
+ax2.set_xlabel('X', fontsize=FS_AXIS)
+ax2.set_ylabel('Y', fontsize=FS_AXIS)
+ax2.tick_params(axis='both', labelsize=FS_AXIS)
+ax2.legend(fontsize=FS_LEGEND)
 ax2.grid(True, alpha=0.3)
 ax2.set_ylim(-50, 150)
 
 ax2.text(
     0.05, 0.95, f'True: Y = {a:.1f}X^{power} + {b:.1f}',
-    transform=ax2.transAxes, fontsize=14, verticalalignment='top',
+    transform=ax2.transAxes, fontsize=FS_ANNOT, verticalalignment='top',
     bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.8),
 )
 
 if USE_COMPLEX_MODEL:
     ax2.text(
         0.05, 0.82, 'Complex Model\n(4 layers, ReLU + Tanh)',
-        transform=ax2.transAxes, fontsize=12, verticalalignment='top',
+        transform=ax2.transAxes, fontsize=FS_ANNOT, verticalalignment='top',
         bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.8),
     )
 else:
     slope, intercept = linear_params_in_original_space(model)
     ax2.text(
         0.05, 0.82, f'Pred: Y = {slope:.2f}X + {intercept:.2f}',
-        transform=ax2.transAxes, fontsize=14, verticalalignment='top',
+        transform=ax2.transAxes, fontsize=FS_ANNOT, verticalalignment='top',
         bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.8),
     )
 
 plt.tight_layout()
-plt.show()
+show_maximized(fig)
 
 # -------------------------------------------------------
 # 6. PLOT: TRAINING LOSS CURVE
 # -------------------------------------------------------
-fig_loss, ax_loss = plt.subplots(1, 1, figsize=(10, 5))
+fig_loss, ax_loss = plt.subplots(1, 1, figsize=screen_figsize(), dpi=FIGURE_DPI)
 ax_loss.plot(losses, color='blue', linewidth=2)
-ax_loss.set_title(f'Training Loss Over Time ({model_name})')
-ax_loss.set_xlabel('Epoch')
-ax_loss.set_ylabel('Normalized MSE Loss')
+ax_loss.set_title(
+    f'Training Loss Over Time ({model_name})',
+    fontsize=FS_AX_TITLE,
+)
+ax_loss.set_xlabel('Epoch', fontsize=FS_AXIS)
+ax_loss.set_ylabel('Normalized MSE Loss', fontsize=FS_AXIS)
+ax_loss.tick_params(axis='both', labelsize=FS_AXIS)
 ax_loss.grid(True, alpha=0.3)
 if USE_COMPLEX_MODEL:
     ax_loss.set_yscale('log')
 plt.tight_layout()
-plt.show()
+show_maximized(fig_loss)
 
 # -------------------------------------------------------
 # 7. FINAL RESULTS

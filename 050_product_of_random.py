@@ -1,5 +1,5 @@
 """
-050_product_of_randomness.py
+050_product_of_random.py
 
 Intuition for the PRODUCT of two random variables.
 
@@ -16,7 +16,7 @@ Unlike sums of Gaussians (which stay Gaussian), a product of Gaussians
 is peaked near 0 with HEAVY tails. For positive variables, taking logs
 turns products into sums -- the bridge to log-normal thinking.
 
-Companion to 040_sum_of_randomness.py (averages / sums).
+Companion to 040_sum_of_random.py (averages / sums).
 """
 
 import torch
@@ -319,7 +319,7 @@ fig4.suptitle(
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
-# Lognormal: if log A, log B ~ N(0, 0.5^2), then A,B > 0 and AB is lognormal
+# Lognormal: if log A, log B ~ N(0, LOG_SIGMA^2), then A,B > 0 and AB is lognormal
 LOG_SIGMA = 1.0  # sigma of log A, log B (matches sigma=1 theme)
 logA = LOG_SIGMA * torch.randn(N_PAIRS)
 logB = LOG_SIGMA * torch.randn(N_PAIRS)
@@ -402,7 +402,7 @@ Geometry (Figure 2):
     |P| large only in the corners (both |X| and |Y| large) -- rare.
     Near an axis, one factor is ~0, so P piles up near 0 -- common.
 
-Contrast with sums (Figure 3 / 040_sum_of_randomness.py):
+Contrast with sums (Figure 3 / 040_sum_of_random.py):
     X+Y of Gaussians stays Gaussian (variance adds).
     X*Y of Gaussians does NOT stay Gaussian.
 

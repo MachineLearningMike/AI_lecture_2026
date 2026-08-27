@@ -1,5 +1,5 @@
 """
-090_mementum.py
+090_momentum.py
 
 Role of momentum in SGD optimizers -- especially under minibatch noise.
 
@@ -425,8 +425,12 @@ anim = animation.FuncAnimation(
     fig_a, update_anim, init_func=init_anim,
     frames=n_anim, interval=1000 / FPS, blit=False,
 )
-anim.save(OUT_GIF, writer=animation.PillowWriter(fps=FPS))
-print(f'Saved: {OUT_GIF}')
+try:
+    anim.save(OUT_GIF, writer=animation.PillowWriter(fps=FPS))
+    print(f'Saved: {OUT_GIF}')
+except Exception as exc:
+    print(f'Skipping GIF export ({OUT_GIF.name}): {exc}')
+    print('Install pillow to enable animation export: pip install pillow')
 plt.close(fig_a)
 
 

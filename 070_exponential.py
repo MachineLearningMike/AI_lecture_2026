@@ -10,8 +10,8 @@ Why it matters in ML / probability:
     - the score / gradient of a log-density is (density)' / density
     - softmax / cross-entropy / Gaussian MLE all lean on this
 
-Companion to 050_product_of_randomness.py (log turns products into sums)
-and 060_maximul_likelihood.py (we maximize log L, not L).
+Companion to 050_product_of_random.py (log turns products into sums)
+and 060_maximum_likelihood.py (we maximize log L, not L).
 """
 
 import torch
@@ -379,7 +379,7 @@ print("""
    Reading: the derivative of log f is the RELATIVE rate of
    change of f -- slope divided by height.
 
-4. Why maximize log L instead of L in MLE (see 06_...):
+4. Why maximize log L instead of L in MLE (see 060_maximum_likelihood.py):
        d/d theta log L = (1/L) * dL/d theta
    Critical points coincide, but log L is numerically stable
    and turns the product-likelihood into a sum.

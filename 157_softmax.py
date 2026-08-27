@@ -185,12 +185,7 @@ ax.text(
 )
 
 ax = axes2[1]
-# Show exp mapping: relative boost of top vs second
-gap = np.linspace(0, 4, 200)
-# two-class: z=(gap, 0) -> p_top
-p_top = np.exp(gap) / (np.exp(gap) + 1.0)
-p_lin_top = (gap + 0.01) / ((gap + 0.01) + 0.01)  # awkward stand-in; better use fixed positive pair
-# cleaner: fix second logit=1, vary first
+# Fix second logit=1, vary first
 z2 = 1.0
 z1 = np.linspace(-1, 5, 200)
 p_soft_top = np.exp(z1) / (np.exp(z1) + np.exp(z2))
@@ -326,21 +321,19 @@ ax.text(
 )
 
 ax = axes4[1]
-# Jacobian sparsity intuition: dp_i / dz_j = p_i (1{i=j} - p_j)
-# Show magnitude of gradient of loss L=-log p_true w.r.t. each logit
+# Softmax CE Jacobian: d(-log p_t)/dz = p - one_hot(t)
+# Hard argmax has (sub)gradient 0 almost everywhere -- do not fake a CE grad.
 true = 0  # class A
-# d(-log p_t)/dz = p - one_hot(t)
 g_soft = P.copy()
 g_soft[true] -= 1.0
-g_hard = hard.copy()  # if we treated hard as probs, same form but one-hot
-g_hard[true] -= 1.0
-ax.bar(x - w / 2, g_hard, width=w, color='#c0392b', edgecolor='k', label='grad via hardmax')
-ax.bar(x + w / 2, g_soft, width=w, color='#1e8449', edgecolor='k', label='grad via softmax')
+g_hard = np.zeros_like(hard)
+ax.bar(x - w / 2, g_hard, width=w, color='#c0392b', edgecolor='k', label='hardmax (sub)grad ~ 0')
+ax.bar(x + w / 2, g_soft, width=w, color='#1e8449', edgecolor='k', label='softmax CE grad')
 ax.axhline(0, color='0.35', lw=1)
 ax.set_xticks(x)
 ax.set_xticklabels(LABELS)
 ax.set_ylabel(r'$\partial(-\log p_A)/\partial z_i$', fontsize=FS_AXIS)
-ax.set_title('Cross-entropy grads still touch every logit', fontsize=FS_AX_TITLE - 4)
+ax.set_title('Softmax CE grads touch every logit; hardmax blocks them', fontsize=FS_AX_TITLE - 4)
 ax.tick_params(axis='both', labelsize=FS_AXIS)
 ax.legend(fontsize=FS_LEGEND, loc='upper right')
 ax.grid(True, axis='y', alpha=0.3)
@@ -348,8 +341,8 @@ ax.text(
     0.02, 0.02,
     'Differentiable normalization:\n'
     r'$\partial p_i/\partial z_j = p_i(1_{i=j}-p_j)$' + '\n'
-    'No component is structurally\n'
-    'erased from the graph.',
+    'Hard argmax is flat a.e.,\n'
+    'so gradients do not flow.',
     transform=ax.transAxes, va='bottom', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.95),
 )
@@ -460,11 +453,11 @@ ax6.set_aspect('equal')
 ax6.axis('off')
 ax6.legend(fontsize=FS_LEGEND, loc='upper right')
 ax6.text(
-    0.02, 0.02,
+    0.02, 0.50,
     'Interior point = stochastic policy.\n'
     'Cooling (↓τ) slides p toward a corner:\n'
     'deterministic choice, still via softmax.',
-    transform=ax6.transAxes, va='bottom', fontsize=FS_ANNOT,
+    transform=ax6.transAxes, va='center', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
 show_maximized(fig6)

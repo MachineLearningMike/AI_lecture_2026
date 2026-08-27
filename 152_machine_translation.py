@@ -270,7 +270,8 @@ def plot_cross_attention(
     if weights.ndim == 2:
         # Single matrix (T, S)
         fig, ax = plt.subplots(figsize=screen_figsize(), dpi=FIGURE_DPI)
-        fig.suptitle(title, fontsize=FS_FIGURE_TITLE, fontweight="bold")
+        # Multiline titles + slightly smaller type so they stay inside the figure.
+        fig.suptitle(title, fontsize=FS_FIGURE_TITLE - 4, fontweight="bold")
         im = ax.imshow(weights.numpy(), cmap="viridis", aspect="auto", vmin=0, vmax=1)
         ax.set_xticks(range(len(src_tokens)))
         ax.set_yticks(range(len(tgt_tokens)))
@@ -294,7 +295,7 @@ def plot_cross_attention(
             ha="center", fontsize=FS_ANNOT,
             bbox=dict(boxstyle="round", facecolor="lightyellow", alpha=0.95),
         )
-        fig.tight_layout(rect=[0, 0.08, 1, 1])
+        fig.tight_layout(rect=[0, 0.08, 1, 0.90])
         show_maximized(fig)
         return
 
@@ -303,7 +304,7 @@ def plot_cross_attention(
     ncols = min(4, H)
     nrows = int(np.ceil(H / ncols))
     fig, axes = plt.subplots(nrows, ncols, figsize=screen_figsize(), dpi=FIGURE_DPI)
-    fig.suptitle(title, fontsize=FS_FIGURE_TITLE - 2, fontweight="bold")
+    fig.suptitle(title, fontsize=FS_FIGURE_TITLE - 4, fontweight="bold")
     axes = np.array(axes).reshape(-1)
     for h in range(H):
         ax = axes[h]
@@ -320,7 +321,7 @@ def plot_cross_attention(
     for h in range(H, len(axes)):
         axes[h].axis("off")
     fig.colorbar(im, ax=axes[:H].tolist(), fraction=0.02, pad=0.02)
-    fig.subplots_adjust(top=0.88, bottom=0.12, wspace=0.35, hspace=0.45)
+    fig.subplots_adjust(top=0.86, bottom=0.12, wspace=0.35, hspace=0.45)
     show_maximized(fig)
 
 
@@ -432,13 +433,19 @@ def main() -> None:
         attn_mean,
         src_toks,
         tgt_toks,
-        title=f"Cross-attention (mean heads):  '{DEMO_EN}'  ->  '{DEMO_FR}'",
+        title=(
+            "Cross-attention (mean over heads)\n"
+            f"'{DEMO_EN}'  ->  '{DEMO_FR}'"
+        ),
     )
     plot_cross_attention(
         attn_heads,
         src_toks,
         tgt_toks,
-        title=f"Cross-attention per head:  '{DEMO_EN}'  ->  '{DEMO_FR}'",
+        title=(
+            "Cross-attention per head\n"
+            f"'{DEMO_EN}'  ->  '{DEMO_FR}'"
+        ),
     )
 
     print(

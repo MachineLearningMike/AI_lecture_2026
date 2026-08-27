@@ -1,5 +1,5 @@
 """
-040_sum_of_randomness.py
+040_sum_of_random.py
 
 Intuition for the mean of TWO identical random variables.
 
@@ -14,7 +14,7 @@ satisfies
     Std(M) = sigma / sqrt(2)    (narrower by ~1.41x)
 
 This is the n=2 special case of the Standard Error sigma/sqrt(n),
-and the first step toward the Central Limit Theorem (see 03_...).
+and the first step toward the Central Limit Theorem (see 030_central_limit_theorem.py).
 """
 
 import torch
@@ -135,7 +135,7 @@ ax = axes1[0]
 ax.hist(X1.numpy(), bins=60, density=True, alpha=0.7, color='steelblue',
         edgecolor='black', linewidth=0.3, label=r'samples of $X_1$')
 ax.plot(x_grid, norm.pdf(x_grid, MU, SIGMA), 'r-', linewidth=2.5,
-        label=rf'$N(\mu={MU:g},\ \sigma={SIGMA:g})$')
+        label=rf'$N(\mu={MU:g},\ \sigma^2={SIGMA**2:g})$')
 ax.axvline(MU, color='k', linestyle='--', alpha=0.6)
 ax.set_title(r'One random variable $X$', fontsize=FS_AX_TITLE)
 ax.set_xlabel('value', fontsize=FS_AXIS)
@@ -154,10 +154,10 @@ ax = axes1[1]
 ax.hist(M.numpy(), bins=60, density=True, alpha=0.7, color='darkorange',
         edgecolor='black', linewidth=0.3, label=r'samples of $M$')
 ax.plot(x_grid, norm.pdf(x_grid, MU, sigma_m_theory), 'r-', linewidth=2.5,
-        label=rf'$N(\mu,\ \sigma/\sqrt{{2}}\approx{sigma_m_theory:.3f})$')
+        label=rf'$N(\mu,\ \sigma^2/2)$  (SE$\approx{sigma_m_theory:.3f}$)')
 # Ghost of the original PDF for comparison
 ax.plot(x_grid, norm.pdf(x_grid, MU, SIGMA), 'b--', linewidth=2, alpha=0.5,
-        label=r'original $N(\mu,\sigma)$')
+        label=r'original $N(\mu,\sigma^2)$')
 ax.axvline(MU, color='k', linestyle='--', alpha=0.6)
 ax.set_title(r'Mean of two: $M=(X_1+X_2)/2$', fontsize=FS_AX_TITLE)
 ax.set_xlabel('value', fontsize=FS_AXIS)
@@ -318,11 +318,11 @@ ax = axes4[1]
 ax.hist(UM.numpy(), bins=50, density=True, alpha=0.75, color='darkorange',
         edgecolor='black', linewidth=0.3, label=r'$M=(U_1+U_2)/2$')
 # Irwin-Hall / triangular PDF for average of two Uniform[-3,3]
-# Average of two Uniform[a,b] is a triangular (piecewise quadratic) distribution.
-# Overlay Normal(mu, sigma/sqrt(2)) as the n=2 CLT approximation.
+# Average of two Uniform[a,b] is a triangular (piecewise linear) distribution.
+# Overlay Normal(mu, sigma^2/2) as the n=2 CLT approximation.
 xs = np.linspace(-3.5, 3.5, 400)
 ax.plot(xs, norm.pdf(xs, u_mu, u_std_m), 'r-', linewidth=2.5,
-        label=rf'CLT approx $N(0,\sigma/\sqrt{{2}})$')
+        label=rf'CLT approx $N(0,\sigma^2/2)$')
 ax.axhline(1.0 / 6.0, color='b', linestyle='--', linewidth=2, alpha=0.5,
            label='original Uniform height')
 ax.axvline(u_mu, color='k', linestyle='--', alpha=0.6)

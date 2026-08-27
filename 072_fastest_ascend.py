@@ -1,6 +1,6 @@
 
 """
-310_fastest_ascend.py
+072_fastest_ascend.py
 
 Why the fastest ascending direction is the GRADIENT vector
     grad f = (df/dx, df/dy, ...)
@@ -19,7 +19,7 @@ Geometry:
     does not change f. Therefore grad f is perpendicular to the contour:
     that normal direction is exactly the fastest ascent.
 
-Companion to 300_derivative.py.
+Companion to 071_derivative.py.
 """
 
 import matplotlib.pyplot as plt
@@ -406,18 +406,16 @@ for name, u, color in candidates:
     path = np.array([px, py])[None, :] + s_vals[:, None] * u[None, :]
     z_path = f(path[:, 0], path[:, 1])
     ls, lw = styles.get(name, ('-', 2.5))
-    # if greedy coincides with an axis, offset slightly in the plot only for visibility
-    y_plot = z_path.copy()
     if name == 'greedy axis' and np.allclose(u, u_x):
-        y_plot = y_plot + 0.01  # tiny vertical offset so the line is visible atop axis-x
         label = name + ' (= axis x here)'
+        lw = max(lw, 3.4)  # thicker so it remains visible atop axis-x
     elif name == 'greedy axis' and np.allclose(u, u_y):
-        y_plot = y_plot + 0.01
         label = name + ' (= axis y here)'
+        lw = max(lw, 3.4)
     else:
         label = name
-    ax.plot(s_vals, y_plot, ls=ls, color=color, lw=lw, label=label)
-    ax.scatter([s_vals[-1]], [y_plot[-1]], color=color, s=55, zorder=5)
+    ax.plot(s_vals, z_path, ls=ls, color=color, lw=lw, label=label)
+    ax.scatter([s_vals[-1]], [z_path[-1]], color=color, s=55, zorder=5)
 
 ax.axhline(pz, color='0.4', ls='--', lw=1.0, label='start height')
 ax.set_xlabel('distance traveled in xy-plane', fontsize=FS_AXIS)

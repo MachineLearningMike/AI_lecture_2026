@@ -316,7 +316,7 @@ ax.plot(loss_nodrop, color='crimson', linewidth=2.2, label='no dropout')
 ax.plot(loss_drop, color='royalblue', linewidth=2.2, label=r'dropout $p=0.5$')
 ax.set_title('Training loss', fontsize=FS_AX_TITLE)
 ax.set_xlabel('step', fontsize=FS_AXIS)
-ax.set_ylabel('MSE + tiny L2', fontsize=FS_AXIS)
+ax.set_ylabel('MSE', fontsize=FS_AXIS)
 ax.tick_params(axis='both', labelsize=FS_AXIS)
 add_vcenter_legend_and_note(
     ax,

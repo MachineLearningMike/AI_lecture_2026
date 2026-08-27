@@ -181,7 +181,7 @@ class OffTheShelfMT(nn.Module):
         num_encoder_layers: int = 2,
         num_decoder_layers: int = 2,
         dim_feedforward: int = 128,
-        dropout: float = 0.1,
+        dropout: float = 0.0,
     ):
         super().__init__()
         self.d_model = d_model
@@ -192,13 +192,14 @@ class OffTheShelfMT(nn.Module):
         self.pe = SinusoidalPE(d_model)
 
         # --- OFF-THE-SHELF ENCODER ----------------------------------------
-        # One layer template: self-attention + FFN (+ residual/LayerNorm)
+        # Match 151: Pre-LN, no dropout (fairer comparison on the toy task).
         encoder_layer = nn.TransformerEncoderLayer(
             d_model=d_model,
             nhead=nhead,
             dim_feedforward=dim_feedforward,
             dropout=dropout,
             batch_first=True,   # (B, S, D)
+            norm_first=True,
         )
         # Stack N identical layers (PyTorch clones the layer weights)
         self.encoder = nn.TransformerEncoder(
@@ -216,6 +217,7 @@ class OffTheShelfMT(nn.Module):
             dim_feedforward=dim_feedforward,
             dropout=dropout,
             batch_first=True,   # (B, T, D)
+            norm_first=True,
         )
         self.decoder = nn.TransformerDecoder(
             decoder_layer,
@@ -455,7 +457,7 @@ def main() -> None:
         num_encoder_layers=2,
         num_decoder_layers=2,
         dim_feedforward=128,
-        dropout=0.1,
+        dropout=0.0,
     )
     n_params = sum(p.numel() for p in model.parameters())
     n_enc = sum(p.numel() for p in model.encoder.parameters())
@@ -509,6 +511,9 @@ TAKEAWAY
     TransformerEncoderLayer -> TransformerEncoder
     TransformerDecoderLayer -> TransformerDecoder
   Do not re-implement QKV attention unless you are teaching it (151).
+
+ALIGNED WITH 151:
+  Pre-LN (norm_first=True) and dropout=0.0 for a fairer toy-task comparison.
 
 MASK GOTCHA (vs hand-rolled 151):
   151 pad mask:  1/True = KEEP

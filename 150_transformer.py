@@ -21,7 +21,6 @@ alignment) and how Transformer usage diversified far beyond MT.
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from matplotlib import patheffects
 import numpy as np
 
 np.random.seed(42)
@@ -467,7 +466,7 @@ def block(ax, x, y, w, h, text, color):
             fontsize=FS_ANNOT + 1, fontweight='bold')
 
 
-# main stack
+# main stack -- original Vaswani post-norm layout
 block(ax5, 4.0, 6.6, 4.0, 0.8, 'Input tokens X', '#dceaff')
 block(ax5, 4.0, 5.2, 4.0, 0.9, 'Multi-Head\nSelf-Attention', '#f8d7da')
 block(ax5, 4.0, 4.0, 4.0, 0.7, 'Add & LayerNorm', '#fff3cd')
@@ -496,9 +495,12 @@ ax5.text(
     'FFN:\n'
     '  think per token\n'
     '  (non-linear MLP)\n\n'
-    'Residual + LN:\n'
-    '  stable deep stacks\n'
-    '  (see 120_normalization.py)',
+    'Diagram: original\n'
+    '  post-norm (Vaswani).\n'
+    '151_transformer_code.py\n'
+    '  uses Pre-LN for stability\n'
+    '  (LN before Attn/FFN).\n'
+    'See also 120_normalization.py',
     ha='left', va='center', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
 )

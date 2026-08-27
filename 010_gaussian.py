@@ -7,9 +7,60 @@ from scipy.stats import norm
 torch.manual_seed(42)
 np.random.seed(42)
 
+FS_FIGURE_TITLE = 28
+FS_AX_TITLE = 22
+FS_AXIS = 16
+FS_ANNOT = 14
+FS_LEGEND = 14
+
+SCREEN_FRACTION = 0.95
+FIGURE_DPI = 120
+
+plt.rcParams.update({
+    'figure.titlesize': FS_FIGURE_TITLE,
+    'axes.titlesize': FS_AX_TITLE,
+    'axes.labelsize': FS_AXIS,
+    'xtick.labelsize': FS_AXIS,
+    'ytick.labelsize': FS_AXIS,
+    'legend.fontsize': FS_LEGEND,
+    'figure.dpi': FIGURE_DPI,
+})
+
+
+def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
+    try:
+        import tkinter as tk
+        root = tk.Tk()
+        root.withdraw()
+        w = root.winfo_screenwidth()
+        h = root.winfo_screenheight()
+        root.destroy()
+        return (w / dpi * fraction, h / dpi * fraction)
+    except Exception:
+        return (16 * fraction / 0.95, 9 * fraction / 0.95)
+
+
+def show_maximized(fig):
+    fig.set_dpi(FIGURE_DPI)
+    fig.set_size_inches(screen_figsize(), forward=True)
+    fig.canvas.draw_idle()
+    manager = getattr(fig.canvas, 'manager', None)
+    if manager is not None:
+        try:
+            manager.window.state('zoomed')
+        except Exception:
+            try:
+                manager.window.showMaximized()
+            except Exception:
+                try:
+                    manager.frame.Maximize(True)
+                except Exception:
+                    pass
+    plt.show()
+
 
 def gaussian_pdf(x: torch.Tensor, mu: float = 0.0, sigma: float = 1.0) -> torch.Tensor:
-    """Standard normal PDF evaluated at x (PyTorch)."""
+    """Gaussian / normal PDF for N(μ, σ²) evaluated at x (PyTorch)."""
     return torch.exp(-0.5 * ((x - mu) / sigma) ** 2) / (sigma * np.sqrt(2 * np.pi))
 
 
@@ -19,18 +70,22 @@ def plot_pdf_curves(ax, means, stds, colors, title):
     for m, s, c in zip(means, stds, colors):
         y = gaussian_pdf(x, m, s)
         ax.plot(x.numpy(), y.numpy(), color=c, linewidth=2, label=f'μ={m}, σ={s}')
-    ax.set_title(title)
-    ax.set_xlabel('x')
-    ax.set_ylabel('Probability Density')
-    ax.legend()
+    ax.set_title(title, fontsize=FS_AX_TITLE)
+    ax.set_xlabel('x', fontsize=FS_AXIS)
+    ax.set_ylabel('Probability Density', fontsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.legend(fontsize=FS_LEGEND)
     ax.grid(True, alpha=0.3)
 
 
 # -------------------------------------------------------
 # FIGURE 1: GAUSSIAN DISTRIBUTION OVERVIEW
 # -------------------------------------------------------
-fig, axes = plt.subplots(2, 3, figsize=(15, 10))
-fig.suptitle('Understanding the Gaussian (Normal) Distribution', fontsize=16, fontweight='bold')
+fig, axes = plt.subplots(2, 3, figsize=screen_figsize(), dpi=FIGURE_DPI)
+fig.suptitle(
+    'Understanding the Gaussian (Normal) Distribution',
+    fontsize=FS_FIGURE_TITLE, fontweight='bold',
+)
 
 # Plot 1: PDF - Different Standard Deviations
 plot_pdf_curves(
@@ -75,10 +130,11 @@ for k, ls in [(1, ':'), (2, '--'), (3, '-.')]:
     ax3.axvline(-k * sigma, color='gray', linestyle=ls, alpha=0.6, linewidth=1)
 ax3.axvline(mu, color='red', linestyle='--', alpha=0.7, label=f'μ={mu:g}')
 
-ax3.set_title('The 68-95-99.7 Rule')
-ax3.set_xlabel('x')
-ax3.set_ylabel('Probability Density')
-ax3.legend(fontsize=8)
+ax3.set_title('The 68-95-99.7 Rule', fontsize=FS_AX_TITLE)
+ax3.set_xlabel('x', fontsize=FS_AXIS)
+ax3.set_ylabel('Probability Density', fontsize=FS_AXIS)
+ax3.tick_params(axis='both', labelsize=FS_AXIS)
+ax3.legend(fontsize=FS_LEGEND)
 ax3.grid(True, alpha=0.3)
 
 # Plot 4: CDF
@@ -88,15 +144,16 @@ for m, s, c in zip([0, 0, 0], [0.5, 1.0, 2.0], ['blue', 'red', 'green']):
     ax4.plot(x.numpy(), norm.cdf(x.numpy(), loc=m, scale=s),
              color=c, linewidth=2, label=f'μ={m}, σ={s}')
 ax4.axhline(0.5, color='gray', linestyle=':', alpha=0.5)
-ax4.set_title('CDF: Probability of X ≤ x')
-ax4.set_xlabel('x')
-ax4.set_ylabel('Cumulative Probability')
-ax4.legend()
+ax4.set_title('CDF: Probability of X ≤ x', fontsize=FS_AX_TITLE)
+ax4.set_xlabel('x', fontsize=FS_AXIS)
+ax4.set_ylabel('Cumulative Probability', fontsize=FS_AXIS)
+ax4.tick_params(axis='both', labelsize=FS_AXIS)
+ax4.legend(fontsize=FS_LEGEND)
 ax4.grid(True, alpha=0.3)
 
 # Plot 5: QQ Plot (Check for Normality)
 # Use matching plotting positions so each sample quantile lines up with
-# the correct theoretical normal quantile (avoids the old linspace mismatch).
+# the corresponding theoretical normal quantile.
 ax5 = axes[1, 1]
 n_qq = 500
 normal_data = np.random.normal(0, 1, n_qq)
@@ -120,10 +177,11 @@ for data, color, label in datasets:
 
 ref = np.array([theoretical_quantiles.min(), theoretical_quantiles.max()])
 ax5.plot(ref, ref, 'k--', alpha=0.6, label='y = x (perfect normal)')
-ax5.set_title('QQ Plot: Visual Normality Test')
-ax5.set_xlabel('Theoretical Quantiles (N(0,1))')
-ax5.set_ylabel('Sample Quantiles')
-ax5.legend(fontsize=8)
+ax5.set_title('QQ Plot: Visual Normality Test', fontsize=FS_AX_TITLE)
+ax5.set_xlabel('Theoretical Quantiles (N(0,1))', fontsize=FS_AXIS)
+ax5.set_ylabel('Sample Quantiles', fontsize=FS_AXIS)
+ax5.tick_params(axis='both', labelsize=FS_AXIS)
+ax5.legend(fontsize=FS_LEGEND)
 ax5.grid(True, alpha=0.3)
 
 # Plot 6: Histogram of Samples vs true PDF
@@ -135,20 +193,24 @@ ax6.hist(
 )
 x_pdf = torch.linspace(-4, 4, 1000)
 ax6.plot(x_pdf.numpy(), gaussian_pdf(x_pdf).numpy(), 'r-', linewidth=2, label='True PDF')
-ax6.set_title('Histogram of Samples (n=1000)')
-ax6.set_xlabel('x')
-ax6.set_ylabel('Density')
-ax6.legend()
+ax6.set_title('Histogram of Samples (n=1000)', fontsize=FS_AX_TITLE)
+ax6.set_xlabel('x', fontsize=FS_AXIS)
+ax6.set_ylabel('Density', fontsize=FS_AXIS)
+ax6.tick_params(axis='both', labelsize=FS_AXIS)
+ax6.legend(fontsize=FS_LEGEND)
 ax6.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.show()
+show_maximized(fig)
 
 # -------------------------------------------------------
 # FIGURE 2: HISTOGRAMS SHOWING SAMPLING (Law of Large Numbers)
 # -------------------------------------------------------
-fig2, axes2 = plt.subplots(2, 3, figsize=(15, 10))
-fig2.suptitle('Histograms: Sampling from Gaussian Distribution', fontsize=16, fontweight='bold')
+fig2, axes2 = plt.subplots(2, 3, figsize=screen_figsize(), dpi=FIGURE_DPI)
+fig2.suptitle(
+    'Histograms: Sampling from Gaussian Distribution',
+    fontsize=FS_FIGURE_TITLE, fontweight='bold',
+)
 
 sample_sizes_hist = [10, 50, 100, 500, 1000, 5000]
 x_pdf = torch.linspace(-4, 4, 1000)
@@ -168,31 +230,32 @@ for ax, n in zip(axes2.flat, sample_sizes_hist):
     mean_val = samples.mean().item()
     std_val = samples.std(unbiased=True).item()
 
-    ax.set_title(f'n = {n}')
-    ax.set_xlabel('x')
-    ax.set_ylabel('Density')
+    ax.set_title(f'n = {n}', fontsize=FS_AX_TITLE)
+    ax.set_xlabel('x', fontsize=FS_AXIS)
+    ax.set_ylabel('Density', fontsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_AXIS)
     ax.set_xlim(-4, 4)
     ax.text(
         0.05, 0.95, f'μ̂ = {mean_val:.3f}\nσ̂ = {std_val:.3f}',
-        transform=ax.transAxes, fontsize=9, verticalalignment='top',
+        transform=ax.transAxes, fontsize=FS_ANNOT, verticalalignment='top',
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.7),
     )
-    ax.legend()
+    ax.legend(fontsize=FS_LEGEND)
     ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.show()
+show_maximized(fig2)
 
 # -------------------------------------------------------
 # FIGURE 3: DISTRIBUTION OF SAMPLE MEANS (same x-scale)
-# For Gaussian data, sample means are exactly N(0, 1/√n).
+# For Gaussian data, sample means are exactly N(0, (1/√n)²) = N(0, 1/n).
 # The narrowing shows the Standard Error shrinking — not CLT "kicking in".
-# (See Central_Limit_Theorem.py for CLT with non-Gaussian sources.)
+# (See 030_central_limit_theorem.py for CLT with non-Gaussian sources.)
 # -------------------------------------------------------
-fig3, axes3 = plt.subplots(2, 3, figsize=(15, 10))
+fig3, axes3 = plt.subplots(2, 3, figsize=screen_figsize(), dpi=FIGURE_DPI)
 fig3.suptitle(
     'Distribution of Sample Means (Gaussian source, same x-scale)',
-    fontsize=16, fontweight='bold',
+    fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
 sample_sizes_means = [2, 5, 10, 30, 50, 100]
@@ -213,26 +276,27 @@ for ax, n in zip(axes3.flat, sample_sizes_means):
     y_means = gaussian_pdf(x_means, mu=0.0, sigma=theoretical_std)
     ax.plot(
         x_means.numpy(), y_means.numpy(), 'b-', linewidth=2,
-        label=f'N(0, 1/√n)  SE={theoretical_std:.3f}',
+        label=f'N(0, (1/√n)²)  SE={theoretical_std:.3f}',
     )
 
     mean_of_means = sample_means.mean().item()
     std_of_means = sample_means.std(unbiased=True).item()
 
     ax.set_xlim(x_min, x_max)
-    ax.set_title(f'n = {n}')
-    ax.set_xlabel('Sample Mean')
-    ax.set_ylabel('Density')
+    ax.set_title(f'n = {n}', fontsize=FS_AX_TITLE)
+    ax.set_xlabel('Sample Mean', fontsize=FS_AXIS)
+    ax.set_ylabel('Density', fontsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_AXIS)
     ax.text(
         0.05, 0.95, f'μ̂ = {mean_of_means:.3f}\nσ̂ = {std_of_means:.3f}',
-        transform=ax.transAxes, fontsize=9, verticalalignment='top',
+        transform=ax.transAxes, fontsize=FS_ANNOT, verticalalignment='top',
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.7),
     )
-    ax.legend(loc='upper right', fontsize=8)
+    ax.legend(loc='upper right', fontsize=FS_LEGEND)
     ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.show()
+show_maximized(fig3)
 
 # -------------------------------------------------------
 # PRINT KEY INSIGHTS
@@ -259,8 +323,9 @@ print("""
    - Large n (e.g., n=5000): Histogram closely matches the true PDF
 
 5. Distribution of Sample Means (Figure 3, SAME X-SCALE):
-   - Source is already Gaussian, so sample means are exactly N(0, 1/sqrt(n))
-     for every n -- this plot shows the Standard Error shrinking, not CLT.
+   - Source is already Gaussian, so sample means are exactly N(0, 1/n)
+     (variance 1/n; SE = 1/sqrt(n)) for every n -- this plot shows the
+     Standard Error shrinking, not CLT.
    - n=2:   SE ~ 0.707  (wide)
    - n=10:  SE ~ 0.316
    - n=30:  SE ~ 0.183
@@ -281,7 +346,7 @@ The CLT says: the distribution of SAMPLE MEANS approaches a Gaussian
 even when the underlying data are NOT Gaussian (given large enough n).
 
 Figure 3 above uses a Gaussian source, so the means are already exactly
-normal for every n -- look at Central_Limit_Theorem.py for the real CLT
+normal for every n -- look at 030_central_limit_theorem.py for the real CLT
 demo with Uniform / Exponential / Bimodal sources.
 
 Why this matters in practice:

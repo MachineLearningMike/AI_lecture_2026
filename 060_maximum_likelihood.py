@@ -1,5 +1,5 @@
 """
-060_maximul_likelihood.py
+060_maximum_likelihood.py
 
 Intuition for Maximum Likelihood Estimation (MLE), and why for a
 Gaussian noise model:

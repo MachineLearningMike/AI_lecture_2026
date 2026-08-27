@@ -394,8 +394,6 @@ ax5.text(
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
 
-# Fix typo "casual" -> "causal" in the box text
-# I'll fix with search_replace after write if needed - actually I typed casual by mistake
 
 plt.tight_layout()
 show_maximized(fig5)

@@ -10,7 +10,7 @@ Demonstrated on a 1D linear fit  y ~ w x + b  with a few outliers:
     MAE   (absolute error)  -- Laplace MLE; robust; sharper valley / constant-scale grads
     Huber                   -- MSE near 0, MAE in the tails; a practical compromise
 
-Companion to 060_maximul_likelihood.py (MSE vs MAE as MLE) and
+Companion to 060_maximum_likelihood.py (MSE vs MAE as MLE) and
 020_model.py (training with MSE).
 """
 
@@ -148,7 +148,7 @@ LOSSES = {
         'color': 'seagreen',
         'residual': huber_residual,
         'grad_r': huber_grad_r,
-        'note': f'MSE if |r|<{HUBER_DELTA}, else MAE',
+        'note': f'MSE if |r|<{HUBER_DELTA}, else MAE-like (slope ±{HUBER_DELTA})',
     },
 }
 
@@ -243,7 +243,7 @@ ax = axes1[0]
 for name, cfg in LOSSES.items():
     ax.plot(r, cfg['residual'](r), color=cfg['color'], linewidth=2.5, label=name)
 ax.axvline(0, color='k', alpha=0.3)
-ax.set_title(r'Penalty $\ell(r)$ on residual $r=y-\hat y$', fontsize=FS_AX_TITLE)
+ax.set_title(r'Penalty $\ell(r)$ on residual $r=\hat y-y$', fontsize=FS_AX_TITLE)
 ax.set_xlabel('residual r', fontsize=FS_AXIS)
 ax.set_ylabel(r'$\ell(r)$', fontsize=FS_AXIS)
 ax.tick_params(axis='both', labelsize=FS_AXIS)
@@ -470,5 +470,5 @@ Why convergence differs:
 Takeaway:
   Choosing a loss is choosing both the destination (statistical bias)
   and the travel experience (gradient scale / convergence).
-  See 060_maximul_likelihood.py for the MLE story behind MSE vs MAE.
+  See 060_maximum_likelihood.py for the MLE story behind MSE vs MAE.
 """)

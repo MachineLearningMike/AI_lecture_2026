@@ -237,11 +237,7 @@ add_note(
 ax.grid(True, alpha=0.3)
 
 ax = axes3[1]
-# attention from a query at position 0 focusing on both ends
-q = signal[:, None]
-K = signal[:, None]
-scores = (q @ K.T).ravel()
-# emphasize ends for illustration by using absolute content match to spike
+# Content-match illustration: attention from position 0 follows signal peaks
 scores = signal * signal[0]
 A = softmax(scores)
 ax.stem(np.arange(T), signal, linefmt='C7-', markerfmt='C7o', basefmt='k-')
