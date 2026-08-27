@@ -30,28 +30,21 @@ and 155_dot_inner_scalar_product.py (scores that feed softmax).
 from __future__ import annotations
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import numpy as np
 
 np.random.seed(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 16
-FS_ANNOT = 15
-FS_LEGEND = 14
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 120
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -117,7 +110,7 @@ ax.bar(LABELS, Z, color=colors, edgecolor='k')
 ax.axhline(0, color='0.35', lw=1)
 ax.set_ylabel(r'logit $z_i$', fontsize=FS_AXIS)
 ax.set_title('Input: unbounded scores (can be negative)', fontsize=FS_AX_TITLE - 2)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, axis='y', alpha=0.3)
 ax.text(
     0.02, 0.98,
@@ -133,7 +126,7 @@ ax.bar(LABELS, P, color=colors, edgecolor='k')
 ax.set_ylim(0, 1.05)
 ax.set_ylabel(r'$p_i = \mathrm{softmax}(z)_i$', fontsize=FS_AXIS)
 ax.set_title(r'Output: $p_i\geq 0$, $\sum_i p_i = 1$', fontsize=FS_AX_TITLE - 2)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, axis='y', alpha=0.3)
 for i, p in enumerate(P):
     ax.text(i, p + 0.02, f'{p:.2f}', ha='center', fontsize=FS_ANNOT - 1)
@@ -172,7 +165,7 @@ ax.set_xticks(x)
 ax.set_xticklabels(LABELS)
 ax.set_ylabel('normalized weight', fontsize=FS_AXIS)
 ax.set_title('Same positive scores; two normalizers', fontsize=FS_AX_TITLE - 2)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, axis='y', alpha=0.3)
 ax.text(
@@ -196,7 +189,7 @@ ax.axvline(z2, color='crimson', ls=':', lw=1.5, label='z2 = 1')
 ax.set_xlabel(r'$z_1$ (vary)', fontsize=FS_AXIS)
 ax.set_ylabel(r'$p_1$', fontsize=FS_AXIS)
 ax.set_title(r'Two options: vary $z_1$, fix $z_2=1$', fontsize=FS_AX_TITLE - 2)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND, loc='lower right')
 ax.grid(True, alpha=0.3)
 ax.set_ylim(-0.05, 1.05)
@@ -237,7 +230,7 @@ ax.set_xticklabels(LABELS)
 ax.set_ylabel(r'$p_i$', fontsize=FS_AXIS)
 ax.set_ylim(0, 1.05)
 ax.set_title('Same logits; sweep temperature', fontsize=FS_AX_TITLE - 2)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND - 1, ncol=2, loc='upper right')
 ax.grid(True, axis='y', alpha=0.3)
 
@@ -256,11 +249,11 @@ ax.set_xlabel(r'temperature $\tau$', fontsize=FS_AXIS)
 ax.set_ylabel(r'$p$ on the best logit', fontsize=FS_AXIS)
 ax.set_ylim(0, 1.05)
 ax.grid(True, alpha=0.3, which='both')
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax2 = ax.twinx()
 ax2.semilogx(tau_grid, entropy, color='#2471a3', lw=2.5, ls='--', label='entropy')
 ax2.set_ylabel('entropy (nats)', fontsize=FS_AXIS, color='#2471a3')
-ax2.tick_params(axis='y', labelsize=FS_AXIS, labelcolor='#2471a3')
+ax2.tick_params(axis='y', labelsize=FS_TICK, labelcolor='#2471a3')
 ax.set_title(r'$\tau\to 0$: peaky;  $\tau\to\infty$: flat', fontsize=FS_AX_TITLE - 2)
 # combined legend
 lines1, lab1 = ax.get_legend_handles_labels()
@@ -307,7 +300,7 @@ ax.set_xticks(x)
 ax.set_xticklabels(LABELS)
 ax.set_ylabel('weight', fontsize=FS_AXIS)
 ax.set_title('Hardmax kills alternatives; softmax keeps a floor', fontsize=FS_AX_TITLE - 4)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, axis='y', alpha=0.3)
 ax.text(
@@ -334,7 +327,7 @@ ax.set_xticks(x)
 ax.set_xticklabels(LABELS)
 ax.set_ylabel(r'$\partial(-\log p_A)/\partial z_i$', fontsize=FS_AXIS)
 ax.set_title('Softmax CE grads touch every logit; hardmax blocks them', fontsize=FS_AX_TITLE - 4)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND, loc='upper right')
 ax.grid(True, axis='y', alpha=0.3)
 ax.text(
@@ -383,7 +376,7 @@ ax.set_xticklabels(actions)
 ax.set_ylabel('policy mass', fontsize=FS_AXIS)
 ax.set_ylim(0, 1.1)
 ax.set_title('Stochastic vs near-deterministic vs hard', fontsize=FS_AX_TITLE - 2)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND - 1)
 ax.grid(True, axis='y', alpha=0.3)
 

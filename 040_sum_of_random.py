@@ -19,6 +19,18 @@ and the first step toward the Central Limit Theorem (see 030_central_limit_theor
 
 import torch
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import numpy as np
 from scipy.stats import norm
 
@@ -26,24 +38,6 @@ torch.manual_seed(42)
 np.random.seed(42)
 
 # Shared style (match 030_central_limit_theorem.py)
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -140,7 +134,7 @@ ax.axvline(MU, color='k', linestyle='--', alpha=0.6)
 ax.set_title(r'One random variable $X$', fontsize=FS_AX_TITLE)
 ax.set_xlabel('value', fontsize=FS_AXIS)
 ax.set_ylabel('Density', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     f'empirical std = {X1.std(unbiased=True).item():.3f}\n'
@@ -162,7 +156,7 @@ ax.axvline(MU, color='k', linestyle='--', alpha=0.6)
 ax.set_title(r'Mean of two: $M=(X_1+X_2)/2$', fontsize=FS_AX_TITLE)
 ax.set_xlabel('value', fontsize=FS_AXIS)
 ax.set_ylabel('Density', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     f'empirical std = {M.std(unbiased=True).item():.3f}\n'
@@ -195,7 +189,7 @@ ax2.scatter(
 )
 cbar = fig2.colorbar(ax2.collections[0], ax=ax2, fraction=0.046, pad=0.04)
 cbar.set_label(r'$M=(X_1+X_2)/2$', fontsize=FS_AXIS)
-cbar.ax.tick_params(labelsize=FS_AXIS)
+cbar.ax.tick_params(labelsize=FS_TICK)
 
 # Diagonal X1 = X2 (points with X1=X2 have M = X1)
 lim = MU + 3.5 * SIGMA
@@ -213,7 +207,7 @@ ax2.set_ylim(-lim, lim)
 ax2.set_aspect('equal')
 ax2.set_xlabel(r'$X_1$', fontsize=FS_AXIS)
 ax2.set_ylabel(r'$X_2$', fontsize=FS_AXIS)
-ax2.tick_params(axis='both', labelsize=FS_AXIS)
+ax2.tick_params(axis='both', labelsize=FS_TICK)
 ax2.set_title(
     r'Noise perpendicular to the diagonal cancels in the average',
     fontsize=FS_AX_TITLE,
@@ -272,7 +266,7 @@ for ax, (data, mean_plot, theory_std, title, color, var_note) in zip(axes3, pane
     ax.set_title(title, fontsize=FS_AX_TITLE)
     ax.set_xlabel('value', fontsize=FS_AXIS)
     ax.set_ylabel('Density', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     add_vcenter_legend_and_note(ax, var_note + f'\nemp. var = {emp_var:.3f}')
     ax.grid(True, alpha=0.3)
 
@@ -305,7 +299,7 @@ ax.axvline(u_mu, color='k', linestyle='--', alpha=0.6)
 ax.set_title(r'One Uniform[-3, 3]', fontsize=FS_AX_TITLE)
 ax.set_xlabel('value', fontsize=FS_AXIS)
 ax.set_ylabel('Density', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     f'std = {U1.std(unbiased=True).item():.3f}\n'
@@ -329,7 +323,7 @@ ax.axvline(u_mu, color='k', linestyle='--', alpha=0.6)
 ax.set_title(r'Mean of two Uniforms', fontsize=FS_AX_TITLE)
 ax.set_xlabel('value', fontsize=FS_AXIS)
 ax.set_ylabel('Density', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     f'std = {UM.std(unbiased=True).item():.3f}\n'

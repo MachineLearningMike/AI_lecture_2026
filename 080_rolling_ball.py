@@ -5,7 +5,8 @@ A ball rolling down a hill -- physics animation as intuition for
 gradient descent: the landscape is a loss surface, gravity pulls
 toward lower values, friction damps oscillations.
 
-Saves an animated video (GIF) next to this script:
+Shows the animation live. Also saves a GIF next to this script
+(GIF export is skipped if the file already exists):
     rolling_ball.gif
 
 Companion metaphor for training loops in 020_model.py.
@@ -14,17 +15,25 @@ Companion metaphor for training loops in 020_model.py.
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import matplotlib.patches as patches
 from matplotlib import animation
 import numpy as np
 
 np.random.seed(42)
 
-FS_FIGURE_TITLE = 22
-FS_AXIS = 14
-FS_ANNOT = 12
 
-FIGURE_DPI = 120
 FPS = 30
 DURATION_S = 8.0
 N_FRAMES = int(FPS * DURATION_S)
@@ -109,136 +118,130 @@ def simulate(n_frames=N_FRAMES, fps=FPS):
 
 
 # -------------------------------------------------------
-# Build animation
+# Build animation, optionally save GIF, then show
 # -------------------------------------------------------
-xs_sim, vs_sim = simulate()
+def render_rolling_ball_gif(out_path: Path = OUT_PATH) -> None:
+    xs_sim, vs_sim = simulate()
 
-x_hill = np.linspace(-3.6, 3.6, 600)
-y_hill = h(x_hill)
+    x_hill = np.linspace(-3.6, 3.6, 600)
+    y_hill = h(x_hill)
 
-fig, ax = plt.subplots(figsize=(10, 5.5), dpi=FIGURE_DPI)
-fig.suptitle(
-    'Ball rolling down a hill\n(gravity + friction  ~  gradient descent)',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold', y=0.98,
-)
-
-# Fill under the hill
-ax.fill_between(x_hill, y_hill, -0.2, color='#c4a574', alpha=0.85, zorder=1)
-ax.plot(x_hill, y_hill, color='#5c4033', linewidth=2.5, zorder=2)
-
-# Trail
-trail_line, = ax.plot([], [], color='crimson', linewidth=2.0, alpha=0.7, zorder=3, label='path')
-
-# Ball
-bx0, by0 = surface_point(xs_sim[0])
-ball = patches.Circle((bx0, by0), BALL_R, facecolor='#e74c3c',
-                      edgecolor='#6d0f0f', linewidth=1.5, zorder=5)
-ax.add_patch(ball)
-# Highlight to suggest a 3D sphere
-shine = patches.Circle((bx0 - 0.03, by0 + 0.04), BALL_R * 0.28,
-                       facecolor='white', alpha=0.45, zorder=6)
-ax.add_patch(shine)
-
-# Force / velocity arrow (tangent direction)
-arrow = ax.annotate(
-    '', xy=(bx0, by0), xytext=(bx0, by0),
-    arrowprops=dict(arrowstyle='->', color='navy', lw=2.0),
-    zorder=7,
-)
-
-info = ax.text(
-    0.02, 0.95, '', transform=ax.transAxes, fontsize=FS_ANNOT, va='top', ha='left',
-    bbox=dict(boxstyle='round', facecolor='white', alpha=0.9),
-)
-
-ax.set_xlim(-3.6, 3.6)
-ax.set_ylim(-0.2, float(y_hill.max()) + 0.55)
-ax.set_aspect('equal')
-ax.set_xlabel('position x', fontsize=FS_AXIS)
-ax.set_ylabel('height h(x)', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS - 2)
-ax.grid(True, alpha=0.3)
-ax.legend(loc='upper right', fontsize=FS_ANNOT)
-fig.subplots_adjust(left=0.08, right=0.98, bottom=0.12, top=0.86)
-
-note = (
-    'Potential energy ~ loss\n'
-    'Gravity ~ negative gradient\n'
-    'Friction ~ damping / small step size'
-)
-ax.text(
-    0.98, 0.05, note, transform=ax.transAxes, fontsize=FS_ANNOT,
-    va='bottom', ha='right',
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
-
-
-def energy(x, v):
-    """Approximate PE + KE for display (unit mass)."""
-    hx = float(h_x(x))
-    speed_along = abs(v) * np.sqrt(1.0 + hx ** 2)
-    pe = G * float(h(x))
-    ke = 0.5 * speed_along ** 2
-    return pe, ke
-
-
-def init():
-    trail_line.set_data([], [])
-    return ball, shine, trail_line, info, arrow
-
-
-def update(frame):
-    x = xs_sim[frame]
-    v = vs_sim[frame]
-    bx, by = surface_point(x)
-    ball.center = (bx, by)
-    shine.center = (bx - 0.03, by + 0.04)
-
-    # trail of contact points
-    trail_x = xs_sim[: frame + 1]
-    trail_y = h(trail_x)
-    trail_line.set_data(trail_x, trail_y)
-
-    # velocity arrow in world coords (tangent * signed speed)
-    hx = float(h_x(x))
-    tang_norm = np.sqrt(1.0 + hx ** 2)
-    tx, ty = 1.0 / tang_norm, hx / tang_norm
-    scale = 0.35 * np.clip(v, -2.5, 2.5)
-    arrow.set_position((bx, by))
-    arrow.xy = (bx + scale * tx, by + scale * ty)
-
-    pe, ke = energy(x, v)
-    info.set_text(
-        f't = {frame / FPS:4.2f}s\n'
-        f'x = {x:6.3f}\n'
-        f'v = {v:6.3f}\n'
-        f'PE = {pe:6.3f}\n'
-        f'KE = {ke:6.3f}'
+    fig, ax = plt.subplots(figsize=(10, 5.5), dpi=FIGURE_DPI)
+    fig.suptitle(
+        'Ball rolling down a hill\n(gravity + friction  ~  gradient descent)',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold', y=0.98,
     )
-    return ball, shine, trail_line, info, arrow
 
+    ax.fill_between(x_hill, y_hill, -0.2, color='#c4a574', alpha=0.85, zorder=1)
+    ax.plot(x_hill, y_hill, color='#5c4033', linewidth=2.5, zorder=2)
 
-anim = animation.FuncAnimation(
-    fig, update, init_func=init,
-    frames=N_FRAMES, interval=1000 / FPS, blit=False,
-)
+    trail_line, = ax.plot([], [], color='crimson', linewidth=2.0, alpha=0.7, zorder=3, label='path')
 
-print(f'Saving animation to {OUT_PATH} ...')
-try:
-    anim.save(OUT_PATH, writer=animation.PillowWriter(fps=FPS))
-    print(f'Saved: {OUT_PATH}')
-except Exception as exc:
-    print(f'Skipping GIF export ({OUT_PATH.name}): {exc}')
-    print('Install pillow to enable animation export: pip install pillow')
+    bx0, by0 = surface_point(xs_sim[0])
+    ball = patches.Circle((bx0, by0), BALL_R, facecolor='#e74c3c',
+                          edgecolor='#6d0f0f', linewidth=1.5, zorder=5)
+    ax.add_patch(ball)
+    shine = patches.Circle((bx0 - 0.03, by0 + 0.04), BALL_R * 0.28,
+                           facecolor='white', alpha=0.45, zorder=6)
+    ax.add_patch(shine)
 
-# Also show interactively when a GUI backend is available
-try:
-    if plt.get_backend().lower() != 'agg':
-        plt.show()
+    arrow = ax.annotate(
+        '', xy=(bx0, by0), xytext=(bx0, by0),
+        arrowprops=dict(arrowstyle='->', color='navy', lw=2.0),
+        zorder=7,
+    )
+
+    info = ax.text(
+        0.02, 0.95, '', transform=ax.transAxes, fontsize=FS_ANNOT, va='top', ha='left',
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.9),
+    )
+
+    ax.set_xlim(-3.6, 3.6)
+    ax.set_ylim(-0.2, float(y_hill.max()) + 0.55)
+    ax.set_aspect('equal')
+    ax.set_xlabel('position x', fontsize=FS_AXIS)
+    ax.set_ylabel('height h(x)', fontsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK - 2)
+    ax.grid(True, alpha=0.3)
+    ax.legend(loc='upper right', fontsize=FS_LEGEND)
+    fig.subplots_adjust(left=0.08, right=0.98, bottom=0.12, top=0.86)
+
+    ax.text(
+        0.98, 0.05,
+        'Potential energy ~ loss\n'
+        'Gravity ~ negative gradient\n'
+        'Friction ~ damping / small step size',
+        transform=ax.transAxes, fontsize=FS_ANNOT,
+        va='bottom', ha='right',
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
+
+    def energy(x, v):
+        """Approximate PE + KE for display (unit mass)."""
+        hx = float(h_x(x))
+        speed_along = abs(v) * np.sqrt(1.0 + hx ** 2)
+        pe = G * float(h(x))
+        ke = 0.5 * speed_along ** 2
+        return pe, ke
+
+    def init():
+        trail_line.set_data([], [])
+        return ball, shine, trail_line, info, arrow
+
+    def update(frame):
+        x = xs_sim[frame]
+        v = vs_sim[frame]
+        bx, by = surface_point(x)
+        ball.center = (bx, by)
+        shine.center = (bx - 0.03, by + 0.04)
+
+        trail_x = xs_sim[: frame + 1]
+        trail_line.set_data(trail_x, h(trail_x))
+
+        hx = float(h_x(x))
+        tang_norm = np.sqrt(1.0 + hx ** 2)
+        tx, ty = 1.0 / tang_norm, hx / tang_norm
+        scale = 0.35 * np.clip(v, -2.5, 2.5)
+        arrow.set_position((bx, by))
+        arrow.xy = (bx + scale * tx, by + scale * ty)
+
+        pe, ke = energy(x, v)
+        info.set_text(
+            f't = {frame / FPS:4.2f}s\n'
+            f'x = {x:6.3f}\n'
+            f'v = {v:6.3f}\n'
+            f'PE = {pe:6.3f}\n'
+            f'KE = {ke:6.3f}'
+        )
+        return ball, shine, trail_line, info, arrow
+
+    anim = animation.FuncAnimation(
+        fig, update, init_func=init,
+        frames=N_FRAMES, interval=1000 / FPS, blit=False,
+    )
+
+    if out_path.is_file() and out_path.stat().st_size > 0:
+        print(f'\nSkipping GIF export (already exists): {out_path}')
     else:
+        print(f'Saving animation to {out_path} ...')
+        try:
+            anim.save(out_path, writer=animation.PillowWriter(fps=FPS))
+            print(f'Saved: {out_path}')
+        except Exception as exc:
+            print(f'Skipping GIF export ({out_path.name}): {exc}')
+            print('Install pillow to enable animation export: pip install pillow')
+
+    try:
+        if plt.get_backend().lower() != 'agg':
+            plt.show()
+        else:
+            plt.close(fig)
+    except Exception:
         plt.close(fig)
-except Exception:
-    plt.close(fig)
+
+
+render_rolling_ball_gif(OUT_PATH)
+
 
 print("""
 Intuition:

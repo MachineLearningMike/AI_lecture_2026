@@ -17,31 +17,24 @@ Companion to 150_transformer.py (token attention basics).
 """
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import matplotlib.patches as patches
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import numpy as np
 
 np.random.seed(42)
 RNG = np.random.default_rng(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -207,7 +200,7 @@ for j in range(0, W + 1, PATCH):
 ax.set_title(f'Spatial patches on one frame\n({N_SPATIAL} tokens / frame)', fontsize=FS_AX_TITLE)
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel('y', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_note(
     ax,
     'ViT-style:\n'
@@ -380,7 +373,7 @@ ax.plot(Ts, cost_divided(Ts, Ns) / 1e6, 's-', color='royalblue', lw=2.5, label='
 ax.set_xlabel('number of frames T', fontsize=FS_AXIS)
 ax.set_ylabel('attention cost  (millions of pairs)', fontsize=FS_AXIS)
 ax.set_title(f'Cost vs T  (N={Ns} patches/frame)', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, alpha=0.3)
 add_note(
@@ -397,7 +390,7 @@ im = ax.imshow(attn_space, cmap='viridis', vmin=0, vmax=1)
 ax.set_title('Spatial attention\n(inside one frame)', fontsize=FS_AX_TITLE)
 ax.set_xlabel('patch key', fontsize=FS_AXIS)
 ax.set_ylabel('patch query', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS - 2)
+ax.tick_params(axis='both', labelsize=FS_TICK - 2)
 fig4.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
 
 ax = axes4[2]
@@ -407,7 +400,7 @@ ax.set_xlabel('frame key', fontsize=FS_AXIS)
 ax.set_ylabel('frame query', fontsize=FS_AXIS)
 ax.set_xticks(range(T))
 ax.set_yticks(range(T))
-ax.tick_params(axis='both', labelsize=FS_AXIS - 2)
+ax.tick_params(axis='both', labelsize=FS_TICK - 2)
 fig4.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
 add_note(
     ax,
@@ -476,7 +469,7 @@ for k, (ti, i, j) in enumerate(tube_index):
 ax.set_xlabel('spatial patch id', fontsize=FS_AXIS)
 ax.set_ylabel('temporal id', fontsize=FS_AXIS)
 ax.set_title('Each tubelet token has a (time, space) address', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, alpha=0.3)
 
 plt.tight_layout()

@@ -13,6 +13,18 @@ Companion to 010_gaussian.py (Gaussian PDF) and 020_model.py (MSE training).
 
 import torch
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import numpy as np
 from scipy.stats import norm, laplace
 
@@ -20,24 +32,6 @@ torch.manual_seed(42)
 np.random.seed(42)
 
 # Shared style (match 04 / 05)
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -169,7 +163,7 @@ for mu_c, color, ls in [
 ax.set_title('Same data, different candidate means', fontsize=FS_AX_TITLE)
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel('PDF density', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.set_ylim(bottom=-0.02)
 add_vcenter_legend_and_note(
     ax,
@@ -191,7 +185,7 @@ ax.axvline(MU_TRUE, color='k', linestyle=':', linewidth=1.5, alpha=0.7,
 ax.set_title(r'Likelihood as a function of $\mu$', fontsize=FS_AX_TITLE)
 ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
 ax.set_ylabel('relative likelihood', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     f'n = {N} Gaussian samples\n'
@@ -220,7 +214,7 @@ ax.axvline(mu_mle, color='red', linestyle='--', linewidth=2, label='argmax')
 ax.set_title(r'Maximize $\log L(\mu)$', fontsize=FS_AX_TITLE)
 ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
 ax.set_ylabel(r'$\log L(\mu)$', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     r'$\log L(\mu)=$' + '\n'
@@ -236,7 +230,7 @@ ax.axvline(mu_mse, color='red', linestyle='--', linewidth=2, label='argmin')
 ax.set_title(r'Minimize MSE$(\mu)=\frac{1}{n}\sum(x_i-\mu)^2$', fontsize=FS_AX_TITLE)
 ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
 ax.set_ylabel('MSE', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     f'argmin MSE = {mu_mse:.2f}\n'
@@ -272,7 +266,7 @@ ax.axvline(mu_mae, color='purple', linestyle='--', linewidth=2,
 ax.set_title('MSE vs MAE objectives (normalized shapes)', fontsize=FS_AX_TITLE)
 ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
 ax.set_ylabel('scaled objective', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'Gaussian MLE -> mean\n'
@@ -293,7 +287,7 @@ ax.plot(z, laplace.pdf(z, 0, 1 / np.sqrt(2)), color='purple', linewidth=2.5,
 ax.set_title('Noise PDF decides the loss', fontsize=FS_AX_TITLE)
 ax.set_xlabel('residual z = x - mu', fontsize=FS_AXIS)
 ax.set_ylabel('density', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'Neg. log-density:\n'
@@ -338,7 +332,7 @@ ax.set_title('Fits after adding one outlier', fontsize=FS_AX_TITLE)
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel('')
 ax.set_yticks([])
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     f'clean mean  = {mu_mean:.2f}\n'
@@ -360,7 +354,7 @@ ax.axvline(mu_mae_out, color='purple', linestyle='--', linewidth=2)
 ax.set_title('Objectives with the outlier present', fontsize=FS_AX_TITLE)
 ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
 ax.set_ylabel('scaled objective', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'Still:\n'

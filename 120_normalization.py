@@ -18,31 +18,26 @@ Companion to 020_model.py (deeper nets need stable activation scales) and
 """
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import matplotlib.patches as patches
 import numpy as np
 
 np.random.seed(42)
 RNG = np.random.default_rng(42)
 
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
 
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
 EPS = 1e-5
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -159,7 +154,7 @@ im = ax.imshow(X, aspect='auto', cmap='coolwarm')
 ax.set_xlabel('feature j', fontsize=FS_AXIS)
 ax.set_ylabel('batch sample i', fontsize=FS_AXIS)
 ax.set_title('Activation matrix X[i, j]', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 cbar = fig1.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
 cbar.ax.tick_params(labelsize=FS_ANNOT)
 ax.text(
@@ -177,7 +172,7 @@ ax.axhline(0, color='k', alpha=0.3)
 ax.set_xlabel('feature j', fontsize=FS_AXIS)
 ax.set_ylabel('activation value', fontsize=FS_AXIS)
 ax.set_title('Per-feature spread is all over the place', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'Next layer sees a mix of\n'
@@ -211,7 +206,7 @@ def draw_matrix_with_groups(ax, title, mode):
     ax.set_xlabel('feature j', fontsize=FS_AXIS)
     ax.set_ylabel('sample i', fontsize=FS_AXIS)
     ax.set_title(title, fontsize=FS_AX_TITLE)
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.set_xticks(range(F))
     ax.set_yticks(range(B))
 
@@ -284,7 +279,7 @@ for ax, (mat, title, tag) in zip(axes3, panels):
     im = ax.imshow(mat, aspect='auto', cmap='coolwarm', vmin=-vmax, vmax=vmax)
     ax.set_title(title, fontsize=FS_AX_TITLE)
     ax.set_xlabel('feature j', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     if tag == 'Raw':
         ax.set_ylabel('sample i', fontsize=FS_AXIS)
     # stats box
@@ -339,7 +334,7 @@ ax.axhline(0, color='k', alpha=0.3)
 ax.set_xlabel('batch index i', fontsize=FS_AXIS)
 ax.set_ylabel('activation', fontsize=FS_AXIS)
 ax.set_title('Tracking one feature across the batch', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'BN forces THIS feature\n'
@@ -412,7 +407,7 @@ ax.set_title('Unnormalized features\n(elongated / zigzaggy GD)', fontsize=FS_AX_
 ax.set_xlabel(r'$w_1$', fontsize=FS_AXIS)
 ax.set_ylabel(r'$w_2$', fontsize=FS_AXIS)
 ax.set_aspect('equal')
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, alpha=0.3)
 
 ax = axes5[1]
@@ -431,7 +426,7 @@ ax.set_title('Normalized features\n(rounder bowl, smoother path)', fontsize=FS_A
 ax.set_xlabel(r'$w_1$', fontsize=FS_AXIS)
 ax.set_ylabel(r'$w_2$', fontsize=FS_AXIS)
 ax.set_aspect('equal')
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, alpha=0.3)
 ax.text(
     0.02, 0.98,

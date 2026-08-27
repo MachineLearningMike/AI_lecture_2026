@@ -27,29 +27,22 @@ Companion to 070_exponential.py (log derivative identity) and
 """
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401  (registers 3d)
 import numpy as np
 
 np.random.seed(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 16
-FS_ANNOT = 15
-FS_LEGEND = 14
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 120
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -149,7 +142,7 @@ ax.scatter([x0], [y0], s=80, c='k', zorder=5)
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel('f(x)', fontsize=FS_AXIS)
 ax.set_title('Curve + tangent at one point', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, alpha=0.3)
 ax.text(
@@ -168,7 +161,7 @@ ax.scatter([x0], [s0], s=80, c='k', zorder=5)
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel(r"$f'(x)$", fontsize=FS_AXIS)
 ax.set_title('Derivative as a function of x', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, alpha=0.3)
 
@@ -371,7 +364,7 @@ ax0.set_aspect('equal')
 ax0.set_xlabel('x', fontsize=FS_AXIS)
 ax0.set_ylabel('y', fontsize=FS_AXIS)
 ax0.set_title('Contour map + gradient arrows', fontsize=FS_AX_TITLE)
-ax0.tick_params(axis='both', labelsize=FS_AXIS)
+ax0.tick_params(axis='both', labelsize=FS_TICK)
 fig5.colorbar(cs, ax=ax0, fraction=0.046, pad=0.04)
 
 ax1 = fig5.add_subplot(1, 2, 2, projection='3d')

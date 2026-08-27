@@ -15,29 +15,22 @@ Companion to 060_maximum_likelihood.py (MSE vs MAE as MLE) and
 """
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import numpy as np
 
 np.random.seed(42)
 RNG = np.random.default_rng(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -246,7 +239,7 @@ ax.axvline(0, color='k', alpha=0.3)
 ax.set_title(r'Penalty $\ell(r)$ on residual $r=\hat y-y$', fontsize=FS_AX_TITLE)
 ax.set_xlabel('residual r', fontsize=FS_AXIS)
 ax.set_ylabel(r'$\ell(r)$', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'MSE grows as r^2\n'
@@ -265,7 +258,7 @@ ax.axvline(0, color='k', alpha=0.3)
 ax.set_title(r'Gradient $\partial\ell/\partial r$  (what GD actually uses)', fontsize=FS_AX_TITLE)
 ax.set_xlabel('residual r', fontsize=FS_AXIS)
 ax.set_ylabel(r'$\partial\ell/\partial r$', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'MSE: grad = r\n'
@@ -318,7 +311,7 @@ for name, cfg in LOSSES.items():
 
 ax2.set_xlabel('x', fontsize=FS_AXIS)
 ax2.set_ylabel('y', fontsize=FS_AXIS)
-ax2.tick_params(axis='both', labelsize=FS_AXIS)
+ax2.tick_params(axis='both', labelsize=FS_TICK)
 ax2.set_title('GD trajectories + final fits (MSE / MAE / Huber)', fontsize=FS_AX_TITLE)
 ax2.set_ylim(-8.5, 14.0)
 add_vcenter_legend_and_note(
@@ -354,7 +347,7 @@ for name, cfg in LOSSES.items():
 ax.set_xlabel('gradient step', fontsize=FS_AXIS)
 ax.set_ylabel(r'loss / loss$_0$  (own units)', fontsize=FS_AXIS)
 ax.set_title('Normalized training loss', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'Curves are not directly\n'
@@ -372,7 +365,7 @@ for name, cfg in LOSSES.items():
 ax.set_xlabel('gradient step', fontsize=FS_AXIS)
 ax.set_ylabel(r'$\|\nabla_\theta L\|$', fontsize=FS_AXIS)
 ax.set_title('Gradient magnitude over training', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'MSE starts with large\n'
@@ -416,7 +409,7 @@ for name, cfg in LOSSES.items():
 
 ax4.set_xlabel('w', fontsize=FS_AXIS)
 ax4.set_ylabel('b', fontsize=FS_AXIS)
-ax4.tick_params(axis='both', labelsize=FS_AXIS)
+ax4.tick_params(axis='both', labelsize=FS_TICK)
 ax4.set_title('Gray contours = MSE landscape (for reference)', fontsize=FS_AX_TITLE)
 add_vcenter_legend_and_note(
     ax4,

@@ -29,6 +29,18 @@ import sys
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import numpy as np
 import torch
 import torch.nn.functional as F_torch
@@ -52,21 +64,6 @@ PAD_ID = t151.PAD_ID  # 0
 # ---------------------------------------------------------------------------
 # Plot helpers (match lecture style)
 # ---------------------------------------------------------------------------
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FIGURE_DPI = 150
-SCREEN_FRACTION = 0.95
-
-plt.rcParams.update({
-    "figure.titlesize": FS_FIGURE_TITLE,
-    "axes.titlesize": FS_AX_TITLE,
-    "axes.labelsize": FS_AXIS,
-    "xtick.labelsize": FS_AXIS,
-    "ytick.labelsize": FS_AXIS,
-    "figure.dpi": FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):

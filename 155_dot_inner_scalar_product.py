@@ -34,30 +34,23 @@ Companion to 071_derivative.py (gradients / planes) and
 from __future__ import annotations
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 from matplotlib.patches import Arc
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 import numpy as np
 
 np.random.seed(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 16
-FS_ANNOT = 15
-FS_LEGEND = 14
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 120
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -146,7 +139,7 @@ ax.set_ylabel(r'$e_2$', fontsize=FS_AXIS)
 ax.set_title('Coordinate formula', fontsize=FS_AX_TITLE)
 ax.legend(fontsize=FS_LEGEND, loc='lower right')
 ax.grid(True, alpha=0.3)
-ax.tick_params(labelsize=FS_AXIS)
+ax.tick_params(labelsize=FS_TICK)
 
 ax = axes1[1]
 ax.axhline(0, color='0.7', lw=1)
@@ -186,7 +179,7 @@ ax.set_ylabel(r'$e_2$', fontsize=FS_AXIS)
 ax.set_title('Projection / angle formula', fontsize=FS_AX_TITLE)
 ax.legend(fontsize=FS_LEGEND, loc='lower right')
 ax.grid(True, alpha=0.3)
-ax.tick_params(labelsize=FS_AXIS)
+ax.tick_params(labelsize=FS_TICK)
 
 fig1.tight_layout(rect=[0, 0, 1, 0.94])
 show_maximized(fig1)
@@ -223,7 +216,7 @@ for ax, (u, v, note), c in zip(axes2, cases, colors):
     ax.set_ylim(-1.2, 2.4)
     ax.set_aspect('equal')
     ax.grid(True, alpha=0.3)
-    ax.tick_params(labelsize=FS_AXIS)
+    ax.tick_params(labelsize=FS_TICK)
 
 fig2.tight_layout(rect=[0, 0, 1, 0.94])
 show_maximized(fig2)
@@ -264,7 +257,7 @@ for ax, (u, v, title) in zip(axes3, [
     ax.set_title(title, fontsize=FS_AX_TITLE - 4)
     ax.legend(fontsize=FS_LEGEND)
     ax.grid(True, alpha=0.3)
-    ax.tick_params(labelsize=FS_AXIS)
+    ax.tick_params(labelsize=FS_TICK)
 
 axes3[0].text(
     0.02, 0.98,
@@ -327,7 +320,7 @@ ax.legend(fontsize=FS_LEGEND, loc='upper right')
 ax.set_title(r'In $\mathbb{R}^2$: hyperplane = line (dim 1)', fontsize=FS_AX_TITLE - 2)
 ax.set_xlabel(r'$x_1$', fontsize=FS_AXIS)
 ax.set_ylabel(r'$x_2$', fontsize=FS_AXIS)
-ax.tick_params(labelsize=FS_AXIS)
+ax.tick_params(labelsize=FS_TICK)
 ax.text(
     0.02, 0.02,
     r'Constraint $\langle x,a\rangle=b$ is ONE scalar' + '\n'
@@ -433,7 +426,7 @@ ax.legend(fontsize=FS_LEGEND, loc='upper right')
 ax.set_title('Parallel slide along the normal', fontsize=FS_AX_TITLE - 2)
 ax.set_xlabel(r'$x_1$', fontsize=FS_AXIS)
 ax.set_ylabel(r'$x_2$', fontsize=FS_AXIS)
-ax.tick_params(labelsize=FS_AXIS)
+ax.tick_params(labelsize=FS_TICK)
 ax.text(
     0.02, 0.02,
     'Same normal $a$ => planes/lines are parallel.\n'

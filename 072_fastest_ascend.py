@@ -23,29 +23,22 @@ Companion to 071_derivative.py.
 """
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 import numpy as np
 
 np.random.seed(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 16
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 120
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -182,7 +175,7 @@ ax.set_aspect('equal')
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel('y', fontsize=FS_AXIS)
 ax.set_title('Contour map at point p', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(loc='best', fontsize=FS_LEGEND)
 fig1.colorbar(cs, ax=ax, fraction=0.046, pad=0.04)
 
@@ -238,7 +231,7 @@ mark(u_greedy, 'greedy axis', 'darkorange')
 ax2.set_xlabel(r'direction angle $\theta$ (degrees)', fontsize=FS_AXIS)
 ax2.set_ylabel('directional derivative (rise per unit step)', fontsize=FS_AXIS)
 ax2.set_title('All possible climb directions', fontsize=FS_AX_TITLE)
-ax2.tick_params(axis='both', labelsize=FS_AXIS)
+ax2.tick_params(axis='both', labelsize=FS_TICK)
 ax2.legend(fontsize=FS_LEGEND, loc='best')
 ax2.grid(True, alpha=0.3)
 add_note(
@@ -291,7 +284,7 @@ ax.set_aspect('equal')
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel('y', fontsize=FS_AXIS)
 ax.set_title(f'Horizontal steps of length {step:g}', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 fig3.colorbar(cs, ax=ax, fraction=0.046, pad=0.04)
 
 ax = axes3[1]
@@ -302,7 +295,7 @@ bars = ax.bar(names, vals, color=colors, edgecolor='k')
 ax.axhline(0, color='k', alpha=0.3)
 ax.set_ylabel(r'actual $\Delta f$ after the step', fontsize=FS_AXIS)
 ax.set_title('Height gained (finite step on the real surface)', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 for b, v in zip(bars, vals):
     ax.text(b.get_x() + b.get_width() / 2, v + (0.01 if v >= 0 else -0.02),
             f'{v:.3f}', ha='center', va='bottom' if v >= 0 else 'top',
@@ -380,7 +373,7 @@ ax.set_aspect('equal')
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel('y', fontsize=FS_AXIS)
 ax.set_title('Contour through p  +  normal = gradient', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(loc='lower left', fontsize=FS_LEGEND)
 add_note(
     ax,
@@ -421,7 +414,7 @@ ax.axhline(pz, color='0.4', ls='--', lw=1.0, label='start height')
 ax.set_xlabel('distance traveled in xy-plane', fontsize=FS_AXIS)
 ax.set_ylabel('height f along the path', fontsize=FS_AXIS)
 ax.set_title('Same path length -- separable height curves', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND, loc='best')
 ax.grid(True, alpha=0.3)
 add_note(
@@ -520,7 +513,7 @@ ax.set_aspect('equal')
 ax.set_xlabel(r'$u_x$', fontsize=FS_AXIS)
 ax.set_ylabel(r'$u_y$', fontsize=FS_AXIS)
 ax.set_title('Unit circle of move directions', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND, loc='lower left')
 ax.grid(True, alpha=0.3)
 
@@ -575,7 +568,7 @@ ax6.axhline(0, color='k', lw=1)
 ax6.set_xlabel('random sample points (sorted)', fontsize=FS_AXIS)
 ax6.set_ylabel(r'$|\nabla f| - \max(|\partial_x f|,|\partial_y f|)$', fontsize=FS_AXIS)
 ax6.set_title('Advantage of full gradient over greedy axis', fontsize=FS_AX_TITLE)
-ax6.tick_params(axis='both', labelsize=FS_AXIS)
+ax6.tick_params(axis='both', labelsize=FS_TICK)
 ax6.grid(True, axis='y', alpha=0.3)
 add_note(
     ax6,

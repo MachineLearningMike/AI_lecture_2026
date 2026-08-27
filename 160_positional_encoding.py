@@ -29,29 +29,22 @@ Companion to 150_transformer.py and 200_video_transformer.py.
 """
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import matplotlib.patches as patches
 import numpy as np
 
 np.random.seed(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -153,7 +146,7 @@ for i, tok in enumerate(tokens_a):
 ax.set_title('Sentence A: dog bites man', fontsize=FS_AX_TITLE)
 ax.set_xlabel('embed dim 0', fontsize=FS_AXIS)
 ax.set_ylabel('embed dim 1', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, alpha=0.3)
 add_note(
     ax,
@@ -173,7 +166,7 @@ for i, tok in enumerate(tokens_b):
 ax.set_title('Sentence B: man bites dog', fontsize=FS_AX_TITLE)
 ax.set_xlabel('embed dim 0', fontsize=FS_AXIS)
 ax.set_ylabel('embed dim 1', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, alpha=0.3)
 add_note(
     ax,
@@ -202,7 +195,7 @@ im = ax2.imshow(PE, aspect='auto', cmap='twilight', interpolation='nearest')
 ax2.set_xlabel('embedding dimension', fontsize=FS_AXIS)
 ax2.set_ylabel('token position', fontsize=FS_AXIS)
 ax2.set_title(f'Sinusoidal PE matrix  (T={N_POS}, d={D_MODEL})', fontsize=FS_AX_TITLE)
-ax2.tick_params(axis='both', labelsize=FS_AXIS)
+ax2.tick_params(axis='both', labelsize=FS_TICK)
 cbar = fig2.colorbar(im, ax=ax2, fraction=0.03, pad=0.02)
 cbar.set_label('PE value', fontsize=FS_ANNOT)
 cbar.ax.tick_params(labelsize=FS_ANNOT)
@@ -241,7 +234,7 @@ for ax, dim in zip(axes3.flat, dim_pairs):
     ax.set_xlabel('position', fontsize=FS_AXIS)
     ax.set_ylabel('PE', fontsize=FS_AXIS)
     ax.set_ylim(-1.2, 1.2)
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=FS_LEGEND, loc='lower right')
 
@@ -264,7 +257,7 @@ ax.semilogy(pair_idx, WAVES, 'o-', color='seagreen', lw=2.5)
 ax.set_xlabel('pair index i', fontsize=FS_AXIS)
 ax.set_ylabel('wavelength (in token steps)', fontsize=FS_AXIS)
 ax.set_title('From ~2π to ~2π·10000 across dimensions', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, alpha=0.3, which='both')
 add_note(
     ax,
@@ -284,7 +277,7 @@ ax.set_xlabel('dimension index (even)', fontsize=FS_AXIS)
 ax.set_ylabel(r'angular frequency $\omega_i$', fontsize=FS_AXIS)
 ax.set_title(r'$\mathrm{PE}=\sin(\omega_i\cdot pos),\ \cos(\omega_i\cdot pos)$',
              fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, alpha=0.3, which='both')
 add_note(
     ax,
@@ -325,7 +318,7 @@ ax.set_aspect('equal')
 ax.set_xlabel(f'PE[{dim + 1}] (cos)', fontsize=FS_AXIS)
 ax.set_ylabel(f'PE[{dim}] (sin)', fontsize=FS_AXIS)
 ax.set_title('One frequency lives on a circle', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND - 1, loc='lower left')
 ax.grid(True, alpha=0.3)
 add_note(
@@ -347,7 +340,7 @@ ax.axvline(ref, color='crimson', ls='--', lw=1.5, label=f'reference pos={ref}')
 ax.set_xlabel('position', fontsize=FS_AXIS)
 ax.set_ylabel('cosine similarity to PE[ref]', fontsize=FS_AXIS)
 ax.set_title('Nearby positions have similar PE vectors', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, alpha=0.3)
 add_note(
@@ -392,7 +385,7 @@ ax.set_title(
     r'$PE(p+\delta)\approx PE(p)+\delta PE\'(p)$',
     fontsize=FS_AX_TITLE - 6,
 )
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND, loc='best')
 ax.grid(True, alpha=0.3)
 add_note(
@@ -436,7 +429,7 @@ ax.set_title(
     'works for every p',
     fontsize=FS_AX_TITLE - 6,
 )
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, alpha=0.3)
 add_note(
     ax,
@@ -477,7 +470,7 @@ ax.axvline(train_T, color='0.3', ls='--', lw=1.5, label=f'train length T={train_
 ax.set_xlabel('position', fontsize=FS_AXIS)
 ax.set_ylabel(f'cos-sim to PE[{ref}]', fontsize=FS_AXIS)
 ax.set_title('Extrapolation past\nthe training context', fontsize=FS_AX_TITLE - 6)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND - 1, loc='best')
 ax.grid(True, alpha=0.3)
 add_note(
@@ -523,7 +516,7 @@ for ax, (mat, title, _) in zip(axes6, panels):
     ax.set_title(title, fontsize=FS_AX_TITLE - 2)
     ax.set_xlabel('dim', fontsize=FS_AXIS)
     ax.set_ylabel('position', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_AXIS - 2)
+    ax.tick_params(axis='both', labelsize=FS_TICK - 2)
 
 axes6[2].text(
     0.02, 0.02,
@@ -747,7 +740,7 @@ ax.set_ylim(-1.15, 1.25)
 ax.set_xlabel('dim pair 0', fontsize=FS_AXIS)
 ax.set_ylabel('dim pair 1', fontsize=FS_AXIS)
 ax.set_title('RoPE: rotate Q/K by absolute position', fontsize=FS_AX_TITLE - 2)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, alpha=0.3)
 add_note(
     ax,
@@ -787,7 +780,7 @@ ax.axvline(0, color='0.4', ls=':', lw=1.2)
 ax.set_xlabel(r'relative offset $n - m$', fontsize=FS_AXIS)
 ax.set_ylabel(r'attention logit $q^\top R_{n-m} k$', fontsize=FS_AXIS)
 ax.set_title('Relative-only scores (absolute cancels)', fontsize=FS_AX_TITLE - 2)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND, loc='best')
 ax.grid(True, alpha=0.3)
 add_note(

@@ -18,29 +18,22 @@ Companion to 150_transformer.py and 110_inductive_bias.py.
 """
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import numpy as np
 
 np.random.seed(42)
 RNG = np.random.default_rng(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -203,7 +196,7 @@ ax.plot(d_grid, c * d_grid ** 2, '--', color='0.4', lw=1.8,
 ax.set_xlabel(r'model dimension $d_{\mathrm{model}}$', fontsize=FS_AXIS)
 ax.set_ylabel('parameters (millions)', fontsize=FS_AXIS)
 ax.set_title(rf'Params vs width  (L={DEFAULT_LAYERS}, fixed vocab)', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, alpha=0.3)
 add_note(
@@ -232,8 +225,8 @@ ax.set_xlabel(r'sequence length $T$', fontsize=FS_AXIS)
 ax.set_ylabel('parameters (millions)', fontsize=FS_AXIS, color='seagreen')
 ax2.set_ylabel('relative attention compute', fontsize=FS_AXIS, color='crimson')
 ax.set_title(rf'Fix $d={d_fixed}$: params flat, compute grows', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
-ax2.tick_params(axis='y', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
+ax2.tick_params(axis='y', labelsize=FS_TICK)
 # combined legend
 h1, l1 = ax.get_legend_handles_labels()
 h2, l2 = ax2.get_legend_handles_labels()
@@ -353,7 +346,7 @@ ax.plot(d_grid, comp_ffn, '^-', label=r'ffn $= L(8d^2+5d)$', lw=2.3)
 ax.set_xlabel(r'$d_{\mathrm{model}}$', fontsize=FS_AXIS)
 ax.set_ylabel('parameters (millions)', fontsize=FS_AXIS)
 ax.set_title('Component growth vs d', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, alpha=0.3)
 add_note(
@@ -424,7 +417,7 @@ for ax, deg in zip(axes4, degrees):
     ax.set_xlim(-2.8, 2.8)
     ax.set_ylim(-3.5, 3.5)
     ax.set_xlabel('x', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_AXIS - 2)
+    ax.tick_params(axis='both', labelsize=FS_TICK - 2)
     ax.grid(True, alpha=0.3)
     if ax is axes4[0]:
         ax.set_ylabel('y', fontsize=FS_AXIS)
@@ -468,7 +461,7 @@ ax.plot(nparams, te_curve, 's-', color='royalblue', lw=2.5, label='test MSE')
 ax.set_xlabel('number of parameters (~ model dimension)', fontsize=FS_AXIS)
 ax.set_ylabel('MSE', fontsize=FS_AXIS)
 ax.set_title('Classic U-shape on test error', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, alpha=0.3)
 add_note(
@@ -490,7 +483,7 @@ ax.axhline(data_budget, color='crimson', ls='--', lw=2.0,
 ax.set_xlabel(r'$d_{\mathrm{model}}$', fontsize=FS_AXIS)
 ax.set_ylabel('parameter count', fontsize=FS_AXIS)
 ax.set_title('Capacity vs available data', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, alpha=0.3)
 add_note(

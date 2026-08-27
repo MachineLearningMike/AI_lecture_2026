@@ -15,25 +15,19 @@ import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
 
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 torch.manual_seed(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 16
-FS_LEGEND = 14
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 120
-
-plt.rcParams.update({
-    "figure.titlesize": FS_FIGURE_TITLE,
-    "axes.titlesize": FS_AX_TITLE,
-    "axes.labelsize": FS_AXIS,
-    "xtick.labelsize": FS_AXIS,
-    "ytick.labelsize": FS_AXIS,
-    "legend.fontsize": FS_LEGEND,
-    "figure.dpi": FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -111,7 +105,7 @@ ax.plot(xs.numpy(), (2.0 * xs).numpy(), "k--", lw=1.5, alpha=0.6, label="true $y
 ax.set_xlabel("x", fontsize=FS_AXIS)
 ax.set_ylabel("y", fontsize=FS_AXIS)
 ax.set_title("Single neuron, no bias", fontsize=FS_AX_TITLE)
-ax.tick_params(axis="both", labelsize=FS_AXIS)
+ax.tick_params(axis="both", labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, alpha=0.3)
 
@@ -120,7 +114,7 @@ ax.plot(losses, color="seagreen", lw=2.0)
 ax.set_xlabel("step", fontsize=FS_AXIS)
 ax.set_ylabel("MSE", fontsize=FS_AXIS)
 ax.set_title("Training loss", fontsize=FS_AX_TITLE)
-ax.tick_params(axis="both", labelsize=FS_AXIS)
+ax.tick_params(axis="both", labelsize=FS_TICK)
 ax.grid(True, alpha=0.3)
 
 fig.suptitle(

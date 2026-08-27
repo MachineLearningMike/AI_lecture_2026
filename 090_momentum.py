@@ -15,13 +15,25 @@ Minibatches make g_t jitter every step. Momentum keeps a running
 average of those noisy pushes, so the "ball" can keep rolling in a
 consistent direction instead of shaking in place.
 
-Saves comparison animation:
+Shows comparison animation (GIF export skipped if the file already exists):
     momentum_sgd.gif
 """
 
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import matplotlib.patches as patches
 from matplotlib import animation
 import numpy as np
@@ -29,28 +41,11 @@ import numpy as np
 np.random.seed(42)
 RNG = np.random.default_rng(42)
 
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
 
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
 ANIM_DPI = 120
 FPS = 20
 
 OUT_GIF = Path(__file__).resolve().parent / 'momentum_sgd.gif'
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -216,7 +211,7 @@ ax1.scatter([X0[0]], [X0[1]], c='orange', s=60, zorder=5, label='start')
 ax1.set_xlabel('x (steep / noisy direction)', fontsize=FS_AXIS)
 ax1.set_ylabel('y (shallow direction)', fontsize=FS_AXIS)
 ax1.set_aspect('equal')
-ax1.tick_params(axis='both', labelsize=FS_AXIS)
+ax1.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax1,
     f'Each step: batch of {BATCH_SIZE}/{N_DATA}\n'
@@ -246,7 +241,7 @@ ax.plot(loss_path(path_mom), color='royalblue', linewidth=2.5, label='Momentum l
 ax.set_xlabel('step', fontsize=FS_AXIS)
 ax.set_ylabel(r'$L(x,y)$ (full batch)', fontsize=FS_AXIS)
 ax.set_title('Full-batch loss along the path', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'Both see identical\n'
@@ -267,7 +262,7 @@ ax.axhline(0, color='k', linewidth=0.8, alpha=0.4)
 ax.set_xlabel('step', fontsize=FS_AXIS)
 ax.set_ylabel('component', fontsize=FS_AXIS)
 ax.set_title('Noisy gradient vs momentum velocity', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     r'$v \leftarrow \beta v + g_{batch}$' + '\n\n'
@@ -331,7 +326,7 @@ fig_a, ax_a = plt.subplots(figsize=(9, 7), dpi=ANIM_DPI)
 fig_a.suptitle(
     'Stochastic minibatches shake the SGD ball;\n'
     'momentum keeps the other ball rolling',
-    fontsize=18, fontweight='bold', y=0.98,
+    fontsize=FS_AX_TITLE, fontweight='bold', y=0.98,
 )
 
 ax_a.contour(GX, GY, GZ, levels=20, cmap='terrain', linewidths=1.0)
@@ -425,13 +420,23 @@ anim = animation.FuncAnimation(
     fig_a, update_anim, init_func=init_anim,
     frames=n_anim, interval=1000 / FPS, blit=False,
 )
+if OUT_GIF.is_file() and OUT_GIF.stat().st_size > 0:
+    print(f'Skipping GIF export (already exists): {OUT_GIF}')
+else:
+    try:
+        anim.save(OUT_GIF, writer=animation.PillowWriter(fps=FPS))
+        print(f'Saved: {OUT_GIF}')
+    except Exception as exc:
+        print(f'Skipping GIF export ({OUT_GIF.name}): {exc}')
+        print('Install pillow to enable animation export: pip install pillow')
 try:
-    anim.save(OUT_GIF, writer=animation.PillowWriter(fps=FPS))
-    print(f'Saved: {OUT_GIF}')
-except Exception as exc:
-    print(f'Skipping GIF export ({OUT_GIF.name}): {exc}')
-    print('Install pillow to enable animation export: pip install pillow')
-plt.close(fig_a)
+    if plt.get_backend().lower() != 'agg':
+        plt.show()
+    else:
+        plt.close(fig_a)
+except Exception:
+    plt.close(fig_a)
+
 
 
 # -------------------------------------------------------

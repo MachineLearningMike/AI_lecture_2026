@@ -15,30 +15,23 @@ Companion to 150_transformer.py and 200_video_transformer.py.
 """
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import matplotlib.patches as patches
 import numpy as np
 
 np.random.seed(42)
 RNG = np.random.default_rng(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -105,7 +98,7 @@ def draw_token_grid(ax, shift=(0, 0), title='', highlight_query=None,
     ax.set_xlabel('token x', fontsize=FS_AXIS)
     ax.set_ylabel('token y', fontsize=FS_AXIS)
     ax.set_title(title, fontsize=FS_AX_TITLE)
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.grid(True, alpha=0.25)
 
     # token centers
@@ -164,7 +157,7 @@ ax.set_aspect('equal')
 ax.set_title('ViT: every token attends globally', fontsize=FS_AX_TITLE)
 ax.set_xlabel('token x', fontsize=FS_AXIS)
 ax.set_ylabel('token y', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 for y in range(H):
     for x in range(W):
         ax.scatter(x, y, s=35, c='#4c78a8', edgecolor='k', lw=0.4, zorder=3)
@@ -316,7 +309,7 @@ def color_windows(ax, shift=(0, 0), title=''):
     ax.set_title(title, fontsize=FS_AX_TITLE - 2)
     ax.set_xlabel('x', fontsize=FS_AXIS)
     ax.set_ylabel('y', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
 
     sx, sy = shift
     palette = ['#f8d7da', '#d1ecf1', '#d4edda', '#fff3cd',
@@ -381,7 +374,7 @@ ax.set_aspect('equal')
 ax.set_title(f'2) Cyclic shift features by ({SHIFT},{SHIFT})', fontsize=FS_AX_TITLE - 2)
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel('y', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 # show arrows indicating cyclic roll
 for y in range(0, H, 2):
     for x in range(0, W, 2):
@@ -507,7 +500,7 @@ ax.loglog(N, swin_cost, 's-', color='seagreen', lw=2.5, label=rf'Swin window ~ $
 ax.set_xlabel('number of patches N (~ image area)', fontsize=FS_AXIS)
 ax.set_ylabel('attention relationships (scale)', fontsize=FS_AXIS)
 ax.set_title('Attention cost vs image size', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, which='both', alpha=0.3)
 add_note(
@@ -526,7 +519,7 @@ ax.semilogx(N, vit_cost / swin_cost, 'D-', color='royalblue', lw=2.5)
 ax.set_xlabel('number of patches N', fontsize=FS_AXIS)
 ax.set_ylabel('ViT cost / Swin cost', fontsize=FS_AXIS)
 ax.set_title('How much more expensive is global attention?', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, which='both', alpha=0.3)
 add_note(
     ax,

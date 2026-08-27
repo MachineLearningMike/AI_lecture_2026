@@ -28,30 +28,23 @@ Companion to 150_transformer.py and 160_positional_encoding.py.
 """
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import matplotlib.patches as patches
 import numpy as np
 
 np.random.seed(42)
 RNG = np.random.default_rng(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -154,7 +147,7 @@ ax.scatter(stream[-1, 0], stream[-1, 1], s=140, c='k', marker='*', zorder=5, lab
 ax.set_title('Residual chain of adds', fontsize=FS_AX_TITLE)
 ax.set_xlabel('residual dim 0', fontsize=FS_AXIS)
 ax.set_ylabel('residual dim 1', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND, loc='best')
 ax.grid(True, alpha=0.3)
 add_note(
@@ -173,7 +166,7 @@ ax.scatter(overwrite[-1, 0], overwrite[-1, 1], s=140, c='k', marker='*', zorder=
 ax.set_title('If layers overwrote instead', fontsize=FS_AX_TITLE)
 ax.set_xlabel('dim 0', fontsize=FS_AXIS)
 ax.set_ylabel('dim 1', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, alpha=0.3)
 add_note(
     ax,
@@ -301,7 +294,7 @@ ax.annotate(
 ax.set_title('Token trajectories in residual space', fontsize=FS_AX_TITLE)
 ax.set_xlabel('dim 0', fontsize=FS_AXIS)
 ax.set_ylabel('dim 1', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND, loc='upper left')
 ax.grid(True, alpha=0.3)
 
@@ -317,7 +310,7 @@ ax.bar(labels, contrib, color=plt.cm.plasma(np.linspace(0.2, 0.85, len(contrib))
        edgecolor='k')
 ax.set_title('Additive contributions into token \"sat\"', fontsize=FS_AX_TITLE)
 ax.set_ylabel(r'$\|\mathrm{contribution}\|_2$', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, axis='y', alpha=0.3)
 add_note(
     ax,
@@ -356,7 +349,7 @@ ax.set_xlabel('after layer k (0 = embedding only)', fontsize=FS_AXIS)
 ax.set_ylabel('fraction of final (projection)', fontsize=FS_AXIS)
 ax.set_title('How the residual fills in over depth', fontsize=FS_AX_TITLE)
 ax.set_ylim(0, 1.05)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, alpha=0.3)
 add_note(
     ax,
@@ -469,7 +462,7 @@ ax.semilogy(depths, grad_res, 's-', color='royalblue', lw=2.5, label='with resid
 ax.set_xlabel('depth from output', fontsize=FS_AXIS)
 ax.set_ylabel('relative gradient magnitude (toy)', fontsize=FS_AXIS)
 ax.set_title('Identity path keeps early layers trainable', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, alpha=0.3, which='both')
 add_note(
@@ -537,7 +530,7 @@ ax.set_xlabel('layer', fontsize=FS_AXIS)
 ax.set_ylabel(r'contribution scale $\alpha_l$', fontsize=FS_AXIS)
 ax.set_title(r'Learnable residual weights $x\!\leftarrow\!x+\alpha_l F_l(x)$',
              fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND, loc='upper left')
 ax.grid(True, axis='y', alpha=0.3)
 add_note(
@@ -567,7 +560,7 @@ ax.scatter(stream_scaled[-1, 0], stream_scaled[-1, 1], s=140, c='k',
 ax.set_title('Same deltas, different mix -> different final', fontsize=FS_AX_TITLE)
 ax.set_xlabel('residual dim 0', fontsize=FS_AXIS)
 ax.set_ylabel('residual dim 1', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND, loc='best')
 ax.grid(True, alpha=0.3)
 add_note(

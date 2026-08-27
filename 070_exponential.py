@@ -16,30 +16,24 @@ and 060_maximum_likelihood.py (we maximize log L, not L).
 
 import torch
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import numpy as np
 
 torch.manual_seed(42)
 np.random.seed(42)
 
 # Shared style (match 04 / 05 / 06)
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -125,7 +119,7 @@ ax.set_aspect('equal')
 ax.set_title(r'Reflection across $y=x$', fontsize=FS_AX_TITLE)
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel('y', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     r'If $y=\exp(x)$' + '\n'
@@ -148,7 +142,7 @@ ax.plot(u, np.log(u), 'darkorange', linestyle='--', linewidth=1.5, alpha=0.5)
 ax.set_title('Composition recovers the original', fontsize=FS_AX_TITLE)
 ax.set_xlabel('input', fontsize=FS_AXIS)
 ax.set_ylabel('output', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     r'$\exp(\log(x))=x$  $(x>0)$' + '\n'
@@ -180,7 +174,7 @@ colors = ['steelblue', 'steelblue', 'darkorange']
 ax.bar(categories, values, color=colors, edgecolor='k', linewidth=0.5)
 ax.set_title(rf'Product space: ${a:g}\times{b:g}={a*b:g}$', fontsize=FS_AX_TITLE)
 ax.set_ylabel('value', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.text(
     0.02, 0.50,
     'Multiplying grows\n'
@@ -200,7 +194,7 @@ ax.axhline(np.log(a * b), color='k', linestyle='--', linewidth=1.5,
            label=rf'$\log(ab)=\log({a*b:g})={np.log(a*b):.3f}$')
 ax.set_title(r'Log space: $\log(ab)=\log a+\log b$', fontsize=FS_AX_TITLE)
 ax.set_ylabel('log value', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'Addition is easy.\n'
@@ -241,7 +235,7 @@ ax.axhline(0, color='k', linewidth=0.8, alpha=0.4)
 ax.set_title(r"A positive function $f$ and its slope $f'$", fontsize=FS_AX_TITLE)
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel('value', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'f must stay > 0\n'
@@ -260,7 +254,7 @@ ax.axhline(0, color='k', linewidth=0.8, alpha=0.4)
 ax.set_title(r'Both sides of the identity match', fontsize=FS_AX_TITLE)
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel(r"$(log f)'$", fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     r"$\frac{d}{dx}\log f = \frac{f'}{f}$" + '\n\n'
@@ -301,7 +295,7 @@ ax.set_ylim(-0.05, 1.15)
 ax.set_title(r"Absolute slope $f'$ vs height $f$", fontsize=FS_AX_TITLE)
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel('f(x)', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     rf"At x={x0:g}:" + '\n'
@@ -331,7 +325,7 @@ ax.axvline(mu_grid[np.argmax(logL)], color='red', linestyle='--', linewidth=2,
 ax.set_title(r'Max $L$ and max $\log L$ agree -- $\log L$ is stabler', fontsize=FS_AX_TITLE)
 ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
 ax.set_ylabel('scaled objective', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     r'$\nabla \log L = \frac{\nabla L}{L}$' + '\n\n'

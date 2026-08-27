@@ -3,26 +3,19 @@ import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
 
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 16
-FS_ANNOT = 14
-FS_LEGEND = 14
 
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 120
-
-plt.rcParams.update({
-    "figure.titlesize": FS_FIGURE_TITLE,
-    "axes.titlesize": FS_AX_TITLE,
-    "axes.labelsize": FS_AXIS,
-    "xtick.labelsize": FS_AXIS,
-    "ytick.labelsize": FS_AXIS,
-    "legend.fontsize": FS_LEGEND,
-    "figure.dpi": FIGURE_DPI,
-})
-
-
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
     try:
         import tkinter as tk
@@ -187,7 +180,7 @@ ax1.plot(X_grid_np, preds_before, color='red', linewidth=2, label='AI Guesses')
 ax1.set_title('BEFORE Training (Random Guesses)', fontsize=FS_AX_TITLE)
 ax1.set_xlabel('X', fontsize=FS_AXIS)
 ax1.set_ylabel('Y', fontsize=FS_AXIS)
-ax1.tick_params(axis='both', labelsize=FS_AXIS)
+ax1.tick_params(axis='both', labelsize=FS_TICK)
 ax1.legend(fontsize=FS_LEGEND)
 ax1.grid(True, alpha=0.3)
 ax1.set_ylim(-50, 150)
@@ -234,7 +227,7 @@ ax2.plot(X_grid_np, preds_after, color='red', linewidth=2, label='AI Predictions
 ax2.set_title('AFTER Training', fontsize=FS_AX_TITLE)
 ax2.set_xlabel('X', fontsize=FS_AXIS)
 ax2.set_ylabel('Y', fontsize=FS_AXIS)
-ax2.tick_params(axis='both', labelsize=FS_AXIS)
+ax2.tick_params(axis='both', labelsize=FS_TICK)
 ax2.legend(fontsize=FS_LEGEND)
 ax2.grid(True, alpha=0.3)
 ax2.set_ylim(-50, 150)
@@ -273,7 +266,7 @@ ax_loss.set_title(
 )
 ax_loss.set_xlabel('Epoch', fontsize=FS_AXIS)
 ax_loss.set_ylabel('Normalized MSE Loss', fontsize=FS_AXIS)
-ax_loss.tick_params(axis='both', labelsize=FS_AXIS)
+ax_loss.tick_params(axis='both', labelsize=FS_TICK)
 ax_loss.grid(True, alpha=0.3)
 if USE_COMPLEX_MODEL:
     ax_loss.set_yscale('log')

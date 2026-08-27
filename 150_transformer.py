@@ -20,30 +20,23 @@ alignment) and how Transformer usage diversified far beyond MT.
 """
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import matplotlib.patches as patches
 import numpy as np
 
 np.random.seed(42)
 RNG = np.random.default_rng(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -238,7 +231,7 @@ for ax, (mat, title, subtitle, face) in zip(axes2, panels):
     ax.set_xticklabels(TOKENS, rotation=45, ha='right')
     ax.set_title(title, fontsize=FS_AX_TITLE - 2)
     ax.set_ylabel('value', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_AXIS - 2)
+    ax.tick_params(axis='both', labelsize=FS_TICK - 2)
     ax.grid(True, axis='y', alpha=0.3)
     ax.text(
         0.5, 0.98, subtitle,
@@ -270,7 +263,7 @@ ax.set_yticklabels(TOKENS)
 ax.set_xlabel('key token', fontsize=FS_AXIS)
 ax.set_ylabel('query token', fontsize=FS_AXIS)
 ax.set_title('Raw scores  QKᵀ/√d', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS - 2)
+ax.tick_params(axis='both', labelsize=FS_TICK - 2)
 fig3.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
 add_note(
     ax,
@@ -289,7 +282,7 @@ ax.set_yticklabels(TOKENS)
 ax.set_xlabel('key / value token', fontsize=FS_AXIS)
 ax.set_ylabel('query token', fontsize=FS_AXIS)
 ax.set_title('Softmax attention weights', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS - 2)
+ax.tick_params(axis='both', labelsize=FS_TICK - 2)
 for i in range(T):
     for j in range(T):
         ax.text(j, i, f'{attn[i, j]:.2f}', ha='center', va='center',
@@ -323,7 +316,7 @@ ax.set_xticks(range(T))
 ax.set_yticks(range(T))
 ax.set_xticklabels(TOKENS, rotation=45, ha='right')
 ax.set_yticklabels(TOKENS)
-ax.tick_params(axis='both', labelsize=FS_AXIS - 2)
+ax.tick_params(axis='both', labelsize=FS_TICK - 2)
 ax.set_xlabel('key', fontsize=FS_AXIS)
 ax.set_ylabel('query', fontsize=FS_AXIS)
 add_note(
@@ -348,7 +341,7 @@ ax.set_xticks(range(T))
 ax.set_yticks(range(T))
 ax.set_xticklabels(TOKENS, rotation=45, ha='right')
 ax.set_yticklabels(TOKENS)
-ax.tick_params(axis='both', labelsize=FS_AXIS - 2)
+ax.tick_params(axis='both', labelsize=FS_TICK - 2)
 ax.set_xlabel('key', fontsize=FS_AXIS)
 ax.set_ylabel('query', fontsize=FS_AXIS)
 add_note(
@@ -529,7 +522,7 @@ for d in d_list:
 ax.set_title('Unscaled $q\\cdot k$ spreads with $d$', fontsize=FS_AX_TITLE)
 ax.set_xlabel('score', fontsize=FS_AXIS)
 ax.set_ylabel('density', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, alpha=0.3)
 
@@ -542,7 +535,7 @@ for d in d_list:
 ax.set_title(r'Scaled $q\cdot k / \sqrt{d}$ stays stable', fontsize=FS_AX_TITLE)
 ax.set_xlabel('score', fontsize=FS_AXIS)
 ax.set_ylabel('density', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, alpha=0.3)
 add_note(

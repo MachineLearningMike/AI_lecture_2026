@@ -20,29 +20,22 @@ Companion to 020_model.py (linear vs deep) and 100_loss_functions.py
 """
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import numpy as np
 
 np.random.seed(42)
 RNG = np.random.default_rng(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -164,16 +157,27 @@ ax1.set_xlim(-3.5, 3.5)
 ax1.set_ylim(-4.0, 4.0)
 ax1.set_xlabel('x', fontsize=FS_AXIS)
 ax1.set_ylabel('y', fontsize=FS_AXIS)
-ax1.tick_params(axis='both', labelsize=FS_AXIS)
+ax1.tick_params(axis='both', labelsize=FS_TICK)
 ax1.set_title('Same data, many stories about the gaps', fontsize=FS_AX_TITLE)
-add_vcenter_legend_and_note(
-    ax1,
+ax1.legend(
+    loc='upper center',
+    bbox_to_anchor=(1.0 / 3.0, 0.98),
+    fontsize=FS_LEGEND,
+    framealpha=0.95,
+    borderaxespad=0.0,
+)
+ax1.text(
+    2.0 / 3.0, 0.98,
     'Finite data leave the\n'
     'function underdetermined\n'
     'between / beyond points.\n\n'
     'Inductive bias = the\n'
     'extra preference that\n'
     'fills those gaps.',
+    transform=ax1.transAxes,
+    fontsize=FS_ANNOT,
+    va='top', ha='center',
+    bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
 )
 ax1.grid(True, alpha=0.3)
 
@@ -211,7 +215,7 @@ for ax, (deg, ridge, title, color) in zip(axes2, families):
     ax.set_xlim(-3.5, 3.5)
     ax.set_ylim(-5.5, 5.5)
     ax.set_xlabel('x', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.grid(True, alpha=0.3)
     ax.text(
         0.02, 0.98,
@@ -254,14 +258,23 @@ ax.set_ylim(-5.0, 5.0)
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel('y', fontsize=FS_AXIS)
 ax.set_title(rf'deg-{DEGREE} polynomials, varying $\lambda$', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
-add_vcenter_legend_and_note(
-    ax,
+ax.tick_params(axis='both', labelsize=FS_TICK)
+ax.legend(
+    loc='upper right',
+    fontsize=FS_LEGEND,
+    framealpha=0.95,
+)
+ax.text(
+    0.50, 0.98,
     'Same architecture.\n'
     'Larger lambda =\n'
     'stronger bias toward\n'
     'small weights / smoother\n'
     'functions.',
+    transform=ax.transAxes,
+    fontsize=FS_ANNOT,
+    va='top', ha='center',
+    bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
 )
 ax.grid(True, alpha=0.3)
 
@@ -285,7 +298,7 @@ ax.set_yscale('log')
 ax.set_xlabel(r'regularization $\lambda$', fontsize=FS_AXIS)
 ax.set_ylabel('MSE', fontsize=FS_AXIS)
 ax.set_title('Bias knob: fit vs generalization', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'Tiny lambda: memorizes,\n'
@@ -349,7 +362,7 @@ for ax, (deg, ridge, title, color) in zip(axes4, panel_cfgs):
     ax.set_xlim(-3.0, 3.0)
     ax.set_ylim(-4.0, 4.0)
     ax.set_xlabel('x', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.grid(True, alpha=0.3)
     if ax is axes4[0]:
         ax.set_ylabel('y', fontsize=FS_AXIS)

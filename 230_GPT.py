@@ -15,30 +15,23 @@ today's chat LLMs. Companion to 150_transformer.py (causal mask) and
 """
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import matplotlib.patches as patches
 import numpy as np
 
 np.random.seed(42)
 RNG = np.random.default_rng(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -214,7 +207,7 @@ ax = axes2[1]
 ax.bar(VOCAB, probs, color='royalblue', edgecolor='k')
 ax.set_ylabel(r'$P($next$)$', fontsize=FS_AXIS)
 ax.set_title('Softmax over vocab given context', fontsize=FS_AX_TITLE - 2)
-ax.tick_params(axis='both', labelsize=FS_AXIS - 4)
+ax.tick_params(axis='both', labelsize=FS_TICK - 4)
 ax.set_ylim(0, 1.05)
 for i, (v, p) in enumerate(zip(VOCAB, probs)):
     ax.text(i, p + 0.03, f'{p:.2f}', ha='center', fontsize=FS_ANNOT - 2)
@@ -256,7 +249,7 @@ ax.set_yticklabels(TOKENS)
 ax.set_xlabel('key (past allowed)', fontsize=FS_AXIS)
 ax.set_ylabel('query', fontsize=FS_AXIS)
 ax.set_title('Lower-triangular attention', fontsize=FS_AX_TITLE - 2)
-ax.tick_params(axis='both', labelsize=FS_AXIS - 4)
+ax.tick_params(axis='both', labelsize=FS_TICK - 4)
 fig3.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
 add_note(
     ax,
@@ -319,7 +312,7 @@ ax.semilogx(C, loss, 'o-', color='royalblue', lw=2.5, ms=8)
 ax.set_xlabel('pretrain compute (toy units)', fontsize=FS_AXIS)
 ax.set_ylabel('held-out NLL (toy)', fontsize=FS_AXIS)
 ax.set_title('Schematic scaling curve', fontsize=FS_AX_TITLE - 2)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, alpha=0.3, which='both')
 add_note(
     ax,

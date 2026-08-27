@@ -12,6 +12,18 @@ Gaussian source) and 020_model.py (why non-linear models matter).
 
 import torch
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import numpy as np
 from scipy.stats import norm
 
@@ -83,25 +95,8 @@ def sample_means(sampler, n: int, num_experiments: int = NUM_EXPERIMENTS) -> tor
 
 
 # Shared font sizes -- identical roles use identical sizes across ALL figures
-FS_FIGURE_TITLE = 28   # every fig.suptitle
-FS_AX_TITLE = 22       # every ax.set_title
-FS_AXIS = 18           # every xlabel, ylabel, xtick label, ytick label
-FS_ANNOT = 16          # text boxes / PDF annotations
-FS_LEGEND = 16         # every legend
 
 # Same screen-fit rate and DPI for every figure
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -166,7 +161,7 @@ for ax, dist in zip(axes1, DISTRIBUTIONS):
     ax.set_title(f"{dist['name']}\n({dist['note']})", fontsize=FS_AX_TITLE)
     ax.set_xlabel('x', fontsize=FS_AXIS)
     ax.set_ylabel('Density', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.text(
         0.5, 0.5, dist['pdf_text'],
         transform=ax.transAxes, fontsize=FS_ANNOT,
@@ -218,7 +213,7 @@ for dist in DISTRIBUTIONS:
         ax.set_title(f'n = {n}', fontsize=FS_AX_TITLE, fontweight='bold', pad=4)
         ax.set_xlabel('Sample mean', fontsize=FS_AXIS)
         ax.set_ylabel('Density', fontsize=FS_AXIS)
-        ax.tick_params(axis='both', labelsize=FS_AXIS)
+        ax.tick_params(axis='both', labelsize=FS_TICK)
         ax.text(
             0.96, 0.05,
             f"mean={means.mean().item():.2f}\n"
@@ -267,7 +262,7 @@ for ax, dist in zip(axes3, DISTRIBUTIONS):
     ax.set_title(dist['name'], fontsize=FS_AX_TITLE)
     ax.set_xlabel('Standardized sample mean', fontsize=FS_AXIS)
     ax.set_ylabel('Density', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.set_xlim(-4, 4)
     ax.legend(loc='center', fontsize=FS_LEGEND)
     ax.grid(True, alpha=0.3)
@@ -300,7 +295,7 @@ for dist in DISTRIBUTIONS:
 
 ax4.set_xlabel('Sample size n', fontsize=FS_AXIS)
 ax4.set_ylabel('Std. dev. of the sample mean (SE)', fontsize=FS_AXIS)
-ax4.tick_params(axis='both', labelsize=FS_AXIS)
+ax4.tick_params(axis='both', labelsize=FS_TICK)
 ax4.legend(fontsize=FS_LEGEND)
 ax4.grid(True, alpha=0.3)
 ax4.set_title(

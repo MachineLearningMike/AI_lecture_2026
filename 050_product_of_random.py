@@ -21,6 +21,18 @@ Companion to 040_sum_of_random.py (averages / sums).
 
 import torch
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import numpy as np
 from scipy.stats import norm
 from scipy.special import kn  # modified Bessel K_0 for product-normal PDF
@@ -29,24 +41,6 @@ torch.manual_seed(42)
 np.random.seed(42)
 
 # Shared style (match 03 / 04)
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -158,7 +152,7 @@ ax.axvline(0, color='k', linestyle='--', alpha=0.5)
 ax.set_title(r'One factor $X\sim N(0,1)$', fontsize=FS_AX_TITLE)
 ax.set_xlabel('value', fontsize=FS_AXIS)
 ax.set_ylabel('Density', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     f'emp. mean = {X.mean().item():.3f}\n'
@@ -185,7 +179,7 @@ ax.axvline(0, color='k', linestyle='--', alpha=0.5)
 ax.set_title(r'Product $P=X\cdot Y$', fontsize=FS_AX_TITLE)
 ax.set_xlabel('value', fontsize=FS_AXIS)
 ax.set_ylabel('Density', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     f'emp. mean = {P.mean().item():.3f}\n'
@@ -220,7 +214,7 @@ ax2.scatter(
 )
 cbar = fig2.colorbar(ax2.collections[0], ax=ax2, fraction=0.046, pad=0.04)
 cbar.set_label(r'$P = X\cdot Y$', fontsize=FS_AXIS)
-cbar.ax.tick_params(labelsize=FS_AXIS)
+cbar.ax.tick_params(labelsize=FS_TICK)
 
 lim = 3.5
 t = np.linspace(0.15, lim, 300)
@@ -237,7 +231,7 @@ ax2.set_ylim(-lim, lim)
 ax2.set_aspect('equal')
 ax2.set_xlabel(r'$X$', fontsize=FS_AXIS)
 ax2.set_ylabel(r'$Y$', fontsize=FS_AXIS)
-ax2.tick_params(axis='both', labelsize=FS_AXIS)
+ax2.tick_params(axis='both', labelsize=FS_TICK)
 ax2.set_title(
     r'Large $|P|$ only when BOTH $|X|$ and $|Y|$ are large (rare)',
     fontsize=FS_AX_TITLE,
@@ -297,7 +291,7 @@ for ax, (data, mean_t, std_t, title, color, is_gaussian) in zip(axes3, panels):
     ax.set_title(title, fontsize=FS_AX_TITLE)
     ax.set_xlabel('value', fontsize=FS_AXIS)
     ax.set_ylabel('Density', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     add_vcenter_legend_and_note(
         ax,
         f'emp. var = {data.var(unbiased=True).item():.3f}\n'
@@ -339,7 +333,7 @@ ax.hist(AB.numpy(), bins=60, density=True, alpha=0.55, color='darkorange',
 ax.set_title(r'Positive factors: product stretches the right tail', fontsize=FS_AX_TITLE)
 ax.set_xlabel('value', fontsize=FS_AXIS)
 ax.set_ylabel('Density', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     f'E[A]E[B]={A.mean().item() * B.mean().item():.3f}\n'
@@ -362,7 +356,7 @@ ax.plot(xs, norm.pdf(xs, 0, LOG_SIGMA * np.sqrt(2)), 'r-', linewidth=2.5,
 ax.set_title(r'Log space: product rule becomes the sum rule', fontsize=FS_AX_TITLE)
 ax.set_xlabel('log value', fontsize=FS_AXIS)
 ax.set_ylabel('Density', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'Taking log turns\n'

@@ -21,31 +21,24 @@ Companion to 110_inductive_bias.py and 120_normalization.py.
 """
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import matplotlib.patches as patches
 from matplotlib.colors import ListedColormap
 import numpy as np
 
 np.random.seed(42)
 RNG = np.random.default_rng(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -134,7 +127,7 @@ ax.axhline(0, color='k', alpha=0.3)
 ax.set_title('Before dropout', fontsize=FS_AX_TITLE)
 ax.set_xlabel('hidden unit', fontsize=FS_AXIS)
 ax.set_ylabel('activation', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, axis='y', alpha=0.3)
 ax.text(
     0.02, 0.98,
@@ -151,7 +144,7 @@ ax.axhline(0, color='k', alpha=0.3)
 ax.set_title(rf'After dropout (p={p_keep:g}), inverted scaling', fontsize=FS_AX_TITLE)
 ax.set_xlabel('hidden unit', fontsize=FS_AXIS)
 ax.set_ylabel('activation', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, axis='y', alpha=0.3)
 kept = int(mask.sum())
 ax.text(
@@ -190,7 +183,7 @@ ax2.set_ylabel('training step (minibatch)', fontsize=FS_AXIS)
 ax2.set_title('Green = kept, gray = dropped', fontsize=FS_AX_TITLE)
 ax2.set_yticks(range(n_steps))
 ax2.set_xticks(range(n_units))
-ax2.tick_params(axis='both', labelsize=FS_AXIS)
+ax2.tick_params(axis='both', labelsize=FS_TICK)
 ax2.text(
     0.98, 0.50,
     'No two steps see the\n'
@@ -300,7 +293,7 @@ ax.plot(x_grid, y_drop, color='royalblue', linewidth=2.6, label=r'dropout $p=0.5
 ax.set_title('Learned functions', fontsize=FS_AX_TITLE)
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel('y', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'Without dropout the net\n'
@@ -317,7 +310,7 @@ ax.plot(loss_drop, color='royalblue', linewidth=2.2, label=r'dropout $p=0.5$')
 ax.set_title('Training loss', fontsize=FS_AX_TITLE)
 ax.set_xlabel('step', fontsize=FS_AXIS)
 ax.set_ylabel('MSE', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'Dropout usually raises\n'
@@ -392,7 +385,7 @@ ax.axhline(a, color='k', linestyle='--', alpha=0.5, label='test-time activation 
 ax.set_xlabel(r'keep probability $p$', fontsize=FS_AXIS)
 ax.set_ylabel('expected activation', fontsize=FS_AXIS)
 ax.set_title('Why scale by 1/p in training', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     'Inverted dropout:\n'

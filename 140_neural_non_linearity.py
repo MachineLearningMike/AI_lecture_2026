@@ -13,30 +13,23 @@ Companion to 020_model.py (simple vs complex net) and 110_inductive_bias.py.
 """
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 from matplotlib.colors import ListedColormap
 import numpy as np
 
 np.random.seed(42)
 RNG = np.random.default_rng(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -141,7 +134,7 @@ def plot_warped_grid(ax, XX, YY, warped, title, color='royalblue'):
         ax.plot(WX[:, i], WY[:, i], color=color, linewidth=0.9, alpha=0.85)
     ax.set_title(title, fontsize=FS_AX_TITLE)
     ax.set_aspect('equal')
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.grid(True, alpha=0.25)
 
 
@@ -179,7 +172,7 @@ ax.set_title('Input space', fontsize=FS_AX_TITLE)
 ax.set_aspect('equal')
 ax.set_xlabel(r'$x_1$', fontsize=FS_AXIS)
 ax.set_ylabel(r'$x_2$', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, alpha=0.25)
 ax.text(
     0.02, 0.98,
@@ -252,7 +245,7 @@ for ax, (name, y, color, note) in zip(axes2, acts):
     ax.set_title(name, fontsize=FS_AX_TITLE)
     ax.set_xlabel('z', fontsize=FS_AXIS)
     ax.set_ylabel('activation', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.grid(True, alpha=0.3)
     ax.text(
         0.98, 0.05, note,
@@ -297,7 +290,7 @@ for ax, (title, Hstage) in zip(axes3, stage_data):
         ax.plot(WX[:, i], WY[:, i], color='k', lw=0.4, alpha=0.35)
     ax.set_title(title, fontsize=FS_AX_TITLE - 4)
     ax.set_aspect('equal')
-    ax.tick_params(axis='both', labelsize=FS_AXIS - 2)
+    ax.tick_params(axis='both', labelsize=FS_TICK - 2)
     ax.grid(True, alpha=0.25)
 
 axes3[0].text(
@@ -393,7 +386,7 @@ for use_relu, title, ax in configs:
     ax.set_xlabel(r'$x_1$', fontsize=FS_AXIS)
     ax.set_ylabel(r'$x_2$', fontsize=FS_AXIS)
     ax.set_aspect('equal')
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.grid(True, alpha=0.25)
     ax.legend(loc='lower left', fontsize=FS_LEGEND)
 
@@ -447,7 +440,7 @@ for j in range(0, H, 5):
 ax5.plot([], [], color='0.6', lw=1.0, label='individual ReLU pieces')
 ax5.set_xlabel('x', fontsize=FS_AXIS)
 ax5.set_ylabel('y', fontsize=FS_AXIS)
-ax5.tick_params(axis='both', labelsize=FS_AXIS)
+ax5.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax5,
     'Each ReLU is a hinged\n'

@@ -28,30 +28,23 @@ Companion to 150_transformer.py, 151_transformer_code.py, 155_dot_*.py.
 from __future__ import annotations
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import matplotlib.patches as patches
 import numpy as np
 
 np.random.seed(42)
 RNG = np.random.default_rng(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 16
-FS_ANNOT = 15
-FS_LEGEND = 14
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 120
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -139,7 +132,7 @@ for i, (k, lab, c) in enumerate(zip(KEYS, LABELS, colors)):
 ax.set_title('KEY space -- what each item advertises', fontsize=FS_AX_TITLE - 2)
 ax.set_xlabel('key dim 0', fontsize=FS_AXIS)
 ax.set_ylabel('key dim 1', fontsize=FS_AXIS)
-ax.tick_params(labelsize=FS_AXIS)
+ax.tick_params(labelsize=FS_TICK)
 ax.grid(True, alpha=0.3)
 ax.set_aspect('equal', adjustable='datalim')
 ax.text(
@@ -159,7 +152,7 @@ for i, (v, lab, c) in enumerate(zip(VALS, LABELS, colors)):
 ax.set_title('VALUE space -- the payload you may retrieve', fontsize=FS_AX_TITLE - 2)
 ax.set_xlabel('value dim 0', fontsize=FS_AXIS)
 ax.set_ylabel('value dim 1', fontsize=FS_AXIS)
-ax.tick_params(labelsize=FS_AXIS)
+ax.tick_params(labelsize=FS_TICK)
 ax.grid(True, alpha=0.3)
 ax.set_aspect('equal', adjustable='datalim')
 ax.text(
@@ -202,7 +195,7 @@ for i, (k, lab, c) in enumerate(zip(KEYS, LABELS, colors)):
 ax.set_title('Question in key-space', fontsize=FS_AX_TITLE)
 ax.set_xlabel('key dim 0', fontsize=FS_AXIS)
 ax.set_ylabel('key dim 1', fontsize=FS_AXIS)
-ax.tick_params(labelsize=FS_AXIS)
+ax.tick_params(labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND, loc='lower left')
 ax.grid(True, alpha=0.3)
 ax.text(
@@ -220,7 +213,7 @@ bars = ax.bar(LABELS, scores, color=colors, edgecolor='k')
 ax.axhline(0, color='0.4', lw=1)
 ax.set_ylabel(r'score $q\cdot k_i / \sqrt{d}$', fontsize=FS_AXIS)
 ax.set_title('Raw similarity scores', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, axis='y', alpha=0.3)
 for b, s in zip(bars, scores):
     ax.text(b.get_x() + b.get_width() / 2, s + 0.05, f'{s:.2f}',
@@ -254,7 +247,7 @@ bars = ax.bar(LABELS, attn, color=colors, edgecolor='k')
 ax.set_ylim(0, 1.05)
 ax.set_ylabel(r'attention $\alpha_i$', fontsize=FS_AXIS)
 ax.set_title(r'$\alpha = \mathrm{softmax}(\mathrm{scores})$', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, axis='y', alpha=0.3)
 for b, a in zip(bars, attn):
     ax.text(b.get_x() + b.get_width() / 2, a + 0.02, f'{a:.2f}',
@@ -287,7 +280,7 @@ ax.annotate(
 ax.set_title('Draw value in proportion to attention', fontsize=FS_AX_TITLE)
 ax.set_xlabel('value dim 0', fontsize=FS_AXIS)
 ax.set_ylabel('value dim 1', fontsize=FS_AXIS)
-ax.tick_params(labelsize=FS_AXIS)
+ax.tick_params(labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND, loc='lower left')
 ax.grid(True, alpha=0.3)
 ax.text(
@@ -414,7 +407,7 @@ ax.set_xticks(xidx)
 ax.set_xticklabels(TOKENS)
 ax.set_ylabel('attention from query "sat"', fontsize=FS_AXIS)
 ax.set_title('Same tokens X; different projections -> different α', fontsize=FS_AX_TITLE - 4)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, axis='y', alpha=0.3)
 ax.text(

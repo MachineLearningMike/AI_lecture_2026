@@ -22,30 +22,23 @@ Companion to 150_transformer.py, 160_positional_encoding.py,
 """
 
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import matplotlib.patches as patches
 import numpy as np
 
 np.random.seed(42)
 RNG = np.random.default_rng(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 18
-FS_ANNOT = 12
-FS_LEGEND = 12
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 150
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -171,7 +164,7 @@ ax.set_yticks(range(3), tokens)
 ax.set_title('Attention on order [A,B,C]', fontsize=FS_AX_TITLE)
 ax.set_xlabel('key', fontsize=FS_AXIS)
 ax.set_ylabel('query', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 
 ax = axes2[1]
 ax.imshow(A_p, cmap='viridis', vmin=0, vmax=1)
@@ -180,7 +173,7 @@ ax.set_yticks(range(3), tokens[perm])
 ax.set_title('Attention on shuffled [C,A,B]', fontsize=FS_AX_TITLE)
 ax.set_xlabel('key', fontsize=FS_AXIS)
 ax.set_ylabel('query', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_note(
     ax,
     'Same pairwise content\n'
@@ -226,7 +219,7 @@ for c in [3, 7, 11]:
 ax.set_title('CNN-like: local windows', fontsize=FS_AX_TITLE)
 ax.set_xlabel('position', fontsize=FS_AXIS)
 ax.set_ylabel('activation', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_note(
     ax,
     'Local kernels need\n'
@@ -245,7 +238,7 @@ ax.plot(np.arange(T), A * 3, 's-', color='seagreen', lw=2.2, label='attn from po
 ax.set_title('Transformer-like: jump to matching content', fontsize=FS_AX_TITLE)
 ax.set_xlabel('position', fontsize=FS_AXIS)
 ax.set_ylabel('value / attention', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.legend(fontsize=FS_LEGEND)
 ax.grid(True, alpha=0.3)
 add_note(
@@ -287,7 +280,7 @@ ax.bar(labels, A_sharp, color='crimson', edgecolor='k')
 ax.set_ylim(0, 1)
 ax.set_title('Peaked attention', fontsize=FS_AX_TITLE)
 ax.set_ylabel('weight', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.text(
     0.5, 0.9,
     f'output ≈ {np.round(out_sharp, 2)}',
@@ -301,7 +294,7 @@ ax.bar(labels, A_diffuse, color='royalblue', edgecolor='k')
 ax.set_ylim(0, 1)
 ax.set_title('Diffuse attention', fontsize=FS_AX_TITLE)
 ax.set_ylabel('weight', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.text(
     0.5, 0.9,
     f'output ≈ {np.round(out_diffuse, 2)}',
@@ -342,7 +335,7 @@ ax.imshow(full, cmap='Greens', vmin=0, vmax=1)
 ax.set_title('Encoder / bidirectional\n(no generation constraint)', fontsize=FS_AX_TITLE)
 ax.set_xlabel('key position', fontsize=FS_AXIS)
 ax.set_ylabel('query position', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_note(
     ax,
     'Bias toward holistic\n'
@@ -360,7 +353,7 @@ for i in range(T):
 ax.set_title('Decoder / causal\n(next-token generation bias)', fontsize=FS_AX_TITLE)
 ax.set_xlabel('key position', fontsize=FS_AXIS)
 ax.set_ylabel('query position', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_AXIS)
+ax.tick_params(axis='both', labelsize=FS_TICK)
 add_note(
     ax,
     'Bias: predict the future\n'

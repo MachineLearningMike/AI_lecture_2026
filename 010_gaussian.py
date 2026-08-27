@@ -1,30 +1,23 @@
 import torch
 import matplotlib.pyplot as plt
+from _config import (
+    FS_FIGURE_TITLE,
+    FS_AX_TITLE,
+    FS_AXIS,
+    FS_TICK,
+    FS_ANNOT,
+    FS_LEGEND,
+    FIGURE_DPI,
+    SCREEN_FRACTION,
+    apply_rcparams,
+)
+apply_rcparams(plt)
 import numpy as np
 from scipy.stats import norm
 
 # Reproducibility for every figure
 torch.manual_seed(42)
 np.random.seed(42)
-
-FS_FIGURE_TITLE = 28
-FS_AX_TITLE = 22
-FS_AXIS = 16
-FS_ANNOT = 14
-FS_LEGEND = 14
-
-SCREEN_FRACTION = 0.95
-FIGURE_DPI = 120
-
-plt.rcParams.update({
-    'figure.titlesize': FS_FIGURE_TITLE,
-    'axes.titlesize': FS_AX_TITLE,
-    'axes.labelsize': FS_AXIS,
-    'xtick.labelsize': FS_AXIS,
-    'ytick.labelsize': FS_AXIS,
-    'legend.fontsize': FS_LEGEND,
-    'figure.dpi': FIGURE_DPI,
-})
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -73,7 +66,7 @@ def plot_pdf_curves(ax, means, stds, colors, title):
     ax.set_title(title, fontsize=FS_AX_TITLE)
     ax.set_xlabel('x', fontsize=FS_AXIS)
     ax.set_ylabel('Probability Density', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.legend(fontsize=FS_LEGEND)
     ax.grid(True, alpha=0.3)
 
@@ -133,7 +126,7 @@ ax3.axvline(mu, color='red', linestyle='--', alpha=0.7, label=f'μ={mu:g}')
 ax3.set_title('The 68-95-99.7 Rule', fontsize=FS_AX_TITLE)
 ax3.set_xlabel('x', fontsize=FS_AXIS)
 ax3.set_ylabel('Probability Density', fontsize=FS_AXIS)
-ax3.tick_params(axis='both', labelsize=FS_AXIS)
+ax3.tick_params(axis='both', labelsize=FS_TICK)
 ax3.legend(fontsize=FS_LEGEND)
 ax3.grid(True, alpha=0.3)
 
@@ -147,7 +140,7 @@ ax4.axhline(0.5, color='gray', linestyle=':', alpha=0.5)
 ax4.set_title('CDF: Probability of X ≤ x', fontsize=FS_AX_TITLE)
 ax4.set_xlabel('x', fontsize=FS_AXIS)
 ax4.set_ylabel('Cumulative Probability', fontsize=FS_AXIS)
-ax4.tick_params(axis='both', labelsize=FS_AXIS)
+ax4.tick_params(axis='both', labelsize=FS_TICK)
 ax4.legend(fontsize=FS_LEGEND)
 ax4.grid(True, alpha=0.3)
 
@@ -180,7 +173,7 @@ ax5.plot(ref, ref, 'k--', alpha=0.6, label='y = x (perfect normal)')
 ax5.set_title('QQ Plot: Visual Normality Test', fontsize=FS_AX_TITLE)
 ax5.set_xlabel('Theoretical Quantiles (N(0,1))', fontsize=FS_AXIS)
 ax5.set_ylabel('Sample Quantiles', fontsize=FS_AXIS)
-ax5.tick_params(axis='both', labelsize=FS_AXIS)
+ax5.tick_params(axis='both', labelsize=FS_TICK)
 ax5.legend(fontsize=FS_LEGEND)
 ax5.grid(True, alpha=0.3)
 
@@ -196,7 +189,7 @@ ax6.plot(x_pdf.numpy(), gaussian_pdf(x_pdf).numpy(), 'r-', linewidth=2, label='T
 ax6.set_title('Histogram of Samples (n=1000)', fontsize=FS_AX_TITLE)
 ax6.set_xlabel('x', fontsize=FS_AXIS)
 ax6.set_ylabel('Density', fontsize=FS_AXIS)
-ax6.tick_params(axis='both', labelsize=FS_AXIS)
+ax6.tick_params(axis='both', labelsize=FS_TICK)
 ax6.legend(fontsize=FS_LEGEND)
 ax6.grid(True, alpha=0.3)
 
@@ -233,7 +226,7 @@ for ax, n in zip(axes2.flat, sample_sizes_hist):
     ax.set_title(f'n = {n}', fontsize=FS_AX_TITLE)
     ax.set_xlabel('x', fontsize=FS_AXIS)
     ax.set_ylabel('Density', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.set_xlim(-4, 4)
     ax.text(
         0.05, 0.95, f'μ̂ = {mean_val:.3f}\nσ̂ = {std_val:.3f}',
@@ -286,7 +279,7 @@ for ax, n in zip(axes3.flat, sample_sizes_means):
     ax.set_title(f'n = {n}', fontsize=FS_AX_TITLE)
     ax.set_xlabel('Sample Mean', fontsize=FS_AXIS)
     ax.set_ylabel('Density', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.text(
         0.05, 0.95, f'μ̂ = {mean_of_means:.3f}\nσ̂ = {std_of_means:.3f}',
         transform=ax.transAxes, fontsize=FS_ANNOT, verticalalignment='top',
