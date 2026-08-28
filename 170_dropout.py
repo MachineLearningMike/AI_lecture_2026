@@ -130,11 +130,11 @@ ax.set_ylabel('activation', fontsize=FS_AXIS)
 ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, axis='y', alpha=0.3)
 ax.text(
-    0.02, 0.98,
+    0.98, 0.02,
     'Full layer is active.\n'
     'Units can co-adapt\n'
     'to each other.',
-    transform=ax.transAxes, va='top', ha='left', fontsize=FS_ANNOT,
+    transform=ax.transAxes, va='bottom', ha='right', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
 
@@ -148,12 +148,12 @@ ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.grid(True, axis='y', alpha=0.3)
 kept = int(mask.sum())
 ax.text(
-    0.02, 0.98,
+    0.98, 0.02,
     f'Kept {kept}/{n_units} units.\n'
     f'Gray = dropped (0).\n'
     f'Green kept values are\n'
     f'scaled by 1/p = {1/p_keep:g}.',
-    transform=ax.transAxes, va='top', ha='left', fontsize=FS_ANNOT,
+    transform=ax.transAxes, va='bottom', ha='right', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
 )
 
@@ -294,13 +294,16 @@ ax.set_title('Learned functions', fontsize=FS_AX_TITLE)
 ax.set_xlabel('x', fontsize=FS_AXIS)
 ax.set_ylabel('y', fontsize=FS_AXIS)
 ax.tick_params(axis='both', labelsize=FS_TICK)
-add_vcenter_legend_and_note(
-    ax,
+ax.legend(loc='lower right', fontsize=FS_LEGEND, framealpha=0.95)
+ax.text(
+    0.98, 0.98,
     'Without dropout the net\n'
     'chases noise wiggles.\n\n'
     'With dropout it stays\n'
     'closer to the smooth\n'
     'truth (stronger bias).',
+    transform=ax.transAxes, ha='right', va='top', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
 )
 ax.grid(True, alpha=0.3)
 
@@ -364,7 +367,7 @@ ax.text(1.5, 5.3, 'inputs', ha='center', fontsize=FS_ANNOT)
 ax.text(5.0, 5.7, 'hidden', ha='center', fontsize=FS_ANNOT)
 ax.text(8.5, 3.7, 'out', ha='center', fontsize=FS_ANNOT)
 ax.text(
-    0.5, 0.08,
+    0.72, 0.08,
     'Two hidden units "conspire" to explain the label together.\n'
     'If either is unreliable alone, the model is brittle.\n'
     'Dropout forces each kept unit to be useful without its partners.',
@@ -386,13 +389,19 @@ ax.set_xlabel(r'keep probability $p$', fontsize=FS_AXIS)
 ax.set_ylabel('expected activation', fontsize=FS_AXIS)
 ax.set_title('Why scale by 1/p in training', fontsize=FS_AX_TITLE)
 ax.tick_params(axis='both', labelsize=FS_TICK)
-add_vcenter_legend_and_note(
-    ax,
+ax.legend(
+    loc='upper left', bbox_to_anchor=(0.0, 0.88),
+    fontsize=FS_LEGEND, framealpha=0.95, borderaxespad=0.0,
+)
+ax.text(
+    0.98, 0.46,
     'Inverted dropout:\n'
     '  train: keep x/p, else 0\n'
     '  test:  use x as-is\n\n'
     'Then E[train] ≈ test,\n'
     'so no test rescaling.',
+    transform=ax.transAxes, ha='right', va='top', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
 )
 ax.grid(True, alpha=0.3)
 
