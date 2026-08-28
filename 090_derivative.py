@@ -147,47 +147,50 @@ C_DESC = '#9467bd'   # purple -- -grad descent
 PARTIAL_LW = 1.7     # thin colored stroke
 FLOOR_AXIS_LW = 2.0
 COAT_EXTRA = 3.0      # white undercoat is lw + COAT_EXTRA (must read clearly in 3D)
+# White-coat toggle: on for Step 1 and Step 10; off for Steps 2-9.
+COAT_LINES = True
 
 
 def _coated_line(ax, xs, ys, zs=None, *, color, lw=PARTIAL_LW, ls='-',
                  label=None, zorder=None):
-    """Draw a white undercoat then the colored stroke (2D or 3D)."""
+    """Draw a colored stroke; optionally with a white undercoat (COAT_LINES)."""
     kw = dict(ls=ls, solid_capstyle='round')
     if zorder is not None:
         kw['zorder'] = zorder
-    # Double white undercoat so the halo stays visible in mplot3d
     if zs is None:
-        ax.plot(xs, ys, color='white', lw=lw + COAT_EXTRA + 1.2, **kw)
-        ax.plot(xs, ys, color='white', lw=lw + COAT_EXTRA, **kw)
+        if COAT_LINES:
+            ax.plot(xs, ys, color='white', lw=lw + COAT_EXTRA + 1.2, **kw)
+            ax.plot(xs, ys, color='white', lw=lw + COAT_EXTRA, **kw)
         ax.plot(xs, ys, color=color, lw=lw, label=label, **kw)
     else:
-        ax.plot(xs, ys, zs, color='white', lw=lw + COAT_EXTRA + 1.2, **kw)
-        ax.plot(xs, ys, zs, color='white', lw=lw + COAT_EXTRA, **kw)
+        if COAT_LINES:
+            ax.plot(xs, ys, zs, color='white', lw=lw + COAT_EXTRA + 1.2, **kw)
+            ax.plot(xs, ys, zs, color='white', lw=lw + COAT_EXTRA, **kw)
         ax.plot(xs, ys, zs, color=color, lw=lw, label=label, **kw)
 
 
 def _coated_arrow3d(ax, origin, direction, *, color, lw=PARTIAL_LW,
                     label=None, arrow_length_ratio=0.18):
-    """White-coated shaft + white-coated arrow head (3D)."""
+    """Shaft + arrow head; white-coated when COAT_LINES is True."""
     o = np.asarray(origin, dtype=float)
     d = np.asarray(direction, dtype=float)
-    # Shaft: fully white-coated plot (do NOT let quiver redraw an uncoated shaft)
     tip = o + d
     _coated_line(
         ax,
         [o[0], tip[0]], [o[1], tip[1]], [o[2], tip[2]],
         color=color, lw=lw, label=label,
     )
-    # Head only: short quiver near the tip, white then color
+    # Head only: short quiver near the tip
     head = float(arrow_length_ratio) * d
     if np.linalg.norm(head) < 1e-12:
         return
     start = tip - head
-    ax.quiver(
-        start[0], start[1], start[2], head[0], head[1], head[2],
-        color='white', linewidth=lw + COAT_EXTRA,
-        arrow_length_ratio=0.95,
-    )
+    if COAT_LINES:
+        ax.quiver(
+            start[0], start[1], start[2], head[0], head[1], head[2],
+            color='white', linewidth=lw + COAT_EXTRA,
+            arrow_length_ratio=0.95,
+        )
     ax.quiver(
         start[0], start[1], start[2], head[0], head[1], head[2],
         color=color, linewidth=lw, arrow_length_ratio=0.85,
@@ -340,6 +343,7 @@ show_maximized(fig1)
 # -------------------------------------------------------
 # FIGURE 2: Browsable 3D surface of z = f(x,y)
 # -------------------------------------------------------
+COAT_LINES = False  # no white coats for Steps 2-10
 fig2 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
 fig2.suptitle(
     r'Step 2: Browse $z=f(x,y)$ in 3D  (drag to rotate)',
@@ -584,15 +588,16 @@ _coated_line(
     [py5, py5 + grad_disp * fy5 / g5],
     color=C_CLIMB, lw=PARTIAL_LW, label=r'$\nabla f$ at $p$', zorder=6,
 )
-# White coat under the arrow head, then the colored head
-ax0.annotate(
-    '',
-    xy=(px5 + grad_disp * fx5 / g5, py5 + grad_disp * fy5 / g5),
-    xytext=(px5, py5),
-    arrowprops=dict(arrowstyle='->', color='white', lw=PARTIAL_LW + COAT_EXTRA,
-                    mutation_scale=18),
-    zorder=6,
-)
+# Arrow head (white undercoat only when COAT_LINES is on)
+if COAT_LINES:
+    ax0.annotate(
+        '',
+        xy=(px5 + grad_disp * fx5 / g5, py5 + grad_disp * fy5 / g5),
+        xytext=(px5, py5),
+        arrowprops=dict(arrowstyle='->', color='white', lw=PARTIAL_LW + COAT_EXTRA,
+                        mutation_scale=18),
+        zorder=6,
+    )
 ax0.annotate(
     '',
     xy=(px5 + grad_disp * fx5 / g5, py5 + grad_disp * fy5 / g5),
@@ -1021,7 +1026,7 @@ show_maximized(fig8)
 
 # -------------------------------------------------------
 # FIGURES 9-10: Asymmetric tilted Gaussian bump (x1 and x2);
-#   Step 9 = red x-grid; Step 10 = blue z-grid; each lifts to the tangent plane.
+#   Step 9 = red x-grid; Step 10 = red z-grid; each lifts to the tangent plane.
 # -------------------------------------------------------
 # f = exp(-(a x1^2 + b x2^2 + c x1 x2)) with a != b and c != 0.
 # Lecture naming: B : x -> z  (z = B x),  g(z) = f(B^{-1} z).
@@ -1217,9 +1222,9 @@ formula_g = r'$g(z)=f(B^{-1}z)$  with $B:x\mapsto z$  (same surface; coefficient
 
 
 def _show_bump_step(step_no, show_x, show_z, grid_note_x, grid_note_z, banner_tag):
-    """Shared x/z bump figure; Step 9 shows red x-grid, Step 10 shows blue z-grid."""
+    """Shared x/z bump figure; Step 9 shows red x-grid, Step 10 shows red z-grid."""
     fig = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
-    which = 'red $x$-grid' if show_x and not show_z else 'blue $z$-grid'
+    which = 'red $x$-grid' if show_x and not show_z else 'red $z$-grid'
     fig.suptitle(
         rf'Step {step_no}: Asymmetric bump -- {which} on floor $\to$ tangent plane',
         fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
@@ -1340,16 +1345,94 @@ _show_bump_step(
 )
 
 # -------------------------------------------------------
-# FIGURE 10: blue z-grid only
+# FIGURE 10: red z-grid only (no white coat; all overlay lines red)
 # -------------------------------------------------------
+C_Z_DOMAIN = C_DX          # red z-grid on the domain floor
+C_Z_TANGENT = '#e74c3c'    # red z-grid lifted to the tangent plane
+_C_DY_SAVE = C_DY
+C_DY = C_DX                 # partial / mirror lines red too for this step
 _show_bump_step(
     step_no=10,
     show_x=False,
     show_z=True,
-    grid_note_x=r'Blue $3\times 3$: $z$-grid via $x=B^{{-1}}z$, floor + tangent lift.',
-    grid_note_z=r'Blue $3\times 3$: $z$-grid on the floor, lifted to the tangent plane.',
-    banner_tag=r'blue $z$-grid only: domain floor $\to$ tangent plane',
+    grid_note_x=r'Red $3\times 3$: $z$-grid via $x=B^{{-1}}z$, floor + tangent lift.',
+    grid_note_z=r'Red $3\times 3$: $z$-grid on the floor, lifted to the tangent plane.',
+    banner_tag=r'red $z$-grid only: domain floor $\to$ tangent plane',
 )
+C_DY = _C_DY_SAVE
+
+
+# -------------------------------------------------------
+# FIGURE 11: A wild landscape -- many local peaks and canyons
+# -------------------------------------------------------
+def rugged_f(x, y, n_features=140, seed=11):
+    """Dense mix of peaks/canyons + multi-scale ripples (practical loss-like terrain)."""
+    rng = np.random.default_rng(seed)
+    z = np.zeros_like(np.asarray(x, dtype=float))
+    # Broad undulation
+    z = z + 0.22 * np.sin(2.4 * x) * np.cos(2.1 * y)
+    z = z + 0.14 * np.sin(4.2 * x + 0.6) * np.sin(3.8 * y - 0.4)
+    z = z + 0.10 * np.cos(5.5 * x) * np.cos(4.9 * y)
+    # Many localized hills (+) and canyons (-)
+    for _ in range(n_features):
+        cx = rng.uniform(-1.85, 1.85)
+        cy = rng.uniform(-1.85, 1.85)
+        # Mix of strong and weak extrema; ~half inverted (canyons)
+        amp = rng.uniform(0.18, 0.85) * rng.choice([-1.0, -1.0, 1.0, 1.0, 1.0])
+        width = rng.uniform(0.12, 0.42)
+        z = z + amp * np.exp(-((x - cx) ** 2 + (y - cy) ** 2) / (2.0 * width ** 2))
+    # Fine-scale "practical" roughness at several frequencies
+    for k in range(12):
+        fx_ = rng.uniform(6.0, 16.0)
+        fy_ = rng.uniform(6.0, 16.0)
+        amp = rng.uniform(0.02, 0.07)
+        phx = rng.uniform(0, 2 * np.pi)
+        phy = rng.uniform(0, 2 * np.pi)
+        z = z + amp * np.sin(fx_ * x + phx) * np.cos(fy_ * y + phy)
+    return z
+
+
+fig11 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
+fig11.suptitle(
+    r'Step 11: Practical reality -- a jungle of local peaks and canyons',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+ax = fig11.add_subplot(111, projection='3d')
+
+xs11 = np.linspace(-2.0, 2.0, 220)
+ys11 = np.linspace(-2.0, 2.0, 220)
+XX11, YY11 = np.meshgrid(xs11, ys11)
+ZZ11 = rugged_f(XX11, YY11)
+z_floor11 = float(np.min(ZZ11)) - 0.40
+
+ax.plot_surface(
+    XX11, YY11, ZZ11, cmap=SURF_CMAP, linewidth=0, antialiased=True,
+    alpha=0.92, shade=True,
+)
+ax.contourf(
+    XX11, YY11, ZZ11, zdir='z', offset=z_floor11,
+    levels=40, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA,
+)
+_plot_floor_contour_polylines(
+    ax, XX11, YY11, ZZ11, z_floor11 + 0.02, levels=36, color='0.25', lw=0.55,
+)
+ax.view_init(elev=30, azim=-52)
+ax.set_xlabel('x', fontsize=FS_AXIS)
+ax.set_ylabel('y', fontsize=FS_AXIS)
+ax.set_zlabel('f', fontsize=FS_AXIS)
+ax.set_zlim(z_floor11 - 0.05, float(np.max(ZZ11)) + 0.15)
+ax.tick_params(labelsize=FS_ANNOT)
+ax.text2D(
+    0.02, 0.02,
+    'Like a real training loss: peaks and canyons everywhere.\n'
+    'A local gradient only sees its neighborhood --\n'
+    'so steepest ascent / descent can stop far from the global best.\n'
+    'This is the everyday reality of optimizing practical models.',
+    transform=ax.transAxes, fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+)
+fig11.tight_layout(rect=[0, 0, 1, 0.94])
+show_maximized(fig11)
 
 
 # -------------------------------------------------------
@@ -1404,8 +1487,12 @@ Steps 9-10 (asymmetric bump demo):
   Depends on BOTH x1 and x2, asymmetrically (a != b) with a tilt (c != 0).
   Under z = B x (B:x->z), g(z)=f(B^{{-1}}z): the linear warp is visible in 3D.
   Step 9: thin red 3x3 x-grid on the floor, lifted to the tangent plane.
-  Step 10: thin blue 3x3 z-grid on the floor, lifted to the tangent plane.
+  Step 10: thin red 3x3 z-grid on the floor, lifted to the tangent plane (no white coat).
   Domain axes throughout: red = x, green = y.
+
+Step 11:
+  A dense jungle of local peaks and canyons (practical-loss style terrain).
+  Local gradients only see their neighborhood -- global optimization is hard.
 
 
 Browsable figures:

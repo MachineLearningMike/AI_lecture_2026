@@ -9,7 +9,7 @@ Baseline:
 
 Goal:
     Students gain confidence and fundamental intuition in AI,
-    and make attempts to talk about -- and deliver -- AI.
+    then begin to self-study AI, squeeze LLMs for AI work, and deliver AI.
 
 Strategy:
     Change the gravity of training.
@@ -154,7 +154,7 @@ ax1.text(8.9, 3.5, 'Urgent demand', ha='center', fontsize=FS_AX_TITLE - 2,
 ax1.text(
     8.9, 2.3,
     r'$\bullet$  ship demos and prototypes' + '\n'
-    r'$\bullet$  know and talk about AI' + '\n'
+    r'$\bullet$  talk about AI as if they know it' + '\n'
     r'$\bullet$  learn while already delivering',
     ha='center', va='center', fontsize=FS_ANNOT + 1,
 )
@@ -175,8 +175,8 @@ blank_slide(ax2)
 round_box(ax2, 0.6, 5.2, 10.8, 2.0, C_GOAL, C_OK, lw=2.5)
 ax2.text(
     6.0, 6.2,
-    'Students leave with confidence and fundamental intuition in AI,\n'
-    'and they make attempts to self-learn and talk about AI and to deliver AI.',
+    'Students leave with confidence and fundamental intuition in AI --\n'
+    'then they self-study AI, squeeze LLMs for AI work, and deliver AI.',
     ha='center', va='center', fontsize=FS_ANNOT + 3, fontweight='bold',
     color='#145a32',
 )
@@ -185,9 +185,9 @@ goals = [
     (0.6, 1.2, 3.4, 3.4, 'Confidence',
      'I can start.\nI can ask.\nI can try.'),
     (4.3, 1.2, 3.4, 3.4, 'Intuition',
-     'I feel what\ngradients, loss,\nand models do.'),
+     'I feel how AI\ncan transform\na business.'),
     (8.0, 1.2, 3.4, 3.4, 'Attempt',
-     'I talk about AI.\nI build something.\nI deliver a first version.'),
+     'I talk about AI.\nI squeeze LLMs.\nI deliver a first version.'),
 ]
 for x, y, w, h, title, body in goals:
     round_box(ax2, x, y, w, h, '#eafaf1', C_OK)
@@ -219,8 +219,8 @@ ax3.text(3.1, 5.95, 'Understand  →  then deliver', ha='center',
 old_steps = [
     (5.35, '1. Theory first'),
     (4.45, '2. Math until comfortable'),
-    (3.55, '3. Then tools / models'),
-    (2.65, '4. Delivery at the end'),
+    (3.55, '3. Then all historical models'),
+    (2.65, '4. Delivery only at the end'),
 ]
 for y, text in old_steps:
     round_box(ax3, 1.0, y - 0.35, 4.2, 0.7, 'white', '#e67e22', lw=1.5)
@@ -239,8 +239,8 @@ ax3.text(8.9, 5.95, 'Deliver  →  then deepen understanding', ha='center',
          fontsize=FS_ANNOT + 2, fontweight='bold')
 
 new_steps = [
-    (5.35, '1. Delivery first (run, modify)'),
-    (4.45, '2. Talk about what happened'),
+    (5.35, '1. Delivery first (pretend, run, modify)'),
+    (4.45, '2. Talk about Transformers / LLMs'),
     (3.55, '3. Pull in math as needed'),
     (2.65, '4. Understanding grows in use'),
 ]
@@ -456,7 +456,7 @@ Baseline:
 
 Goal:
   Confidence + fundamental intuition in AI,
-  plus real attempts to talk about and deliver AI.
+  then self-study, squeeze LLMs for AI work, and deliver.
 
 Strategy (change the gravity):
   Begin delivery, advance toward understanding, fast.
