@@ -25,6 +25,7 @@ from _config import (
     FIGURE_DPI,
     SCREEN_FRACTION,
     apply_rcparams,
+    add_step_footer,
 )
 apply_rcparams(plt)
 import matplotlib.patches as patches
@@ -231,6 +232,7 @@ def render_rolling_ball_gif(out_path: Path = OUT_PATH) -> None:
             print(f'Skipping GIF export ({out_path.name}): {exc}')
             print('Install pillow to enable animation export: pip install pillow')
 
+    add_step_footer(fig)
     try:
         if plt.get_backend().lower() != 'agg':
             plt.show()

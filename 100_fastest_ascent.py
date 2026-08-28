@@ -33,6 +33,7 @@ from _config import (
     FIGURE_DPI,
     SCREEN_FRACTION,
     apply_rcparams,
+    add_step_footer,
 )
 apply_rcparams(plt)
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
@@ -71,6 +72,7 @@ def show_maximized(fig):
                 except Exception:
                     pass
     print('Tip: drag 3D plots to rotate; scroll to zoom.')
+    add_step_footer(fig)
     plt.show()
 
 
@@ -204,7 +206,7 @@ show_maximized(fig1)
 # -------------------------------------------------------
 fig2, ax2 = plt.subplots(figsize=screen_figsize(), dpi=FIGURE_DPI)
 fig2.suptitle(
-    r'Step 2: Rise rate = $\nabla f\cdot u = |\nabla f|\cos\theta$',
+    r'Step 2: Rise rate = $\nabla f\cdot u(\theta) = |\nabla f|\cos\theta$',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -230,12 +232,19 @@ mark(u_greedy, 'greedy axis', 'darkorange')
 
 ax2.set_xlabel(r'direction angle $\theta$ (degrees)', fontsize=FS_AXIS)
 ax2.set_ylabel('directional derivative (rise per unit step)', fontsize=FS_AXIS)
-ax2.set_title('All possible climb directions', fontsize=FS_AX_TITLE)
+ax2.set_title(
+    r'$u(\theta)=(\cos\theta,\sin\theta)$ is the unit vector in direction $\theta$',
+    fontsize=FS_AX_TITLE,
+)
 ax2.tick_params(axis='both', labelsize=FS_TICK)
 ax2.legend(fontsize=FS_LEGEND, loc='best')
 ax2.grid(True, alpha=0.3)
 add_note(
     ax2,
+    r'$u(\theta)$ = unit vector'
+    '\nin the direction of '
+    r'$\theta$'
+    '.\n\n'
     'The curve peaks ONLY at\n'
     'the gradient angle.\n\n'
     'Any single-axis choice\n'
@@ -446,18 +455,36 @@ for name, u, color in candidates:
     seen.append(key)
     panel_cands.append((name, u, color))
 
+z_floor4b = float(np.min(ZZ)) - 0.18
 axes_b = []
 for i, (name, u, color) in enumerate(panel_cands):
     ax = fig4b.add_subplot(1, len(panel_cands), i + 1, projection='3d')
     axes_b.append(ax)
-    ax.plot_surface(XX, YY, ZZ, cmap='terrain', linewidth=0, alpha=0.28)
+    ax.plot_surface(XX, YY, ZZ, cmap='terrain', linewidth=0, alpha=0.22)
     path = np.array([px, py])[None, :] + s_vals[:, None] * u[None, :]
     z_path = f(path[:, 0], path[:, 1])
+    # Climb on the surface
     ax.plot(path[:, 0], path[:, 1], z_path, color=color, lw=3.5)
-    ax.scatter([px], [py], [pz], c='k', s=35, depthshade=False)
+    # Matching domain path on the floor (same style as 090 Step 3/4)
+    ax.plot(
+        path[:, 0], path[:, 1], np.full_like(z_path, z_floor4b),
+        color=color, lw=2.4, alpha=0.95,
+    )
+    ax.scatter([px], [py], [pz], c='k', s=35, depthshade=False, zorder=5)
+    ax.scatter([px], [py], [z_floor4b], c='k', s=32, depthshade=False, zorder=5)
     ax.scatter([path[-1, 0]], [path[-1, 1]], [z_path[-1]],
-               c=color, s=50, depthshade=False)
-    # vertical stem to emphasize final height
+               c=color, s=50, depthshade=False, zorder=5)
+    ax.scatter([path[-1, 0]], [path[-1, 1]], [z_floor4b],
+               c=color, s=38, depthshade=False, zorder=5)
+    # Drop lines from surface start / end down to the floor
+    ax.plot([px, px], [py, py], [z_floor4b, pz], color='0.35', lw=1.0, ls=':')
+    ax.plot(
+        [path[-1, 0], path[-1, 0]],
+        [path[-1, 1], path[-1, 1]],
+        [z_floor4b, z_path[-1]],
+        color='0.45', ls=':', lw=0.9, alpha=0.85,
+    )
+    # Vertical stem to emphasize final height (surface start -> end)
     ax.plot(
         [path[-1, 0], path[-1, 0]],
         [path[-1, 1], path[-1, 1]],
@@ -469,11 +496,14 @@ for i, (name, u, color) in enumerate(panel_cands):
     ax.set_xlabel('x', fontsize=FS_AXIS - 2)
     ax.set_ylabel('y', fontsize=FS_AXIS - 2)
     ax.set_zlabel('f', fontsize=FS_AXIS - 2)
+    ax.set_zlim(z_floor4b - 0.05, float(np.max(ZZ)) + 0.08)
+    ax.view_init(elev=28, azim=-55)
     ax.tick_params(labelsize=FS_ANNOT - 2)
 
 fig4b.text(
     0.5, 0.02,
-    'Separate panels avoid overlap. Compare endpoint heights (dashed vertical stems).',
+    'Solid floor lines = domain paths in (x,y).  Surface curves = the same climbs in height.\n'
+    'Dotted drops link endpoints to the floor; dashed stems compare endpoint heights.',
     ha='center', fontsize=FS_ANNOT,
 )
 show_maximized(fig4b)

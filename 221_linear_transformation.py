@@ -43,6 +43,7 @@ from _config import (
     FIGURE_DPI,
     SCREEN_FRACTION,
     apply_rcparams,
+    add_step_footer,
 )
 apply_rcparams(plt)
 import matplotlib.patches as patches
@@ -86,6 +87,7 @@ def show_maximized(fig):
     # Tip only when a 3D axes is present
     if any(getattr(ax, "name", "") == "3d" for ax in fig.axes):
         print("Tip: click-drag to rotate 3D views; scroll to zoom.")
+    add_step_footer(fig)
     plt.show()
 
 

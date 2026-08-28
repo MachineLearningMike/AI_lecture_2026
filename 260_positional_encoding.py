@@ -39,6 +39,7 @@ from _config import (
     FIGURE_DPI,
     SCREEN_FRACTION,
     apply_rcparams,
+    add_step_footer,
 )
 apply_rcparams(plt)
 import matplotlib.patches as patches
@@ -82,6 +83,7 @@ def show_maximized(fig):
                     manager.frame.Maximize(True)
                 except Exception:
                     pass
+    add_step_footer(fig)
     plt.show()
 
 

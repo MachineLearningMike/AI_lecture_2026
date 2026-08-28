@@ -49,6 +49,7 @@ from _config import (
     FIGURE_DPI,
     SCREEN_FRACTION,
     apply_rcparams,
+    add_step_footer,
 )
 apply_rcparams(plt)
 from matplotlib.patches import Arc
@@ -88,6 +89,7 @@ def show_maximized(fig):
                 except Exception:
                     pass
     print('Tip: click-drag to rotate 3D views; scroll to zoom.')
+    add_step_footer(fig)
     plt.show()
 
 

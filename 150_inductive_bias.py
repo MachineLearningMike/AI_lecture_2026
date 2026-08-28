@@ -30,6 +30,7 @@ from _config import (
     FIGURE_DPI,
     SCREEN_FRACTION,
     apply_rcparams,
+    add_step_footer,
 )
 apply_rcparams(plt)
 import numpy as np
@@ -73,6 +74,7 @@ def show_maximized(fig):
                     manager.frame.Maximize(True)
                 except Exception:
                     pass
+    add_step_footer(fig)
     plt.show()
 
 
