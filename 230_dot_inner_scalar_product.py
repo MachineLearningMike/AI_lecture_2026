@@ -113,7 +113,11 @@ shadow = float(unit(x) @ y)  # = |y| cos(theta)
 # -------------------------------------------------------
 # FIGURE 1: Definition, then why three names, then geometry
 # -------------------------------------------------------
-fig1, axes1 = plt.subplots(1, 3, figsize=screen_figsize(), dpi=FIGURE_DPI)
+# Middle column wider than the side axes; box widths fill most of that column.
+fig1, axes1 = plt.subplots(
+    1, 3, figsize=screen_figsize(), dpi=FIGURE_DPI,
+    gridspec_kw=dict(width_ratios=[1.15, 2.75, 1.15], wspace=0.22),
+)
 fig1.suptitle(
     r'Step 1: Definition  $\langle x,y\rangle = \sum_i x_i y_i = |x||y|\cos\theta$'
     '  -- and why three names',
@@ -127,62 +131,77 @@ ax.quiver(0, 0, x[0], x[1], angles='xy', scale_units='xy', scale=1,
           color='#c0392b', width=0.012, label=r'$x$')
 ax.quiver(0, 0, y[0], y[1], angles='xy', scale_units='xy', scale=1,
           color='#2471a3', width=0.012, label=r'$y$')
+# Annotation outside the axes (below), so the plot can be larger.
 ax.text(
-    0.02, 0.98,
+    0.5, -0.36,
     'Mathematical definition\n'
-    r'(standard $\mathbb{R}^n$):' + '\n\n'
+    r'(standard $\mathbb{R}^n$):' + '\n'
     rf'$\langle x,y\rangle = \sum_i x_i y_i$' + '\n'
     rf'$= ({x[0]:.1f})({y[0]:.1f})$'
-    rf'$+ ({x[1]:.1f})({y[1]:.1f})$' + '\n'
-    rf'$= {dot_xy:.2f}$' + '\n\n'
+    rf'$+ ({x[1]:.1f})({y[1]:.1f})$'
+    rf'$= {dot_xy:.2f}$' + '\n'
     r'Also $= |x||y|\cos\theta$.',
-    transform=ax.transAxes, va='top', fontsize=FS_ANNOT,
+    transform=ax.transAxes, ha='center', va='top', fontsize=FS_ANNOT - 1,
+    clip_on=False,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
-ax.set_xlim(-0.5, 4.0)
-ax.set_ylim(-0.5, 3.2)
-ax.set_aspect('equal')
+ax.set_xlim(-0.35, 3.7)
+ax.set_ylim(-0.35, 3.0)
+ax.set_aspect('equal', adjustable='box')
 ax.set_xlabel(r'$e_1$', fontsize=FS_AXIS)
 ax.set_ylabel(r'$e_2$', fontsize=FS_AXIS)
-ax.set_title('1) Coordinate definition', fontsize=FS_AX_TITLE)
+# y>1 places the title above the axes; pad was being ignored by tight_layout.
+ax.set_title('1) Coordinate definition', fontsize=FS_AX_TITLE, y=1.14)
 ax.legend(fontsize=FS_LEGEND, loc='lower right')
 ax.grid(True, alpha=0.3)
 ax.tick_params(labelsize=FS_TICK)
 
 # Why three names for the same number on R^n
 ax = axes1[1]
-ax.set_xlim(0, 10)
-ax.set_ylim(0, 10)
+ax.set_xlim(0, 26)
+ax.set_ylim(-0.55, 10)
 ax.axis('off')
-ax.set_title('2) Same number -- three names', fontsize=FS_AX_TITLE)
+# Place this title in data coords so tight_layout cannot "haunt" pad-based moves.
+# Sits in the gap above the top box (box top ≈ 9.15).
+ax.text(
+    13.0, 9.55, '2) Same number -- three names',
+    ha='center', va='center', fontsize=FS_AX_TITLE, fontweight='normal',
+)
+# Three name boxes with equal gaps (~0.15) between them.
 name_boxes = [
-    (0.35, 6.55, 9.3, 2.9, '#fdebd0',
+    (0.05, 6.25, 25.9, 2.9, '#fdebd0',
      'Dot product   $x \\cdot y$\n'
-     'Meaning: the "dot" notation; multiply matching\n'
-     'coordinates and add.\n'
-     'Usage: vector calc, physics, ML ("dot-product\n'
-     'attention", cosine via a dot).'),
-    (0.35, 3.45, 9.3, 2.9, '#d6eaf8',
+     '\n'
+     'Meaning:  the "dot" notation;\n'
+     '          multiply matching coordinates and add.\n'
+     '\n'
+     'Usage:    vector calc, physics, ML\n'
+     '          ("dot-product attention", cosine via a dot).'),
+    (0.05, 3.20, 25.9, 2.9, '#d6eaf8',
      'Scalar product\n'
-     'Meaning: the result is a SCALAR (one number),\n'
-     'not a vector -- unlike the cross / vector product.\n'
-     'Usage: physics texts (esp. European); stresses\n'
-     'output type.'),
-    (0.35, 0.35, 9.3, 2.9, '#d5f5e3',
+     '\n'
+     'Meaning:  the result is a SCALAR (one number), not a vector --\n'
+     '          unlike the cross / vector product.\n'
+     '\n'
+     'Usage:    physics texts (esp. European); stresses output type.'),
+    (0.05, 0.35, 25.9, 2.7, '#d5f5e3',
      'Inner product   $\\langle x, y \\rangle$\n'
-     'Meaning: abstract bilinear form with axioms\n'
-     '(linear, symmetric, positive-definite).\n'
-     'Usage: linear algebra / Hilbert spaces; same\n'
-     'idea for functions, e.g. $\\langle f,g\\rangle=\\int f g$.'),
+     '\n'
+     'Meaning:  abstract bilinear form with axioms\n'
+     '          (linear, symmetric, positive-definite).\n'
+     '\n'
+     'Usage:    linear algebra / Hilbert spaces; same idea for functions,\n'
+     r'          e.g. $\langle f,g\rangle=\int f g$.'),
 ]
 for x0, y0, w, h, color, text in name_boxes:
     ax.add_patch(plt.Rectangle((x0, y0), w, h, facecolor=color, edgecolor='k', lw=1.8))
     ax.text(x0 + w / 2, y0 + h / 2, text, ha='center', va='center',
             fontsize=FS_ANNOT - 1, fontweight='bold')
+# Special note under the lowest box (not one of the three aligned boxes).
 ax.text(
-    0.5, 0.02,
+    13.0, -0.12,
     r'On $\mathbb{R}^n$ with the standard basis these three names denote THE SAME operation.',
-    transform=ax.transAxes, ha='center', va='bottom', fontsize=FS_ANNOT - 1,
+    ha='center', va='top', fontsize=FS_ANNOT - 1, clip_on=False,
     bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
 )
 
@@ -203,28 +222,30 @@ arc = Arc((0, 0), 1.2, 1.2,
           color='black', lw=1.5)
 ax.add_patch(arc)
 ax.text(0.7, 0.55, r'$\theta$', fontsize=FS_AXIS)
+# Annotation outside the axes (below).
 ax.text(
-    0.02, 0.98,
+    0.5, -0.36,
     'Geometry:\n'
     r'1) Drop a perpendicular from $y$ onto $x$' + '\n'
-    r'2) Shadow length $= |y|\cos\theta$' + '\n'
-    rf'   $= {shadow:.2f}$' + '\n'
-    r'3) Multiply by $|x|$' + '\n'
-    rf'   $\langle x,y\rangle = |x|\,|y|\cos\theta = {dot_xy:.2f}$',
-    transform=ax.transAxes, va='top', fontsize=FS_ANNOT - 1,
+    r'2) Shadow length $= |y|\cos\theta$'
+    rf' $= {shadow:.2f}$' + '\n'
+    r'3) Multiply by $|x|$:  '
+    rf'$\langle x,y\rangle = |x|\,|y|\cos\theta = {dot_xy:.2f}$',
+    transform=ax.transAxes, ha='center', va='top', fontsize=FS_ANNOT - 1,
+    clip_on=False,
     bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.95),
 )
-ax.set_xlim(-0.5, 4.0)
-ax.set_ylim(-0.5, 3.2)
-ax.set_aspect('equal')
+ax.set_xlim(-0.35, 3.7)
+ax.set_ylim(-0.35, 3.0)
+ax.set_aspect('equal', adjustable='box')
 ax.set_xlabel(r'$e_1$', fontsize=FS_AXIS)
 ax.set_ylabel(r'$e_2$', fontsize=FS_AXIS)
-ax.set_title('3) Projection / angle reading', fontsize=FS_AX_TITLE)
-ax.legend(fontsize=FS_LEGEND, loc='lower right')
+ax.set_title('3) Projection / angle reading', fontsize=FS_AX_TITLE, y=1.14)
+ax.legend(fontsize=FS_LEGEND, loc='upper right')
 ax.grid(True, alpha=0.3)
 ax.tick_params(labelsize=FS_TICK)
 
-fig1.tight_layout(rect=[0, 0, 1, 0.94])
+fig1.tight_layout(rect=[0, 0.18, 1, 0.94])
 show_maximized(fig1)
 
 
