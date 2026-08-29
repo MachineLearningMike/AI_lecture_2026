@@ -247,8 +247,8 @@ ax2.legend(
 )
 ax2.text(
     0.02, 0.50,
-    'Near an axis: one factor ~0 => product ~0 (common)\n'
-    'Far in corners: both large => |product| large (rare, heavy tails)',
+    'Near an axis: one factor near 0, so the product is near 0 (common).\n'
+    'Far in the corners: both factors large, so |product| is large (rare, heavy tails).',
     transform=ax2.transAxes,
     fontsize=FS_ANNOT,
     va='center', ha='left',
@@ -361,7 +361,7 @@ ax.set_ylabel('Density', fontsize=FS_AXIS)
 ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
-    'Taking log turns\n'
+    'Taking the log turns\n'
     'multiplication into addition.\n'
     'That is why log-normals\n'
     'are closed under products.',

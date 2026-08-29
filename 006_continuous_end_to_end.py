@@ -168,11 +168,11 @@ ax2.text(
 ax2.text(
     6.0, 2.5,
     'Traditionally, Input, Process, and Output were each described with\n'
-    'mean, discrete words in natural language, and with existing symbolic\n'
+    'ordinary discrete words in natural language, and with existing symbolic\n'
     'concepts from science and technology.\n\n'
     'That shared description constrained degrees of freedom -- of representation,\n'
-    'and of invention and innovation. If it could not be said in words or\n'
-    'existing symbols, it was hard to build.',
+    'invention, and innovation. If it could not be said in words or existing\n'
+    'symbols, it was hard to build.',
     ha='center', va='center', fontsize=FS_ANNOT + 1,
 )
 
@@ -192,7 +192,7 @@ blank_slide(ax3)
 stages_old = [
     (0.4, 'Raw\ninput', C_MUTE),
     (2.5, 'Hand\nfeatures', C_OLD),
-    (4.6, 'Rules /\nsymbols', C_OLD),
+    (4.6, 'Rules and\nsymbols', C_OLD),
     (6.7, 'Tuned\nmodules', C_OLD),
     (8.8, 'Final\noutput', C_MUTE),
 ]
@@ -229,15 +229,15 @@ fig4.suptitle(
 blank_slide(ax4)
 
 round_box(ax4, 0.5, 1.2, 5.3, 5.8, C_OLD, '#e67e22', lw=2.5)
-ax4.text(3.15, 6.5, 'Language / symbols', ha='center',
+ax4.text(3.15, 6.5, 'Language and symbols', ha='center',
          fontsize=FS_AX_TITLE, fontweight='bold', color='#a04000')
 ax4.text(
     3.15, 4.6,
     'Words, categories, hand labels\n'
-    'Rules like “if … then …”\n'
+    'Rules like "if ... then ..."\n'
     'Discrete slots humans invent\n\n'
     'Good for explaining to people.\n'
-    'Bad as a forced middle language\n'
+    'Poor as a forced middle language\n'
     'for every machine step.',
     ha='center', va='center', fontsize=FS_ANNOT + 1,
 )
@@ -278,7 +278,7 @@ ax5.text(6.0, 6.5, 'End-to-end model', ha='center',
          fontsize=FS_AX_TITLE - 2, fontweight='bold', color=C_DARK)
 ax5.text(
     6.0, 5.4,
-    'continuous\nlayers &\nrepresentations',
+    'continuous\nlayers and\nrepresentations',
     ha='center', va='center', fontsize=FS_ANNOT + 1,
 )
 
@@ -302,7 +302,7 @@ round_box(ax5, 0.7, 1.0, 10.6, 2.4, C_GOAL, C_OK)
 ax5.text(
     6.0, 2.7,
     'One objective trains the whole path.\n'
-    'No human-designed “middle language” that must be perfect before learning starts.',
+    'No human-designed "middle language" that must be perfect before learning starts.',
     ha='center', va='center', fontsize=FS_ANNOT + 2,
 )
 
@@ -335,7 +335,7 @@ for x, y, text in items:
 
 ax6.text(
     6.0, 0.55,
-    'Not “humans disappear from AI.”  Humans move up: goals, data, evaluation, deployment.',
+    'Not that humans disappear from AI. Humans move up: goals, data, evaluation, deployment.',
     ha='center', fontsize=FS_ANNOT + 1, style='italic',
 )
 

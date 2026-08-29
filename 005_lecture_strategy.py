@@ -142,8 +142,8 @@ ax1.text(3.1, 3.5, 'Not enough of', ha='center', fontsize=FS_AX_TITLE - 2,
          fontweight='bold')
 ax1.text(
     3.1, 2.3,
-    r'$\bullet$  calculus / probability fluency' + '\n'
-    r'$\bullet$  ML vocabulary & habits' + '\n'
+    r'$\bullet$  calculus and probability fluency' + '\n'
+    r'$\bullet$  ML vocabulary and habits' + '\n'
     r'$\bullet$  practice delivering systems',
     ha='center', va='center', fontsize=FS_ANNOT + 1,
 )
@@ -240,7 +240,7 @@ ax3.text(8.9, 5.95, 'Deliver  →  then deepen understanding', ha='center',
 
 new_steps = [
     (5.35, '1. Delivery first (pretend, run, modify)'),
-    (4.45, '2. Talk about Transformers / LLMs'),
+    (4.45, '2. Talk about Transformers and LLMs'),
     (3.55, '3. Pull in math as needed'),
     (2.65, '4. Understanding grows in use'),
 ]
@@ -315,9 +315,9 @@ blank_slide(ax5)
 
 # Timeline path
 stages = [
-    (0.5, 'See it run', 'Watch a model\ntrain / a figure move'),
+    (0.5, 'See it run', 'Watch a model\ntrain, or a figure move'),
     (3.4, 'Touch it', 'Change a knob.\nBreak it. Fix it.'),
-    (6.3, 'Name it', 'Give the math\nand vocabulary'),
+    (6.3, 'Name it', 'Give the math\nand the vocabulary'),
     (9.2, 'Own it', 'Explain it.\nDeliver a small AI.'),
 ]
 ys = 4.6
@@ -336,8 +336,8 @@ ax5.text(6.0, 3.3, 'Design rule for every module', ha='center',
          fontsize=FS_AX_TITLE - 2, fontweight='bold')
 ax5.text(
     6.0, 2.0,
-    'Start from a runnable picture or demo  →  then the symbol.\n'
-    'Ask for an attempt (talk / tweak / ship) before perfect mastery.\n'
+    'Start from a runnable picture or demo -- then the symbol.\n'
+    'Ask for an attempt (talk, tweak, or ship) before perfect mastery.\n'
     'Pull math in when it clarifies what students already saw working.',
     ha='center', va='center', fontsize=FS_ANNOT + 2,
 )

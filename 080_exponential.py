@@ -181,7 +181,7 @@ ax.text(
     0.02, 0.50,
     'Multiplying grows\n'
     'fast and is awkward\n'
-    'for gradients / MLE',
+    'for gradients and MLE',
     transform=ax.transAxes, fontsize=FS_ANNOT, va='center', ha='left',
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
@@ -324,15 +324,15 @@ ax.plot(mu_grid, (logL_shift - logL_shift.min()) / (logL_shift.max() - logL_shif
         color='seagreen', linewidth=2.5, label=r'scaled $\log L(\mu)$')
 ax.axvline(mu_grid[np.argmax(logL)], color='red', linestyle='--', linewidth=2,
            label='same maximizer')
-ax.set_title(r'Max $L$ and max $\log L$ agree -- $\log L$ is stabler', fontsize=FS_AX_TITLE)
+ax.set_title(r'Max $L$ and max $\log L$ agree -- $\log L$ is more stable', fontsize=FS_AX_TITLE)
 ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
 ax.set_ylabel('scaled objective', fontsize=FS_AXIS)
 ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     r'$\nabla \log L = \frac{\nabla L}{L}$' + '\n\n'
-    'Gradient of log L =\n'
-    'relative gradient of L.\n'
+    'The gradient of log L is\n'
+    'the relative gradient of L.\n'
     'Same critical points,\n'
     'better numerics.',
 )

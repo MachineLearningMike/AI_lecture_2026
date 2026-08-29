@@ -164,15 +164,15 @@ for mu_c, color, ls in [
             label=rf'candidate $N(\mu={mu_c:g},1)$')
 ax.set_title('Same data, different candidate means', fontsize=FS_AX_TITLE)
 ax.set_xlabel('x', fontsize=FS_AXIS)
-ax.set_ylabel('PDF density', fontsize=FS_AXIS)
+ax.set_ylabel('Density', fontsize=FS_AXIS)
 ax.tick_params(axis='both', labelsize=FS_TICK)
 ax.set_ylim(bottom=-0.02)
 add_vcenter_legend_and_note(
     ax,
-    'Likelihood of a mu:\n'
+    r'Likelihood of a $\mu$:' + '\n'
     r'$L(\mu)=\prod_i\,f(x_i\mid\mu)$' + '\n'
-    'taller density at each\n'
-    'point => higher L',
+    'Taller density at each\n'
+    'point means higher L',
 )
 ax.grid(True, alpha=0.3)
 
@@ -206,7 +206,7 @@ show_maximized(fig1)
 # -------------------------------------------------------
 fig2, axes2 = new_figure(1, 2)
 fig2.suptitle(
-    r'Step 2: For Gaussians, max $\log L$  is exactly  min MSE',
+    r'Step 2: For Gaussians, maximizing $\log L$ is exactly minimizing MSE',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -221,8 +221,8 @@ add_vcenter_legend_and_note(
     ax,
     r'$\log L(\mu)=$' + '\n'
     r'const $-\frac{1}{2\sigma^2}\sum(x_i-\mu)^2$' + '\n\n'
-    'only the squared term\n'
-    'depends on mu',
+    'Only the squared term\n'
+    r'depends on $\mu$',
 )
 ax.grid(True, alpha=0.3)
 
@@ -236,10 +236,10 @@ ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
     f'argmin MSE = {mu_mse:.2f}\n'
-    f'argmax logL = {mu_mle:.2f}\n'
-    'SAME location!\n\n'
+    f'argmax log L = {mu_mle:.2f}\n'
+    'Same location.\n\n'
     'So training with MSE\n'
-    '= Gaussian MLE',
+    'is Gaussian MLE.',
 )
 ax.grid(True, alpha=0.3)
 
@@ -273,7 +273,7 @@ add_vcenter_legend_and_note(
     ax,
     'Gaussian MLE -> mean\n'
     'Laplace MLE -> median\n\n'
-    'MAE is NOT the\n'
+    'MAE is not the\n'
     'Gaussian likelihood',
 )
 ax.grid(True, alpha=0.3)
@@ -287,8 +287,8 @@ ax.plot(z, laplace.pdf(z, 0, 1 / np.sqrt(2)), color='purple', linewidth=2.5,
         label=r'Laplace $\propto e^{-\sqrt{2}|z|}$  -> MAE')
 # Match variance of Laplace for fair visual: scale b = 1/sqrt(2) gives var=1
 ax.set_title('Noise PDF decides the loss', fontsize=FS_AX_TITLE)
-ax.set_xlabel('residual z = x - mu', fontsize=FS_AXIS)
-ax.set_ylabel('density', fontsize=FS_AXIS)
+ax.set_xlabel(r'residual $z = x - \mu$', fontsize=FS_AXIS)
+ax.set_ylabel('Density', fontsize=FS_AXIS)
 ax.tick_params(axis='both', labelsize=FS_TICK)
 add_vcenter_legend_and_note(
     ax,
@@ -296,7 +296,7 @@ add_vcenter_legend_and_note(
     'Gaussian -> z^2  (MSE)\n'
     'Laplace  -> |z|  (MAE)\n\n'
     'Pick the loss that\n'
-    'matches your noise',
+    'matches the noise.',
 )
 ax.grid(True, alpha=0.3)
 
@@ -341,7 +341,7 @@ add_vcenter_legend_and_note(
     f'outlier mean= {data_out.mean():.2f}\n'
     f'outlier med.= {np.median(data_out):.2f}\n\n'
     'MSE chases outliers;\n'
-    'MAE is more robust',
+    'MAE is more robust.',
 )
 ax.grid(True, alpha=0.3)
 ax.set_xlim(MU_TRUE - 3.5, MU_TRUE + 9.0)
@@ -364,7 +364,7 @@ add_vcenter_legend_and_note(
     'MAE argmin = median\n\n'
     'Gaussian MLE still\n'
     'means MSE -- even\n'
-    'when that is brittle',
+    'when that is brittle.',
 )
 ax.grid(True, alpha=0.3)
 

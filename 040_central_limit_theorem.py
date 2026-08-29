@@ -66,7 +66,7 @@ DISTRIBUTIONS = [
         'color': 'steelblue',
         'mu': 0.0,
         'var': 3.0,
-        'note': 'flat / bounded',
+        'note': 'flat and bounded',
         'pdf_text': r'$f(x)=\dfrac{1}{6}\ \mathrm{for}\ x \in [-3,3]$',
     },
     {
@@ -148,7 +148,7 @@ def show_maximized(fig):
 # -------------------------------------------------------
 fig1, axes1 = new_figure(1, 3)
 fig1.suptitle(
-    'Step 1: The parent distributions are NOT Gaussian',
+    'Step 1: The parent distributions are not Gaussian',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -186,7 +186,7 @@ STEP2_EXPERIMENTS = 8000  # denser histograms at high resolution
 for dist in DISTRIBUTIONS:
     fig2, axes2 = new_figure(2, 3)
     fig2.suptitle(
-        f"Step 2: CLT for {dist['name']} -- distribution of sample means",
+        f"Step 2: CLT for {dist['name']} -- the distribution of sample means",
         fontsize=FS_FIGURE_TITLE, fontweight='bold', y=0.98,
     )
 
@@ -278,7 +278,7 @@ show_maximized(fig3)
 # -------------------------------------------------------
 fig4, ax4 = new_figure()
 fig4.suptitle(
-    'Step 4: Precision improves as 1/sqrt(n)  (Standard Error)',
+    r'Step 4: Precision improves as $1/\sqrt{n}$  (standard error)',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -301,7 +301,7 @@ ax4.tick_params(axis='both', labelsize=FS_TICK)
 ax4.legend(fontsize=FS_LEGEND)
 ax4.grid(True, alpha=0.3)
 ax4.set_title(
-    'Dashed = theory  sigma/sqrt(n)   |   Dots = simulation',
+    r'Dashed: theory $\sigma/\sqrt{n}$   |   Dots: simulation',
     fontsize=FS_AX_TITLE,
 )
 

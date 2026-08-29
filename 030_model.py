@@ -175,11 +175,11 @@ X_grid_np = X_grid.numpy()
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=screen_figsize(), dpi=FIGURE_DPI)
 fig.suptitle(f'Model: {model_name}', fontsize=FS_FIGURE_TITLE, fontweight='bold')
 
-ax1.scatter(X_np, Y_np, alpha=0.3, label='Data with Noise', color='blue', s=5)
+ax1.scatter(X_np, Y_np, alpha=0.3, label='Data with noise', color='blue', s=5)
 ax1.plot(X_sorted_np, Y_true_sorted_np, color='green', linewidth=2,
-         label='True Function', alpha=0.8)
-ax1.plot(X_grid_np, preds_before, color='red', linewidth=2, label='AI Guesses')
-ax1.set_title('BEFORE Training (Random Guesses)', fontsize=FS_AX_TITLE)
+         label='True function', alpha=0.8)
+ax1.plot(X_grid_np, preds_before, color='red', linewidth=2, label='Model guesses')
+ax1.set_title('Before training (random guesses)', fontsize=FS_AX_TITLE)
 ax1.set_xlabel('X', fontsize=FS_AXIS)
 ax1.set_ylabel('Y', fontsize=FS_AXIS)
 ax1.tick_params(axis='both', labelsize=FS_TICK)
@@ -222,11 +222,11 @@ with torch.no_grad():
     mse_vs_true = torch.mean((preds_data - Y_true) ** 2).item()
     mse_vs_data = torch.mean((preds_data - Y) ** 2).item()
 
-ax2.scatter(X_np, Y_np, alpha=0.3, label='Data with Noise', color='blue', s=5)
+ax2.scatter(X_np, Y_np, alpha=0.3, label='Data with noise', color='blue', s=5)
 ax2.plot(X_sorted_np, Y_true_sorted_np, color='green', linewidth=2,
-         label='True Function', alpha=0.8)
-ax2.plot(X_grid_np, preds_after, color='red', linewidth=2, label='AI Predictions')
-ax2.set_title('AFTER Training', fontsize=FS_AX_TITLE)
+         label='True function', alpha=0.8)
+ax2.plot(X_grid_np, preds_after, color='red', linewidth=2, label='Model predictions')
+ax2.set_title('After training', fontsize=FS_AX_TITLE)
 ax2.set_xlabel('X', fontsize=FS_AXIS)
 ax2.set_ylabel('Y', fontsize=FS_AXIS)
 ax2.tick_params(axis='both', labelsize=FS_TICK)
@@ -242,7 +242,7 @@ ax2.text(
 
 if USE_COMPLEX_MODEL:
     ax2.text(
-        0.05, 0.82, 'Complex Model\n(4 layers, ReLU + Tanh)',
+        0.05, 0.82, 'Complex model\n(4 layers, ReLU + Tanh)',
         transform=ax2.transAxes, fontsize=FS_ANNOT, verticalalignment='top',
         bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.8),
     )
@@ -263,11 +263,11 @@ show_maximized(fig)
 fig_loss, ax_loss = plt.subplots(1, 1, figsize=screen_figsize(), dpi=FIGURE_DPI)
 ax_loss.plot(losses, color='blue', linewidth=2)
 ax_loss.set_title(
-    f'Training Loss Over Time ({model_name})',
+    f'Training loss over time ({model_name})',
     fontsize=FS_AX_TITLE,
 )
 ax_loss.set_xlabel('Epoch', fontsize=FS_AXIS)
-ax_loss.set_ylabel('Normalized MSE Loss', fontsize=FS_AXIS)
+ax_loss.set_ylabel('Normalized MSE loss', fontsize=FS_AXIS)
 ax_loss.tick_params(axis='both', labelsize=FS_TICK)
 ax_loss.grid(True, alpha=0.3)
 if USE_COMPLEX_MODEL:

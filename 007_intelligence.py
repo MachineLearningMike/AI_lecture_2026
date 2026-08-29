@@ -166,7 +166,7 @@ trio = [
     (0.7, 1.1, 3.4, 2.9, 'Choice',
      'Among options,\npick one action\nor one belief.'),
     (4.3, 1.1, 3.4, 2.9, 'Right',
-     'Better for the aim\nthan the alternatives\n(not "mystical").'),
+     'Better for the aim\nthan the alternatives\n(not mystical).'),
     (7.9, 1.1, 3.4, 2.9, 'Capacity',
      'A system that can\ndo this repeatedly,\nnot once by luck.'),
 ]
@@ -193,7 +193,7 @@ blank_slide(ax3)
 round_box(ax3, 0.7, 5.2, 10.6, 2.0, C_NEW, '#2874a6', lw=2.5)
 ax3.text(
     6.0, 6.2,
-    'No goal  ->  no yardstick for "right" or "wrong."',
+    'No goal -- no yardstick for "right" or "wrong."',
     ha='center', va='center', fontsize=FS_AX_TITLE,
     fontweight='bold', color=C_DARK,
 )
@@ -288,7 +288,7 @@ ax5.text(
 # Left: other sciences/tech
 round_box(ax5, 0.5, 1.0, 5.3, 4.2, C_OLD, '#e67e22', lw=2.5)
 ax5.text(
-    3.15, 4.7, 'Other sciences & technology',
+    3.15, 4.7, 'Other sciences and technology',
     ha='center', va='center', fontsize=FS_AX_TITLE - 2,
     fontweight='bold', color='#a04000',
 )
@@ -345,7 +345,7 @@ ax6.text(
 )
 
 ahead = [
-    (0.7, 1.2, 3.4, 3.2, 'Goals & losses',
+    (0.7, 1.2, 3.4, 3.2, 'Goals and losses',
      'How "right" becomes\na number we can\noptimize.'),
     (4.3, 1.2, 3.4, 3.2, 'Learning to choose',
      'Gradients, search,\nand feedback that\nimprove decisions.'),

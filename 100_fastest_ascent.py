@@ -530,6 +530,12 @@ ax.arrow(0, 0, u_x[0], u_x[1],
 ax.arrow(0, 0, u_y[0], u_y[1],
          head_width=0.05, color='royalblue', length_includes_head=True, lw=2,
          label='unit ±y')
+# Small angle off the x-axis: early mix of both components
+theta_small = np.deg2rad(25)
+u_mix = np.array([np.cos(theta_small), np.sin(theta_small)])
+ax.arrow(0, 0, u_mix[0], u_mix[1],
+         head_width=0.05, color='darkorange', length_includes_head=True, lw=2,
+         label=r'small $\theta$ off axis')
 # level lines of grad·u = c  are lines perpendicular to grad
 for c in [0.0, 0.5 * g_norm, g_norm]:
     # fx u + fy v = c
@@ -549,22 +555,30 @@ ax.grid(True, alpha=0.3)
 
 ax = axes5[1]
 ax.axis('off')
-ax.set_title('Why not the largest partial alone?', fontsize=FS_AX_TITLE)
+ax.set_title('Why not an axis -- or a blend of axes?', fontsize=FS_AX_TITLE)
 ax.text(
-    0.5, 0.55,
-    'Axis move uses only ONE coordinate of grad:\n'
+    0.5, 0.78,
+    'Why not the largest partial alone?\n\n'
+    'Axis moves use only ONE coordinate of grad:\n'
     f'  rise_x = |df/dx| = {abs(fx):.3f}\n'
-    f'  rise_y = |df/dy| = {abs(fy):.3f}\n\n'
-    'Gradient combines BOTH coordinates:\n'
-    f'  |grad| = sqrt((df/dx)^2 + (df/dy)^2)\n'
-    f'         = {g_norm:.3f}\n\n'
-    'Because squares add under the sqrt,\n'
-    '|grad| is ALWAYS >= every |partial|.\n'
-    'Equality only if the other partials are 0.\n\n'
-    'So unless the surface depends on a single\n'
-    'variable, pure-axis climbing wastes slope.',
+    f'  rise_y = |df/dy| = {abs(fy):.3f}\n'
+    'The gradient combines BOTH:\n'
+    f'  |grad| = sqrt((df/dx)^2 + (df/dy)^2) = {g_norm:.3f}\n'
+    'So |grad| is always >= every |partial|.',
+    transform=ax.transAxes, ha='center', va='top', fontsize=FS_AXIS - 2,
+    bbox=dict(boxstyle='round,pad=0.55', facecolor='#e8f4fc',
+              edgecolor='#2874a6', linewidth=1.6, alpha=0.97),
+)
+ax.text(
+    0.5, 0.28,
+    'Why not an interpolation between the two axes?\n\n'
+    'Insight: as the angle grows from zero,\n'
+    'the x-component decreases only slowly at first,\n'
+    'while the y-component rises quickly --\n'
+    'so early on we benefit from both large x and fast growing y.',
     transform=ax.transAxes, ha='center', va='center', fontsize=FS_AXIS - 2,
-    bbox=dict(boxstyle='round', facecolor='#f7f7ff', alpha=0.96),
+    bbox=dict(boxstyle='round,pad=0.55', facecolor='#fdebd0',
+              edgecolor='#d68910', linewidth=1.6, alpha=0.97),
 )
 
 fig5.tight_layout(rect=[0, 0, 1, 0.94])

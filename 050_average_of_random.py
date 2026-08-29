@@ -120,7 +120,7 @@ sigma_m_theory = SIGMA / np.sqrt(2)
 # -------------------------------------------------------
 fig1, axes1 = new_figure(1, 2)
 fig1.suptitle(
-    r'Step 1: $X$ vs $M=(X_1+X_2)/2$  —  same mean, half the variance',
+    r'Step 1: $X$ vs $M=(X_1+X_2)/2$  --  same mean, half the variance',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -223,8 +223,8 @@ ax2.legend(
 )
 ax2.text(
     0.02, 0.50,
-    'Along the diagonal: signal keeps\n'
-    'Across the diagonal: cancels in M',
+    'Along the diagonal, the signal remains.\n'
+    'Across the diagonal, noise cancels in M.',
     transform=ax2.transAxes,
     fontsize=FS_ANNOT,
     va='center', ha='left',
@@ -241,7 +241,7 @@ show_maximized(fig2)
 # -------------------------------------------------------
 fig3, axes3 = new_figure(1, 3)
 fig3.suptitle(
-    r'Step 3: Why $\mathrm{Var}(M)=\sigma^2/2$  (and why the sum gets wider)',
+    r'Step 3: Why $\mathrm{Var}(M)=\sigma^2/2$ -- and why the sum gets wider',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -281,7 +281,7 @@ show_maximized(fig3)
 # -------------------------------------------------------
 fig4, axes4 = new_figure(1, 2)
 fig4.suptitle(
-    r'Step 4: Works for non-Gaussian twins too (Uniform) — mean preserved, spread shrinks',
+    'Step 4: Works for non-Gaussian twins too (Uniform) -- mean preserved, spread shrinks',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 

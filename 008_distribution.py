@@ -9,10 +9,14 @@ Sketch:
   3. Looking only at the data, everything is a distribution of points.
   4. Knowledge itself can be seen as a distribution
      (e.g. tree recognition = labels or likelihoods over objects).
-  5. Another example: dog vs cat photo clusters (two modes).
-  6. The same clusters, tiny in a corner -- then normalized;
+  5. Next-word distribution after a given context.
+  6. Next-sentence distribution after a given context.
+  7. Everyday images as a distribution.
+  8. Dog vs cat photo clusters (two modes).
+  9. The same clusters, tiny in a corner -- then normalized;
      framing questions on scale, information, and boundaries.
-  7. Therefore we study distribution.
+  10. Therefore we study distribution.
+     (Discriminative vs generative moves to 009_discriminative_generative.py.)
 """
 
 import matplotlib.pyplot as plt
@@ -296,112 +300,359 @@ show_maximized(fig4)
 
 
 # -------------------------------------------------------
-# FIGURE 5: Another example -- dog vs cat photo clusters
+# FIGURE 5: Next-word distribution after a given context
 # -------------------------------------------------------
 fig5, ax5 = new_figure()
 fig5.suptitle(
-    'Step 5: Another distribution -- dog photos and cat photos',
+    'Step 5: Another distribution -- the next word after a context',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
-rng5 = np.random.default_rng(3)
+context = 'The cat sat on the'
+# Illustrative next-word probabilities (toy, not from a real model)
+next_words = [
+    ('mat', 0.42),
+    ('floor', 0.18),
+    ('sofa', 0.14),
+    ('table', 0.09),
+    ('bed', 0.06),
+    ('roof', 0.04),
+    ('dog', 0.03),
+    ('...', 0.04),
+]
+labels5 = [w for w, _ in next_words]
+probs5 = np.array([p for _, p in next_words])
+# Draw highest bar first for visual ranking
+order5 = np.argsort(probs5)
+labels5 = [labels5[i] for i in order5]
+probs5 = probs5[order5]
+colors5 = ['#2874a6' if lab != '...' else '0.65' for lab in labels5]
+
+y_pos = np.arange(len(labels5))
+ax5.barh(y_pos, probs5, color=colors5, edgecolor='white', height=0.72)
+ax5.set_yticks(y_pos)
+ax5.set_yticklabels(labels5, fontsize=FS_AXIS)
+ax5.set_xlabel('Probability of the next word', fontsize=FS_AXIS)
+ax5.tick_params(axis='x', labelsize=FS_TICK)
+ax5.set_xlim(0, max(probs5) * 1.25)
+ax5.grid(True, axis='x', alpha=0.25)
+for y, p in zip(y_pos, probs5):
+    ax5.text(p + 0.01, y, f'{p:.2f}', va='center', ha='left',
+             fontsize=FS_ANNOT)
+
+# Context banner above the axes
+fig5.text(
+    0.5, 0.91,
+    f'Context:  "{context} ..."',
+    ha='center', va='center', fontsize=FS_AX_TITLE,
+    fontweight='bold', color=C_DARK,
+    bbox=dict(boxstyle='round,pad=0.35', facecolor=C_NEW,
+              edgecolor='#2874a6', linewidth=1.8, alpha=0.97),
+)
+ax5.text(
+    0.98, 0.05,
+    'Given the context, the next word\n'
+    'is not a single answer --\n'
+    'it is a distribution over words.\n'
+    'Language skill lives in that spread.',
+    transform=ax5.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+)
+fig5.tight_layout(rect=[0, 0, 1, 0.88])
+show_maximized(fig5)
+
+
+# -------------------------------------------------------
+# FIGURE 6: Next-sentence distribution after a given context
+# -------------------------------------------------------
+fig6, ax6 = new_figure()
+fig6.suptitle(
+    'Step 6: Another distribution -- the next sentence after a context',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+
+context6 = '... (story B)...It was a rainy morning, so she'
+next_sentences = [
+    ('stayed home and read.', 0.31),
+    ('took an umbrella and left.', 0.24),
+    ('called a taxi to work.', 0.16),
+    ('watched the street from the window.', 0.12),
+    ('went for a walk anyway.', 0.08),
+    ('baked bread instead.', 0.05),
+    ('...', 0.04),
+]
+labels6 = [s for s, _ in next_sentences]
+probs6 = np.array([p for _, p in next_sentences])
+order6 = np.argsort(probs6)
+labels6 = [labels6[i] for i in order6]
+probs6 = probs6[order6]
+colors6 = ['#1e8449' if lab != '...' else '0.65' for lab in labels6]
+
+y_pos6 = np.arange(len(labels6))
+ax6.barh(y_pos6, probs6, color=colors6, edgecolor='white', height=0.72)
+ax6.set_yticks(y_pos6)
+ax6.set_yticklabels(labels6, fontsize=FS_ANNOT + 1)
+ax6.set_xlabel('Probability of the next sentence', fontsize=FS_AXIS)
+ax6.tick_params(axis='x', labelsize=FS_TICK)
+ax6.set_xlim(0, max(probs6) * 1.28)
+ax6.grid(True, axis='x', alpha=0.25)
+for y, p in zip(y_pos6, probs6):
+    ax6.text(p + 0.008, y, f'{p:.2f}', va='center', ha='left',
+             fontsize=FS_ANNOT)
+
+fig6.text(
+    0.5, 0.91,
+    f'Context:  "{context6} ..."',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 1,
+    fontweight='bold', color=C_DARK,
+    bbox=dict(boxstyle='round,pad=0.35', facecolor=C_GOAL,
+              edgecolor=C_OK, linewidth=1.8, alpha=0.97),
+)
+ax6.text(
+    0.98, 0.05,
+    'Same idea, larger units:\n'
+    'after a context, the next sentence\n'
+    'is again a distribution --\n'
+    'not one destined line.',
+    transform=ax6.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+)
+fig6.tight_layout(rect=[0, 0, 1, 0.88])
+show_maximized(fig6)
+
+
+# -------------------------------------------------------
+# FIGURE 7: Everyday images as a distribution
+# -------------------------------------------------------
+fig7, ax7 = new_figure()
+fig7.suptitle(
+    'Step 7: Everyday images are also a distribution',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+
+rng7 = np.random.default_rng(11)
+
+
+def sample_river(rng, polylines, n_per_seg=55, width_lo=0.04, width_hi=0.18):
+    """Sample a river-like cloud: thin branching corridors with varying width."""
+    clouds = []
+    for poly in polylines:
+        poly = np.asarray(poly, dtype=float)
+        for a, b in zip(poly[:-1], poly[1:]):
+            t = rng.random(n_per_seg)
+            # Slightly denser near mid-segment bends
+            along = a + (b - a) * t[:, None]
+            tang = b - a
+            tang_n = tang / (np.linalg.norm(tang) + 1e-9)
+            normal = np.array([-tang_n[1], tang_n[0]])
+            # Width breathes along the segment (narrow / wide / narrow)
+            width = width_lo + (width_hi - width_lo) * (
+                0.35 + 0.65 * np.sin(np.pi * t) ** 2
+            )
+            offset = rng.normal(0.0, 1.0, size=n_per_seg) * width
+            clouds.append(along + offset[:, None] * normal)
+    return np.vstack(clouds)
+
+
+# Compact everyday modes (background of daily life)
+everyday = [
+    ('Street', [-2.6, -1.8], [0.40, 0.32], '#5dade2'),
+    ('Kitchen', [-2.4, 1.9], [0.38, 0.34], '#58d68d'),
+    ('Faces', [2.5, 1.9], [0.36, 0.32], '#f5b041'),
+    ('Nature', [2.6, -1.9], [0.40, 0.34], '#af7ac5'),
+    ('Screens', [-2.5, 0.2], [0.32, 0.28], '#85929e'),
+]
+for name, loc, scale, color in everyday:
+    pts = rng7.normal(loc=loc, scale=scale, size=(70, 2))
+    ax7.scatter(
+        pts[:, 0], pts[:, 1], s=22, c=color, alpha=0.70,
+        edgecolors='white', linewidths=0.25, zorder=2, label=name,
+    )
+    c = pts.mean(axis=0)
+    ax7.annotate(
+        name, xy=c, xytext=(c[0], c[1] + 0.75),
+        fontsize=FS_ANNOT, fontweight='bold', color=color, ha='center',
+        arrowprops=dict(arrowstyle='->', color=color, lw=1.1),
+        bbox=dict(boxstyle='round,pad=0.18', facecolor='white',
+                  edgecolor=color, alpha=0.95),
+    )
+
+# Cat and Dog: complex river networks -- many branches, changing narrow width,
+# and the two rivers pass near / through each other.
+dog_river = [
+    # main trunk
+    [(-1.6, -0.9), (-0.7, -0.35), (0.15, 0.05), (0.9, 0.55), (1.7, 0.85)],
+    # side branches
+    [(-0.7, -0.35), (-1.1, 0.35), (-0.85, 0.95)],
+    [(0.15, 0.05), (0.55, -0.55), (1.05, -0.95)],
+    [(0.9, 0.55), (1.35, 1.25), (1.15, 1.75)],
+    [(0.15, 0.05), (-0.25, 0.65), (0.2, 1.15)],
+]
+cat_river = [
+    # main trunk crosses near the dog river
+    [(-1.5, 0.85), (-0.6, 0.45), (0.1, -0.05), (0.85, -0.45), (1.65, -0.75)],
+    # side branches that weave close to dog branches
+    [(-0.6, 0.45), (-1.05, -0.15), (-0.75, -0.85)],
+    [(0.1, -0.05), (0.5, 0.55), (0.95, 1.05)],
+    [(0.85, -0.45), (1.3, -1.15), (1.1, -1.65)],
+    [(0.1, -0.05), (-0.35, -0.55), (0.15, -1.1)],
+]
+
+dogs7 = sample_river(rng7, dog_river, n_per_seg=48, width_lo=0.035, width_hi=0.16)
+cats7 = sample_river(rng7, cat_river, n_per_seg=48, width_lo=0.035, width_hi=0.16)
+
+ax7.scatter(
+    dogs7[:, 0], dogs7[:, 1], s=16, c='#1f77b4', alpha=0.78,
+    edgecolors='none', zorder=4, label='Dog',
+)
+ax7.scatter(
+    cats7[:, 0], cats7[:, 1], s=16, c='#2ca02c', alpha=0.78,
+    edgecolors='none', zorder=4, label='Cat',
+)
+ax7.annotate(
+    'Dog', xy=dogs7.mean(axis=0),
+    xytext=(1.85, 1.55),
+    fontsize=FS_ANNOT + 1, fontweight='bold', color='#1f77b4', ha='center',
+    arrowprops=dict(arrowstyle='->', color='#1f77b4', lw=1.4),
+    bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
+              edgecolor='#1f77b4', alpha=0.95),
+)
+ax7.annotate(
+    'Cat', xy=cats7.mean(axis=0),
+    xytext=(1.85, -1.55),
+    fontsize=FS_ANNOT + 1, fontweight='bold', color='#2ca02c', ha='center',
+    arrowprops=dict(arrowstyle='->', color='#2ca02c', lw=1.4),
+    bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
+              edgecolor='#2ca02c', alpha=0.95),
+)
+
+ax7.set_xlabel('feature 1  (e.g. an embedding)', fontsize=FS_AXIS)
+ax7.set_ylabel('feature 2', fontsize=FS_AXIS)
+ax7.tick_params(labelsize=FS_TICK)
+ax7.grid(True, alpha=0.25)
+ax7.set_aspect('equal', adjustable='datalim')
+ax7.legend(loc='upper left', fontsize=FS_LEGEND, framealpha=0.92)
+ax7.text(
+    0.02, 0.02,
+    'Cat and Dog are not neat blobs.\n'
+    'Each is a river of branches --\n'
+    'narrow, widening, forking --\n'
+    'and the two rivers pass\n'
+    'near, even through, each other.',
+    transform=ax7.transAxes, ha='left', va='bottom', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+)
+fig7.tight_layout(rect=[0, 0, 1, 0.94])
+show_maximized(fig7)
+
+
+# -------------------------------------------------------
+# FIGURE 8: Another example -- dog vs cat photo clusters
+# -------------------------------------------------------
+fig8, ax8 = new_figure()
+fig8.suptitle(
+    'Step 8: Zooming in -- dog photos and cat photos',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+
+rng8 = np.random.default_rng(3)
 # Two modes / clusters in a 2D feature plane (e.g. embedding coordinates)
-dogs = rng5.normal(loc=[-1.2, -0.3], scale=[0.55, 0.45], size=(120, 2))
-cats = rng5.normal(loc=[1.3, 0.4], scale=[0.50, 0.48], size=(120, 2))
+dogs = rng8.normal(loc=[-1.2, -0.3], scale=[0.55, 0.45], size=(120, 2))
+cats = rng8.normal(loc=[1.3, 0.4], scale=[0.50, 0.48], size=(120, 2))
 dog_c = dogs.mean(axis=0)
 cat_c = cats.mean(axis=0)
 
-ax5.scatter(
+ax8.scatter(
     dogs[:, 0], dogs[:, 1], s=36, c='#1f77b4', alpha=0.85,
     edgecolors='white', linewidths=0.4, zorder=3,
 )
-ax5.scatter(
+ax8.scatter(
     cats[:, 0], cats[:, 1], s=36, c='#2ca02c', alpha=0.85,
     edgecolors='white', linewidths=0.4, zorder=3,
 )
 # Place labels near each cluster (slightly offset from the mean)
-ax5.annotate(
+ax8.annotate(
     'Dog photos', xy=dog_c, xytext=(dog_c[0] - 0.15, dog_c[1] + 1.15),
     fontsize=FS_ANNOT + 2, fontweight='bold', color='#1f77b4', ha='center',
     arrowprops=dict(arrowstyle='->', color='#1f77b4', lw=1.6),
     bbox=dict(boxstyle='round,pad=0.25', facecolor='white', edgecolor='#1f77b4', alpha=0.95),
 )
-ax5.annotate(
+ax8.annotate(
     'Cat photos', xy=cat_c, xytext=(cat_c[0] + 0.15, cat_c[1] + 1.15),
     fontsize=FS_ANNOT + 2, fontweight='bold', color='#2ca02c', ha='center',
     arrowprops=dict(arrowstyle='->', color='#2ca02c', lw=1.6),
     bbox=dict(boxstyle='round,pad=0.25', facecolor='white', edgecolor='#2ca02c', alpha=0.95),
 )
-ax5.set_xlabel('feature 1  (e.g. an embedding or measurement)', fontsize=FS_AXIS)
-ax5.set_ylabel('feature 2', fontsize=FS_AXIS)
-ax5.tick_params(labelsize=FS_TICK)
-ax5.grid(True, alpha=0.25)
-ax5.set_aspect('equal', adjustable='datalim')
-ax5.text(
+ax8.set_xlabel('feature 1  (e.g. an embedding or measurement)', fontsize=FS_AXIS)
+ax8.set_ylabel('feature 2', fontsize=FS_AXIS)
+ax8.tick_params(labelsize=FS_TICK)
+ax8.grid(True, alpha=0.25)
+ax8.set_aspect('equal', adjustable='datalim')
+ax8.text(
     0.98, 0.05,
     'Two modes (clusters)\n'
     'in one joint distribution.\n'
     'Still only points --\n'
     'now with two pile-ups.',
-    transform=ax5.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
+    transform=ax8.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
-fig5.tight_layout(rect=[0, 0, 1, 0.94])
-show_maximized(fig5)
+fig8.tight_layout(rect=[0, 0, 1, 0.94])
+show_maximized(fig8)
 
 
 # -------------------------------------------------------
-# FIGURE 6: Corner view + normalized view -- what should we do?
+# FIGURE 9: Corner view + normalized view -- what should we do?
 # -------------------------------------------------------
-fig6, (ax6, axq) = new_figure(1, 2, gridspec_kw={'width_ratios': [2.35, 1.0]})
-fig6.suptitle(
-    'Step 6: The same distribution -- from a corner, then normalized',
+fig9, (ax9, axq) = new_figure(1, 2, gridspec_kw={'width_ratios': [2.35, 1.0]})
+fig9.suptitle(
+    'Step 9: The same distribution -- from a corner, then normalized',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
-# Shrink and translate the Step-5 clusters into the lower-left of a wide frame
-scale6 = 0.22
-shift6 = np.array([-3.2, -3.2])
-dogs6 = dogs * scale6 + shift6
-cats6 = cats * scale6 + shift6
-dog_c6 = dogs6.mean(axis=0)
-cat_c6 = cats6.mean(axis=0)
+# Shrink and translate the Step-8 clusters into the lower-left of a wide frame
+scale9 = 0.22
+shift9 = np.array([-3.2, -3.2])
+dogs9 = dogs * scale9 + shift9
+cats9 = cats * scale9 + shift9
+dog_c9 = dogs9.mean(axis=0)
+cat_c9 = cats9.mean(axis=0)
 
 # Corner (shrunk) copy
-ax6.scatter(
-    dogs6[:, 0], dogs6[:, 1], s=18, c='#1f77b4', alpha=0.75,
+ax9.scatter(
+    dogs9[:, 0], dogs9[:, 1], s=18, c='#1f77b4', alpha=0.75,
     edgecolors='white', linewidths=0.25, zorder=3,
 )
-ax6.scatter(
-    cats6[:, 0], cats6[:, 1], s=18, c='#2ca02c', alpha=0.75,
+ax9.scatter(
+    cats9[:, 0], cats9[:, 1], s=18, c='#2ca02c', alpha=0.75,
     edgecolors='white', linewidths=0.25, zorder=3,
 )
-# Normalized copy (same points as Step 5)
-ax6.scatter(
+# Normalized copy (same points as Step 8)
+ax9.scatter(
     dogs[:, 0], dogs[:, 1], s=36, c='#1f77b4', alpha=0.85,
     edgecolors='white', linewidths=0.4, zorder=4,
 )
-ax6.scatter(
+ax9.scatter(
     cats[:, 0], cats[:, 1], s=36, c='#2ca02c', alpha=0.85,
     edgecolors='white', linewidths=0.4, zorder=4,
 )
 
-ax6.annotate(
+ax9.annotate(
     'Dog photos', xy=dog_c, xytext=(dog_c[0] - 0.15, dog_c[1] + 1.15),
     fontsize=FS_ANNOT + 1, fontweight='bold', color='#1f77b4', ha='center',
     arrowprops=dict(arrowstyle='->', color='#1f77b4', lw=1.5),
     bbox=dict(boxstyle='round,pad=0.22', facecolor='white', edgecolor='#1f77b4', alpha=0.95),
 )
-ax6.annotate(
+ax9.annotate(
     'Cat photos', xy=cat_c, xytext=(cat_c[0] + 0.15, cat_c[1] + 1.15),
     fontsize=FS_ANNOT + 1, fontweight='bold', color='#2ca02c', ha='center',
     arrowprops=dict(arrowstyle='->', color='#2ca02c', lw=1.5),
     bbox=dict(boxstyle='round,pad=0.22', facecolor='white', edgecolor='#2ca02c', alpha=0.95),
 )
-ax6.annotate(
+ax9.annotate(
     'As recorded\n(tiny, in a corner)',
-    xy=((dog_c6 + cat_c6) / 2),
-    xytext=(dog_c6[0] - 0.15, dog_c6[1] + 1.15),
+    xy=((dog_c9 + cat_c9) / 2),
+    xytext=(dog_c9[0] - 0.15, dog_c9[1] + 1.15),
     fontsize=FS_ANNOT - 1, color='0.25', ha='center',
     arrowprops=dict(arrowstyle='->', color='0.45', lw=1.2),
     bbox=dict(boxstyle='round,pad=0.2', facecolor='white', edgecolor='0.55', alpha=0.95),
@@ -409,7 +660,7 @@ ax6.annotate(
 
 # Bridge label: corner -> normalized
 mid_norm = (dog_c + cat_c) / 2
-ax6.annotate(
+ax9.annotate(
     'Normalize the distribution\nfor convenience',
     xy=mid_norm, xytext=(-0.4, -2.55),
     fontsize=FS_ANNOT + 1, fontweight='bold', color=C_DARK, ha='center',
@@ -419,15 +670,15 @@ ax6.annotate(
               edgecolor=C_DARK, linewidth=2.0, alpha=0.95),
 )
 
-ax6.set_xlim(-4.5, 4.5)
-ax6.set_ylim(-4.5, 4.5)
-ax6.set_xlabel('feature 1', fontsize=FS_AXIS)
-ax6.set_ylabel('feature 2', fontsize=FS_AXIS)
-ax6.tick_params(labelsize=FS_TICK)
-ax6.grid(True, alpha=0.25)
-ax6.set_aspect('equal', adjustable='box')
-ax6.axhline(0, color='0.7', lw=0.8)
-ax6.axvline(0, color='0.7', lw=0.8)
+ax9.set_xlim(-4.5, 4.5)
+ax9.set_ylim(-4.5, 4.5)
+ax9.set_xlabel('feature 1', fontsize=FS_AXIS)
+ax9.set_ylabel('feature 2', fontsize=FS_AXIS)
+ax9.tick_params(labelsize=FS_TICK)
+ax9.grid(True, alpha=0.25)
+ax9.set_aspect('equal', adjustable='box')
+ax9.axhline(0, color='0.7', lw=0.8)
+ax9.axvline(0, color='0.7', lw=0.8)
 
 # Questions live outside the plot axes
 axq.set_xlim(0, 1)
@@ -455,19 +706,19 @@ axq.text(
               edgecolor='0.55', alpha=0.98),
     multialignment='right',
 )
-fig6.tight_layout(rect=[0, 0, 1, 0.94])
-show_maximized(fig6)
+fig9.tight_layout(rect=[0, 0, 1, 0.94])
+show_maximized(fig9)
 
 
 # -------------------------------------------------------
-# FIGURE 7: Bridge to the next technical work
+# FIGURE 10: Bridge to the next technical work
 # -------------------------------------------------------
-fig7, ax7 = new_figure()
-fig7.suptitle(
-    'Step 7: Therefore we study distribution',
+fig10, ax10 = new_figure()
+fig10.suptitle(
+    'Step 10: Therefore we study distribution, driven by the goal',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
-blank_slide(ax7)
+blank_slide(ax10)
 
 flow = [
     (0.6, 'Client\nbusiness'),
@@ -478,21 +729,21 @@ flow = [
 for i, (x, title) in enumerate(flow):
     color = C_NEW if i < 3 else C_GOAL
     edge = '#2874a6' if i < 3 else C_OK
-    round_box(ax7, x, 4.2, 2.4, 2.4, color, edge, lw=2.2)
-    ax7.text(x + 1.2, 5.4, title, ha='center', va='center',
-             fontsize=FS_ANNOT + 2, fontweight='bold')
+    round_box(ax10, x, 4.2, 2.4, 2.4, color, edge, lw=2.2)
+    ax10.text(x + 1.2, 5.4, title, ha='center', va='center',
+              fontsize=FS_ANNOT + 2, fontweight='bold')
     if i < len(flow) - 1:
-        arrow(ax7, x + 2.45, 5.4, x + 2.85, 5.4, C_DARK, lw=2.4)
+        arrow(ax10, x + 2.45, 5.4, x + 2.85, 5.4, C_DARK, lw=2.4)
 
-round_box(ax7, 0.6, 1.0, 10.8, 2.6, C_MUTE, '0.45', lw=1.8)
-ax7.text(
+round_box(ax10, 0.6, 1.0, 10.8, 2.6, C_MUTE, '0.45', lw=1.8)
+ax10.text(
     6.0, 2.3,
     'Distribution is the language of data without domain jargon.\n'
     'If we can read distributions, we can read businesses -- and choose well.',
     ha='center', va='center', fontsize=FS_ANNOT + 2,
 )
 
-show_maximized(fig7)
+show_maximized(fig10)
 
 
 # -------------------------------------------------------
@@ -515,15 +766,33 @@ Knowledge as distribution:
   Recognizing a tree is a distribution of labels -- or likelihoods --
   over objects across cases.
 
-Another example (Step 5):
+Next-word example (Step 5):
+  Given a context such as "...(story A)...The cat sat on the ...",
+  the next word is a distribution over candidates
+  (mat, floor, sofa, ...) -- language skill lives in that spread.
+
+Next-sentence example (Step 6):
+  Same idea at a larger unit: after a context, the next sentence
+  is again a distribution -- not one destined line.
+
+Everyday images (Step 7):
+  Photos from daily life form a distribution with many familiar modes
+  (street, kitchen, faces, nature, screens, ...).
+  Cat and Dog are not neat blobs: each is a river of branches --
+  narrow, widening, forking -- and the two rivers pass near,
+  even through, each other.
+
+Zoom-in example (Step 8):
   Dog-photo and cat-photo points in 2D form two modes / clusters
   -- still a distribution, now with two pile-ups.
 
-Framing questions (Step 6):
+Framing questions (Step 9):
   Would it help to bring these clusters to the center and enlarge them,
   so we can study how they relate?
   If we do, do we lose the information that tells cats from dogs --
   or do we merely change the frame in which we look?
   Beyond discriminating one cluster from the other, might we learn
   the boundary of each cluster in its own right?
+
+See also: 009_discriminative_generative.py
 """)

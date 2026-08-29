@@ -67,7 +67,7 @@ def plot_pdf_curves(ax, means, stds, colors, title):
         ax.plot(x.numpy(), y.numpy(), color=c, linewidth=2, label=f'μ={m}, σ={s}')
     ax.set_title(title, fontsize=FS_AX_TITLE)
     ax.set_xlabel('x', fontsize=FS_AXIS)
-    ax.set_ylabel('Probability Density', fontsize=FS_AXIS)
+    ax.set_ylabel('Probability density', fontsize=FS_AXIS)
     ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.legend(fontsize=FS_LEGEND)
     ax.grid(True, alpha=0.3)
@@ -78,7 +78,7 @@ def plot_pdf_curves(ax, means, stds, colors, title):
 # -------------------------------------------------------
 fig, axes = plt.subplots(2, 3, figsize=screen_figsize(), dpi=FIGURE_DPI)
 fig.suptitle(
-    'Understanding the Gaussian (Normal) Distribution',
+    'The Gaussian (Normal) distribution',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -88,7 +88,7 @@ plot_pdf_curves(
     means=[0, 0, 0],
     stds=[0.5, 1.0, 2.0],
     colors=['blue', 'red', 'green'],
-    title='Effect of Standard Deviation (σ)',
+    title='Effect of the standard deviation (σ)',
 )
 
 # Plot 2: PDF - Different Means
@@ -97,7 +97,7 @@ plot_pdf_curves(
     means=[-2, 0, 2],
     stds=[1.0, 1.0, 1.0],
     colors=['orange', 'purple', 'brown'],
-    title='Effect of Mean (μ) - Shifting the Center',
+    title='Effect of the mean (μ) -- shifting the center',
 )
 
 # Plot 3: 68-95-99.7 Rule
@@ -125,9 +125,9 @@ for k, ls in [(1, ':'), (2, '--'), (3, '-.')]:
     ax3.axvline(-k * sigma, color='gray', linestyle=ls, alpha=0.6, linewidth=1)
 ax3.axvline(mu, color='red', linestyle='--', alpha=0.7, label=f'μ={mu:g}')
 
-ax3.set_title('The 68-95-99.7 Rule', fontsize=FS_AX_TITLE)
+ax3.set_title('The 68-95-99.7 rule', fontsize=FS_AX_TITLE)
 ax3.set_xlabel('x', fontsize=FS_AXIS)
-ax3.set_ylabel('Probability Density', fontsize=FS_AXIS)
+ax3.set_ylabel('Probability density', fontsize=FS_AXIS)
 ax3.tick_params(axis='both', labelsize=FS_TICK)
 ax3.legend(fontsize=FS_LEGEND)
 ax3.grid(True, alpha=0.3)
@@ -139,9 +139,9 @@ for m, s, c in zip([0, 0, 0], [0.5, 1.0, 2.0], ['blue', 'red', 'green']):
     ax4.plot(x.numpy(), norm.cdf(x.numpy(), loc=m, scale=s),
              color=c, linewidth=2, label=f'μ={m}, σ={s}')
 ax4.axhline(0.5, color='gray', linestyle=':', alpha=0.5)
-ax4.set_title('CDF: Probability of X ≤ x', fontsize=FS_AX_TITLE)
+ax4.set_title('CDF: probability that X ≤ x', fontsize=FS_AX_TITLE)
 ax4.set_xlabel('x', fontsize=FS_AXIS)
-ax4.set_ylabel('Cumulative Probability', fontsize=FS_AXIS)
+ax4.set_ylabel('Cumulative probability', fontsize=FS_AXIS)
 ax4.tick_params(axis='both', labelsize=FS_TICK)
 ax4.legend(fontsize=FS_LEGEND)
 ax4.grid(True, alpha=0.3)
@@ -172,9 +172,9 @@ for data, color, label in datasets:
 
 ref = np.array([theoretical_quantiles.min(), theoretical_quantiles.max()])
 ax5.plot(ref, ref, 'k--', alpha=0.6, label='y = x (perfect normal)')
-ax5.set_title('QQ Plot: Visual Normality Test', fontsize=FS_AX_TITLE)
-ax5.set_xlabel('Theoretical Quantiles (N(0,1))', fontsize=FS_AXIS)
-ax5.set_ylabel('Sample Quantiles', fontsize=FS_AXIS)
+ax5.set_title('QQ plot: a visual normality check', fontsize=FS_AX_TITLE)
+ax5.set_xlabel('Theoretical quantiles (N(0,1))', fontsize=FS_AXIS)
+ax5.set_ylabel('Sample quantiles', fontsize=FS_AXIS)
 ax5.tick_params(axis='both', labelsize=FS_TICK)
 ax5.legend(fontsize=FS_LEGEND)
 ax5.grid(True, alpha=0.3)
@@ -188,7 +188,7 @@ ax6.hist(
 )
 x_pdf = torch.linspace(-4, 4, 1000)
 ax6.plot(x_pdf.numpy(), gaussian_pdf(x_pdf).numpy(), 'r-', linewidth=2, label='True PDF')
-ax6.set_title('Histogram of Samples (n=1000)', fontsize=FS_AX_TITLE)
+ax6.set_title('Histogram of samples (n = 1000)', fontsize=FS_AX_TITLE)
 ax6.set_xlabel('x', fontsize=FS_AXIS)
 ax6.set_ylabel('Density', fontsize=FS_AXIS)
 ax6.tick_params(axis='both', labelsize=FS_TICK)
@@ -203,7 +203,7 @@ show_maximized(fig)
 # -------------------------------------------------------
 fig2, axes2 = plt.subplots(2, 3, figsize=screen_figsize(), dpi=FIGURE_DPI)
 fig2.suptitle(
-    'Histograms: Sampling from Gaussian Distribution',
+    'Histograms: sampling from a Gaussian',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -249,7 +249,7 @@ show_maximized(fig2)
 # -------------------------------------------------------
 fig3, axes3 = plt.subplots(2, 3, figsize=screen_figsize(), dpi=FIGURE_DPI)
 fig3.suptitle(
-    'Distribution of Sample Means (Gaussian source, same x-scale)',
+    'Distribution of sample means (Gaussian source, same x-scale)',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -279,7 +279,7 @@ for ax, n in zip(axes3.flat, sample_sizes_means):
 
     ax.set_xlim(x_min, x_max)
     ax.set_title(f'n = {n}', fontsize=FS_AX_TITLE)
-    ax.set_xlabel('Sample Mean', fontsize=FS_AXIS)
+    ax.set_xlabel('Sample mean', fontsize=FS_AXIS)
     ax.set_ylabel('Density', fontsize=FS_AXIS)
     ax.tick_params(axis='both', labelsize=FS_TICK)
     ax.text(
