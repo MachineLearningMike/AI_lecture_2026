@@ -7,6 +7,7 @@ Sketch:
   1. Two readings: P(cat | cat-or-dog image) vs P(cat | image).
   2. Kitchen vs cat cross table, plus branching cat/dog rivers;
      boundary knowledge vs knowing the cat world (and creating from it).
+  3. The complex cat/dog distribution on its own (left panel).
 """
 
 import matplotlib.pyplot as plt
@@ -157,6 +158,89 @@ ax1.text(
 show_maximized(fig1)
 
 
+def sample_river(rng, polylines, n_per_seg=48, width_lo=0.035, width_hi=0.16):
+    """Sample a river-like cloud: thin branching corridors with varying width."""
+    clouds = []
+    for poly in polylines:
+        poly = np.asarray(poly, dtype=float)
+        for a, b in zip(poly[:-1], poly[1:]):
+            t = rng.random(n_per_seg)
+            along = a + (b - a) * t[:, None]
+            tang = b - a
+            tang_n = tang / (np.linalg.norm(tang) + 1e-9)
+            normal = np.array([-tang_n[1], tang_n[0]])
+            width = width_lo + (width_hi - width_lo) * (
+                0.35 + 0.65 * np.sin(np.pi * t) ** 2
+            )
+            offset = rng.normal(0.0, 1.0, size=n_per_seg) * width
+            clouds.append(along + offset[:, None] * normal)
+    return np.vstack(clouds)
+
+
+DOG_RIVER = [
+    [(-1.6, -0.9), (-0.7, -0.35), (0.15, 0.05), (0.9, 0.55), (1.7, 0.85)],
+    [(-0.7, -0.35), (-1.1, 0.35), (-0.85, 0.95)],
+    [(0.15, 0.05), (0.55, -0.55), (1.05, -0.95)],
+    [(0.9, 0.55), (1.35, 1.25), (1.15, 1.75)],
+    [(0.15, 0.05), (-0.25, 0.65), (0.2, 1.15)],
+]
+CAT_RIVER = [
+    [(-1.5, 0.85), (-0.6, 0.45), (0.1, -0.05), (0.85, -0.45), (1.65, -0.75)],
+    [(-0.6, 0.45), (-1.05, -0.15), (-0.75, -0.85)],
+    [(0.1, -0.05), (0.5, 0.55), (0.95, 1.05)],
+    [(0.85, -0.45), (1.3, -1.15), (1.1, -1.65)],
+    [(0.1, -0.05), (-0.35, -0.55), (0.15, -1.1)],
+]
+KITCHEN_PT = np.array([0.15, -1.85])
+
+
+def draw_cat_dog_rivers(ax, rng, with_kitchen=True):
+    """Draw the branching Cat / Dog rivers on an axes."""
+    dogs = sample_river(rng, DOG_RIVER)
+    cats = sample_river(rng, CAT_RIVER)
+    ax.scatter(
+        dogs[:, 0], dogs[:, 1], s=14, c='#1f77b4', alpha=0.78,
+        edgecolors='none', zorder=3, label='Dog',
+    )
+    ax.scatter(
+        cats[:, 0], cats[:, 1], s=14, c='#2ca02c', alpha=0.78,
+        edgecolors='none', zorder=3, label='Cat',
+    )
+    ax.annotate(
+        'Dog', xy=dogs.mean(axis=0), xytext=(1.75, 1.55),
+        fontsize=FS_ANNOT + 1, fontweight='bold', color='#1f77b4', ha='center',
+        arrowprops=dict(arrowstyle='->', color='#1f77b4', lw=1.3),
+        bbox=dict(boxstyle='round,pad=0.18', facecolor='white',
+                  edgecolor='#1f77b4', alpha=0.95),
+    )
+    ax.annotate(
+        'Cat', xy=cats.mean(axis=0), xytext=(1.75, -1.55),
+        fontsize=FS_ANNOT + 1, fontweight='bold', color='#2ca02c', ha='center',
+        arrowprops=dict(arrowstyle='->', color='#2ca02c', lw=1.3),
+        bbox=dict(boxstyle='round,pad=0.18', facecolor='white',
+                  edgecolor='#2ca02c', alpha=0.95),
+    )
+    if with_kitchen:
+        ax.scatter(
+            [KITCHEN_PT[0]], [KITCHEN_PT[1]], s=160, c='red', zorder=6,
+            edgecolors='white', linewidths=1.6, label='Kitchen',
+        )
+        ax.annotate(
+            'Kitchen', xy=KITCHEN_PT, xytext=(0.15, -2.45),
+            fontsize=FS_ANNOT + 2, fontweight='bold', color='red', ha='center',
+            arrowprops=dict(arrowstyle='->', color='red', lw=1.6),
+            bbox=dict(boxstyle='round,pad=0.22', facecolor='white',
+                      edgecolor='red', linewidth=1.5, alpha=0.95),
+        )
+    ax.set_xlabel('feature 1', fontsize=FS_AXIS)
+    ax.set_ylabel('feature 2', fontsize=FS_AXIS)
+    ax.tick_params(labelsize=FS_TICK)
+    ax.grid(True, alpha=0.25)
+    ax.set_aspect('equal', adjustable='datalim')
+    ax.legend(loc='upper left', fontsize=FS_LEGEND, framealpha=0.92)
+    return dogs, cats
+
+
 # -------------------------------------------------------
 # FIGURE 2: Kitchen vs cat + complex cat/dog distribution
 # -------------------------------------------------------
@@ -164,7 +248,7 @@ fig2, (ax_cases, ax_river) = new_figure(
     1, 2, gridspec_kw={'width_ratios': [6.4, 2.1]},
 )
 fig2.suptitle(
-    'Step 2: A kitchen image exposes the difference; a cat image does not',
+    'Step 2: D vs G: Do NOT leave this slide for 10 hours',
     fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
 )
 
@@ -254,95 +338,60 @@ ax_cases.text(
 )
 
 # Right: complex river-like cat / dog distribution
-def sample_river(rng, polylines, n_per_seg=48, width_lo=0.035, width_hi=0.16):
-    """Sample a river-like cloud: thin branching corridors with varying width."""
-    clouds = []
-    for poly in polylines:
-        poly = np.asarray(poly, dtype=float)
-        for a, b in zip(poly[:-1], poly[1:]):
-            t = rng.random(n_per_seg)
-            along = a + (b - a) * t[:, None]
-            tang = b - a
-            tang_n = tang / (np.linalg.norm(tang) + 1e-9)
-            normal = np.array([-tang_n[1], tang_n[0]])
-            width = width_lo + (width_hi - width_lo) * (
-                0.35 + 0.65 * np.sin(np.pi * t) ** 2
-            )
-            offset = rng.normal(0.0, 1.0, size=n_per_seg) * width
-            clouds.append(along + offset[:, None] * normal)
-    return np.vstack(clouds)
-
-
 rng2 = np.random.default_rng(11)
-dog_river = [
-    [(-1.6, -0.9), (-0.7, -0.35), (0.15, 0.05), (0.9, 0.55), (1.7, 0.85)],
-    [(-0.7, -0.35), (-1.1, 0.35), (-0.85, 0.95)],
-    [(0.15, 0.05), (0.55, -0.55), (1.05, -0.95)],
-    [(0.9, 0.55), (1.35, 1.25), (1.15, 1.75)],
-    [(0.15, 0.05), (-0.25, 0.65), (0.2, 1.15)],
-]
-cat_river = [
-    [(-1.5, 0.85), (-0.6, 0.45), (0.1, -0.05), (0.85, -0.45), (1.65, -0.75)],
-    [(-0.6, 0.45), (-1.05, -0.15), (-0.75, -0.85)],
-    [(0.1, -0.05), (0.5, 0.55), (0.95, 1.05)],
-    [(0.85, -0.45), (1.3, -1.15), (1.1, -1.65)],
-    [(0.1, -0.05), (-0.35, -0.55), (0.15, -1.1)],
-]
-dogs2 = sample_river(rng2, dog_river)
-cats2 = sample_river(rng2, cat_river)
-
-ax_river.scatter(
-    dogs2[:, 0], dogs2[:, 1], s=14, c='#1f77b4', alpha=0.78,
-    edgecolors='none', zorder=3, label='Dog',
-)
-ax_river.scatter(
-    cats2[:, 0], cats2[:, 1], s=14, c='#2ca02c', alpha=0.78,
-    edgecolors='none', zorder=3, label='Cat',
-)
-ax_river.annotate(
-    'Dog', xy=dogs2.mean(axis=0), xytext=(1.75, 1.55),
-    fontsize=FS_ANNOT + 1, fontweight='bold', color='#1f77b4', ha='center',
-    arrowprops=dict(arrowstyle='->', color='#1f77b4', lw=1.3),
-    bbox=dict(boxstyle='round,pad=0.18', facecolor='white',
-              edgecolor='#1f77b4', alpha=0.95),
-)
-ax_river.annotate(
-    'Cat', xy=cats2.mean(axis=0), xytext=(1.75, -1.55),
-    fontsize=FS_ANNOT + 1, fontweight='bold', color='#2ca02c', ha='center',
-    arrowprops=dict(arrowstyle='->', color='#2ca02c', lw=1.3),
-    bbox=dict(boxstyle='round,pad=0.18', facecolor='white',
-              edgecolor='#2ca02c', alpha=0.95),
-)
-
-# Kitchen lies off both rivers -- "unknown / else" in the generative reading
-kitchen_pt = np.array([0.15, -1.85])
-ax_river.scatter(
-    [kitchen_pt[0]], [kitchen_pt[1]], s=160, c='red', zorder=6,
-    edgecolors='white', linewidths=1.6, label='Kitchen',
-)
-ax_river.annotate(
-    'Kitchen', xy=kitchen_pt, xytext=(0.15, -2.45),
-    fontsize=FS_ANNOT + 2, fontweight='bold', color='red', ha='center',
-    arrowprops=dict(arrowstyle='->', color='red', lw=1.6),
-    bbox=dict(boxstyle='round,pad=0.22', facecolor='white',
-              edgecolor='red', linewidth=1.5, alpha=0.95),
-)
-
+draw_cat_dog_rivers(ax_river, rng2, with_kitchen=True)
 ax_river.set_title(
     'Cat and Dog in image space',
     fontsize=FS_AX_TITLE - 2,
 )
-ax_river.set_xlabel('feature 1', fontsize=FS_AXIS)
-ax_river.set_ylabel('feature 2', fontsize=FS_AXIS)
-ax_river.tick_params(labelsize=FS_TICK)
-ax_river.grid(True, alpha=0.25)
-ax_river.set_aspect('equal', adjustable='datalim')
-ax_river.legend(loc='upper left', fontsize=FS_LEGEND, framealpha=0.92)
 
-# Keep full width; nudge the layout slightly left without cropping
 fig2.tight_layout(rect=[0.0, 0.02, 0.995, 0.94])
 fig2.subplots_adjust(left=0.02, right=0.99, wspace=0.12)
 show_maximized(fig2)
+
+
+# -------------------------------------------------------
+# FIGURE 3: Complex cat/dog distribution (left panel)
+# -------------------------------------------------------
+fig3, (ax_river3, ax_note3) = new_figure(
+    1, 2, gridspec_kw={'width_ratios': [2.4, 1.0]},
+)
+fig3.suptitle(
+    'Step 3: Cat and Dog as branching rivers in image space',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+
+rng3 = np.random.default_rng(11)
+draw_cat_dog_rivers(ax_river3, rng3, with_kitchen=True)
+ax_river3.set_title('Complex Cat / Dog distribution', fontsize=FS_AX_TITLE - 2)
+
+ax_note3.set_xlim(0, 1)
+ax_note3.set_ylim(0, 1)
+ax_note3.axis('off')
+ax_note3.text(
+    0.05, 0.72,
+    'Cat and Dog are not neat blobs.\n'
+    'Each is a river of branches --\n'
+    'narrow, widening, forking --\n'
+    'and the two rivers pass near,\n'
+    'even through, each other.',
+    ha='left', va='top', fontsize=FS_ANNOT + 1,
+    bbox=dict(boxstyle='round,pad=0.45', facecolor='lightyellow',
+              edgecolor='0.55', alpha=0.97),
+)
+ax_note3.text(
+    0.05, 0.28,
+    'Kitchen sits off both rivers.\n'
+    'Generative reading: Else.\n'
+    'Discriminative reading:\n'
+    'still forced to pick Cat or Dog.',
+    ha='left', va='top', fontsize=FS_ANNOT + 1,
+    bbox=dict(boxstyle='round,pad=0.45', facecolor=C_NEW,
+              edgecolor='#2874a6', alpha=0.97),
+)
+
+fig3.tight_layout(rect=[0, 0.02, 1, 0.94])
+show_maximized(fig3)
 
 
 # -------------------------------------------------------
@@ -363,4 +412,8 @@ Step 2 -- the difference appears on a kitchen image:
 
   P(cat|image) knows every possible cat image -- and can make a new one.
   P(cat|cat-or-dog image) knows only the boundary between cats and dogs.
+
+Step 3 -- the complex distribution:
+  Cat and Dog form branching rivers that nearly cross.
+  Kitchen lies off both rivers (Else for generative; forced pick for discriminative).
 """)

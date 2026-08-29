@@ -12,11 +12,11 @@ Sketch:
   5. Next-word distribution after a given context.
   6. Next-sentence distribution after a given context.
   7. Everyday images as a distribution.
-  8. Dog vs cat photo clusters (two modes).
-  9. The same clusters, tiny in a corner -- then normalized;
-     framing questions on scale, information, and boundaries.
-  10. Therefore we study distribution.
-     (Discriminative vs generative moves to 009_discriminative_generative.py.)
+  8. Discriminative vs generative understanding of a distribution.
+  9. Dog vs cat photo clusters (two modes).
+  10. The same clusters, tiny in a corner -- then normalized;
+      framing questions on scale, information, and boundaries.
+  11. Therefore we study distribution.
 """
 
 import matplotlib.pyplot as plt
@@ -547,112 +547,199 @@ show_maximized(fig7)
 
 
 # -------------------------------------------------------
-# FIGURE 8: Another example -- dog vs cat photo clusters
+# FIGURE 8: Discriminative vs generative understanding
 # -------------------------------------------------------
 fig8, ax8 = new_figure()
 fig8.suptitle(
-    'Step 8: Zooming in -- dog photos and cat photos',
+    'Step 8: Discriminative vs generative understanding of a distribution',
+    fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
+)
+blank_slide(ax8)
+
+# Two definitions
+round_box(ax8, 0.4, 5.35, 5.4, 2.0, C_OLD, '#e67e22', lw=2.2)
+ax8.text(
+    3.1, 6.75, 'Discriminative',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+    fontweight='bold', color='#a04000',
+)
+ax8.text(
+    3.1, 5.95,
+    r'$P(\mathrm{cat}\mid\mathrm{cat\ or\ dog})$' + '\n'
+    'A forced choice among known labels',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+)
+
+round_box(ax8, 6.2, 5.35, 5.4, 2.0, C_NEW, '#2874a6', lw=2.2)
+ax8.text(
+    8.9, 6.75, 'Generative',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+    fontweight='bold', color=C_DARK,
+)
+ax8.text(
+    8.9, 5.95,
+    r'$P(\mathrm{cat}\mid\mathrm{image}),\ P(\mathrm{dog}\mid\mathrm{image})$' + '\n'
+    'A place for every image in the whole world',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+)
+
+# Three comparison cases
+cases = [
+    (0.4, 'Kitchen image',
+     '"Cat -- 85%"\n'
+     '(must pick cat or dog image)',
+     '"Not a cat."\n'
+     '(kitchen lives elsewhere)',
+     C_MUTE),
+    (4.2, 'Cat image',
+     '"It is a cat."',
+     '"It is a cat."',
+     C_GOAL),
+    (8.0, 'What each can do',
+     'Separate the two labels\n'
+     'when both are on the table.',
+     'Also create a new cat image --\n'
+     'because it models the cat world.',
+     C_NEW),
+]
+for x, title, disc, gen, face in cases:
+    round_box(ax8, x, 0.55, 3.6, 4.45, face, '0.45', lw=1.6)
+    ax8.text(
+        x + 1.8, 4.55, title,
+        ha='center', va='center', fontsize=FS_ANNOT + 2,
+        fontweight='bold', color=C_DARK,
+    )
+    round_box(ax8, x + 0.2, 2.55, 3.2, 1.55, '#fce4d6', '#e67e22', lw=1.4)
+    ax8.text(
+        x + 1.8, 3.7, 'Discriminative',
+        ha='center', va='center', fontsize=FS_ANNOT,
+        fontweight='bold', color='#a04000',
+    )
+    ax8.text(
+        x + 1.8, 3.05, disc,
+        ha='center', va='center', fontsize=FS_ANNOT,
+    )
+    round_box(ax8, x + 0.2, 0.75, 3.2, 1.55, '#d6eaf8', '#2874a6', lw=1.4)
+    ax8.text(
+        x + 1.8, 1.9, 'Generative',
+        ha='center', va='center', fontsize=FS_ANNOT,
+        fontweight='bold', color=C_DARK,
+    )
+    ax8.text(
+        x + 1.8, 1.25, gen,
+        ha='center', va='center', fontsize=FS_ANNOT,
+    )
+
+show_maximized(fig8)
+
+
+# -------------------------------------------------------
+# FIGURE 9: Another example -- dog vs cat photo clusters
+# -------------------------------------------------------
+fig9, ax9 = new_figure()
+fig9.suptitle(
+    'Step 9: Zooming in -- dog photos and cat photos',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
-rng8 = np.random.default_rng(3)
+rng9 = np.random.default_rng(3)
 # Two modes / clusters in a 2D feature plane (e.g. embedding coordinates)
-dogs = rng8.normal(loc=[-1.2, -0.3], scale=[0.55, 0.45], size=(120, 2))
-cats = rng8.normal(loc=[1.3, 0.4], scale=[0.50, 0.48], size=(120, 2))
+dogs = rng9.normal(loc=[-1.2, -0.3], scale=[0.55, 0.45], size=(120, 2))
+cats = rng9.normal(loc=[1.3, 0.4], scale=[0.50, 0.48], size=(120, 2))
 dog_c = dogs.mean(axis=0)
 cat_c = cats.mean(axis=0)
 
-ax8.scatter(
+ax9.scatter(
     dogs[:, 0], dogs[:, 1], s=36, c='#1f77b4', alpha=0.85,
     edgecolors='white', linewidths=0.4, zorder=3,
 )
-ax8.scatter(
+ax9.scatter(
     cats[:, 0], cats[:, 1], s=36, c='#2ca02c', alpha=0.85,
     edgecolors='white', linewidths=0.4, zorder=3,
 )
 # Place labels near each cluster (slightly offset from the mean)
-ax8.annotate(
+ax9.annotate(
     'Dog photos', xy=dog_c, xytext=(dog_c[0] - 0.15, dog_c[1] + 1.15),
     fontsize=FS_ANNOT + 2, fontweight='bold', color='#1f77b4', ha='center',
     arrowprops=dict(arrowstyle='->', color='#1f77b4', lw=1.6),
     bbox=dict(boxstyle='round,pad=0.25', facecolor='white', edgecolor='#1f77b4', alpha=0.95),
 )
-ax8.annotate(
+ax9.annotate(
     'Cat photos', xy=cat_c, xytext=(cat_c[0] + 0.15, cat_c[1] + 1.15),
     fontsize=FS_ANNOT + 2, fontweight='bold', color='#2ca02c', ha='center',
     arrowprops=dict(arrowstyle='->', color='#2ca02c', lw=1.6),
     bbox=dict(boxstyle='round,pad=0.25', facecolor='white', edgecolor='#2ca02c', alpha=0.95),
 )
-ax8.set_xlabel('feature 1  (e.g. an embedding or measurement)', fontsize=FS_AXIS)
-ax8.set_ylabel('feature 2', fontsize=FS_AXIS)
-ax8.tick_params(labelsize=FS_TICK)
-ax8.grid(True, alpha=0.25)
-ax8.set_aspect('equal', adjustable='datalim')
-ax8.text(
+ax9.set_xlabel('feature 1  (e.g. an embedding or measurement)', fontsize=FS_AXIS)
+ax9.set_ylabel('feature 2', fontsize=FS_AXIS)
+ax9.tick_params(labelsize=FS_TICK)
+ax9.grid(True, alpha=0.25)
+ax9.set_aspect('equal', adjustable='datalim')
+ax9.text(
     0.98, 0.05,
     'Two modes (clusters)\n'
     'in one joint distribution.\n'
     'Still only points --\n'
     'now with two pile-ups.',
-    transform=ax8.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
+    transform=ax9.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
-fig8.tight_layout(rect=[0, 0, 1, 0.94])
-show_maximized(fig8)
+fig9.tight_layout(rect=[0, 0, 1, 0.94])
+show_maximized(fig9)
 
 
 # -------------------------------------------------------
-# FIGURE 9: Corner view + normalized view -- what should we do?
+# FIGURE 10: Corner view + normalized view -- what should we do?
 # -------------------------------------------------------
-fig9, (ax9, axq) = new_figure(1, 2, gridspec_kw={'width_ratios': [2.35, 1.0]})
-fig9.suptitle(
-    'Step 9: The same distribution -- from a corner, then normalized',
+fig10, (ax10, axq) = new_figure(1, 2, gridspec_kw={'width_ratios': [2.35, 1.0]})
+fig10.suptitle(
+    'Step 10: The same distribution -- from a corner, then normalized',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
-# Shrink and translate the Step-8 clusters into the lower-left of a wide frame
-scale9 = 0.22
-shift9 = np.array([-3.2, -3.2])
-dogs9 = dogs * scale9 + shift9
-cats9 = cats * scale9 + shift9
-dog_c9 = dogs9.mean(axis=0)
-cat_c9 = cats9.mean(axis=0)
+# Shrink and translate the Step-9 clusters into the lower-left of a wide frame
+scale10 = 0.22
+shift10 = np.array([-3.2, -3.2])
+dogs10 = dogs * scale10 + shift10
+cats10 = cats * scale10 + shift10
+dog_c10 = dogs10.mean(axis=0)
+cat_c10 = cats10.mean(axis=0)
 
 # Corner (shrunk) copy
-ax9.scatter(
-    dogs9[:, 0], dogs9[:, 1], s=18, c='#1f77b4', alpha=0.75,
+ax10.scatter(
+    dogs10[:, 0], dogs10[:, 1], s=18, c='#1f77b4', alpha=0.75,
     edgecolors='white', linewidths=0.25, zorder=3,
 )
-ax9.scatter(
-    cats9[:, 0], cats9[:, 1], s=18, c='#2ca02c', alpha=0.75,
+ax10.scatter(
+    cats10[:, 0], cats10[:, 1], s=18, c='#2ca02c', alpha=0.75,
     edgecolors='white', linewidths=0.25, zorder=3,
 )
-# Normalized copy (same points as Step 8)
-ax9.scatter(
+# Normalized copy (same points as Step 9)
+ax10.scatter(
     dogs[:, 0], dogs[:, 1], s=36, c='#1f77b4', alpha=0.85,
     edgecolors='white', linewidths=0.4, zorder=4,
 )
-ax9.scatter(
+ax10.scatter(
     cats[:, 0], cats[:, 1], s=36, c='#2ca02c', alpha=0.85,
     edgecolors='white', linewidths=0.4, zorder=4,
 )
 
-ax9.annotate(
+ax10.annotate(
     'Dog photos', xy=dog_c, xytext=(dog_c[0] - 0.15, dog_c[1] + 1.15),
     fontsize=FS_ANNOT + 1, fontweight='bold', color='#1f77b4', ha='center',
     arrowprops=dict(arrowstyle='->', color='#1f77b4', lw=1.5),
     bbox=dict(boxstyle='round,pad=0.22', facecolor='white', edgecolor='#1f77b4', alpha=0.95),
 )
-ax9.annotate(
+ax10.annotate(
     'Cat photos', xy=cat_c, xytext=(cat_c[0] + 0.15, cat_c[1] + 1.15),
     fontsize=FS_ANNOT + 1, fontweight='bold', color='#2ca02c', ha='center',
     arrowprops=dict(arrowstyle='->', color='#2ca02c', lw=1.5),
     bbox=dict(boxstyle='round,pad=0.22', facecolor='white', edgecolor='#2ca02c', alpha=0.95),
 )
-ax9.annotate(
+ax10.annotate(
     'As recorded\n(tiny, in a corner)',
-    xy=((dog_c9 + cat_c9) / 2),
-    xytext=(dog_c9[0] - 0.15, dog_c9[1] + 1.15),
+    xy=((dog_c10 + cat_c10) / 2),
+    xytext=(dog_c10[0] - 0.15, dog_c10[1] + 1.15),
     fontsize=FS_ANNOT - 1, color='0.25', ha='center',
     arrowprops=dict(arrowstyle='->', color='0.45', lw=1.2),
     bbox=dict(boxstyle='round,pad=0.2', facecolor='white', edgecolor='0.55', alpha=0.95),
@@ -660,7 +747,7 @@ ax9.annotate(
 
 # Bridge label: corner -> normalized
 mid_norm = (dog_c + cat_c) / 2
-ax9.annotate(
+ax10.annotate(
     'Normalize the distribution\nfor convenience',
     xy=mid_norm, xytext=(-0.4, -2.55),
     fontsize=FS_ANNOT + 1, fontweight='bold', color=C_DARK, ha='center',
@@ -670,15 +757,15 @@ ax9.annotate(
               edgecolor=C_DARK, linewidth=2.0, alpha=0.95),
 )
 
-ax9.set_xlim(-4.5, 4.5)
-ax9.set_ylim(-4.5, 4.5)
-ax9.set_xlabel('feature 1', fontsize=FS_AXIS)
-ax9.set_ylabel('feature 2', fontsize=FS_AXIS)
-ax9.tick_params(labelsize=FS_TICK)
-ax9.grid(True, alpha=0.25)
-ax9.set_aspect('equal', adjustable='box')
-ax9.axhline(0, color='0.7', lw=0.8)
-ax9.axvline(0, color='0.7', lw=0.8)
+ax10.set_xlim(-4.5, 4.5)
+ax10.set_ylim(-4.5, 4.5)
+ax10.set_xlabel('feature 1', fontsize=FS_AXIS)
+ax10.set_ylabel('feature 2', fontsize=FS_AXIS)
+ax10.tick_params(labelsize=FS_TICK)
+ax10.grid(True, alpha=0.25)
+ax10.set_aspect('equal', adjustable='box')
+ax10.axhline(0, color='0.7', lw=0.8)
+ax10.axvline(0, color='0.7', lw=0.8)
 
 # Questions live outside the plot axes
 axq.set_xlim(0, 1)
@@ -706,19 +793,19 @@ axq.text(
               edgecolor='0.55', alpha=0.98),
     multialignment='right',
 )
-fig9.tight_layout(rect=[0, 0, 1, 0.94])
-show_maximized(fig9)
+fig10.tight_layout(rect=[0, 0, 1, 0.94])
+show_maximized(fig10)
 
 
 # -------------------------------------------------------
-# FIGURE 10: Bridge to the next technical work
+# FIGURE 11: Bridge to the next technical work
 # -------------------------------------------------------
-fig10, ax10 = new_figure()
-fig10.suptitle(
-    'Step 10: Therefore we study distribution, driven by the goal',
+fig11, ax11 = new_figure()
+fig11.suptitle(
+    'Step 11: Therefore we study distribution, driven by the goal',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
-blank_slide(ax10)
+blank_slide(ax11)
 
 flow = [
     (0.6, 'Client\nbusiness'),
@@ -729,21 +816,21 @@ flow = [
 for i, (x, title) in enumerate(flow):
     color = C_NEW if i < 3 else C_GOAL
     edge = '#2874a6' if i < 3 else C_OK
-    round_box(ax10, x, 4.2, 2.4, 2.4, color, edge, lw=2.2)
-    ax10.text(x + 1.2, 5.4, title, ha='center', va='center',
+    round_box(ax11, x, 4.2, 2.4, 2.4, color, edge, lw=2.2)
+    ax11.text(x + 1.2, 5.4, title, ha='center', va='center',
               fontsize=FS_ANNOT + 2, fontweight='bold')
     if i < len(flow) - 1:
-        arrow(ax10, x + 2.45, 5.4, x + 2.85, 5.4, C_DARK, lw=2.4)
+        arrow(ax11, x + 2.45, 5.4, x + 2.85, 5.4, C_DARK, lw=2.4)
 
-round_box(ax10, 0.6, 1.0, 10.8, 2.6, C_MUTE, '0.45', lw=1.8)
-ax10.text(
+round_box(ax11, 0.6, 1.0, 10.8, 2.6, C_MUTE, '0.45', lw=1.8)
+ax11.text(
     6.0, 2.3,
     'Distribution is the language of data without domain jargon.\n'
     'If we can read distributions, we can read businesses -- and choose well.',
     ha='center', va='center', fontsize=FS_ANNOT + 2,
 )
 
-show_maximized(fig10)
+show_maximized(fig11)
 
 
 # -------------------------------------------------------
@@ -782,17 +869,22 @@ Everyday images (Step 7):
   narrow, widening, forking -- and the two rivers pass near,
   even through, each other.
 
-Zoom-in example (Step 8):
+Discriminative vs generative (Step 8):
+  Discriminative: P(cat | cat-or-dog) -- a forced choice among known labels.
+  Generative: P(cat | image), P(dog | image) -- a place for every image.
+  On a kitchen photo the former may still say "cat, 85%";
+  the latter says "not a cat." On a cat photo, both agree.
+  Only the generative view can create a new cat image.
+
+Zoom-in example (Step 9):
   Dog-photo and cat-photo points in 2D form two modes / clusters
   -- still a distribution, now with two pile-ups.
 
-Framing questions (Step 9):
+Framing questions (Step 10):
   Would it help to bring these clusters to the center and enlarge them,
   so we can study how they relate?
   If we do, do we lose the information that tells cats from dogs --
   or do we merely change the frame in which we look?
   Beyond discriminating one cluster from the other, might we learn
   the boundary of each cluster in its own right?
-
-See also: 009_discriminative_generative.py
 """)
