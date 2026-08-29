@@ -613,9 +613,9 @@ fig6.suptitle(
 )
 blank_slide(ax6)
 
-round_box(ax6, 0.5, 5.55, 11.0, 1.85, C_DARK, C_DARK, lw=0)
+round_box(ax6, 0.5, 6.45, 11.0, 1.25, C_DARK, C_DARK, lw=0)
 ax6.text(
-    6.0, 6.45,
+    6.0, 7.05,
     'Train a generative model G on the situations where D works well.\n'
     'If G says "I don\'t know this situation," do not trust D there.',
     ha='center', va='center', fontsize=FS_AX_TITLE - 2,
@@ -623,57 +623,57 @@ ax6.text(
 )
 
 # Pipeline: Input -> G gate -> trust D or refuse D
-round_box(ax6, 0.5, 3.35, 2.2, 1.85, C_MUTE, '0.45', lw=2.0)
-ax6.text(1.6, 4.25, 'Input\nimage', ha='center', va='center',
+round_box(ax6, 0.5, 4.55, 2.2, 1.45, C_MUTE, '0.45', lw=2.0)
+ax6.text(1.6, 5.25, 'Input\nimage', ha='center', va='center',
          fontsize=FS_ANNOT + 1, fontweight='bold', color=C_DARK)
 
-round_box(ax6, 3.5, 3.35, 2.6, 1.85, C_NEW, '#2874a6', lw=2.0)
-ax6.text(4.8, 4.25, 'G: known\nsituation?', ha='center', va='center',
+round_box(ax6, 3.5, 4.55, 2.6, 1.45, C_NEW, '#2874a6', lw=2.0)
+ax6.text(4.8, 5.25, 'G: known\nsituation?', ha='center', va='center',
          fontsize=FS_ANNOT + 1, fontweight='bold', color=C_DARK)
 
-arrow(ax6, 2.75, 4.25, 3.45, 4.25, C_DARK, lw=2.2)
+arrow(ax6, 2.75, 5.25, 3.45, 5.25, C_DARK, lw=2.2)
 
-round_box(ax6, 7.0, 4.35, 4.5, 1.15, C_GOAL, C_OK, lw=2.0)
-ax6.text(9.25, 4.9, 'Yes  =>  trust D\'s answer', ha='center', va='center',
+round_box(ax6, 7.0, 5.35, 4.5, 0.95, C_GOAL, C_OK, lw=2.0)
+ax6.text(9.25, 5.8, 'Yes  =>  trust D\'s answer', ha='center', va='center',
          fontsize=FS_ANNOT + 1, fontweight='bold', color=C_OK)
 
-round_box(ax6, 7.0, 2.95, 4.5, 1.15, C_OLD, '#e67e22', lw=2.0)
-ax6.text(9.25, 3.5, 'No  =>  do not trust D', ha='center', va='center',
+round_box(ax6, 7.0, 4.15, 4.5, 0.95, C_OLD, '#e67e22', lw=2.0)
+ax6.text(9.25, 4.6, 'No  =>  do not trust D', ha='center', va='center',
          fontsize=FS_ANNOT + 1, fontweight='bold', color='#a04000')
 
-arrow(ax6, 6.15, 4.55, 6.95, 4.9, C_OK, lw=2.0)
-arrow(ax6, 6.15, 3.95, 6.95, 3.5, '#e67e22', lw=2.0)
+arrow(ax6, 6.15, 5.45, 6.95, 5.8, C_OK, lw=2.0)
+arrow(ax6, 6.15, 4.95, 6.95, 4.6, '#e67e22', lw=2.0)
 
 # Two outcome cards
-round_box(ax6, 0.5, 1.35, 5.3, 1.7, C_GOAL, C_OK, lw=2.0)
+round_box(ax6, 0.5, 2.05, 5.3, 1.65, C_GOAL, C_OK, lw=2.0)
 ax6.text(
-    3.15, 2.55, 'Inside G\'s world',
+    3.15, 3.2, 'Inside G\'s world',
     ha='center', va='center', fontsize=FS_ANNOT + 2,
     fontweight='bold', color=C_OK,
 )
 ax6.text(
-    3.15, 1.85,
+    3.15, 2.5,
     'G recognizes the situation.\n'
     'D\'s cat/dog call is allowed to speak.',
     ha='center', va='center', fontsize=FS_ANNOT + 1,
 )
 
-round_box(ax6, 6.2, 1.35, 5.3, 1.7, C_OLD, '#e67e22', lw=2.0)
+round_box(ax6, 6.2, 2.05, 5.3, 1.65, C_OLD, '#e67e22', lw=2.0)
 ax6.text(
-    8.85, 2.55, 'Outside G\'s world',
+    8.85, 3.2, 'Outside G\'s world',
     ha='center', va='center', fontsize=FS_ANNOT + 2,
     fontweight='bold', color='#a04000',
 )
 ax6.text(
-    8.85, 1.85,
+    8.85, 2.5,
     'G says "I don\'t know."\n'
     'D may still shout an answer -- we ignore it.',
     ha='center', va='center', fontsize=FS_ANNOT + 1,
 )
 
-round_box(ax6, 0.5, 0.25, 11.0, 0.95, 'lightyellow', '0.55', lw=1.6)
+round_box(ax6, 0.5, 0.25, 11.0, 1.35, 'lightyellow', '0.55', lw=1.6)
 ax6.text(
-    6.0, 0.72,
+    6.0, 0.9,
     'Discussion: If the dataset is hard to model discriminatively,\n'
     'will it be easy to model it generatively?',
     ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
@@ -719,4 +719,6 @@ Step 6 -- when D often fails:
   Train G on situations where D works well.
   If G says "I don't know this situation," do not trust D there.
   G becomes a gate that reduces D's failures outside its comfort zone.
+
+See also: 008_distribution.py Steps 10-11 (normalize; why N(0,1)).
 """)

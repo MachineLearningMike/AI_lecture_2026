@@ -12,11 +12,15 @@ Sketch:
   5. Next-word distribution after a given context.
   6. Next-sentence distribution after a given context.
   7. Everyday images as a distribution.
-  8. Discriminative vs generative understanding of a distribution.
-  9. Dog vs cat photo clusters (two modes).
-  10. The same clusters, tiny in a corner -- then normalized;
-      framing questions on scale, information, and boundaries.
-  11. Therefore we study distribution.
+  8. Dog vs cat photo clusters (two modes).
+  9. The same clusters, tiny in a corner -- then normalized;
+     framing questions on scale, information, and boundaries.
+  10. Normalize dataset manually with sliders a, b.
+  11. Why N(0, 1)? -- activations live near zero-scale numbers.
+  12. Normalization with NumPy or Torch.
+  13. So what are NumPy and Torch?
+  14. Therefore we study distribution.
+     (Discriminative vs generative lives in 009_discriminative_generative.py.)
 """
 
 import matplotlib.pyplot as plt
@@ -34,6 +38,7 @@ from _config import (
 )
 apply_rcparams(plt)
 import matplotlib.patches as patches
+from matplotlib.widgets import Slider
 import numpy as np
 
 np.random.seed(42)
@@ -547,199 +552,112 @@ show_maximized(fig7)
 
 
 # -------------------------------------------------------
-# FIGURE 8: Discriminative vs generative understanding
+# FIGURE 8: Another example -- dog vs cat photo clusters
 # -------------------------------------------------------
 fig8, ax8 = new_figure()
 fig8.suptitle(
-    'Step 8: Discriminative vs generative understanding of a distribution',
-    fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
-)
-blank_slide(ax8)
-
-# Two definitions
-round_box(ax8, 0.4, 5.35, 5.4, 2.0, C_OLD, '#e67e22', lw=2.2)
-ax8.text(
-    3.1, 6.75, 'Discriminative',
-    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
-    fontweight='bold', color='#a04000',
-)
-ax8.text(
-    3.1, 5.95,
-    r'$P(\mathrm{cat}\mid\mathrm{cat\ or\ dog})$' + '\n'
-    'A forced choice among known labels',
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-)
-
-round_box(ax8, 6.2, 5.35, 5.4, 2.0, C_NEW, '#2874a6', lw=2.2)
-ax8.text(
-    8.9, 6.75, 'Generative',
-    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
-    fontweight='bold', color=C_DARK,
-)
-ax8.text(
-    8.9, 5.95,
-    r'$P(\mathrm{cat}\mid\mathrm{image}),\ P(\mathrm{dog}\mid\mathrm{image})$' + '\n'
-    'A place for every image in the whole world',
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-)
-
-# Three comparison cases
-cases = [
-    (0.4, 'Kitchen image',
-     '"Cat -- 85%"\n'
-     '(must pick cat or dog image)',
-     '"Not a cat."\n'
-     '(kitchen lives elsewhere)',
-     C_MUTE),
-    (4.2, 'Cat image',
-     '"It is a cat."',
-     '"It is a cat."',
-     C_GOAL),
-    (8.0, 'What each can do',
-     'Separate the two labels\n'
-     'when both are on the table.',
-     'Also create a new cat image --\n'
-     'because it models the cat world.',
-     C_NEW),
-]
-for x, title, disc, gen, face in cases:
-    round_box(ax8, x, 0.55, 3.6, 4.45, face, '0.45', lw=1.6)
-    ax8.text(
-        x + 1.8, 4.55, title,
-        ha='center', va='center', fontsize=FS_ANNOT + 2,
-        fontweight='bold', color=C_DARK,
-    )
-    round_box(ax8, x + 0.2, 2.55, 3.2, 1.55, '#fce4d6', '#e67e22', lw=1.4)
-    ax8.text(
-        x + 1.8, 3.7, 'Discriminative',
-        ha='center', va='center', fontsize=FS_ANNOT,
-        fontweight='bold', color='#a04000',
-    )
-    ax8.text(
-        x + 1.8, 3.05, disc,
-        ha='center', va='center', fontsize=FS_ANNOT,
-    )
-    round_box(ax8, x + 0.2, 0.75, 3.2, 1.55, '#d6eaf8', '#2874a6', lw=1.4)
-    ax8.text(
-        x + 1.8, 1.9, 'Generative',
-        ha='center', va='center', fontsize=FS_ANNOT,
-        fontweight='bold', color=C_DARK,
-    )
-    ax8.text(
-        x + 1.8, 1.25, gen,
-        ha='center', va='center', fontsize=FS_ANNOT,
-    )
-
-show_maximized(fig8)
-
-
-# -------------------------------------------------------
-# FIGURE 9: Another example -- dog vs cat photo clusters
-# -------------------------------------------------------
-fig9, ax9 = new_figure()
-fig9.suptitle(
-    'Step 9: Zooming in -- dog photos and cat photos',
+    'Step 8: Zooming in -- dog photos and cat photos',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
-rng9 = np.random.default_rng(3)
+rng8 = np.random.default_rng(3)
 # Two modes / clusters in a 2D feature plane (e.g. embedding coordinates)
-dogs = rng9.normal(loc=[-1.2, -0.3], scale=[0.55, 0.45], size=(120, 2))
-cats = rng9.normal(loc=[1.3, 0.4], scale=[0.50, 0.48], size=(120, 2))
+dogs = rng8.normal(loc=[-1.2, -0.3], scale=[0.55, 0.45], size=(120, 2))
+cats = rng8.normal(loc=[1.3, 0.4], scale=[0.50, 0.48], size=(120, 2))
 dog_c = dogs.mean(axis=0)
 cat_c = cats.mean(axis=0)
 
-ax9.scatter(
+ax8.scatter(
     dogs[:, 0], dogs[:, 1], s=36, c='#1f77b4', alpha=0.85,
     edgecolors='white', linewidths=0.4, zorder=3,
 )
-ax9.scatter(
+ax8.scatter(
     cats[:, 0], cats[:, 1], s=36, c='#2ca02c', alpha=0.85,
     edgecolors='white', linewidths=0.4, zorder=3,
 )
 # Place labels near each cluster (slightly offset from the mean)
-ax9.annotate(
+ax8.annotate(
     'Dog photos', xy=dog_c, xytext=(dog_c[0] - 0.15, dog_c[1] + 1.15),
     fontsize=FS_ANNOT + 2, fontweight='bold', color='#1f77b4', ha='center',
     arrowprops=dict(arrowstyle='->', color='#1f77b4', lw=1.6),
     bbox=dict(boxstyle='round,pad=0.25', facecolor='white', edgecolor='#1f77b4', alpha=0.95),
 )
-ax9.annotate(
+ax8.annotate(
     'Cat photos', xy=cat_c, xytext=(cat_c[0] + 0.15, cat_c[1] + 1.15),
     fontsize=FS_ANNOT + 2, fontweight='bold', color='#2ca02c', ha='center',
     arrowprops=dict(arrowstyle='->', color='#2ca02c', lw=1.6),
     bbox=dict(boxstyle='round,pad=0.25', facecolor='white', edgecolor='#2ca02c', alpha=0.95),
 )
-ax9.set_xlabel('feature 1  (e.g. an embedding or measurement)', fontsize=FS_AXIS)
-ax9.set_ylabel('feature 2', fontsize=FS_AXIS)
-ax9.tick_params(labelsize=FS_TICK)
-ax9.grid(True, alpha=0.25)
-ax9.set_aspect('equal', adjustable='datalim')
-ax9.text(
+ax8.set_xlabel('feature 1  (e.g. an embedding or measurement)', fontsize=FS_AXIS)
+ax8.set_ylabel('feature 2', fontsize=FS_AXIS)
+ax8.tick_params(labelsize=FS_TICK)
+ax8.grid(True, alpha=0.25)
+ax8.set_aspect('equal', adjustable='datalim')
+ax8.text(
     0.98, 0.05,
     'Two modes (clusters)\n'
     'in one joint distribution.\n'
     'Still only points --\n'
     'now with two pile-ups.',
-    transform=ax9.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
+    transform=ax8.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
-fig9.tight_layout(rect=[0, 0, 1, 0.94])
-show_maximized(fig9)
+fig8.tight_layout(rect=[0, 0, 1, 0.94])
+show_maximized(fig8)
 
 
 # -------------------------------------------------------
-# FIGURE 10: Corner view + normalized view -- what should we do?
+# FIGURE 9: Corner view + normalized view -- what should we do?
 # -------------------------------------------------------
-fig10, (ax10, axq) = new_figure(1, 2, gridspec_kw={'width_ratios': [2.35, 1.0]})
-fig10.suptitle(
-    'Step 10: The same distribution -- from a corner, then normalized',
+fig9, (ax9, axq) = new_figure(1, 2, gridspec_kw={'width_ratios': [2.35, 1.0]})
+fig9.suptitle(
+    'Step 9: The same distribution -- from a corner, then normalized',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
-# Shrink and translate the Step-9 clusters into the lower-left of a wide frame
-scale10 = 0.22
-shift10 = np.array([-3.2, -3.2])
-dogs10 = dogs * scale10 + shift10
-cats10 = cats * scale10 + shift10
-dog_c10 = dogs10.mean(axis=0)
-cat_c10 = cats10.mean(axis=0)
+# Shrink and translate the Step-8 clusters into the lower-left of a wide frame
+scale9 = 0.22
+shift9 = np.array([-3.2, -3.2])
+dogs9 = dogs * scale9 + shift9
+cats9 = cats * scale9 + shift9
+dog_c9 = dogs9.mean(axis=0)
+cat_c9 = cats9.mean(axis=0)
 
 # Corner (shrunk) copy
-ax10.scatter(
-    dogs10[:, 0], dogs10[:, 1], s=18, c='#1f77b4', alpha=0.75,
+ax9.scatter(
+    dogs9[:, 0], dogs9[:, 1], s=18, c='#1f77b4', alpha=0.75,
     edgecolors='white', linewidths=0.25, zorder=3,
 )
-ax10.scatter(
-    cats10[:, 0], cats10[:, 1], s=18, c='#2ca02c', alpha=0.75,
+ax9.scatter(
+    cats9[:, 0], cats9[:, 1], s=18, c='#2ca02c', alpha=0.75,
     edgecolors='white', linewidths=0.25, zorder=3,
 )
-# Normalized copy (same points as Step 9)
-ax10.scatter(
+# Normalized copy (same points as Step 8)
+ax9.scatter(
     dogs[:, 0], dogs[:, 1], s=36, c='#1f77b4', alpha=0.85,
     edgecolors='white', linewidths=0.4, zorder=4,
 )
-ax10.scatter(
+ax9.scatter(
     cats[:, 0], cats[:, 1], s=36, c='#2ca02c', alpha=0.85,
     edgecolors='white', linewidths=0.4, zorder=4,
 )
 
-ax10.annotate(
+ax9.annotate(
     'Dog photos', xy=dog_c, xytext=(dog_c[0] - 0.15, dog_c[1] + 1.15),
     fontsize=FS_ANNOT + 1, fontweight='bold', color='#1f77b4', ha='center',
     arrowprops=dict(arrowstyle='->', color='#1f77b4', lw=1.5),
     bbox=dict(boxstyle='round,pad=0.22', facecolor='white', edgecolor='#1f77b4', alpha=0.95),
 )
-ax10.annotate(
+ax9.annotate(
     'Cat photos', xy=cat_c, xytext=(cat_c[0] + 0.15, cat_c[1] + 1.15),
     fontsize=FS_ANNOT + 1, fontweight='bold', color='#2ca02c', ha='center',
     arrowprops=dict(arrowstyle='->', color='#2ca02c', lw=1.5),
     bbox=dict(boxstyle='round,pad=0.22', facecolor='white', edgecolor='#2ca02c', alpha=0.95),
 )
-ax10.annotate(
+ax9.annotate(
     'As recorded\n(tiny, in a corner)',
-    xy=((dog_c10 + cat_c10) / 2),
-    xytext=(dog_c10[0] - 0.15, dog_c10[1] + 1.15),
+    xy=((dog_c9 + cat_c9) / 2),
+    xytext=(dog_c9[0] - 0.15, dog_c9[1] + 1.15),
     fontsize=FS_ANNOT - 1, color='0.25', ha='center',
     arrowprops=dict(arrowstyle='->', color='0.45', lw=1.2),
     bbox=dict(boxstyle='round,pad=0.2', facecolor='white', edgecolor='0.55', alpha=0.95),
@@ -747,7 +665,7 @@ ax10.annotate(
 
 # Bridge label: corner -> normalized
 mid_norm = (dog_c + cat_c) / 2
-ax10.annotate(
+ax9.annotate(
     'Normalize the distribution\nfor convenience',
     xy=mid_norm, xytext=(-0.4, -2.55),
     fontsize=FS_ANNOT + 1, fontweight='bold', color=C_DARK, ha='center',
@@ -757,15 +675,15 @@ ax10.annotate(
               edgecolor=C_DARK, linewidth=2.0, alpha=0.95),
 )
 
-ax10.set_xlim(-4.5, 4.5)
-ax10.set_ylim(-4.5, 4.5)
-ax10.set_xlabel('feature 1', fontsize=FS_AXIS)
-ax10.set_ylabel('feature 2', fontsize=FS_AXIS)
-ax10.tick_params(labelsize=FS_TICK)
-ax10.grid(True, alpha=0.25)
-ax10.set_aspect('equal', adjustable='box')
-ax10.axhline(0, color='0.7', lw=0.8)
-ax10.axvline(0, color='0.7', lw=0.8)
+ax9.set_xlim(-4.5, 4.5)
+ax9.set_ylim(-4.5, 4.5)
+ax9.set_xlabel('feature 1', fontsize=FS_AXIS)
+ax9.set_ylabel('feature 2', fontsize=FS_AXIS)
+ax9.tick_params(labelsize=FS_TICK)
+ax9.grid(True, alpha=0.25)
+ax9.set_aspect('equal', adjustable='box')
+ax9.axhline(0, color='0.7', lw=0.8)
+ax9.axvline(0, color='0.7', lw=0.8)
 
 # Questions live outside the plot axes
 axq.set_xlim(0, 1)
@@ -793,19 +711,377 @@ axq.text(
               edgecolor='0.55', alpha=0.98),
     multialignment='right',
 )
-fig10.tight_layout(rect=[0, 0, 1, 0.94])
+fig9.tight_layout(rect=[0, 0, 1, 0.94])
+show_maximized(fig9)
+
+
+# -------------------------------------------------------
+# FIGURE 10: Normalize dataset manually with sliders
+# -------------------------------------------------------
+fig10, (ax10_raw, ax10_z) = new_figure(1, 2)
+fig10.suptitle(
+    'Step 10: Normalize dataset manually',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+fig10.subplots_adjust(bottom=0.22, wspace=0.28)
+
+rng10 = np.random.default_rng(7)
+MU_DATA, SIG_DATA = 48.0, 2.2
+X10 = rng10.normal(loc=MU_DATA, scale=SIG_DATA, size=(36, 2))
+mean_x = float(X10.mean())
+std_x = float(X10.std(ddof=0))
+
+ax10_raw.scatter(X10[:, 0], X10[:, 1], s=55, c='#2874a6', alpha=0.85,
+                 edgecolors='white', linewidths=0.6, zorder=3)
+ax10_raw.axhline(mean_x, color='0.4', ls='--', lw=1.2, alpha=0.7)
+ax10_raw.axvline(mean_x, color='0.4', ls='--', lw=1.2, alpha=0.7)
+ax10_raw.set_title('Raw points (large mean, small std)', fontsize=FS_AX_TITLE - 2)
+ax10_raw.set_xlabel(r'$x_1$', fontsize=FS_AXIS)
+ax10_raw.set_ylabel(r'$x_2$', fontsize=FS_AXIS)
+ax10_raw.tick_params(labelsize=FS_TICK)
+ax10_raw.grid(True, alpha=0.25)
+ax10_raw.set_aspect('equal', adjustable='datalim')
+ax10_raw.text(
+    0.02, 0.98,
+    f'mean(x) = {mean_x:.2f}\n'
+    f'std(x)  = {std_x:.2f}',
+    transform=ax10_raw.transAxes, va='top', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+)
+
+sc10 = ax10_z.scatter([], [], s=55, c='#1e8449', alpha=0.85,
+                      edgecolors='white', linewidths=0.6, zorder=3)
+ax10_z.axhline(0, color='0.5', lw=1.0)
+ax10_z.axvline(0, color='0.5', lw=1.0)
+ax10_z.set_title(r'Transformed $z=(x-a)/b$', fontsize=FS_AX_TITLE - 2)
+ax10_z.set_xlabel(r'$z_1$', fontsize=FS_AXIS)
+ax10_z.set_ylabel(r'$z_2$', fontsize=FS_AXIS)
+ax10_z.tick_params(labelsize=FS_TICK)
+ax10_z.grid(True, alpha=0.25)
+ax10_z.set_aspect('equal', adjustable='datalim')
+hud10 = ax10_z.text(
+    0.02, 0.98, '',
+    transform=ax10_z.transAxes, va='top', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.95),
+)
+note10 = ax10_z.text(
+    0.98, 0.02, '',
+    transform=ax10_z.transAxes, va='bottom', ha='right', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor=C_GOAL, edgecolor=C_OK, alpha=0.95),
+)
+
+ax_a = fig10.add_axes([0.15, 0.10, 0.70, 0.035])
+ax_b = fig10.add_axes([0.15, 0.045, 0.70, 0.035])
+slider_a = Slider(ax_a, r'$a$', 0.0, 80.0, valinit=1.0, valstep=0.1)
+slider_b = Slider(ax_b, r'$b$', 0.0, 20.0, valinit=0.0, valstep=0.1)
+
+
+def _update_norm(_=None):
+    a = float(slider_a.val)
+    b = float(slider_b.val)
+    if abs(b) < 1e-8:
+        sc10.set_offsets(np.empty((0, 2)))
+        hud10.set_text(
+            rf'$a={a:.2f},\ b={b:.2f}$' + '\n'
+            'b = 0  =>  division undefined.\n'
+            'Move b away from 0.'
+        )
+        note10.set_text('Best target: a = mean(x), b = std(x)')
+        ax10_z.relim()
+        ax10_z.autoscale_view()
+        fig10.canvas.draw_idle()
+        return
+    Z = (X10 - a) / b
+    sc10.set_offsets(Z)
+    z_mean = float(Z.mean())
+    z_std = float(Z.std(ddof=0))
+    hud10.set_text(
+        rf'$a={a:.2f},\ b={b:.2f}$' + '\n'
+        f'mean(z) = {z_mean:.3f}\n'
+        f'std(z)  = {z_std:.3f}'
+    )
+    near = abs(a - mean_x) < 0.35 and abs(b - std_x) < 0.25
+    if near:
+        note10.set_text(
+            'Best setting reached:\n'
+            'a ≈ mean(x), b ≈ std(x)\n'
+            '=> z ≈ N(0, 1)'
+        )
+    else:
+        note10.set_text(
+            f'Try a → {mean_x:.2f} (= mean)\n'
+            f'Try b → {std_x:.2f} (= std)\n'
+            'to get z ≈ N(0, 1)'
+        )
+    pad = max(3.0, 3.0 * abs(b) if abs(b) < 1 else 3.0)
+    ax10_z.set_xlim(Z[:, 0].mean() - pad, Z[:, 0].mean() + pad)
+    ax10_z.set_ylim(Z[:, 1].mean() - pad, Z[:, 1].mean() + pad)
+    fig10.canvas.draw_idle()
+
+
+slider_a.on_changed(_update_norm)
+slider_b.on_changed(_update_norm)
+_update_norm()
+print("Step 10: drag a and b; best values are a=mean(x), b=std(x).")
 show_maximized(fig10)
 
 
 # -------------------------------------------------------
-# FIGURE 11: Bridge to the next technical work
+# FIGURE 11: Why N(0, 1)?
 # -------------------------------------------------------
-fig11, ax11 = new_figure()
+fig11, axes11 = new_figure(1, 3)
 fig11.suptitle(
-    'Step 11: Therefore we study distribution, driven by the goal',
+    'Step 11: Why N(0, 1)?',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+
+xs11 = np.linspace(-4.5, 4.5, 500)
+gauss11 = np.exp(-0.5 * xs11 ** 2) / np.sqrt(2 * np.pi)
+acts = [
+    (
+        'sigmoid',
+        r'$\sigma(x)=\dfrac{1}{1+e^{-x}}$',
+        1.0 / (1.0 + np.exp(-xs11)),
+        '#2874a6',
+        'Alive near 0;\nsaturates for |x| large.',
+    ),
+    (
+        'tanh',
+        r'$\tanh(x)=\dfrac{e^{x}-e^{-x}}{e^{x}+e^{-x}}$',
+        np.tanh(xs11),
+        '#1e8449',
+        'Centered at 0;\nsaturates outside ~[-2, 2].',
+    ),
+    (
+        'ReLU',
+        r'$\mathrm{ReLU}(x)=\max(0,x)$',
+        np.maximum(0.0, xs11),
+        '#c0392b',
+        'Half of N(0,1) is active\n(x > 0); half is silent.',
+    ),
+]
+
+for i, (ax, (name, eq, ys, color, tip)) in enumerate(zip(axes11, acts)):
+    ax.axvspan(-2.0, 2.0, color='#d5f5e3', alpha=0.55, label='N(0,1) bulk')
+    ax.plot(xs11, ys, color=color, lw=2.6, label=name)
+    if name == 'ReLU':
+        # Show the correct derivative on a twin axis (step: 0 / 1)
+        ax2 = ax.twinx()
+        relu_grad = (xs11 > 0).astype(float)
+        ax2.plot(xs11, relu_grad, color='#7d3c98', lw=2.2, label=r"ReLU'")
+        ax2.set_ylim(-0.05, 1.35)
+        ax2.set_ylabel(r"ReLU'", fontsize=FS_AXIS, color='#7d3c98')
+        ax2.tick_params(axis='y', labelsize=FS_TICK, colors='#7d3c98')
+    else:
+        ax.plot(xs11, gauss11 / gauss11.max() * max(float(ys.max()), 1.0),
+                color='0.45', lw=1.6, ls='--', alpha=0.85, label='N(0,1) shape')
+    ax.axvline(0, color='0.5', lw=0.9, alpha=0.7)
+    ax.axhline(0, color='0.5', lw=0.9, alpha=0.7)
+    ax.set_title(name, fontsize=FS_AX_TITLE - 1)
+    ax.set_xlabel('x', fontsize=FS_AXIS)
+    ax.tick_params(labelsize=FS_TICK)
+    ax.grid(True, alpha=0.25)
+    ax.set_xlim(-4.5, 4.5)
+    # Left and middle panels: annotation at bottom-right; right panel keeps top-left
+    if i < 2:
+        ax.text(
+            0.98, 0.02, eq + '\n\n' + tip,
+            transform=ax.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
+            bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+        )
+    else:
+        ax.text(
+            0.02, 0.98, eq + '\n\n' + tip,
+            transform=ax.transAxes, va='top', fontsize=FS_ANNOT,
+            bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+        )
+
+fig11.text(
+    0.5, 0.02,
+    'If numbers inside the model live near N(0, 1),\n'
+    'they are likely to fall into the living region of popular activations -- not the dead flat tails.',
+    ha='center', va='bottom', fontsize=FS_ANNOT + 1, fontweight='bold',
+    bbox=dict(boxstyle='round,pad=0.35', facecolor=C_GOAL, edgecolor=C_OK, alpha=0.96),
+)
+fig11.tight_layout(rect=[0, 0.08, 1, 0.94])
+show_maximized(fig11)
+
+
+# -------------------------------------------------------
+# FIGURE 12: Normalization with NumPy or Torch
+# -------------------------------------------------------
+fig12, ax12 = new_figure()
+fig12.suptitle(
+    'Step 12: Normalization with NumPy or Torch',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+blank_slide(ax12)
+
+round_box(ax12, 0.5, 5.55, 11.0, 1.85, C_DARK, C_DARK, lw=0)
+ax12.text(
+    6.0, 6.45,
+    r'Same recipe as the sliders:  $z = (x - \mathrm{mean})/\mathrm{std}$' + '\n'
+    'Now written in one line -- in NumPy or in Torch.',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+    fontweight='bold', color='white',
+)
+
+# NumPy panel
+round_box(ax12, 0.5, 1.55, 5.3, 3.7, C_NEW, '#2874a6', lw=2.2)
+ax12.text(
+    3.15, 4.85, 'NumPy',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 1,
+    fontweight='bold', color=C_DARK,
+)
+ax12.text(
+    3.15, 3.25,
+    'import numpy as np\n\n'
+    'x = np.asarray(x, dtype=float)\n'
+    'z = (x - x.mean()) / x.std()',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+    family='monospace',
+    bbox=dict(boxstyle='round,pad=0.45', facecolor='white',
+              edgecolor='#2874a6', alpha=0.98),
+)
+
+# Torch panel
+round_box(ax12, 6.2, 1.55, 5.3, 3.7, C_GOAL, C_OK, lw=2.2)
+ax12.text(
+    8.85, 4.85, 'PyTorch',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 1,
+    fontweight='bold', color=C_OK,
+)
+ax12.text(
+    8.85, 3.25,
+    'import torch\n\n'
+    'x = torch.as_tensor(x, dtype=torch.float)\n'
+    'z = (x - x.mean()) / x.std()',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+    family='monospace',
+    bbox=dict(boxstyle='round,pad=0.45', facecolor='white',
+              edgecolor=C_OK, alpha=0.98),
+)
+
+round_box(ax12, 0.5, 0.35, 11.0, 0.95, 'lightyellow', '0.55', lw=1.6)
+ax12.text(
+    6.0, 0.8,
+    'Per-feature / per-channel: mean and std along the right axis '
+    r'(e.g. dim=0).  Watch for std $= 0$.',
+    ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
+)
+
+show_maximized(fig12)
+
+
+# -------------------------------------------------------
+# FIGURE 13: So what are NumPy and Torch?
+# -------------------------------------------------------
+fig13, ax13 = new_figure()
+fig13.suptitle(
+    'Step 13: So what are NumPy and Torch?',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+blank_slide(ax13)
+
+round_box(ax13, 0.5, 6.55, 11.0, 1.15, C_DARK, C_DARK, lw=0)
+ax13.text(
+    6.0, 7.1,
+    'Two libraries for numbers in arrays -- same spirit, different engine.',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+    fontweight='bold', color='white',
+)
+
+# NumPy
+round_box(ax13, 0.5, 3.55, 5.3, 2.7, C_NEW, '#2874a6', lw=2.2)
+ax13.text(
+    3.15, 5.9, 'NumPy  --  ndarray',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+    fontweight='bold', color=C_DARK,
+)
+ax13.text(
+    3.15, 5.25,
+    'CPU array. No autograd. Data prep & science.',
+    ha='center', va='center', fontsize=FS_ANNOT,
+)
+ax13.text(
+    3.15, 4.15,
+    'import numpy as np\n\n'
+    'a = np.array([[1., 2.],\n'
+    '              [3., 4.]])',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+    family='monospace',
+    bbox=dict(boxstyle='round,pad=0.4', facecolor='white',
+              edgecolor='#2874a6', alpha=0.98),
+)
+
+# Torch
+round_box(ax13, 6.2, 3.55, 5.3, 2.7, C_GOAL, C_OK, lw=2.2)
+ax13.text(
+    8.85, 5.9, 'Torch  --  Tensor',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+    fontweight='bold', color=C_OK,
+)
+ax13.text(
+    8.85, 5.25,
+    'CPU/GPU array + optional gradient tape.',
+    ha='center', va='center', fontsize=FS_ANNOT,
+)
+ax13.text(
+    8.85, 4.15,
+    'import torch\n\n'
+    't = torch.tensor([[1., 2.],\n'
+    '                  [3., 4.]])',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+    family='monospace',
+    bbox=dict(boxstyle='round,pad=0.4', facecolor='white',
+              edgecolor=C_OK, alpha=0.98),
+)
+
+# Difference strip
+round_box(ax13, 0.5, 1.55, 11.0, 1.7, C_MUTE, '0.45', lw=1.6)
+ax13.text(
+    6.0, 2.85, 'ndarray vs Tensor -- the practical difference',
+    ha='center', va='center', fontsize=FS_ANNOT + 2,
+    fontweight='bold', color=C_DARK,
+)
+ax13.text(
+    6.0, 2.05,
+    'A Tensor is an array plus device + optional gradient tape.\n'
+    'Bridge either way:  '
+    r'$\mathrm{torch.from\_numpy}(a)$'
+    '   /   '
+    r'$t.detach().cpu().numpy()$',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+)
+
+round_box(ax13, 0.5, 1.0, 11.0, 0.9, 'lightyellow', '0.55', lw=1.6)
+ax13.text(
+    6.0, 1.45,
+    'Same mental model: operate on whole arrays, not one scalar at a time.\n'
+    'NumPy explores and prepares data.  Torch learns from it.',
+    ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
+)
+
+round_box(ax13, 0.5, 0.15, 11.0, 0.7, '#f8d7da', C_ACCENT, lw=1.8)
+ax13.text(
+    6.0, 0.5,
+    'Study, independently, the indexing and operations of arrays and tensors.',
+    ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
+    color=C_ACCENT,
+)
+
+show_maximized(fig13)
+
+
+# -------------------------------------------------------
+# FIGURE 14: Bridge to the next technical work
+# -------------------------------------------------------
+fig14, ax14 = new_figure()
+fig14.suptitle(
+    'Step 14: Therefore we study distribution, driven by the goal',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
-blank_slide(ax11)
+blank_slide(ax14)
 
 flow = [
     (0.6, 'Client\nbusiness'),
@@ -816,21 +1092,21 @@ flow = [
 for i, (x, title) in enumerate(flow):
     color = C_NEW if i < 3 else C_GOAL
     edge = '#2874a6' if i < 3 else C_OK
-    round_box(ax11, x, 4.2, 2.4, 2.4, color, edge, lw=2.2)
-    ax11.text(x + 1.2, 5.4, title, ha='center', va='center',
+    round_box(ax14, x, 4.2, 2.4, 2.4, color, edge, lw=2.2)
+    ax14.text(x + 1.2, 5.4, title, ha='center', va='center',
               fontsize=FS_ANNOT + 2, fontweight='bold')
     if i < len(flow) - 1:
-        arrow(ax11, x + 2.45, 5.4, x + 2.85, 5.4, C_DARK, lw=2.4)
+        arrow(ax14, x + 2.45, 5.4, x + 2.85, 5.4, C_DARK, lw=2.4)
 
-round_box(ax11, 0.6, 1.0, 10.8, 2.6, C_MUTE, '0.45', lw=1.8)
-ax11.text(
+round_box(ax14, 0.6, 1.0, 10.8, 2.6, C_MUTE, '0.45', lw=1.8)
+ax14.text(
     6.0, 2.3,
     'Distribution is the language of data without domain jargon.\n'
     'If we can read distributions, we can read businesses -- and choose well.',
     ha='center', va='center', fontsize=FS_ANNOT + 2,
 )
 
-show_maximized(fig11)
+show_maximized(fig14)
 
 
 # -------------------------------------------------------
@@ -869,22 +1145,31 @@ Everyday images (Step 7):
   narrow, widening, forking -- and the two rivers pass near,
   even through, each other.
 
-Discriminative vs generative (Step 8):
-  Discriminative: P(cat | cat-or-dog) -- a forced choice among known labels.
-  Generative: P(cat | image), P(dog | image) -- a place for every image.
-  On a kitchen photo the former may still say "cat, 85%";
-  the latter says "not a cat." On a cat photo, both agree.
-  Only the generative view can create a new cat image.
-
-Zoom-in example (Step 9):
+Zoom-in example (Step 8):
   Dog-photo and cat-photo points in 2D form two modes / clusters
   -- still a distribution, now with two pile-ups.
 
-Framing questions (Step 10):
+Framing questions (Step 9):
   Would it help to bring these clusters to the center and enlarge them,
   so we can study how they relate?
   If we do, do we lose the information that tells cats from dogs --
   or do we merely change the frame in which we look?
   Beyond discriminating one cluster from the other, might we learn
   the boundary of each cluster in its own right?
+
+Normalize manually (Step 10):
+  z = (x - a) / b with sliders. Best: a = mean(x), b = std(x) => z ≈ N(0, 1).
+
+Why N(0, 1)? (Step 11):
+  Sigmoid, tanh, and ReLU are most useful near zero-scale inputs.
+
+Normalization in code (Step 12):
+  NumPy:  z = (x - x.mean()) / x.std()
+  Torch:  z = (x - x.mean()) / x.std()
+
+NumPy vs Torch (Step 13):
+  ndarray: CPU, no autograd.  Tensor: CPU/GPU + optional gradient tape.
+  Bridge: torch.from_numpy(a) / t.detach().cpu().numpy().
+
+See also: 009_discriminative_generative.py
 """)

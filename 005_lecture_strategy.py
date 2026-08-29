@@ -440,6 +440,18 @@ ax7.text(
     ha='center', va='center', fontsize=FS_ANNOT + 1,
 )
 
+# Pull the footnote box down by nearly its own height
+_box_h = 0.7
+_box_y = 0.15 - 0.65 * _box_h
+ax7.set_ylim(-0.55, 8)
+round_box(ax7, 0.6, _box_y, 10.8, _box_h, 'lightyellow', '0.55', lw=1.6)
+ax7.text(
+    6.0, _box_y + _box_h / 2,
+    'What we teach you today with ease took us years of painful self-study\n'
+    'buried in endless academic papers.',
+    ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
+)
+
 show_maximized(fig7)
 
 
