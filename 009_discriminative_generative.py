@@ -287,28 +287,36 @@ for i, (name, face) in enumerate([
     )
 
 # Row labels + answer cells
+# extension lines use a second color so the complement identity stands out
 rows = [
     (
         r'$P(\mathrm{cat}\mid\mathrm{cat\ or\ dog\ image})$',
-        '#fce4d6', '#e67e22', '#a04000',
-        '"Cat 85%, so Dog 15%."',
-        '"Cat 98%, so Dog 2%."',
+        r'$=1-P(\mathrm{dog}\mid\mathrm{cat\ or\ dog\ image})$',
+        '#fce4d6', '#e67e22', '#a04000', '#c0392b',
+        '"cat 85%, so dog 15%."',
+        '"cat 98%, so dog 2%."',
     ),
     (
         r'$P(\mathrm{cat}\mid\mathrm{image})$',
-        '#d6eaf8', '#2874a6', C_DARK,
-        '"Cat 2%, so Else 98%"',
-        '"Cat 98%, so Else 2%"',
+        r'$=1-P(\mathrm{allElse}\mid\mathrm{image})$',
+        '#d6eaf8', '#2874a6', C_DARK, '#1e8449',
+        '"cat 2%, so allElse 98%"',
+        '"cat 98%, so allElse 2%"',
     ),
 ]
-for r, (row_label, face, edge, title_c, ans_k, ans_c) in enumerate(rows):
+for r, (row_main, row_ext, face, edge, title_c, ext_c, ans_k, ans_c) in enumerate(rows):
     y = y0 + (1 - r) * row_h
-    # First column: probability query
+    # First column: probability query + complement identity
     round_box(ax_cases, x0, y, label_w, row_h, face, edge, lw=1.6)
     ax_cases.text(
-        x0 + label_w / 2, y + row_h / 2, row_label,
+        x0 + label_w / 2, y + row_h / 2 + 0.45, row_main,
         ha='center', va='center', fontsize=FS_ANNOT,
         fontweight='bold', color=title_c,
+    )
+    ax_cases.text(
+        x0 + label_w / 2, y + row_h / 2 - 0.55, row_ext,
+        ha='center', va='center', fontsize=FS_ANNOT,
+        fontweight='bold', color=ext_c,
     )
     # Cross cells: answers only
     for c, ans in enumerate([ans_k, ans_c]):
@@ -332,7 +340,7 @@ ax_cases.text(
 )
 ax_cases.text(
     x0 + table_w / 2, y0 - gap_table_to_box - 1.55 - gap_between_boxes,
-    r'So, $P(\mathrm{cat}\mid\mathrm{image})=P(\mathrm{cat}\mid\mathrm{cat\ or\ else\ image})$',
+    r'So, $P(\mathrm{cat}\mid\mathrm{image})=P(\mathrm{cat}\mid\mathrm{cat\ or\ allElse\ image})$',
     ha='center', va='top', fontsize=FS_ANNOT + 2, fontweight='bold',
     color=C_DARK,
     bbox=dict(boxstyle='round,pad=0.4', facecolor=C_GOAL,
@@ -359,7 +367,7 @@ fig3, (ax_complex3, ax_latent3) = new_figure(
     1, 2, gridspec_kw={'width_ratios': [1.0, 1.0]},
 )
 fig3.suptitle(
-    'Step 3: From tangled image space to a simpler hidden space',
+    'Step 3: From tangled image space to a simpler latent space',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
@@ -404,7 +412,7 @@ ax_latent3.annotate(
               edgecolor='red', alpha=0.95),
 )
 ax_latent3.set_title(
-    'A hidden space where cats have gaussian distribution',
+    'A latent space where cats have a gaussian distribution',
     fontsize=FS_AX_TITLE - 3,
 )
 ax_latent3.set_xlabel('latent 1', fontsize=FS_AXIS)
