@@ -18,7 +18,7 @@ FS_FIGURE_TITLE = 24
 FS_AX_TITLE = 18
 FS_AXIS = 14
 FS_TICK = 12
-FS_ANNOT = 12
+FS_ANNOT = 14
 FS_LEGEND = 12
 
 # Footer on every Step figure (shown via show_maximized -> add_step_footer)
