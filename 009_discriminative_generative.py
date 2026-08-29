@@ -5,9 +5,9 @@ Discriminative vs generative understanding of a distribution.
 
 Sketch:
   1. Two readings: P(cat | cat-or-dog image) vs P(cat | image).
-  2. Kitchen vs cat cross table, plus branching cat/dog rivers;
+  2. Kitchen vs cat cross table, plus the complex cat/dog distribution;
      boundary knowledge vs knowing the cat world (and creating from it).
-  3. The complex cat/dog distribution on its own (left panel).
+  3. Left: complex cat/dog distribution; right: hidden space with Gaussian cats.
 """
 
 import matplotlib.pyplot as plt
@@ -158,8 +158,8 @@ ax1.text(
 show_maximized(fig1)
 
 
-def sample_river(rng, polylines, n_per_seg=48, width_lo=0.035, width_hi=0.16):
-    """Sample a river-like cloud: thin branching corridors with varying width."""
+def sample_complex_branches(rng, polylines, n_per_seg=48, width_lo=0.035, width_hi=0.16):
+    """Sample the complex Cat/Dog distribution along branching corridors."""
     clouds = []
     for poly in polylines:
         poly = np.asarray(poly, dtype=float)
@@ -177,14 +177,14 @@ def sample_river(rng, polylines, n_per_seg=48, width_lo=0.035, width_hi=0.16):
     return np.vstack(clouds)
 
 
-DOG_RIVER = [
+DOG_BRANCHES = [
     [(-1.6, -0.9), (-0.7, -0.35), (0.15, 0.05), (0.9, 0.55), (1.7, 0.85)],
     [(-0.7, -0.35), (-1.1, 0.35), (-0.85, 0.95)],
     [(0.15, 0.05), (0.55, -0.55), (1.05, -0.95)],
     [(0.9, 0.55), (1.35, 1.25), (1.15, 1.75)],
     [(0.15, 0.05), (-0.25, 0.65), (0.2, 1.15)],
 ]
-CAT_RIVER = [
+CAT_BRANCHES = [
     [(-1.5, 0.85), (-0.6, 0.45), (0.1, -0.05), (0.85, -0.45), (1.65, -0.75)],
     [(-0.6, 0.45), (-1.05, -0.15), (-0.75, -0.85)],
     [(0.1, -0.05), (0.5, 0.55), (0.95, 1.05)],
@@ -192,12 +192,14 @@ CAT_RIVER = [
     [(0.1, -0.05), (-0.35, -0.55), (0.15, -1.1)],
 ]
 KITCHEN_PT = np.array([0.15, -1.85])
+# Label sits up-left of the point so it stays inside the axes (not on the frame)
+KITCHEN_LABEL_XY = (-1.55, -1.15)
 
 
-def draw_cat_dog_rivers(ax, rng, with_kitchen=True):
-    """Draw the branching Cat / Dog rivers on an axes."""
-    dogs = sample_river(rng, DOG_RIVER)
-    cats = sample_river(rng, CAT_RIVER)
+def draw_complex_cat_dog(ax, rng, with_kitchen=True):
+    """Draw the complex Cat / Dog distribution on an axes."""
+    dogs = sample_complex_branches(rng, DOG_BRANCHES)
+    cats = sample_complex_branches(rng, CAT_BRANCHES)
     ax.scatter(
         dogs[:, 0], dogs[:, 1], s=14, c='#1f77b4', alpha=0.78,
         edgecolors='none', zorder=3, label='Dog',
@@ -226,7 +228,7 @@ def draw_cat_dog_rivers(ax, rng, with_kitchen=True):
             edgecolors='white', linewidths=1.6, label='Kitchen',
         )
         ax.annotate(
-            'Kitchen', xy=KITCHEN_PT, xytext=(0.15, -2.45),
+            'Kitchen', xy=KITCHEN_PT, xytext=KITCHEN_LABEL_XY,
             fontsize=FS_ANNOT + 2, fontweight='bold', color='red', ha='center',
             arrowprops=dict(arrowstyle='->', color='red', lw=1.6),
             bbox=dict(boxstyle='round,pad=0.22', facecolor='white',
@@ -244,7 +246,7 @@ def draw_cat_dog_rivers(ax, rng, with_kitchen=True):
 # -------------------------------------------------------
 # FIGURE 2: Kitchen vs cat + complex cat/dog distribution
 # -------------------------------------------------------
-fig2, (ax_cases, ax_river) = new_figure(
+fig2, (ax_cases, ax_complex) = new_figure(
     1, 2, gridspec_kw={'width_ratios': [6.4, 2.1]},
 )
 fig2.suptitle(
@@ -337,11 +339,11 @@ ax_cases.text(
               edgecolor=C_OK, linewidth=1.6, alpha=0.97),
 )
 
-# Right: complex river-like cat / dog distribution
+# Right: complex cat / dog distribution
 rng2 = np.random.default_rng(11)
-draw_cat_dog_rivers(ax_river, rng2, with_kitchen=True)
-ax_river.set_title(
-    'Cat and Dog in image space',
+draw_complex_cat_dog(ax_complex, rng2, with_kitchen=True)
+ax_complex.set_title(
+    'Complex Cat / Dog distribution',
     fontsize=FS_AX_TITLE - 2,
 )
 
@@ -351,44 +353,66 @@ show_maximized(fig2)
 
 
 # -------------------------------------------------------
-# FIGURE 3: Complex cat/dog distribution (left panel)
+# FIGURE 3: Complex cat/dog distribution (left) vs hidden Gaussian cats (right)
 # -------------------------------------------------------
-fig3, (ax_river3, ax_note3) = new_figure(
-    1, 2, gridspec_kw={'width_ratios': [2.4, 1.0]},
+fig3, (ax_complex3, ax_latent3) = new_figure(
+    1, 2, gridspec_kw={'width_ratios': [1.0, 1.0]},
 )
 fig3.suptitle(
-    'Step 3: Cat and Dog as branching rivers in image space',
+    'Step 3: From tangled image space to a simpler hidden space',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
 rng3 = np.random.default_rng(11)
-draw_cat_dog_rivers(ax_river3, rng3, with_kitchen=True)
-ax_river3.set_title('Complex Cat / Dog distribution', fontsize=FS_AX_TITLE - 2)
+draw_complex_cat_dog(ax_complex3, rng3, with_kitchen=True)
+ax_complex3.set_title('Complex Cat / Dog distribution', fontsize=FS_AX_TITLE - 2)
 
-ax_note3.set_xlim(0, 1)
-ax_note3.set_ylim(0, 1)
-ax_note3.axis('off')
-ax_note3.text(
-    0.05, 0.72,
-    'Cat and Dog are not neat blobs.\n'
-    'Each is a river of branches --\n'
-    'narrow, widening, forking --\n'
-    'and the two rivers pass near,\n'
-    'even through, each other.',
-    ha='left', va='top', fontsize=FS_ANNOT + 1,
-    bbox=dict(boxstyle='round,pad=0.45', facecolor='lightyellow',
-              edgecolor='0.55', alpha=0.97),
+# Right panel: cats ~ Gaussian ball; dogs uneven around it; kitchen elsewhere
+cats_h = rng3.normal(loc=[0.0, 0.0], scale=[0.55, 0.55], size=(160, 2))
+# Dogs: uneven clumps around the Gaussian ball (not a ring, not another Gaussian)
+dog_clumps = [
+    ([1.8, 1.4], [0.35, 0.55], 40),
+    ([-1.6, 1.7], [0.55, 0.28], 35),
+    ([2.0, -1.1], [0.45, 0.40], 45),
+    ([-1.9, -1.5], [0.30, 0.60], 30),
+    ([0.2, 2.2], [0.70, 0.25], 25),
+]
+dogs_h = []
+for loc, scale, n in dog_clumps:
+    dogs_h.append(rng3.normal(loc=loc, scale=scale, size=(n, 2)))
+dogs_h = np.vstack(dogs_h)
+kitchen_h = rng3.uniform(low=[-2.6, -2.4], high=[2.6, 2.4], size=2)
+
+ax_latent3.scatter(
+    dogs_h[:, 0], dogs_h[:, 1], s=18, c='#1f77b4', alpha=0.75,
+    edgecolors='none', zorder=3, label='Dog',
 )
-ax_note3.text(
-    0.05, 0.28,
-    'Kitchen sits off both rivers.\n'
-    'Generative reading: Else.\n'
-    'Discriminative reading:\n'
-    'still forced to pick Cat or Dog.',
-    ha='left', va='top', fontsize=FS_ANNOT + 1,
-    bbox=dict(boxstyle='round,pad=0.45', facecolor=C_NEW,
-              edgecolor='#2874a6', alpha=0.97),
+ax_latent3.scatter(
+    cats_h[:, 0], cats_h[:, 1], s=18, c='#2ca02c', alpha=0.80,
+    edgecolors='none', zorder=4, label='Cat',
 )
+ax_latent3.scatter(
+    [kitchen_h[0]], [kitchen_h[1]], s=160, c='red', zorder=6,
+    edgecolors='white', linewidths=1.6, label='Kitchen',
+)
+ax_latent3.annotate(
+    'Kitchen', xy=kitchen_h,
+    xytext=(kitchen_h[0], kitchen_h[1] - 0.85),
+    fontsize=FS_ANNOT + 1, fontweight='bold', color='red', ha='center',
+    arrowprops=dict(arrowstyle='->', color='red', lw=1.4),
+    bbox=dict(boxstyle='round,pad=0.18', facecolor='white',
+              edgecolor='red', alpha=0.95),
+)
+ax_latent3.set_title(
+    'A hidden space where cats have gaussian distribution',
+    fontsize=FS_AX_TITLE - 3,
+)
+ax_latent3.set_xlabel('latent 1', fontsize=FS_AXIS)
+ax_latent3.set_ylabel('latent 2', fontsize=FS_AXIS)
+ax_latent3.tick_params(labelsize=FS_TICK)
+ax_latent3.grid(True, alpha=0.25)
+ax_latent3.set_aspect('equal', adjustable='datalim')
+ax_latent3.legend(loc='upper right', fontsize=FS_LEGEND, framealpha=0.92)
 
 fig3.tight_layout(rect=[0, 0.02, 1, 0.94])
 show_maximized(fig3)
@@ -413,7 +437,8 @@ Step 2 -- the difference appears on a kitchen image:
   P(cat|image) knows every possible cat image -- and can make a new one.
   P(cat|cat-or-dog image) knows only the boundary between cats and dogs.
 
-Step 3 -- the complex distribution:
-  Cat and Dog form branching rivers that nearly cross.
-  Kitchen lies off both rivers (Else for generative; forced pick for discriminative).
+Step 3 -- complex distribution vs hidden space:
+  Left: the complex Cat / Dog distribution; Kitchen is Else.
+  Right: a hidden space where cats have a Gaussian distribution;
+  dogs sit unevenly around that ball; Kitchen is somewhere else at random.
 """)
