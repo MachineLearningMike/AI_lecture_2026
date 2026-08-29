@@ -7,7 +7,11 @@ Sketch:
   1. Two readings: P(cat | cat-or-dog image) vs P(cat | image).
   2. Kitchen vs cat cross table, plus the complex cat/dog distribution;
      boundary knowledge vs knowing the cat world (and creating from it).
-  3. Left: complex cat/dog distribution; right: hidden space with Gaussian cats.
+  3. Left: complex cat/dog distribution; right: latent space with Gaussian cats.
+  4. Create a model that knows to tell "I don't know."
+  5. Create a model that can create a new cat image.
+  6. What if a discriminative model D often fails?
+     Train G on situations where D works; if G says "I don't know," don't trust D.
 """
 
 import matplotlib.pyplot as plt
@@ -340,7 +344,8 @@ ax_cases.text(
 )
 ax_cases.text(
     x0 + table_w / 2, y0 - gap_table_to_box - 1.55 - gap_between_boxes,
-    r'So, $P(\mathrm{cat}\mid\mathrm{image})=P(\mathrm{cat}\mid\mathrm{cat\ or\ allElse\ image})$',
+    'Think of the allElse points.\n'
+    'They are learned by learning all the cat points.',
     ha='center', va='top', fontsize=FS_ANNOT + 2, fontweight='bold',
     color=C_DARK,
     bbox=dict(boxstyle='round,pad=0.4', facecolor=C_GOAL,
@@ -427,6 +432,258 @@ show_maximized(fig3)
 
 
 # -------------------------------------------------------
+# FIGURE 4: A model that can say "I don't know"
+# -------------------------------------------------------
+fig4, ax4 = new_figure()
+fig4.suptitle(
+    'Step 4: Create a model that knows to tell "I don\'t know"',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+blank_slide(ax4)
+
+round_box(ax4, 0.5, 5.5, 11.0, 1.9, C_DARK, C_DARK, lw=0)
+ax4.text(
+    6.0, 6.45,
+    'A forced choice is not knowledge.\n'
+    'Real knowledge includes the right to refuse.',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 1,
+    fontweight='bold', color='white',
+)
+
+# Left: cannot refuse
+round_box(ax4, 0.5, 0.7, 5.3, 4.4, C_OLD, '#e67e22', lw=2.4)
+ax4.text(
+    3.15, 4.55, 'Boundary-only model',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+    fontweight='bold', color='#a04000',
+)
+ax4.text(
+    3.15, 3.55,
+    r'$P(\mathrm{cat}\mid\mathrm{cat\ or\ dog})$',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+    fontweight='bold', color='#a04000',
+)
+ax4.text(
+    3.15, 2.35,
+    'Kitchen arrives.\n'
+    'The model must still answer\n'
+    '"cat" or "dog."\n\n'
+    'It has no word for\n'
+    '"I don\'t know."',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+)
+
+# Right: can refuse
+round_box(ax4, 6.2, 0.7, 5.3, 4.4, C_GOAL, C_OK, lw=2.4)
+ax4.text(
+    8.85, 4.55, 'World model',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+    fontweight='bold', color=C_OK,
+)
+ax4.text(
+    8.85, 3.55,
+    r'$P(\mathrm{cat}\mid\mathrm{image})$',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+    fontweight='bold', color=C_DARK,
+)
+ax4.text(
+    8.85, 2.35,
+    'Kitchen arrives.\n'
+    'Far from every cat point,\n'
+    'so allElse dominates.\n\n'
+    'The model can say:\n'
+    '"I don\'t know."',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+)
+
+show_maximized(fig4)
+
+
+# -------------------------------------------------------
+# FIGURE 5: A model that can create a new cat image
+# -------------------------------------------------------
+fig5, (ax5a, ax5b) = new_figure(1, 2, gridspec_kw={'width_ratios': [1.0, 1.0]})
+fig5.suptitle(
+    'Step 5: Create a model that can create a new cat image',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+
+rng5 = np.random.default_rng(21)
+
+# Left: boundary-only knowledge -- a separator, no generator
+cats_b = rng5.normal(loc=[-1.1, 0.2], scale=[0.45, 0.50], size=(80, 2))
+dogs_b = rng5.normal(loc=[1.1, -0.1], scale=[0.48, 0.45], size=(80, 2))
+ax5a.scatter(dogs_b[:, 0], dogs_b[:, 1], s=22, c='#1f77b4', alpha=0.75,
+             edgecolors='none', label='Dog')
+ax5a.scatter(cats_b[:, 0], cats_b[:, 1], s=22, c='#2ca02c', alpha=0.75,
+             edgecolors='none', label='Cat')
+ax5a.plot([-0.2, 0.2], [-2.2, 2.2], color='#c0392b', lw=2.8, label='boundary')
+ax5a.set_title('Boundary model: separates, does not invent', fontsize=FS_AX_TITLE - 2)
+ax5a.set_xlabel('feature 1', fontsize=FS_AXIS)
+ax5a.set_ylabel('feature 2', fontsize=FS_AXIS)
+ax5a.tick_params(labelsize=FS_TICK)
+ax5a.grid(True, alpha=0.25)
+ax5a.set_aspect('equal', adjustable='datalim')
+ax5a.legend(loc='upper left', fontsize=FS_LEGEND, framealpha=0.92)
+ax5a.text(
+    0.98, 0.05,
+    'A line between classes\n'
+    'cannot mint a new cat.',
+    transform=ax5a.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor=C_OLD, edgecolor='#e67e22', alpha=0.95),
+)
+
+# Right: same latent-space panel as Step 3, plus one new sampled cat
+cats_h5 = rng5.normal(loc=[0.0, 0.0], scale=[0.55, 0.55], size=(160, 2))
+dog_clumps5 = [
+    ([1.8, 1.4], [0.35, 0.55], 40),
+    ([-1.6, 1.7], [0.55, 0.28], 35),
+    ([2.0, -1.1], [0.45, 0.40], 45),
+    ([-1.9, -1.5], [0.30, 0.60], 30),
+    ([0.2, 2.2], [0.70, 0.25], 25),
+]
+dogs_h5 = np.vstack([
+    rng5.normal(loc=loc, scale=scale, size=(n, 2))
+    for loc, scale, n in dog_clumps5
+])
+kitchen_h5 = rng5.uniform(low=[-2.6, -2.4], high=[2.6, 2.4], size=2)
+new_cat = rng5.normal(loc=[0.0, 0.0], scale=[0.55, 0.55], size=2)
+
+ax5b.scatter(
+    dogs_h5[:, 0], dogs_h5[:, 1], s=18, c='#1f77b4', alpha=0.75,
+    edgecolors='none', zorder=3, label='Dog',
+)
+ax5b.scatter(
+    cats_h5[:, 0], cats_h5[:, 1], s=18, c='#2ca02c', alpha=0.80,
+    edgecolors='none', zorder=4, label='Cat',
+)
+ax5b.scatter(
+    [kitchen_h5[0]], [kitchen_h5[1]], s=160, c='red', zorder=6,
+    edgecolors='white', linewidths=1.6, label='Kitchen',
+)
+ax5b.scatter(
+    [new_cat[0]], [new_cat[1]], s=220, c='#145a32', marker='*',
+    edgecolors='white', linewidths=1.2, zorder=7, label='new cat',
+)
+ax5b.annotate(
+    'Kitchen', xy=kitchen_h5,
+    xytext=(kitchen_h5[0], kitchen_h5[1] - 0.85),
+    fontsize=FS_ANNOT + 1, fontweight='bold', color='red', ha='center',
+    arrowprops=dict(arrowstyle='->', color='red', lw=1.4),
+    bbox=dict(boxstyle='round,pad=0.18', facecolor='white',
+              edgecolor='red', alpha=0.95),
+)
+ax5b.annotate(
+    'new cat image', xy=new_cat,
+    xytext=(new_cat[0] + 1.05, new_cat[1] + 0.95),
+    fontsize=FS_ANNOT + 1, fontweight='bold', color='#145a32', ha='left',
+    arrowprops=dict(arrowstyle='->', color='#145a32', lw=1.5),
+    bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
+              edgecolor='#145a32', alpha=0.95),
+)
+ax5b.set_title(
+    'A latent space where cats have a gaussian distribution',
+    fontsize=FS_AX_TITLE - 3,
+)
+ax5b.set_xlabel('latent 1', fontsize=FS_AXIS)
+ax5b.set_ylabel('latent 2', fontsize=FS_AXIS)
+ax5b.tick_params(labelsize=FS_TICK)
+ax5b.grid(True, alpha=0.25)
+ax5b.set_aspect('equal', adjustable='datalim')
+ax5b.legend(loc='upper right', fontsize=FS_LEGEND, framealpha=0.92)
+ax5b.text(
+    0.02, 0.05,
+    'Sample inside the cat Gaussian\n'
+    '=> create a new cat image.',
+    transform=ax5b.transAxes, ha='left', va='bottom', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor=C_GOAL, edgecolor=C_OK, alpha=0.95),
+)
+
+fig5.tight_layout(rect=[0, 0.02, 1, 0.94])
+show_maximized(fig5)
+
+
+# -------------------------------------------------------
+# FIGURE 6: When D fails -- let G decide whether to trust D
+# -------------------------------------------------------
+fig6, ax6 = new_figure()
+fig6.suptitle(
+    'Step 6: What if a discriminative model D often fails?',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+blank_slide(ax6)
+
+round_box(ax6, 0.5, 5.55, 11.0, 1.85, C_DARK, C_DARK, lw=0)
+ax6.text(
+    6.0, 6.45,
+    'Train a generative model G on the situations where D works well.\n'
+    'If G says "I don\'t know this situation," do not trust D there.',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+    fontweight='bold', color='white',
+)
+
+# Pipeline: Input -> G gate -> trust D or refuse D
+round_box(ax6, 0.5, 3.35, 2.2, 1.85, C_MUTE, '0.45', lw=2.0)
+ax6.text(1.6, 4.25, 'Input\nimage', ha='center', va='center',
+         fontsize=FS_ANNOT + 1, fontweight='bold', color=C_DARK)
+
+round_box(ax6, 3.5, 3.35, 2.6, 1.85, C_NEW, '#2874a6', lw=2.0)
+ax6.text(4.8, 4.25, 'G: known\nsituation?', ha='center', va='center',
+         fontsize=FS_ANNOT + 1, fontweight='bold', color=C_DARK)
+
+arrow(ax6, 2.75, 4.25, 3.45, 4.25, C_DARK, lw=2.2)
+
+round_box(ax6, 7.0, 4.35, 4.5, 1.15, C_GOAL, C_OK, lw=2.0)
+ax6.text(9.25, 4.9, 'Yes  =>  trust D\'s answer', ha='center', va='center',
+         fontsize=FS_ANNOT + 1, fontweight='bold', color=C_OK)
+
+round_box(ax6, 7.0, 2.95, 4.5, 1.15, C_OLD, '#e67e22', lw=2.0)
+ax6.text(9.25, 3.5, 'No  =>  do not trust D', ha='center', va='center',
+         fontsize=FS_ANNOT + 1, fontweight='bold', color='#a04000')
+
+arrow(ax6, 6.15, 4.55, 6.95, 4.9, C_OK, lw=2.0)
+arrow(ax6, 6.15, 3.95, 6.95, 3.5, '#e67e22', lw=2.0)
+
+# Two outcome cards
+round_box(ax6, 0.5, 1.35, 5.3, 1.7, C_GOAL, C_OK, lw=2.0)
+ax6.text(
+    3.15, 2.55, 'Inside G\'s world',
+    ha='center', va='center', fontsize=FS_ANNOT + 2,
+    fontweight='bold', color=C_OK,
+)
+ax6.text(
+    3.15, 1.85,
+    'G recognizes the situation.\n'
+    'D\'s cat/dog call is allowed to speak.',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+)
+
+round_box(ax6, 6.2, 1.35, 5.3, 1.7, C_OLD, '#e67e22', lw=2.0)
+ax6.text(
+    8.85, 2.55, 'Outside G\'s world',
+    ha='center', va='center', fontsize=FS_ANNOT + 2,
+    fontweight='bold', color='#a04000',
+)
+ax6.text(
+    8.85, 1.85,
+    'G says "I don\'t know."\n'
+    'D may still shout an answer -- we ignore it.',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+)
+
+round_box(ax6, 0.5, 0.25, 11.0, 0.95, 'lightyellow', '0.55', lw=1.6)
+ax6.text(
+    6.0, 0.72,
+    'Discussion: If the dataset is hard to model discriminatively,\n'
+    'will it be easy to model it generatively?',
+    ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
+    color=C_DARK,
+)
+
+show_maximized(fig6)
+
+
+# -------------------------------------------------------
 # KEY INSIGHTS
 # -------------------------------------------------------
 print("\n" + "=" * 60)
@@ -445,8 +702,21 @@ Step 2 -- the difference appears on a kitchen image:
   P(cat|image) knows every possible cat image -- and can make a new one.
   P(cat|cat-or-dog image) knows only the boundary between cats and dogs.
 
-Step 3 -- complex distribution vs hidden space:
+Step 3 -- complex distribution vs latent space:
   Left: the complex Cat / Dog distribution; Kitchen is Else.
-  Right: a hidden space where cats have a Gaussian distribution;
+  Right: a latent space where cats have a Gaussian distribution;
   dogs sit unevenly around that ball; Kitchen is somewhere else at random.
+
+Step 4 -- "I don't know":
+  A boundary-only model cannot refuse: kitchen still becomes cat or dog.
+  A world model can refuse: far from cat mass => allElse => "I don't know."
+
+Step 5 -- create a new cat:
+  A boundary separates classes but cannot invent a new cat.
+  A world model samples from the cat distribution and creates a new cat image.
+
+Step 6 -- when D often fails:
+  Train G on situations where D works well.
+  If G says "I don't know this situation," do not trust D there.
+  G becomes a gate that reduces D's failures outside its comfort zone.
 """)
