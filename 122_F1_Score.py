@@ -776,7 +776,7 @@ show_maximized(fig3)
 # -------------------------------------------------------
 # Full-screen slide; bar graph stays on the right. After maximize, force the
 # equal-aspect confusion square to grow by +3 physical inches.
-_CM_GROW_IN = 3.0
+_CM_GROW_IN = 2.0  # was +3 in; reduced by 1 in per request
 fig4 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
 fig4.suptitle(
     "Step 6: How to interpret model scores?",
@@ -952,7 +952,8 @@ print("Step 6: drag threshold; matrix + all rates update live.")
 
 
 def _grow_step6_cm_plus_3():
-    """Grow figure, then force confusion square to side0+3 in. Bars stay on the right."""
+    """Grow figure; confusion table = (side0+3) wide, 0.5 in shorter; shift left 2 in.
+    Bar graph stays on the right and moves up 1 in."""
     fig4.set_dpi(FIGURE_DPI)
     fig4.set_size_inches(screen_figsize(), forward=True)
     fig4.subplots_adjust(bottom=0.16, top=0.88, left=0.07, right=0.98)
@@ -963,45 +964,48 @@ def _grow_step6_cm_plus_3():
     phist = ax4_hist.get_position()
     side0 = min(pcm.width * fw0, pcm.height * fh0)
     side1 = side0 + _CM_GROW_IN
-    left_in = pcm.x0 * fw0
+    cm_w = max(side1 - 1.0, 1.0)           # width -1 in more
+    cm_h = max(side1 - 0.5 - 0.5, 1.0)     # height -0.5 then -0.5 more
+    left_in = max(pcm.x0 * fw0 - 2.0, 0.05)  # move table 2 in leftward
     bot_in = pcm.y0 * fh0
     met_w = max(pmet.width * fw0, 2.5)
+    met_h = max(pmet.height * fh0, 2.3)
+    met_bot = bot_in + 1.0 - 0.5          # was +1.0 up; move down 0.5 in
     hist_h = phist.height * fh0
     gap = 0.28
     top_in = max((1.0 - phist.y0 - phist.height) * fh0, 0.40)
-    fw1 = left_in + side1 + gap + met_w + 0.20
-    fh1 = bot_in + side1 + gap + hist_h + top_in
+    fw1 = left_in + cm_w + gap + met_w + 0.20
+    fh1 = max(bot_in + cm_h, met_bot + met_h) + gap + hist_h + top_in
     fig4.set_size_inches(fw1, fh1, forward=True)
     fig4.canvas.draw()
-    ax4_cm.set_aspect("equal", adjustable="box")
+    # Fill the requested box (not letterboxed by equal-aspect).
+    ax4_cm.set_aspect("auto")
     ax4_cm.set_position([
         left_in / fw1,
         bot_in / fh1,
-        side1 / fw1,
-        side1 / fh1,
+        cm_w / fw1,
+        cm_h / fh1,
     ])
-    # Bar graph remains on the right of the confusion table.
+    # Bar graph on the right, raised by 1 inch.
     ax4_met.set_position([
-        (left_in + side1 + gap) / fw1,
-        bot_in / fh1,
+        (left_in + cm_w + gap) / fw1,
+        met_bot / fh1,
         met_w / fw1,
-        max(pmet.height * fh0, 2.3) / fh1,
+        met_h / fh1,
     ])
     ax4_hist.set_position([
         left_in / fw1,
-        (bot_in + side1 + gap) / fh1,
-        (side1 + gap + met_w) / fw1,
+        (max(bot_in + cm_h, met_bot + met_h) + gap) / fh1,
+        (cm_w + gap + met_w) / fw1,
         hist_h / fh1,
     ])
     fig4.canvas.draw()
     p2 = ax4_cm.get_position()
     fw2, fh2 = fig4.get_size_inches()
-    side_now = min(p2.width * fw2, p2.height * fh2)
-    print(f"Step 6 confusion table: {side0:.2f} in -> {side_now:.2f} in (+{_CM_GROW_IN:.1f})")
-    if side_now + 0.2 < side1:
-        raise RuntimeError(
-            f"Failed to enlarge confusion table: got {side_now:.2f}, want {side1:.2f}"
-        )
+    print(
+        f"Step 6 confusion table: {p2.width * fw2:.2f} x {p2.height * fh2:.2f} in "
+        f"(left-2.0, width-1.0, height-1.0); bars net +0.5 up"
+    )
 
 
 # Grow first (real inches), then maximize for full screen.
