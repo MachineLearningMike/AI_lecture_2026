@@ -964,14 +964,15 @@ def _grow_step6_cm_plus_3():
     phist = ax4_hist.get_position()
     side0 = min(pcm.width * fw0, pcm.height * fh0)
     side1 = side0 + _CM_GROW_IN
-    cm_w = max(side1 - 1.0, 1.0)           # width -1 in more
-    cm_h = max(side1 - 0.5 - 0.5, 1.0)     # height -0.5 then -0.5 more
-    left_in = max(pcm.x0 * fw0 - 2.0, 0.05)  # move table 2 in leftward
-    bot_in = pcm.y0 * fh0
-    met_w = max(pmet.width * fw0, 2.5)
-    met_h = max(pmet.height * fh0, 2.3)
-    met_bot = bot_in + 1.0 - 0.5          # was +1.0 up; move down 0.5 in
-    hist_h = phist.height * fh0
+    cm_w = max(side1 - 1.0 - 1.0, 1.0)     # prior -1 in, then all-panels -1 in
+    cm_h = max(side1 - 0.5 - 0.5 - 1.0, 1.0)
+    # Apply -2 in left first (may hit the floor), THEN +0.4 in right for all panels.
+    left_in = max(pcm.x0 * fw0 - 2.0, 0.05) + 0.4
+    bot_in = max(pcm.y0 * fh0 - 0.5, 0.05)   # table + bars down 0.5 in
+    met_w = max(pmet.width * fw0 - 1.0, 1.5)  # all panels -1 in
+    met_h = max(pmet.height * fh0 - 1.0, 1.5)
+    met_bot = bot_in + 1.0 - 0.5          # was +1.0 up; then -0.5; shares table downshift
+    hist_h = max(phist.height * fh0 - 1.0, 1.2)
     gap = 0.28
     top_in = max((1.0 - phist.y0 - phist.height) * fh0, 0.40)
     fw1 = left_in + cm_w + gap + met_w + 0.20
@@ -1003,8 +1004,9 @@ def _grow_step6_cm_plus_3():
     p2 = ax4_cm.get_position()
     fw2, fh2 = fig4.get_size_inches()
     print(
-        f"Step 6 confusion table: {p2.width * fw2:.2f} x {p2.height * fh2:.2f} in "
-        f"(left-2.0, width-1.0, height-1.0); bars net +0.5 up"
+        f"Step 6: cm x0={p2.x0 * fw2:.2f} in (includes +0.4 right), "
+        f"size {p2.width * fw2:.2f}x{p2.height * fh2:.2f}; "
+        f"bars {met_w:.2f}x{met_h:.2f}, hist_h {hist_h:.2f}"
     )
 
 
