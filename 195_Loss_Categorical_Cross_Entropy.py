@@ -11,6 +11,7 @@ Sketch:
   5. Drag the true-class probability: watch -log p_true
   6. Confusion of confidence: correct argmax can still be expensive
   7. Takeaway -- CE embraces multi-class because labels are categorical
+  8. Torch -- from-scratch CE vs nn.CrossEntropyLoss
 
 Companion to 194_Binary_Cross_Entropy.py, 035_regression_classification.py,
 190_loss_functions.py, 320_softmax.py.
@@ -503,6 +504,81 @@ ax5.text(
 show_maximized(fig5)
 
 
+# -------------------------------------------------------
+# FIGURE 8: Torch -- from scratch vs API
+# -------------------------------------------------------
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+torch.manual_seed(195)
+logits_t = torch.tensor([
+    [2.0, 0.5, -1.0],
+    [0.1, 1.5, 0.2],
+], dtype=torch.float32)
+y_idx = torch.tensor([0, 1], dtype=torch.long)
+
+log_p = F.log_softmax(logits_t, dim=-1)
+ce_scratch = -log_p[torch.arange(len(y_idx)), y_idx].mean()
+ce_api = nn.CrossEntropyLoss()(logits_t, y_idx)
+
+CODE_CE_SCRATCH = (
+    'import torch\n'
+    'import torch.nn.functional as F\n'
+    '\n'
+    'logits = torch.tensor([\n'
+    '    [2.0, 0.5, -1.0],\n'
+    '    [0.1, 1.5,  0.2],\n'
+    '])\n'
+    'y = torch.tensor([0, 1])  # class indices\n'
+    '\n'
+    '# from scratch: softmax then -log p_true\n'
+    'log_p = F.log_softmax(logits, dim=-1)\n'
+    'loss = -log_p[torch.arange(len(y)), y].mean()\n'
+    'print(loss.item())'
+)
+CODE_CE_API = (
+    'import torch\n'
+    'import torch.nn as nn\n'
+    '\n'
+    'logits = torch.tensor([\n'
+    '    [2.0, 0.5, -1.0],\n'
+    '    [0.1, 1.5,  0.2],\n'
+    '])\n'
+    'y = torch.tensor([0, 1])  # class indices\n'
+    '\n'
+    '# off-the-shelf API (logits in!)\n'
+    'loss = nn.CrossEntropyLoss()(logits, y)\n'
+    'print(loss.item())'
+)
+
+fig_t, (ax_ts, ax_ta) = new_figure(1, 2)
+fig_t.suptitle(
+    'Step 8: Torch CE -- from scratch vs nn.CrossEntropyLoss',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+for ax, title, code, face, edge in [
+    (ax_ts, 'From scratch', CODE_CE_SCRATCH, C_NEW, '#2874a6'),
+    (ax_ta, 'Off-the-shelf API', CODE_CE_API, '#f5eef8', C_MULTI),
+]:
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+    ax.set_title(title, fontsize=FS_AX_TITLE - 1, color=edge)
+    round_box(ax, 0.35, 1.3, 9.3, 8.2, face, edge, lw=2.0)
+    ax.text(0.7, 5.3, code, ha='left', va='center',
+            fontsize=FS_ANNOT - 1, family='monospace', linespacing=1.35)
+round_box(ax_ts, 0.35, 0.25, 9.3, 0.9, '#fdebd0', '#d68910', lw=1.6)
+ax_ts.text(
+    5.0, 0.7,
+    f'scratch = {ce_scratch.item():.6f}   |   API = {ce_api.item():.6f}   |   match = {torch.allclose(ce_scratch, ce_api)}',
+    ha='center', va='center', fontsize=FS_ANNOT,
+)
+fig_t.tight_layout(rect=[0, 0.02, 1, 0.94])
+print(f'Step 8: Torch CE scratch={ce_scratch.item():.6f} API={ce_api.item():.6f}')
+show_maximized(fig_t)
+
+
 print("\n" + "=" * 60)
 print("195 CATEGORICAL CROSS-ENTROPY")
 print("=" * 60)
@@ -519,7 +595,8 @@ Steps:
   5. Drag p_true on -log curve
   6. Correct argmax, different CE
   7. Takeaway
+  8. Torch -- scratch CE matches nn.CrossEntropyLoss()
 
-See also: 194_Binary_Cross_Entropy.py, 035_regression_classification.py,
+See also: 194_Loss_Binary_Cross_Entropy.py, 035_regression_classification.py,
           190_loss_functions.py, 320_softmax.py
 """)

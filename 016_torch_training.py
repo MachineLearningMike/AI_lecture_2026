@@ -6,16 +6,16 @@ Lecture slides that explain 015_torch_training.ipynb.
 The notebook is a conceptual lean version of 070_torch_training.py:
   - one parameter w, no bias:  y_hat = w * x
   - MSE loss
-  - full-batch SGD on 5 noisy points near y = 2x
+  - full-batch gradient descent on 30 noisy points near y = 2x
   - no animation -- just the loop, stripped bare
 
 Sketch:
-  1. Notebook code block 1 -- setup (exact)
-  2. Notebook code block 2 -- training loop (exact)
+  1. Notebook code block 1 -- setup
+  2. Notebook code block 2 -- training loop
   3. Model: one weight, no bias
-  4. Data: five noisy points on y ≈ 2x
+  4. Data: thirty noisy points on y ≈ 2x
   5. The four pieces -- model, loss, backward, step
-  6. One SGD step as a cycle
+  6. One full-batch training step as a cycle
   7. The training loop, line by line
   8. After training -- w approaches 2
   9. Mental checklist before richer models
@@ -121,25 +121,33 @@ C_OLD = '#fce4d6'
 
 
 # -------------------------------------------------------
-# Reproduce the notebook's tiny experiment (for live numbers)
+# Full-batch experiment (live numbers for later slides)
+# N=30, mild noise so least-squares w sits near the true slope 2.
 # -------------------------------------------------------
-x = torch.tensor([[1.0], [2.0], [3.0], [4.0], [5.0]])
-y = 2.0 * x + 2.5 * torch.randn(5, 1)
+N = 30
+x = torch.linspace(1.0, 5.0, N).unsqueeze(1)
+y = 2.0 * x + 0.15 * torch.randn(N, 1)
 
 model = nn.Linear(1, 1, bias=False)
+with torch.no_grad():
+    model.weight.fill_(-0.5)  # start far from 2 so the path is visible
 loss_fn = nn.MSELoss()
-opt = torch.optim.SGD(model.parameters(), lr=0.005)
+# Full-batch gradient descent on all N rows each step (PyTorch optimizer API).
+LR = 0.005
+opt = torch.optim.SGD(model.parameters(), lr=LR)
 
 w0 = model.weight.item()
-SGD_STEPS = 100
+STEPS = 150
 w_path = [w0]
+grad_path = []
 loss_path = []
 
-for _ in range(SGD_STEPS):
+for _ in range(STEPS):
     y_hat = model(x)
     loss = loss_fn(y_hat, y)
     opt.zero_grad()
     loss.backward()
+    grad_path.append(model.weight.grad.item())
     opt.step()
     w_path.append(model.weight.item())
     loss_path.append(loss.item())
@@ -147,32 +155,37 @@ for _ in range(SGD_STEPS):
 w_final = model.weight.item()
 mse_final = loss_fn(model(x), y).item()
 w_path = np.array(w_path)
+grad_path = np.array(grad_path)
 loss_path = np.array(loss_path)
 
 x_np = x.numpy().ravel()
 y_np = y.numpy().ravel()
 
 
-# Exact code cells from 015_torch_training.ipynb (no edits).
+# Code cells for Steps 1-2 (same recipe as the live run above).
 NB_CODE_1 = (
     'import torch\n'
     'import torch.nn as nn\n'
     '\n'
     'torch.manual_seed(523)\n'
     '\n'
-    'x = torch.tensor([[1.0], [2.0], [3.0], [4.0], [5.0]])\n'
-    'y = 2.0 * x + 2.5 * torch.randn(5, 1)   # noisy observations of y = 2x\n'
+    'N = 30\n'
+    'x = torch.linspace(1.0, 5.0, N).unsqueeze(1)\n'
+    'y = 2.0 * x + 0.15 * torch.randn(N, 1)  # mild noise; truth y=2x\n'
     '\n'
     'model = nn.Linear(1, 1, bias=False)     # one weight w; y_hat = w * x\n'
+    'with torch.no_grad():\n'
+    '    model.weight.fill_(-0.5)            # start far from 2\n'
     'loss_fn = nn.MSELoss()\n'
+    '# full-batch GD on all N rows (PyTorch API class name below)\n'
     'opt = torch.optim.SGD(model.parameters(), lr=0.005)\n'
 )
 
 NB_CODE_2 = (
-    'SGD_STEPS = 100\n'
+    'STEPS = 150\n'
     '\n'
-    'for sgd_step in range(SGD_STEPS):\n'
-    '    y_hat = model(x)              # forward\n'
+    'for step in range(STEPS):\n'
+    '    y_hat = model(x)              # forward on ALL N points\n'
     '    loss = loss_fn(y_hat, y)      # scalar MSE\n'
     '    opt.zero_grad()\n'
     '    loss.backward()               # compute d(loss)/dw\n'
@@ -189,7 +202,6 @@ def show_code_slide(step_no, title, code):
     fig.suptitle(title, fontsize=FS_FIGURE_TITLE - 2, fontweight='bold')
     blank_slide(ax)
     round_box(ax, 0.45, 0.45, 11.1, 7.1, '#fbfcfc', '#2874a6', lw=2.0)
-    # Exact notebook source -- no add/remove; left-aligned monospace.
     ax.text(
         0.85, 4.0, code.rstrip('\n'),
         ha='left', va='center',
@@ -201,21 +213,21 @@ def show_code_slide(step_no, title, code):
 
 
 # -------------------------------------------------------
-# FIGURE 1: Notebook code block 1 (exact)
+# FIGURE 1: Notebook code block 1
 # -------------------------------------------------------
 show_code_slide(
     1,
-    'Step 1: 015 code block 1 -- setup (exact)',
+    'Step 1: 015 code block 1 -- setup',
     NB_CODE_1,
 )
 
 
 # -------------------------------------------------------
-# FIGURE 2: Notebook code block 2 (exact)
+# FIGURE 2: Notebook code block 2
 # -------------------------------------------------------
 show_code_slide(
     2,
-    'Step 2: 015 code block 2 -- training loop (exact)',
+    'Step 2: 015 code block 2 -- training loop (full batch)',
     NB_CODE_2,
 )
 
@@ -223,7 +235,19 @@ show_code_slide(
 # -------------------------------------------------------
 # FIGURE 3: Model -- one weight
 # -------------------------------------------------------
-fig3m, (ax2a, ax2b) = new_figure(1, 2)
+# Left panel +2.5 inches broader WITHOUT shrinking the right panel:
+# keep right absolute width; grow whole figure by 2.5 inches.
+_fw3, _fh3 = screen_figsize()
+_usable3 = _fw3 * 0.92
+_right_in3 = _usable3 * 0.5
+_left_in3 = _usable3 * 0.5 + 2.5
+_fw3_wide = (_left_in3 + _right_in3) / 0.92
+fig3m, (ax2a, ax2b) = plt.subplots(
+    1, 2,
+    figsize=(_fw3_wide, _fh3),
+    dpi=FIGURE_DPI,
+    gridspec_kw={'width_ratios': [_left_in3, _right_in3]},
+)
 fig3m.suptitle(
     'Step 3: The model is deliberately tiny -- one free number w',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
@@ -275,7 +299,24 @@ ax2b.text(
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
 fig3m.tight_layout(rect=[0, 0, 1, 0.94])
-show_maximized(fig3m)
+# Keep the wider figsize (do not reset to default screen width).
+fig3m.set_dpi(FIGURE_DPI)
+fig3m.set_size_inches(_fw3_wide, _fh3, forward=True)
+fig3m.canvas.draw_idle()
+_manager3 = getattr(fig3m.canvas, 'manager', None)
+if _manager3 is not None:
+    try:
+        _manager3.window.state('zoomed')
+    except Exception:
+        try:
+            _manager3.window.showMaximized()
+        except Exception:
+            try:
+                _manager3.frame.Maximize(True)
+            except Exception:
+                pass
+add_step_footer(fig3m)
+plt.show()
 
 
 # -------------------------------------------------------
@@ -283,22 +324,22 @@ show_maximized(fig3m)
 # -------------------------------------------------------
 fig3, (ax3a, ax3b) = new_figure(1, 2)
 fig3.suptitle(
-    'Step 4: Five noisy observations of y = 2x',
+    f'Step 4: {N} noisy observations of y = 2x',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
 ax3a.set_xlim(0, 10)
 ax3a.set_ylim(0, 10)
 ax3a.axis('off')
-ax3a.set_title('Notebook data', fontsize=FS_AX_TITLE - 1)
+ax3a.set_title('Training data', fontsize=FS_AX_TITLE - 1)
 round_box(ax3a, 0.4, 1.0, 9.2, 8.0, C_NEW, '#2874a6', lw=2.0)
 ax3a.text(
     5.0, 7.4,
-    'x = [[1], [2], [3], [4], [5]]\n\n'
-    'y = 2*x + noise\n\n'
-    'Tiny on purpose:\n'
-    'every SGD step can use ALL points\n'
-    '(full-batch GD on 5 rows).',
+    f'N = {N}\n'
+    'x = linspace(1, 5, N)\n\n'
+    'y = 2*x + mild noise\n\n'
+    'Every training step uses ALL points\n'
+    f'(full-batch GD on {N} rows).',
     ha='center', va='center', fontsize=FS_ANNOT + 1,
     family='monospace',
 )
@@ -358,7 +399,7 @@ ax4.text(
     'model  = prediction\n'
     'loss   = wrongness\n'
     'backward = compute gradient into .grad\n'
-    'step   = apply SGD update\n\n'
+    'step   = apply the parameter update\n\n'
     'If you mix these four up, debugging becomes superstition.',
     ha='center', va='center', fontsize=FS_ANNOT + 1,
 )
@@ -366,11 +407,11 @@ show_maximized(fig4)
 
 
 # -------------------------------------------------------
-# FIGURE 6: One SGD step cycle
+# FIGURE 6: One full-batch training step cycle
 # -------------------------------------------------------
 fig5, ax5 = new_figure()
 fig5.suptitle(
-    'Step 6: One SGD step is a closed cycle',
+    'Step 6: One full-batch training step is a closed cycle',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 blank_slide(ax5)
@@ -399,7 +440,7 @@ arrow(ax5, 2.4, 3.9, 2.4, 5.1, C_DARK, lw=2.2)
 
 ax5.text(
     6.0, 0.55,
-    'In 015: every step uses all 5 points (full batch).\n'
+    f'Here: every step uses all {N} points (full batch).\n'
     'Same cycle scales to mini-batches later -- only the data slice changes.',
     ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
     bbox=dict(boxstyle='round,pad=0.35', facecolor='lightyellow',
@@ -423,7 +464,7 @@ lines = [
     ('loss = loss_fn(y_hat, y)', 'Scalar MSE -- one number to reduce.'),
     ('opt.zero_grad()', 'Clear old .grad (grads accumulate by default).'),
     ('loss.backward()', 'Autograd writes d(loss)/dw into w.grad.'),
-    ('opt.step()', 'SGD: w <- w - lr * w.grad.'),
+    ('opt.step()', 'Update: w <- w - lr * w.grad.'),
 ]
 for i, (code, meaning) in enumerate(lines):
     y0 = 6.5 - i * 1.15
@@ -437,37 +478,45 @@ for i, (code, meaning) in enumerate(lines):
 
 ax6.text(
     6.0, 0.45,
-    f'Notebook settings:  lr = 0.005,  SGD_STEPS = {SGD_STEPS},  seed = 523',
+    f'Settings:  lr = {LR:g},  STEPS = {STEPS},  seed = 523  (full batch)',
     ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
 )
 show_maximized(fig6)
 
 
 # -------------------------------------------------------
-# FIGURE 8: After training
+# FIGURE 8: After training -- w path + gradient series
 # -------------------------------------------------------
 fig7, (ax7a, ax7b) = new_figure(1, 2)
 fig7.suptitle(
-    'Step 8: After the loop -- w moves toward 2',
+    'Step 8: After the loop -- w converges near the true slope 2',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
-ax7a.plot(w_path, color='#2874a6', lw=2.6)
-ax7a.axhline(2.0, color=C_OK, ls='--', lw=2.0, label='true slope 2')
-ax7a.set_title('Trajectory of w', fontsize=FS_AX_TITLE - 1)
-ax7a.set_xlabel('SGD step', fontsize=FS_AXIS)
-ax7a.set_ylabel('w', fontsize=FS_AXIS)
-ax7a.tick_params(labelsize=FS_TICK)
+steps_w = np.arange(len(w_path))
+steps_g = np.arange(len(grad_path))  # one grad per update (before step)
+line_w, = ax7a.plot(steps_w, w_path, color='#2874a6', lw=2.6, label='w')
+line_true = ax7a.axhline(2.0, color=C_OK, ls='--', lw=2.0, label='true slope 2')
+ax7a.set_title(r'Trajectory of $w$ and gradient $g=\partial\ell/\partial w$',
+               fontsize=FS_AX_TITLE - 2)
+ax7a.set_xlabel('training step', fontsize=FS_AXIS)
+ax7a.set_ylabel('w', fontsize=FS_AXIS, color='#2874a6')
+ax7a.tick_params(labelsize=FS_TICK, axis='y', labelcolor='#2874a6')
 ax7a.grid(True, alpha=0.3)
-ax7a.legend(fontsize=FS_LEGEND, loc='best')
-ax7a.text(
-    0.98, 0.02,
-    f'start w = {w0:.3f}\n'
-    f'final w = {w_final:.3f}\n'
-    f'final MSE = {mse_final:.3f}',
-    transform=ax7a.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
+ax7a.relim()
+ax7a.autoscale_view()
+ylo0, yhi0 = ax7a.get_ylim()
+# Same numeric ticks for g as for w. If |g| overflows w's window, scale g down.
+room = max(abs(ylo0), abs(yhi0), 1e-12)
+g_peak = float(np.max(np.abs(grad_path))) if len(grad_path) else 0.0
+if g_peak > room:
+    g_scale = g_peak / room
+    g_plot = grad_path / g_scale
+    g_label = rf'gradient $g/{g_scale:.3g}$'
+else:
+    g_scale = 1.0
+    g_plot = grad_path
+    g_label = r'gradient $g$'
 
 ax7b.scatter(x_np, y_np, s=80, c='#2874a6', zorder=3,
              edgecolors='white', linewidths=0.7, label='data')
@@ -482,9 +531,53 @@ ax7b.grid(True, alpha=0.3)
 ax7b.legend(fontsize=FS_LEGEND, loc='upper left')
 
 fig7.tight_layout(rect=[0, 0.05, 1, 0.94])
+fig7.canvas.draw_idle()
+# Lift the gradient curve by +1 physical inch (data units from axes height).
+_pos7 = ax7a.get_position()
+_dy_g = 1.0 / max(fig7.get_figheight() * _pos7.height, 1e-6) * (yhi0 - ylo0)
+g_plot_lifted = g_plot + _dy_g
+ylo, yhi = ylo0, yhi0 + _dy_g
+ax7a.set_ylim(ylo, yhi)
+
+ax7a_g = ax7a.twinx()
+line_g, = ax7a_g.plot(steps_g, g_plot_lifted, color=C_ACCENT, lw=2.2,
+                      alpha=0.9, label=g_label + ' (lifted)')
+ax7a_g.axhline(_dy_g, color=C_ACCENT, ls=':', lw=1.2, alpha=0.7)  # g = 0 after lift
+ax7a_g.set_ylim(ylo, yhi)
+ax7a_g.set_yticks(ax7a.get_yticks())
+ax7a_g.set_ylabel(g_label, fontsize=FS_AXIS, color=C_ACCENT)
+ax7a_g.tick_params(labelsize=FS_TICK, axis='y', labelcolor=C_ACCENT)
+
+lines = [line_w, line_true, line_g]
+labels = [ln.get_label() for ln in lines]
+ax7a.legend(lines, labels, fontsize=FS_LEGEND - 1, loc='upper left')
+
+# Update rule for w: right edge, and 0.4 inch lower than the old 0.72 anchor.
+_dy_ann = 0.4 / max(fig7.get_figheight() * _pos7.height, 1e-6)
+ax7a.text(
+    0.98, 0.72 - _dy_ann,
+    r'$w \leftarrow w - \mathrm{lr}\cdot g$'
+    '\n'
+    rf'lr $= {LR:g}$'
+    '\n'
+    r'$g=\partial\ell/\partial w$',
+    transform=ax7a.transAxes, ha='right', va='top', fontsize=FS_ANNOT + 1,
+    bbox=dict(boxstyle='round', facecolor='#eafaf1', edgecolor=C_OK, alpha=0.95),
+)
+ax7a.text(
+    0.98, 0.02,
+    f'start w = {w0:.3f}\n'
+    f'final w = {w_final:.3f}\n'
+    f'final |g| = {abs(grad_path[-1]):.3f}\n'
+    f'final MSE = {mse_final:.3f}'
+    + (f'\n(g scaled ÷{g_scale:.3g})' if g_scale != 1.0 else '')
+    + '\n(g curve lifted +1 in)',
+    transform=ax7a.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+)
 fig7.text(
     0.5, 0.01,
-    'Same seed and recipe as 015_torch_training.ipynb -- numbers match the notebook run.',
+    'Mild noise + enough steps: w settles near 2; gradient series fades toward 0.',
     ha='center', va='bottom', fontsize=FS_ANNOT + 1, fontweight='bold',
 )
 show_maximized(fig7)
@@ -536,11 +629,12 @@ Notebook essence:
   loss  = MSE(y_hat, y)
   loop  = predict -> loss -> zero_grad -> backward -> step
 
-Data: 5 points, y = 2x + noise, seed 523, lr=0.005, steps={SGD_STEPS}
+Data: {N} points, y = 2x + mild noise, seed 523, lr={LR:g}, steps={STEPS} (full batch)
 
 This run:
   start w = {w0:.4f}
-  final w = {w_final:.4f}   (target near 2)
+  final w = {w_final:.4f}   (true slope 2)
+  final |grad| = {abs(grad_path[-1]):.4f}
   final MSE = {mse_final:.4f}
 
 Teaching point:

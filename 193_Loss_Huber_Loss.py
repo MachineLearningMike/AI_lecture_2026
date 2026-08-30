@@ -11,6 +11,7 @@ Sketch:
   5. Same outlier data: who owns the average?
   6. Fit duel: Huber sits between MSE and MAE
   7. Takeaway -- when to choose Huber
+  8. Torch -- from-scratch Huber vs nn.HuberLoss
 
 Companion to 191_Mean_Squared_Error.py, 192_Mean_Absolute_Error.py,
 190_loss_functions.py.
@@ -451,6 +452,82 @@ ax6.text(
 show_maximized(fig6)
 
 
+# -------------------------------------------------------
+# FIGURE 8: Torch -- from scratch vs API
+# -------------------------------------------------------
+import torch
+import torch.nn as nn
+
+torch.manual_seed(193)
+y_t = torch.tensor([1.0, 2.0, 0.0, 4.0])
+yhat_t = torch.tensor([1.5, 1.0, 0.5, 7.0])  # last residual is large
+delta_t = float(DELTA)
+r = yhat_t - y_t
+abs_r = r.abs()
+huber_scratch = torch.where(
+    abs_r <= delta_t,
+    0.5 * r ** 2,
+    delta_t * (abs_r - 0.5 * delta_t),
+).mean()
+huber_api = nn.HuberLoss(delta=delta_t)(yhat_t, y_t)
+
+CODE_HUBER_SCRATCH = (
+    'import torch\n'
+    '\n'
+    f'delta = {delta_t:g}\n'
+    'y    = torch.tensor([1., 2., 0., 4.])\n'
+    'yhat = torch.tensor([1.5, 1., 0.5, 7.])\n'
+    'r = yhat - y\n'
+    'a = r.abs()\n'
+    '\n'
+    '# from scratch (same formula as the slides)\n'
+    'loss = torch.where(\n'
+    '    a <= delta,\n'
+    '    0.5 * r**2,\n'
+    '    delta * (a - 0.5 * delta),\n'
+    ').mean()\n'
+    'print(loss.item())'
+)
+CODE_HUBER_API = (
+    'import torch\n'
+    'import torch.nn as nn\n'
+    '\n'
+    f'delta = {delta_t:g}\n'
+    'y    = torch.tensor([1., 2., 0., 4.])\n'
+    'yhat = torch.tensor([1.5, 1., 0.5, 7.])\n'
+    '\n'
+    '# off-the-shelf API\n'
+    'loss = nn.HuberLoss(delta=delta)(yhat, y)\n'
+    'print(loss.item())'
+)
+
+fig_t, (ax_ts, ax_ta) = new_figure(1, 2)
+fig_t.suptitle(
+    'Step 8: Torch Huber -- from scratch vs nn.HuberLoss',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+for ax, title, code, face, edge in [
+    (ax_ts, 'From scratch', CODE_HUBER_SCRATCH, C_NEW, '#2874a6'),
+    (ax_ta, 'Off-the-shelf API', CODE_HUBER_API, C_GOAL, C_OK),
+]:
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+    ax.set_title(title, fontsize=FS_AX_TITLE - 1, color=edge)
+    round_box(ax, 0.35, 1.3, 9.3, 8.2, face, edge, lw=2.0)
+    ax.text(0.7, 5.3, code, ha='left', va='center',
+            fontsize=FS_ANNOT - 1, family='monospace', linespacing=1.35)
+round_box(ax_ts, 0.35, 0.25, 9.3, 0.9, '#fdebd0', '#d68910', lw=1.6)
+ax_ts.text(
+    5.0, 0.7,
+    f'scratch = {huber_scratch.item():.6f}   |   API = {huber_api.item():.6f}   |   match = {torch.allclose(huber_scratch, huber_api)}',
+    ha='center', va='center', fontsize=FS_ANNOT,
+)
+fig_t.tight_layout(rect=[0, 0.02, 1, 0.94])
+print(f'Step 8: Torch Huber scratch={huber_scratch.item():.6f} API={huber_api.item():.6f}')
+show_maximized(fig_t)
+
+
 print("\n" + "=" * 60)
 print("193 HUBER LOSS")
 print("=" * 60)
@@ -460,6 +537,8 @@ Huber = MSE inside |r|<=delta, MAE-like outside.
 
 Outlier ownership on the demo set:
   MSE {100*share['MSE']:.0f}% | MAE {100*share['MAE']:.0f}% | Huber {100*share['Huber']:.0f}%
+
+Step 8: Torch -- scratch Huber matches nn.HuberLoss(delta={DELTA:g}).
 
 See also: 191_Mean_Squared_Error.py, 192_Mean_Absolute_Error.py, 190_loss_functions.py
 """)

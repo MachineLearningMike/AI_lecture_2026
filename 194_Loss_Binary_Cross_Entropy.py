@@ -12,6 +12,7 @@ Sketch:
   6. From logit s through sigmoid to BCE
   7. Correct class with low confidence still pays
   8. Takeaway -- BCE as a soft coach for a Bernoulli label
+  9. Torch -- from-scratch BCE vs nn.BCELoss
 
 Companion to 035_regression_classification.py, 190_loss_functions.py,
 320_softmax.py.
@@ -258,41 +259,46 @@ hud_p = ax_slice.text(
     bbox=dict(boxstyle='round', facecolor='#fdebd0', edgecolor=C_BIN, alpha=0.95),
 )
 
-# Yellow highlight on the 3D surface at the current p
+# Yellow function line on the 3D surface: BCE(y, p) at the slider's p
+# (same slice drawn on the right as BCE vs y).
 p_line_3d, = ax3d.plot(
     y_grid,
     np.full_like(y_grid, p_slide0),
     bce_soft(y_grid, p_slide0, eps=eps),
-    color='#f1c40f', lw=3.2, label=f'slice p={p_slide0:.2f}',
+    color='#f1c40f', lw=4.0, zorder=10,
+    label=r'$\mathrm{BCE}(y,p)$ at slider $p$',
 )
 
-ax_sl_p = fig_bce3d.add_axes([0.55, 0.06, 0.35, 0.04])
+# Slider spans both panels -- one p drives the 3D line and the right curve
+ax_sl_p = fig_bce3d.add_axes([0.18, 0.06, 0.64, 0.04])
 slider_p3d = Slider(ax_sl_p, r'$p$', 0.05, 0.95, valinit=p_slide0, valstep=0.01)
 
 
 def _update_p3d(_=None):
     p = float(slider_p3d.val)
-    z = bce_soft(y_line, p, eps=eps)
-    curve.set_ydata(z)
+    z_right = bce_soft(y_line, p, eps=eps)
+    z_3d = bce_soft(y_grid, p, eps=eps)
+    # Right panel: BCE vs continuous y at this p
+    curve.set_ydata(z_right)
     mark_y0.set_data([0.0], [bce_soft(0.0, p, eps=eps)])
     mark_y1.set_data([1.0], [bce_soft(1.0, p, eps=eps)])
-    p_line_3d.set_data(y_grid, np.full_like(y_grid, p))
-    p_line_3d.set_3d_properties(bce_soft(y_grid, p, eps=eps))
-    p_line_3d.set_label(f'slice p={p:.2f}')
+    # Left panel: same function as a line on the 3D surface (fixed-p slice)
+    p_line_3d.set_data_3d(y_grid, np.full_like(y_grid, p), z_3d)
+    p_line_3d.set_label(rf'$\mathrm{{BCE}}(y,{p:.2f})$')
     ax3d.legend(loc='upper left', fontsize=FS_LEGEND - 2, framealpha=0.92)
     hud_p.set_text(
         f'p = y_hat = {p:.2f}\n\n'
         f'BCE(y=0, p) = {bce_soft(0.0, p, eps=eps):.2f}\n'
         f'BCE(y=1, p) = {bce_soft(1.0, p, eps=eps):.2f}\n\n'
-        'Move p: the yellow slice\n'
-        'sweeps across the surface.'
+        'One p drives both panels:\n'
+        'yellow 3D line = right curve.'
     )
     fig_bce3d.canvas.draw_idle()
 
 
 slider_p3d.on_changed(_update_p3d)
 _update_p3d()
-print('Step 2: browse the BCE(y,p) surface; drag p for the yellow slice.')
+print('Step 2: drag p -- yellow BCE(y,p) line on 3D and right curve move together.')
 show_maximized(fig_bce3d)
 
 
@@ -583,6 +589,75 @@ ax5.text(
 show_maximized(fig5)
 
 
+# -------------------------------------------------------
+# FIGURE 9: Torch -- from scratch vs API
+# -------------------------------------------------------
+import torch
+import torch.nn as nn
+
+torch.manual_seed(194)
+y_t = torch.tensor([1.0, 0.0, 1.0, 0.0])
+p_t = torch.tensor([0.9, 0.2, 0.6, 0.1])
+eps = 1e-7
+p_c = p_t.clamp(eps, 1.0 - eps)
+bce_scratch = (-(y_t * p_c.log() + (1.0 - y_t) * (1.0 - p_c).log())).mean()
+bce_api = nn.BCELoss()(p_t, y_t)
+
+CODE_BCE_SCRATCH = (
+    'import torch\n'
+    '\n'
+    'y = torch.tensor([1., 0., 1., 0.])\n'
+    'p = torch.tensor([0.9, 0.2, 0.6, 0.1])  # probs\n'
+    'eps = 1e-7\n'
+    'p = p.clamp(eps, 1 - eps)\n'
+    '\n'
+    '# from scratch\n'
+    'loss = (-(y * p.log()\n'
+    '         + (1 - y) * (1 - p).log())).mean()\n'
+    'print(loss.item())'
+)
+CODE_BCE_API = (
+    'import torch\n'
+    'import torch.nn as nn\n'
+    '\n'
+    'y = torch.tensor([1., 0., 1., 0.])\n'
+    'p = torch.tensor([0.9, 0.2, 0.6, 0.1])  # probs\n'
+    '\n'
+    '# off-the-shelf API (probs in, not logits)\n'
+    'loss = nn.BCELoss()(p, y)\n'
+    'print(loss.item())\n'
+    '\n'
+    '# training tip: prefer\n'
+    '# nn.BCEWithLogitsLoss()(logits, y)'
+)
+
+fig_t, (ax_ts, ax_ta) = new_figure(1, 2)
+fig_t.suptitle(
+    'Step 9: Torch BCE -- from scratch vs nn.BCELoss',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+for ax, title, code, face, edge in [
+    (ax_ts, 'From scratch', CODE_BCE_SCRATCH, C_NEW, '#2874a6'),
+    (ax_ta, 'Off-the-shelf API', CODE_BCE_API, C_GOAL, C_OK),
+]:
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    ax.axis('off')
+    ax.set_title(title, fontsize=FS_AX_TITLE - 1, color=edge)
+    round_box(ax, 0.35, 1.3, 9.3, 8.2, face, edge, lw=2.0)
+    ax.text(0.7, 5.3, code, ha='left', va='center',
+            fontsize=FS_ANNOT - 1, family='monospace', linespacing=1.35)
+round_box(ax_ts, 0.35, 0.25, 9.3, 0.9, '#fdebd0', C_BIN, lw=1.6)
+ax_ts.text(
+    5.0, 0.7,
+    f'scratch = {bce_scratch.item():.6f}   |   API = {bce_api.item():.6f}   |   match = {torch.allclose(bce_scratch, bce_api)}',
+    ha='center', va='center', fontsize=FS_ANNOT,
+)
+fig_t.tight_layout(rect=[0, 0.02, 1, 0.94])
+print(f'Step 9: Torch BCE scratch={bce_scratch.item():.6f} API={bce_api.item():.6f}')
+show_maximized(fig_t)
+
+
 print("\n" + "=" * 60)
 print("194 BINARY CROSS-ENTROPY")
 print("=" * 60)
@@ -601,7 +676,8 @@ Steps:
   6. Logit -> sigmoid -> BCE
   7. Confidence tax
   8. Takeaway
+  9. Torch -- scratch BCE matches nn.BCELoss()
 
 See also: 035_regression_classification.py, 190_loss_functions.py,
-          195_Categorical_Cross_Entropy.py
+          195_Loss_Categorical_Cross_Entropy.py
 """)
