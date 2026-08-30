@@ -10,7 +10,8 @@ Demonstrated on a 1D linear fit  y ~ w x + b  with a few outliers:
     MAE   (absolute error)  -- Laplace MLE; robust; sharper valley / constant-scale grads
     Huber                   -- MSE near 0, MAE in the tails; a practical compromise
 
-Formulas + intuition + viz for MSE / MAE / Huber, then demos.
+Taxonomy table (Regression / Binary / Multi-class), then
+formulas + intuition + viz for MSE / MAE / Huber, then demos.
 
 Then: classification error (0-1), sigmoid + binary CE (Shannon entropy),
 multi-class CE / softmax, and why soft losses train instead.
@@ -245,11 +246,86 @@ results = {
 
 
 # -------------------------------------------------------
-# FIGURE 1: Formulas + intuition + viz for MSE / MAE / Huber
+# -------------------------------------------------------
+# FIGURE 1: Taxonomy table (English; same contents as the image)
+# -------------------------------------------------------
+fig0, ax0 = new_figure()
+fig0.suptitle(
+    'Step 1: Loss taxonomy -- regression / binary / multi-class',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+ax0.set_xlim(0, 12)
+ax0.set_ylim(0, 8)
+ax0.axis('off')
+
+# Same English contents as the image
+headers = ['Category', 'Task', 'Data', 'Loss Function']
+rows = [
+    [
+        'Regression',
+        'Predict continuous values',
+        'Input: Continuous or Categorical\n'
+        'Output: Continuous real values\n'
+        '(Continuous Probability Distribution)',
+        'MSE',
+    ],
+    [
+        'Binary Classification',
+        'Choose one of two',
+        'Input: Continuous or Categorical\n'
+        'Output: 0 or 1\n'
+        '(Bernoulli Distribution)',
+        'Binary Cross Entropy',
+    ],
+    [
+        'Multi-class Classification',
+        'Choose one of three or more',
+        'Input: Continuous or Categorical\n'
+        'Output: [0,0,0,1,0] One-hot vector\n'
+        '(Categorical Distribution)',
+        'Cross Entropy',
+    ],
+]
+
+col_x = [0.40, 2.70, 5.20, 9.70]
+col_w = [2.15, 2.35, 4.35, 1.90]
+header_y, header_h = 6.35, 0.90
+row_h = 1.95
+row0_y = 5.25
+
+for x, w, h in zip(col_x, col_w, headers):
+    ax0.add_patch(patches.Rectangle(
+        (x, header_y), w, header_h,
+        facecolor='#d6eaf8', edgecolor='#7f8c8d', lw=1.5,
+    ))
+    ax0.text(
+        x + w / 2, header_y + header_h / 2, h,
+        ha='center', va='center', fontsize=FS_ANNOT + 2, fontweight='bold',
+        color='#1a5276',
+    )
+
+for r, row in enumerate(rows):
+    y = row0_y - r * row_h
+    for c, (x, w, cell) in enumerate(zip(col_x, col_w, row)):
+        ax0.add_patch(patches.Rectangle(
+            (x, y), w, row_h - 0.10,
+            facecolor='white', edgecolor='#7f8c8d', lw=1.5,
+        ))
+        ax0.text(
+            x + w / 2, y + (row_h - 0.10) / 2, cell,
+            ha='center', va='center',
+            fontsize=FS_ANNOT + (1 if c in (0, 3) else 0),
+            fontweight='bold' if c in (0, 3) else 'normal',
+        )
+
+show_maximized(fig0)
+
+
+# FIGURE 2: Formulas + intuition + viz for MSE / MAE / Huber
 # -------------------------------------------------------
 fig1, axes1f = new_figure(2, 3, gridspec_kw={'height_ratios': [1.15, 1.0]})
 fig1.suptitle(
-    'Step 1: Formulas, intuition, and the shape of each residual loss',
+    'Step 2: Formulas, intuition, and the shape of each residual loss',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
@@ -338,11 +414,11 @@ show_maximized(fig1)
 
 
 # -------------------------------------------------------
-# FIGURE 2: Shapes of the losses / grads
+# FIGURE 3: Shapes of the losses / grads
 # -------------------------------------------------------
 fig1, axes1 = new_figure(1, 2)
 fig1.suptitle(
-    'Step 2: Loss shape decides the gradient signal',
+    'Step 3: Loss shape decides the gradient signal',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -401,11 +477,11 @@ show_maximized(fig1)
 
 
 # -------------------------------------------------------
-# FIGURE 3: Fitted lines -- different losses, different answers
+# FIGURE 4: Fitted lines -- different losses, different answers
 # -------------------------------------------------------
 fig2, ax2 = new_figure()
 fig2.suptitle(
-    'Step 3: Same data / init / optimizer family -- different fits',
+    'Step 4: Same data / init / optimizer family -- different fits',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -463,11 +539,11 @@ show_maximized(fig2)
 
 
 # -------------------------------------------------------
-# FIGURE 4: Convergence curves differ
+# FIGURE 5: Convergence curves differ
 # -------------------------------------------------------
 fig3, axes3 = new_figure(1, 2)
 fig3.suptitle(
-    'Step 4: Convergence speed and stability depend on the loss',
+    'Step 5: Convergence speed and stability depend on the loss',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -514,11 +590,11 @@ show_maximized(fig3)
 
 
 # -------------------------------------------------------
-# FIGURE 5: Parameter-space paths (geometry of each loss)
+# FIGURE 6: Parameter-space paths (geometry of each loss)
 # -------------------------------------------------------
 fig4, ax4 = new_figure()
 fig4.suptitle(
-    'Step 5: Paths in $(w,b)$ space -- each loss has its own landscape',
+    'Step 6: Paths in $(w,b)$ space -- each loss has its own landscape',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 
@@ -565,7 +641,7 @@ show_maximized(fig4)
 
 
 # -------------------------------------------------------
-# FIGURE 6: Classification error -- formula, intuition, viz
+# FIGURE 7: Classification error -- formula, intuition, viz
 # -------------------------------------------------------
 # Make LEFT panel +2 inches broader WITHOUT shrinking the right panel:
 # keep right's absolute width, grow the whole figure width by 2 inches.
@@ -581,7 +657,7 @@ fig5, axes5 = plt.subplots(
     gridspec_kw={'width_ratios': [_left_in6, _right_in6]},
 )
 fig5.suptitle(
-    'Step 6: Classification error -- formula, intuition, and the 0-1 shape',
+    'Step 7: Classification error -- formula, intuition, and the 0-1 shape',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
@@ -771,11 +847,11 @@ for t, p in zip(ym, yhat_mc):
 
 
 # -------------------------------------------------------
-# FIGURE 7: Binary classification error
+# FIGURE 8: Binary classification error
 # -------------------------------------------------------
 fig6, (ax6a, ax6b) = new_figure(1, 2)
 fig6.suptitle(
-    'Step 7: Binary classification error -- fraction of wrong hard labels',
+    'Step 8: Binary classification error -- fraction of wrong hard labels',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
@@ -862,11 +938,11 @@ show_maximized(fig6)
 
 
 # -------------------------------------------------------
-# FIGURE 8: Multi-class classification error
+# FIGURE 9: Multi-class classification error
 # -------------------------------------------------------
 fig7, (ax7a, ax7b) = new_figure(1, 2)
 fig7.suptitle(
-    'Step 8: Multi-class error -- still 0-1; every wrong class costs the same',
+    'Step 9: Multi-class error -- still 0-1; every wrong class costs the same',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
@@ -933,11 +1009,11 @@ show_maximized(fig7)
 
 
 # -------------------------------------------------------
-# FIGURE 9: Sigmoid + binary cross-entropy + Shannon entropy
+# FIGURE 10: Sigmoid + binary cross-entropy + Shannon entropy
 # -------------------------------------------------------
 fig9, axes9 = new_figure(1, 2, gridspec_kw={'width_ratios': [1.2, 1.0]})
 fig9.suptitle(
-    'Step 9: Sigmoid and binary cross-entropy -- soft training for two classes',
+    'Step 10: Sigmoid and binary cross-entropy -- soft training for two classes',
     fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
 )
 
@@ -1045,11 +1121,11 @@ show_maximized(fig9)
 
 
 # -------------------------------------------------------
-# FIGURE 10: Multi-class cross-entropy
+# FIGURE 11: Multi-class cross-entropy
 # -------------------------------------------------------
 fig10, axes10 = new_figure(1, 2, gridspec_kw={'width_ratios': [1.15, 1.0]})
 fig10.suptitle(
-    'Step 10: Multi-class cross-entropy -- soft training for K classes',
+    'Step 11: Multi-class cross-entropy -- soft training for K classes',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 
@@ -1156,11 +1232,11 @@ show_maximized(fig10)
 
 
 # -------------------------------------------------------
-# FIGURE 11: Intuition bridge -- report card vs training signal
+# FIGURE 12: Intuition bridge -- report card vs training signal
 # -------------------------------------------------------
 fig8, ax8 = new_figure()
 fig8.suptitle(
-    'Step 11: Intuition -- error is discrete; training needs a soft slope',
+    'Step 12: Intuition -- error is discrete; training needs a soft slope',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 ax8.set_xlim(0, 12)
@@ -1238,7 +1314,7 @@ for name in LOSSES:
 print(f"""
   True     w={W_TRUE:+.3f}  b={B_TRUE:+.3f}
 
-Formulas (Step 1):
+Formulas (Step 2):
   MSE:   ell(r)=r^2/2 , grad=r
   MAE:   ell(r)=|r|   , grad=sign(r)
   Huber: quadratic near 0, linear in tails; grad=clip(r, +/- delta)
@@ -1257,7 +1333,7 @@ Why convergence differs:
   3) Therefore the SAME learning-rate GD takes different routes
      and stops at different (w, b).
 
-Classification error (Steps 6-8) and soft training losses (Steps 9-10):
+Classification error (Steps 7-9) and soft training losses (Steps 10-11):
   0-1 loss: 1[y_hat != y].  Error rate = mean 0-1 loss.
   Binary demo / multi-class demo: hard mistakes only (report card).
 
@@ -1265,12 +1341,12 @@ Classification error (Steps 6-8) and soft training losses (Steps 9-10):
     H(p) = -sum p log p          -- average surprise / coding length of a source
     H(p,q) = -sum p log q        -- bits if true is p but you encode with q
 
-  Binary CE (Step 9):
+  Binary CE (Step 10):
     p = sigmoid(s)
     BCE = -( y log p + (1-y) log(1-p) )
     Soft slope for GD; graded punishment of wrong probabilities.
 
-  Multi-class CE (Step 10):
+  Multi-class CE (Step 11):
     p = softmax(s)
     CE = -log p_true   (for a hard label)
     Same Shannon cross-entropy between one-hot label and model probs.
