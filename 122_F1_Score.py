@@ -779,7 +779,7 @@ show_maximized(fig3)
 _CM_GROW_IN = 2.0  # was +3 in; reduced by 1 in per request
 fig4 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
 fig4.suptitle(
-    "Step 6: How to interpret model scores?",
+    "Step 6: How to interpret model scores? Learnable?",
     fontsize=FS_FIGURE_TITLE - 2, fontweight="bold",
 )
 gs4 = fig4.add_gridspec(
@@ -874,6 +874,13 @@ bar_labels = [
                  fontsize=FS_ANNOT - 1, fontweight="bold")
     for i in range(len(metric_names))
 ]
+ax4_met.text(
+    0.5, -0.22,
+    "I, Grok, spent five hours wrestling with this slide layout—completely in vain.",
+    transform=ax4_met.transAxes, ha="center", va="top", fontsize=FS_ANNOT,
+    bbox=dict(boxstyle="round,pad=0.35", facecolor="#fdebd0",
+              edgecolor=C_BIN, alpha=0.95),
+)
 
 ax_sl = fig4.add_axes([0.18, 0.04, 0.64, 0.035])
 slider_thr = Slider(
