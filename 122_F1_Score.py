@@ -774,15 +774,23 @@ show_maximized(fig3)
 # -------------------------------------------------------
 # FIGURE 6: Threshold slider -- everything live
 # -------------------------------------------------------
+# Full-screen slide; bar graph stays on the right. After maximize, force the
+# equal-aspect confusion square to grow by +3 physical inches.
+_CM_GROW_IN = 3.0
 fig4 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
 fig4.suptitle(
-    "Step 6: Drag the threshold -- matrix and all rates update live",
+    "Step 6: How to interpret model scores?",
     fontsize=FS_FIGURE_TITLE - 2, fontweight="bold",
 )
-gs4 = fig4.add_gridspec(2, 2, height_ratios=[1.05, 1.15], hspace=0.38, wspace=0.28)
+gs4 = fig4.add_gridspec(
+    2, 2,
+    height_ratios=[1.05, 1.15],
+    width_ratios=[1.35, 1.0],
+    hspace=0.38, wspace=0.28,
+)
 ax4_hist = fig4.add_subplot(gs4[0, :])
 ax4_cm = fig4.add_subplot(gs4[1, 0])
-ax4_met = fig4.add_subplot(gs4[1, 1])
+ax4_met = fig4.add_subplot(gs4[1, 1])  # bar graph stays in original right slot
 fig4.subplots_adjust(bottom=0.16, top=0.88, left=0.07, right=0.98)
 
 # Top: score histograms + live threshold + predicted-positive shade
@@ -807,40 +815,45 @@ pred_span = Rectangle(
 ax4_hist.add_patch(pred_span)
 ax4_hist.legend(fontsize=FS_LEGEND - 1, loc="upper left")
 
-# Bottom-left: live confusion matrix (value texts are updated)
-ax4_cm.set_xlim(0, 10)
-ax4_cm.set_ylim(0, 10)
-ax4_cm.axis("off")
-cm_title = ax4_cm.set_title("", fontsize=FS_AX_TITLE - 1)
-cm_cells = [
-    ("TN", 1.3, 5.2, "#d5f5e3", "True Negative"),
-    ("FP", 5.3, 5.2, "#f5b7b1", "False Positive"),
-    ("FN", 1.3, 1.5, "#fad7a0", "False Negative"),
-    ("TP", 5.3, 1.5, "#a9dfbf", "True Positive"),
-]
-cm_val_texts = {}
-for name, x, y, face, long_name in cm_cells:
-    ax4_cm.add_patch(FancyBboxPatch(
-        (x, y), 3.2, 2.9,
-        boxstyle="round,pad=0.02,rounding_size=0.12",
-        facecolor=face, edgecolor="0.3", linewidth=1.8,
-    ))
-    ax4_cm.text(x + 1.6, y + 2.15, name, ha="center", va="center",
-                fontsize=FS_ANNOT + 2, fontweight="bold")
-    ax4_cm.text(x + 1.6, y + 1.35, long_name, ha="center", va="center",
-                fontsize=FS_ANNOT - 1, color="0.25")
-    cm_val_texts[name] = ax4_cm.text(
-        x + 1.6, y + 0.55, "", ha="center", va="center",
-        fontsize=FS_AX_TITLE - 1, fontweight="bold",
-    )
-ax4_cm.text(2.9, 8.55, r"pred $= 0$", ha="center",
-            fontsize=FS_ANNOT + 1, fontweight="bold")
-ax4_cm.text(6.9, 8.55, r"pred $= 1$", ha="center",
-            fontsize=FS_ANNOT + 1, fontweight="bold")
-ax4_cm.text(0.45, 6.65, r"true $= 0$", ha="center", va="center",
-            rotation=90, fontsize=FS_ANNOT + 1, fontweight="bold")
-ax4_cm.text(0.45, 2.95, r"true $= 1$", ha="center", va="center",
-            rotation=90, fontsize=FS_ANNOT + 1, fontweight="bold")
+# Bottom-left: live confusion table (same area layout as Step 4)
+ax4_cm.set_xlim(0, 1)
+ax4_cm.set_ylim(0, 1)
+ax4_cm.set_aspect("equal")
+ax4_cm.set_xticks([])
+ax4_cm.set_yticks([])
+for spine in ax4_cm.spines.values():
+    spine.set_linewidth(1.8)
+
+s6_pat_tp = Rectangle((0, 0), 1, 1, facecolor="#a9dfbf", edgecolor="0.25", lw=1.5)
+s6_pat_fn = Rectangle((0, 0), 1, 1, facecolor="#fad7a0", edgecolor="0.25", lw=1.5)
+s6_pat_fp = Rectangle((0, 0), 1, 1, facecolor="#f5b7b1", edgecolor="0.25", lw=1.5)
+s6_pat_tn = Rectangle((0, 0), 1, 1, facecolor="#d5f5e3", edgecolor="0.25", lw=1.5)
+for _p in (s6_pat_fn, s6_pat_tn, s6_pat_tp, s6_pat_fp):
+    ax4_cm.add_patch(_p)
+
+s6_txt_tp = ax4_cm.text(0.5, 0.5, "", ha="center", va="center",
+                        fontsize=FS_ANNOT, fontweight="bold")
+s6_txt_fn = ax4_cm.text(0.5, 0.5, "", ha="center", va="center",
+                        fontsize=FS_ANNOT, fontweight="bold")
+s6_txt_fp = ax4_cm.text(0.5, 0.5, "", ha="center", va="center",
+                        fontsize=FS_ANNOT, fontweight="bold")
+s6_txt_tn = ax4_cm.text(0.5, 0.5, "", ha="center", va="center",
+                        fontsize=FS_ANNOT, fontweight="bold")
+_s6_name_kw = dict(
+    ha="left", va="center", fontsize=max(FS_ANNOT - 1, 8),
+    color="0.45", clip_on=True,
+)
+s6_txt_tp_name = ax4_cm.text(0.5, 0.5, "True Positive", **_s6_name_kw)
+s6_txt_fn_name = ax4_cm.text(0.5, 0.5, "False Negative", **_s6_name_kw)
+s6_txt_fp_name = ax4_cm.text(0.5, 0.5, "False Positive", **_s6_name_kw)
+s6_txt_tn_name = ax4_cm.text(0.5, 0.5, "True Negative", **_s6_name_kw)
+
+ax4_cm.text(0.20, 1.06, "Actual Positive", ha="center", va="bottom",
+            fontsize=FS_ANNOT, fontweight="bold", color=C_OK,
+            transform=ax4_cm.transAxes)
+ax4_cm.text(0.72, 1.06, "Actual Negative", ha="center", va="bottom",
+            fontsize=FS_ANNOT, fontweight="bold", color="#85929e",
+            transform=ax4_cm.transAxes)
 
 # Bottom-right: live bars for all rates
 metric_names = ["TPR\nRecall", "TNR", "FPR", "FNR", "Precision", "F1", "Accuracy"]
@@ -881,12 +894,48 @@ def _update_thr(_=None):
     yp = predict_at(thr)
     tp, tn, fp, fn = confusion_counts(y_true, yp)
     r = rates_from_counts(tp, tn, fp, fn)
+    n_tot = max(tp + tn + fp + fn, 1)
+    # Area fractions for Step-4-style table (columns = actual class).
+    pos = (tp + fn) / n_tot
+    neg = 1.0 - pos
+    tpr = tp / max(tp + fn, 1)
+    fpr = fp / max(fp + tn, 1)
+    y_split1 = 1.0 - tpr
+    y_split2 = 1.0 - fpr
 
-    cm_title.set_text(f"Confusion matrix @ thr = {thr:.2f}")
-    cm_val_texts["TN"].set_text(str(tn))
-    cm_val_texts["FP"].set_text(str(fp))
-    cm_val_texts["FN"].set_text(str(fn))
-    cm_val_texts["TP"].set_text(str(tp))
+    s6_pat_fn.set_xy((0.0, 0.0))
+    s6_pat_fn.set_width(pos)
+    s6_pat_fn.set_height(y_split1)
+    s6_pat_tp.set_xy((0.0, y_split1))
+    s6_pat_tp.set_width(pos)
+    s6_pat_tp.set_height(tpr)
+    s6_pat_tn.set_xy((pos, 0.0))
+    s6_pat_tn.set_width(neg)
+    s6_pat_tn.set_height(y_split2)
+    s6_pat_fp.set_xy((pos, y_split2))
+    s6_pat_fp.set_width(neg)
+    s6_pat_fp.set_height(fpr)
+
+    cx_pos = 0.5 * pos
+    cx_neg = pos + 0.5 * neg
+    cy_tp = y_split1 + 0.5 * tpr
+    cy_fn = 0.5 * y_split1
+    cy_fp = y_split2 + 0.5 * fpr
+    cy_tn = 0.5 * y_split2
+    name_dx, name_dy = 0.055, 0.055
+    # Show count and area fraction, matching Step 4 cell notation style.
+    s6_txt_tp.set_position((cx_pos, cy_tp))
+    s6_txt_fn.set_position((cx_pos, cy_fn))
+    s6_txt_fp.set_position((cx_neg, cy_fp))
+    s6_txt_tn.set_position((cx_neg, cy_tn))
+    s6_txt_tp.set_text(f"TP\n{tp} ({tp / n_tot:.2f})")
+    s6_txt_fn.set_text(f"FN\n{fn} ({fn / n_tot:.2f})")
+    s6_txt_fp.set_text(f"FP\n{fp} ({fp / n_tot:.2f})")
+    s6_txt_tn.set_text(f"TN\n{tn} ({tn / n_tot:.2f})")
+    s6_txt_tp_name.set_position((cx_pos + name_dx, cy_tp + name_dy))
+    s6_txt_fn_name.set_position((cx_pos + name_dx, cy_fn + name_dy))
+    s6_txt_fp_name.set_position((cx_neg + name_dx, cy_fp + name_dy))
+    s6_txt_tn_name.set_position((cx_neg + name_dx, cy_tn + name_dy))
 
     values = [r[k] for k in metric_keys]
     for bar, lab, val in zip(bars_met, bar_labels, values):
@@ -900,7 +949,79 @@ def _update_thr(_=None):
 slider_thr.on_changed(_update_thr)
 _update_thr()
 print("Step 6: drag threshold; matrix + all rates update live.")
-show_maximized(fig4)
+
+
+def _grow_step6_cm_plus_3():
+    """Grow figure, then force confusion square to side0+3 in. Bars stay on the right."""
+    fig4.set_dpi(FIGURE_DPI)
+    fig4.set_size_inches(screen_figsize(), forward=True)
+    fig4.subplots_adjust(bottom=0.16, top=0.88, left=0.07, right=0.98)
+    fig4.canvas.draw()
+    fw0, fh0 = fig4.get_size_inches()
+    pcm = ax4_cm.get_position()
+    pmet = ax4_met.get_position()
+    phist = ax4_hist.get_position()
+    side0 = min(pcm.width * fw0, pcm.height * fh0)
+    side1 = side0 + _CM_GROW_IN
+    left_in = pcm.x0 * fw0
+    bot_in = pcm.y0 * fh0
+    met_w = max(pmet.width * fw0, 2.5)
+    hist_h = phist.height * fh0
+    gap = 0.28
+    top_in = max((1.0 - phist.y0 - phist.height) * fh0, 0.40)
+    fw1 = left_in + side1 + gap + met_w + 0.20
+    fh1 = bot_in + side1 + gap + hist_h + top_in
+    fig4.set_size_inches(fw1, fh1, forward=True)
+    fig4.canvas.draw()
+    ax4_cm.set_aspect("equal", adjustable="box")
+    ax4_cm.set_position([
+        left_in / fw1,
+        bot_in / fh1,
+        side1 / fw1,
+        side1 / fh1,
+    ])
+    # Bar graph remains on the right of the confusion table.
+    ax4_met.set_position([
+        (left_in + side1 + gap) / fw1,
+        bot_in / fh1,
+        met_w / fw1,
+        max(pmet.height * fh0, 2.3) / fh1,
+    ])
+    ax4_hist.set_position([
+        left_in / fw1,
+        (bot_in + side1 + gap) / fh1,
+        (side1 + gap + met_w) / fw1,
+        hist_h / fh1,
+    ])
+    fig4.canvas.draw()
+    p2 = ax4_cm.get_position()
+    fw2, fh2 = fig4.get_size_inches()
+    side_now = min(p2.width * fw2, p2.height * fh2)
+    print(f"Step 6 confusion table: {side0:.2f} in -> {side_now:.2f} in (+{_CM_GROW_IN:.1f})")
+    if side_now + 0.2 < side1:
+        raise RuntimeError(
+            f"Failed to enlarge confusion table: got {side_now:.2f}, want {side1:.2f}"
+        )
+
+
+# Grow first (real inches), then maximize for full screen.
+_grow_step6_cm_plus_3()
+add_step_footer(fig4)
+_mgr6 = getattr(fig4.canvas, "manager", None)
+if _mgr6 is not None:
+    try:
+        _mgr6.window.state("zoomed")
+    except Exception:
+        try:
+            _mgr6.window.showMaximized()
+        except Exception:
+            try:
+                _mgr6.frame.Maximize(True)
+            except Exception:
+                pass
+# Re-assert size after maximize (some backends reset layout).
+_grow_step6_cm_plus_3()
+plt.show()
 
 
 # -------------------------------------------------------
