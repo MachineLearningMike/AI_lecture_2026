@@ -7,11 +7,12 @@ Sketch:
   1. Why counts matter -- accuracy alone can lie
   2. Confusion matrix -- TP, TN, FP, FN
   3. Rates -- TPR, TNR, FPR, FNR
-  4. Recall and Precision -- two ways to be careful
-  5. Drag the decision threshold -- watch Precision / Recall move
-  6. F-score -- harmonic mean of Precision and Recall
-  7. Imbalance demo -- accuracy looks fine; F1 does not
-  8. Takeaway
+  4. Confusion Table and scores -- live drag mosaic + rates
+  5. Recall and Precision -- two ways to be careful
+  6. Drag the decision threshold -- watch Precision / Recall move
+  7. F-score -- harmonic mean of Precision and Recall
+  8. Imbalance demo -- accuracy looks fine; F1 does not
+  9. Takeaway
 
 Companion to 035_regression_classification.py, 190_loss_functions.py,
 194_Loss_Binary_Cross_Entropy.py.
@@ -105,17 +106,18 @@ def confusion_counts(y_true, y_pred):
 
 
 def rates_from_counts(tp, tn, fp, fn):
-    tpr = tp / max(tp + fn, 1)          # recall / sensitivity
-    tnr = tn / max(tn + fp, 1)          # specificity
-    fpr = fp / max(fp + tn, 1)
-    fnr = fn / max(fn + tp, 1)
-    precision = tp / max(tp + fp, 1)
+    eps = 1e-12
+    tpr = tp / max(tp + fn, eps)          # recall / sensitivity
+    tnr = tn / max(tn + fp, eps)          # specificity
+    fpr = fp / max(fp + tn, eps)
+    fnr = fn / max(fn + tp, eps)
+    precision = tp / max(tp + fp, eps)
     recall = tpr
-    if precision + recall == 0:
+    if precision + recall <= eps:
         f1 = 0.0
     else:
         f1 = 2.0 * precision * recall / (precision + recall)
-    acc = (tp + tn) / max(tp + tn + fp + fn, 1)
+    acc = (tp + tn) / max(tp + tn + fp + fn, eps)
     return dict(
         TPR=tpr, TNR=tnr, FPR=fpr, FNR=fnr,
         Precision=precision, Recall=recall, F1=f1, Accuracy=acc,
@@ -314,11 +316,418 @@ show_maximized(fig2)
 
 
 # -------------------------------------------------------
-# FIGURE 4: Recall and Precision
+# FIGURE 4: Interactive area mosaic (drag boundaries)
+# -------------------------------------------------------
+# Columns = actual class. Rows = prediction.
+#   Col1 Actual Positive: top=TP, bottom=FN
+#   Col2 Actual Negative: top=FP, bottom=TN
+# Drag vertical split (class prior) and each column's horizontal split.
+# Grow panels in physical inches; do not steal width from the other side.
+_fw_m, _fh_m = screen_figsize()
+_left_margin, _right_margin = 0.06, 0.98
+_usable_w = _fw_m * (_right_margin - _left_margin)
+_left_in = _usable_w * 1.2 / (1.2 + 1.0)
+_right_in = _usable_w * 1.0 / (1.2 + 1.0)
+_left_in += 1.5 + 1.0 + 1.0   # confusion table width bumps
+_right_in += 1.0 + 1.0 + 0.5 + 1.0  # right panel width bumps (+1.0 now)
+_fh_m_tall = _fh_m + 0.8 + 1.0 + 1.0 + 0.5  # table height bumps + room to shift left panel up
+_fw_m_wide = (_left_in + _right_in) / (_right_margin - _left_margin)
+_LEFT_PANEL_UP_IN = 0.5 + 0.5  # prior 0.5 + this request 0.5; applied after maximize
+fig_mos = plt.figure(figsize=(_fw_m_wide, _fh_m_tall), dpi=FIGURE_DPI)
+fig_mos.suptitle(
+    "Step 4: Confusion Table and scores",
+    fontsize=FS_FIGURE_TITLE - 2, fontweight="bold",
+)
+gs_mos = fig_mos.add_gridspec(
+    1, 2,
+    width_ratios=[_left_in, _right_in],
+    wspace=0.28,
+)
+# Left: top spacer so column titles sit below the figure title, then mosaic.
+gs_left = gs_mos[0, 0].subgridspec(2, 1, height_ratios=[0.22, 1.0], hspace=0.08)
+ax_mos_hdr = fig_mos.add_subplot(gs_left[0, 0])
+ax_mos = fig_mos.add_subplot(gs_left[1, 0])
+ax_mos_hdr.set_xlim(0, 1)
+ax_mos_hdr.set_ylim(0, 1)
+ax_mos_hdr.axis("off")
+gs_right = gs_mos[0, 1].subgridspec(2, 1, height_ratios=[0.75, 1.55], hspace=0.22)
+ax_mos_bars = fig_mos.add_subplot(gs_right[0, 0])
+ax_mos_form = fig_mos.add_subplot(gs_right[1, 0])
+fig_mos.subplots_adjust(left=0.06, right=0.98, bottom=0.08, top=0.86)
+
+# State in area fractions of the unit square.
+mos = {
+    "pos": 0.40,   # width of Actual Positive column
+    "tpr": 0.75,   # top fraction of col1 = TP / (TP+FN)
+    "fpr": 0.20,   # top fraction of col2 = FP / (FP+TN)
+}
+_MIN_SPLIT = 0.06
+_drag = {"mode": None}  # 'v', 'h1', 'h2'
+
+
+def _mos_areas(state):
+    pos = float(state["pos"])
+    tpr = float(state["tpr"])
+    fpr = float(state["fpr"])
+    tp = pos * tpr
+    fn = pos * (1.0 - tpr)
+    fp = (1.0 - pos) * fpr
+    tn = (1.0 - pos) * (1.0 - fpr)
+    return tp, tn, fp, fn
+
+
+def _mos_metrics(state):
+    tp, tn, fp, fn = _mos_areas(state)
+    return rates_from_counts(tp, tn, fp, fn), (tp, tn, fp, fn)
+
+
+ax_mos.set_xlim(0, 1)
+ax_mos.set_ylim(0, 1)
+ax_mos.set_aspect("equal")
+ax_mos.set_xticks([])
+ax_mos.set_yticks([])
+for spine in ax_mos.spines.values():
+    spine.set_linewidth(1.8)
+
+# Four area patches + center labels + three drag handles
+pat_tp = Rectangle((0, 0), 1, 1, facecolor="#a9dfbf", edgecolor="0.25", lw=1.5)
+pat_fn = Rectangle((0, 0), 1, 1, facecolor="#fad7a0", edgecolor="0.25", lw=1.5)
+pat_fp = Rectangle((0, 0), 1, 1, facecolor="#f5b7b1", edgecolor="0.25", lw=1.5)
+pat_tn = Rectangle((0, 0), 1, 1, facecolor="#d5f5e3", edgecolor="0.25", lw=1.5)
+for p in (pat_fn, pat_tn, pat_tp, pat_fp):
+    ax_mos.add_patch(p)
+
+txt_tp = ax_mos.text(0.5, 0.5, "", ha="center", va="center",
+                     fontsize=FS_ANNOT, fontweight="bold")
+txt_fn = ax_mos.text(0.5, 0.5, "", ha="center", va="center",
+                     fontsize=FS_ANNOT, fontweight="bold")
+txt_fp = ax_mos.text(0.5, 0.5, "", ha="center", va="center",
+                     fontsize=FS_ANNOT, fontweight="bold")
+txt_tn = ax_mos.text(0.5, 0.5, "", ha="center", va="center",
+                     fontsize=FS_ANNOT, fontweight="bold")
+# Full names in gray, placed to the right of TP/FP/FN/TN.
+_name_kw = dict(
+    ha="left", va="center", fontsize=max(FS_ANNOT - 1, 8),
+    color="0.45", clip_on=True,
+)
+txt_tp_name = ax_mos.text(0.5, 0.5, "True Positive", **_name_kw)
+txt_fn_name = ax_mos.text(0.5, 0.5, "False Negative", **_name_kw)
+txt_fp_name = ax_mos.text(0.5, 0.5, "False Positive", **_name_kw)
+txt_tn_name = ax_mos.text(0.5, 0.5, "True Negative", **_name_kw)
+
+handle_v, = ax_mos.plot([mos["pos"], mos["pos"]], [0, 1], color=C_DARK, lw=3.0,
+                        solid_capstyle="round", zorder=5)
+handle_h1, = ax_mos.plot([0, mos["pos"]], [1.0 - mos["tpr"], 1.0 - mos["tpr"]],
+                         color=C_DARK, lw=3.0, solid_capstyle="round", zorder=5)
+handle_h2, = ax_mos.plot([mos["pos"], 1], [1.0 - mos["fpr"], 1.0 - mos["fpr"]],
+                         color=C_DARK, lw=3.0, solid_capstyle="round", zorder=5)
+_mos_handles = {"v": handle_v, "h1": handle_h1, "h2": handle_h2}
+_hover_labels = {
+    "v": "Ready: drag class boundary (Actual + / Actual -)",
+    "h1": "Ready: drag TP / FN split",
+    "h2": "Ready: drag FP / TN split",
+}
+hover_badge = ax_mos.text(
+    0.02, 0.98, "",
+    transform=ax_mos.transAxes, ha="left", va="top", fontsize=FS_ANNOT,
+    fontweight="bold", color=C_ACCENT, zorder=6,
+    bbox=dict(boxstyle="round,pad=0.35", facecolor="#fdebd0",
+              edgecolor=C_ACCENT, alpha=0.95),
+)
+hover_badge.set_visible(False)
+
+ax_mos_hdr.text(0.20, 0.35, "Actual Positive", ha="center", va="center",
+                fontsize=FS_ANNOT, fontweight="bold", color=C_OK)
+ax_mos_hdr.text(0.72, 0.35, "Actual Negative", ha="center", va="center",
+                fontsize=FS_ANNOT, fontweight="bold", color="#85929e")
+# Bottom hint is part of the left panel; keep it in axes coords so it moves with ax_mos.
+mos_hint = ax_mos.text(
+    0.5, -0.10,
+    "Hover a bold boundary until it highlights, then drag",
+    ha="center", va="top", fontsize=FS_ANNOT,
+    transform=ax_mos.transAxes,
+)
+
+# Right bars
+mos_bar_names = [
+    "Actual\nPositive", "Actual\nNegative",
+    "TPR", "FNR", "TNR", "FPR",
+    "Recall", "Precision", "F1",
+]
+mos_bar_colors = [
+    C_OK, "#85929e",
+    C_REC, C_BIN, C_OK, C_ACCENT,
+    C_REC, C_PREC, "#1a5276",
+]
+mos_bars = ax_mos_bars.bar(
+    np.arange(len(mos_bar_names)), np.zeros(len(mos_bar_names)),
+    color=mos_bar_colors, edgecolor="white", width=0.72,
+)
+ax_mos_bars.set_xticks(np.arange(len(mos_bar_names)))
+ax_mos_bars.set_xticklabels(mos_bar_names, fontsize=max(FS_TICK - 2, 7))
+ax_mos_bars.set_ylim(0, 1.18)
+ax_mos_bars.set_ylabel("value", fontsize=FS_AXIS)
+ax_mos_bars.set_title("Live rates from areas", fontsize=FS_AX_TITLE - 1)
+ax_mos_bars.grid(True, axis="y", alpha=0.3)
+mos_bar_labs = [
+    ax_mos_bars.text(i, 0.05, "", ha="center", va="bottom",
+                     fontsize=max(FS_ANNOT - 2, 7), fontweight="bold")
+    for i in range(len(mos_bar_names))
+]
+
+ax_mos_form.set_xlim(0, 10)
+ax_mos_form.set_ylim(0, 10)
+ax_mos_form.axis("off")
+round_box(ax_mos_form, 0.2, 0.3, 9.6, 9.4, C_MUTE, "0.45", lw=1.6)
+# One text artist per formula; vertical gap between formulas = 0.1 inch.
+_N_FORM_LINES = 9
+mos_form_lines = [
+    ax_mos_form.text(
+        5.0, 5.0, "", ha="center", va="center", fontsize=FS_ANNOT,
+    )
+    for _ in range(_N_FORM_LINES)
+]
+_form_gap = {"step": None}  # data-units between formula baselines
+
+
+def _formula_baseline_step():
+    """Baseline spacing = formula line height + 0.1 inch gap."""
+    if _form_gap["step"] is not None:
+        return _form_gap["step"]
+    pos = ax_mos_form.get_position()
+    h_in = max(fig_mos.get_figheight() * pos.height, 1e-6)
+    gap_data = 0.1 / h_in * 10.0          # 0.1 inch -> data y in [0,10]
+    line_data = (FS_ANNOT / 72.0) * 1.45 / h_in * 10.0
+    _form_gap["step"] = gap_data + line_data
+    return _form_gap["step"]
+
+
+def _place_formula_lines(lines):
+    step = _formula_baseline_step()
+    total = (_N_FORM_LINES - 1) * step
+    y_top = 5.0 + 0.5 * total
+    for i, (artist, text) in enumerate(zip(mos_form_lines, lines)):
+        artist.set_text(text)
+        artist.set_position((5.0, y_top - i * step))
+
+
+def _redraw_mosaic(_=None):
+    pos = mos["pos"]
+    tpr = mos["tpr"]
+    fpr = mos["fpr"]
+    # Column 1: Actual Positive
+    # FN bottom [0, 1-tpr], TP top [1-tpr, 1]
+    y_split1 = 1.0 - tpr
+    pat_fn.set_xy((0.0, 0.0))
+    pat_fn.set_width(pos)
+    pat_fn.set_height(y_split1)
+    pat_tp.set_xy((0.0, y_split1))
+    pat_tp.set_width(pos)
+    pat_tp.set_height(tpr)
+    # Column 2: Actual Negative
+    y_split2 = 1.0 - fpr
+    pat_tn.set_xy((pos, 0.0))
+    pat_tn.set_width(1.0 - pos)
+    pat_tn.set_height(y_split2)
+    pat_fp.set_xy((pos, y_split2))
+    pat_fp.set_width(1.0 - pos)
+    pat_fp.set_height(fpr)
+
+    r, (tp, tn, fp, fn) = _mos_metrics(mos)
+    # Abbreviation + area centered; full name in gray to the right of the abbrev.
+    cx_pos = 0.5 * pos
+    cx_neg = pos + 0.5 * (1.0 - pos)
+    cy_tp = y_split1 + 0.5 * tpr
+    cy_fn = 0.5 * y_split1
+    cy_fp = y_split2 + 0.5 * fpr
+    cy_tn = 0.5 * y_split2
+    # Nudge names right of the centered "TP"/"FN"/... on the upper text line.
+    name_dx = 0.055
+    name_dy = 0.055
+
+    txt_tp.set_position((cx_pos, cy_tp))
+    txt_fn.set_position((cx_pos, cy_fn))
+    txt_fp.set_position((cx_neg, cy_fp))
+    txt_tn.set_position((cx_neg, cy_tn))
+    txt_tp.set_text(f"TP\n{tp:.2f}")
+    txt_fn.set_text(f"FN\n{fn:.2f}")
+    txt_fp.set_text(f"FP\n{fp:.2f}")
+    txt_tn.set_text(f"TN\n{tn:.2f}")
+    txt_tp_name.set_position((cx_pos + name_dx, cy_tp + name_dy))
+    txt_fn_name.set_position((cx_pos + name_dx, cy_fn + name_dy))
+    txt_fp_name.set_position((cx_neg + name_dx, cy_fp + name_dy))
+    txt_tn_name.set_position((cx_neg + name_dx, cy_tn + name_dy))
+
+    handle_v.set_data([pos, pos], [0, 1])
+    handle_h1.set_data([0, pos], [y_split1, y_split1])
+    handle_h2.set_data([pos, 1], [y_split2, y_split2])
+
+    values = [
+        pos, 1.0 - pos,
+        r["TPR"], r["FNR"], r["TNR"], r["FPR"],
+        r["Recall"], r["Precision"], r["F1"],
+    ]
+    for bar, lab, val in zip(mos_bars, mos_bar_labs, values):
+        bar.set_height(val)
+        lab.set_y(val + 0.03)
+        lab.set_text(f"{val:.2f}")
+
+    _place_formula_lines([
+        f"Actual Positive = True Positive + False Negative = {pos:.2f}",
+        f"Actual Negative = False Positive + True Negative = {1.0 - pos:.2f}",
+        f"TPR = True Positive / Actual Positive = {r['TPR']:.2f}",
+        f"TNR = True Negative / Actual Negative = {r['TNR']:.2f}",
+        f"FPR = False Positive / Actual Negative = {r['FPR']:.2f}",
+        f"FNR = False Negative / Actual Positive = {r['FNR']:.2f}",
+        f"Recall = True Positive / Actual Positive = {r['Recall']:.2f}",
+        f"Precision = True Positive / (TP+FP = Positive-predicted) = {r['Precision']:.2f}",
+        f"F1 = 2 * Precision * Recall / (Precision + Recall) = {r['F1']:.2f}",
+    ])
+    fig_mos.canvas.draw_idle()
+
+
+def _hit_mode(x, y):
+    """Which boundary is nearest to the click (in axes data coords)."""
+    pos, tpr, fpr = mos["pos"], mos["tpr"], mos["fpr"]
+    y1 = 1.0 - tpr
+    y2 = 1.0 - fpr
+    # Thresholds in data units (unit square).
+    tol = 0.04
+    candidates = []
+    candidates.append(("v", abs(x - pos)))
+    if 0.0 <= x <= pos:
+        candidates.append(("h1", abs(y - y1)))
+    if pos <= x <= 1.0:
+        candidates.append(("h2", abs(y - y2)))
+    mode, dist = min(candidates, key=lambda t: t[1])
+    return mode if dist <= tol else None
+
+
+def _set_mos_cursor(kind):
+    """kind: None, 'ew' (vertical boundary), 'ns' (horizontal boundary)."""
+    try:
+        from matplotlib.backend_bases import cursors
+        mapping = {
+            None: cursors.POINTER,
+            "ew": cursors.RESIZE_HORIZONTAL,
+            "ns": cursors.RESIZE_VERTICAL,
+        }
+        fig_mos.canvas.set_cursor(mapping.get(kind, cursors.POINTER))
+    except Exception:
+        pass
+
+
+def _style_mos_handles(active=None):
+    for key, handle in _mos_handles.items():
+        if key == active:
+            handle.set_color(C_ACCENT)
+            handle.set_linewidth(5.8)
+            handle.set_alpha(1.0)
+        else:
+            handle.set_color(C_DARK)
+            handle.set_linewidth(3.0)
+            handle.set_alpha(0.95)
+    if active is None:
+        hover_badge.set_visible(False)
+    else:
+        hover_badge.set_text(_hover_labels[active])
+        hover_badge.set_visible(True)
+
+
+def _on_press(event):
+    if event.inaxes != ax_mos or event.xdata is None or event.ydata is None:
+        return
+    mode = _hit_mode(event.xdata, event.ydata)
+    _drag["mode"] = mode
+    if mode is not None:
+        _style_mos_handles(mode)
+        fig_mos.canvas.draw_idle()
+
+
+def _on_release(event):
+    _drag["mode"] = None
+    # Re-evaluate hover under the cursor after release.
+    if event.inaxes == ax_mos and event.xdata is not None and event.ydata is not None:
+        mode = _hit_mode(event.xdata, event.ydata)
+        _style_mos_handles(mode)
+        _set_mos_cursor(
+            None if mode is None else ("ew" if mode == "v" else "ns")
+        )
+    else:
+        _style_mos_handles(None)
+        _set_mos_cursor(None)
+    fig_mos.canvas.draw_idle()
+
+
+def _on_motion(event):
+    # Dragging a picked boundary.
+    if _drag["mode"] is not None:
+        if event.inaxes != ax_mos or event.xdata is None or event.ydata is None:
+            return
+        x = float(np.clip(event.xdata, _MIN_SPLIT, 1.0 - _MIN_SPLIT))
+        y = float(np.clip(event.ydata, _MIN_SPLIT, 1.0 - _MIN_SPLIT))
+        mode = _drag["mode"]
+        if mode == "v":
+            mos["pos"] = x
+        elif mode == "h1":
+            # top fraction tpr = 1 - y_split
+            mos["tpr"] = float(np.clip(1.0 - y, _MIN_SPLIT, 1.0 - _MIN_SPLIT))
+        elif mode == "h2":
+            mos["fpr"] = float(np.clip(1.0 - y, _MIN_SPLIT, 1.0 - _MIN_SPLIT))
+        _style_mos_handles(mode)
+        _redraw_mosaic()
+        return
+
+    # Hover acknowledgement: highlight handle + cursor + badge.
+    if event.inaxes != ax_mos or event.xdata is None or event.ydata is None:
+        _style_mos_handles(None)
+        _set_mos_cursor(None)
+        fig_mos.canvas.draw_idle()
+        return
+    mode = _hit_mode(event.xdata, event.ydata)
+    _style_mos_handles(mode)
+    _set_mos_cursor(None if mode is None else ("ew" if mode == "v" else "ns"))
+    fig_mos.canvas.draw_idle()
+
+
+fig_mos.canvas.mpl_connect("button_press_event", _on_press)
+fig_mos.canvas.mpl_connect("button_release_event", _on_release)
+fig_mos.canvas.mpl_connect("motion_notify_event", _on_motion)
+print("Step 4: hover boundaries to arm drag; drag to update areas and bars.")
+# Keep the widened/tall figsize (do not reset via show_maximized).
+fig_mos.set_dpi(FIGURE_DPI)
+fig_mos.set_size_inches(_fw_m_wide, _fh_m_tall, forward=True)
+fig_mos.canvas.draw_idle()
+_form_gap["step"] = None
+_redraw_mosaic()
+_mgr_mos = getattr(fig_mos.canvas, "manager", None)
+if _mgr_mos is not None:
+    try:
+        _mgr_mos.window.state("zoomed")
+    except Exception:
+        try:
+            _mgr_mos.window.showMaximized()
+        except Exception:
+            try:
+                _mgr_mos.frame.Maximize(True)
+            except Exception:
+                pass
+add_step_footer(fig_mos)
+# Apply AFTER maximize so it is not undone. Moves header + table + bottom hint.
+_dy_left_up = _LEFT_PANEL_UP_IN / max(fig_mos.get_figheight(), 1e-6)
+for _ax in (ax_mos_hdr, ax_mos):
+    _p = _ax.get_position()
+    _ax.set_position([_p.x0, _p.y0 + _dy_left_up, _p.width, _p.height])
+fig_mos.canvas.draw_idle()
+plt.show()
+
+
+# -------------------------------------------------------
+# FIGURE 5: Recall and Precision
 # -------------------------------------------------------
 fig3, ax3 = new_figure()
 fig3.suptitle(
-    "Step 4: Recall and Precision -- two questions about positives",
+    "Step 5: Recall and Precision -- two questions about positives",
     fontsize=FS_FIGURE_TITLE - 2, fontweight="bold",
 )
 blank_slide(ax3)
@@ -363,35 +772,97 @@ show_maximized(fig3)
 
 
 # -------------------------------------------------------
-# FIGURE 5: Threshold slider -- Precision / Recall tradeoff
+# FIGURE 6: Threshold slider -- everything live
 # -------------------------------------------------------
-fig4, (ax4a, ax4b) = new_figure(1, 2)
+fig4 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
 fig4.suptitle(
-    "Step 5: Drag the threshold -- Precision and Recall trade off",
+    "Step 6: Drag the threshold -- matrix and all rates update live",
     fontsize=FS_FIGURE_TITLE - 2, fontweight="bold",
 )
-fig4.subplots_adjust(bottom=0.22, wspace=0.28)
+gs4 = fig4.add_gridspec(2, 2, height_ratios=[1.05, 1.15], hspace=0.38, wspace=0.28)
+ax4_hist = fig4.add_subplot(gs4[0, :])
+ax4_cm = fig4.add_subplot(gs4[1, 0])
+ax4_met = fig4.add_subplot(gs4[1, 1])
+fig4.subplots_adjust(bottom=0.16, top=0.88, left=0.07, right=0.98)
 
-# Left: score histograms
+# Top: score histograms + live threshold + predicted-positive shade
 bins = np.linspace(scores.min() - 0.3, scores.max() + 0.3, 28)
-ax4a.hist(scores_neg, bins=bins, alpha=0.55, color="#85929e",
-          label="true 0", edgecolor="white")
-ax4a.hist(scores_pos, bins=bins, alpha=0.65, color=C_OK,
-          label="true 1", edgecolor="white")
-thr_line = ax4a.axvline(THR0, color=C_ACCENT, lw=2.6, label="threshold")
-ax4a.set_xlabel("model score", fontsize=FS_AXIS)
-ax4a.set_ylabel("count", fontsize=FS_AXIS)
-ax4a.set_title("Higher score => more likely positive", fontsize=FS_AX_TITLE - 2)
-ax4a.legend(fontsize=FS_LEGEND - 1, loc="upper left")
-ax4a.grid(True, axis="y", alpha=0.3)
+ax4_hist.hist(scores_neg, bins=bins, alpha=0.55, color="#85929e",
+              label="true 0", edgecolor="white")
+ax4_hist.hist(scores_pos, bins=bins, alpha=0.65, color=C_OK,
+              label="true 1", edgecolor="white")
+thr_line = ax4_hist.axvline(THR0, color=C_ACCENT, lw=2.6, label="threshold")
+ax4_hist.set_xlabel("model score", fontsize=FS_AXIS)
+ax4_hist.set_ylabel("count", fontsize=FS_AXIS)
+ax4_hist.set_title("Higher score => more likely positive", fontsize=FS_AX_TITLE - 2)
+ax4_hist.grid(True, axis="y", alpha=0.3)
+x_left_hist, x_right_hist = float(scores.min()) - 0.3, float(scores.max()) + 0.3
+ax4_hist.set_xlim(x_left_hist, x_right_hist)
+# Placeholder shade; geometry filled in _update_thr after ylim is known.
+pred_span = Rectangle(
+    (THR0, 0.0), max(x_right_hist - THR0, 0.0), 1.0,
+    facecolor=C_ACCENT, edgecolor="none", alpha=0.12,
+    label="predict 1 (score >= thr)", zorder=0,
+)
+ax4_hist.add_patch(pred_span)
+ax4_hist.legend(fontsize=FS_LEGEND - 1, loc="upper left")
 
-ax4b.set_xlim(0, 10)
-ax4b.set_ylim(0, 10)
-ax4b.axis("off")
-round_box(ax4b, 0.5, 1.2, 9.0, 7.5, C_MUTE, "0.45", lw=1.8)
-hud4 = ax4b.text(5.0, 5.2, "", ha="center", va="center", fontsize=FS_ANNOT + 1)
+# Bottom-left: live confusion matrix (value texts are updated)
+ax4_cm.set_xlim(0, 10)
+ax4_cm.set_ylim(0, 10)
+ax4_cm.axis("off")
+cm_title = ax4_cm.set_title("", fontsize=FS_AX_TITLE - 1)
+cm_cells = [
+    ("TN", 1.3, 5.2, "#d5f5e3", "True Negative"),
+    ("FP", 5.3, 5.2, "#f5b7b1", "False Positive"),
+    ("FN", 1.3, 1.5, "#fad7a0", "False Negative"),
+    ("TP", 5.3, 1.5, "#a9dfbf", "True Positive"),
+]
+cm_val_texts = {}
+for name, x, y, face, long_name in cm_cells:
+    ax4_cm.add_patch(FancyBboxPatch(
+        (x, y), 3.2, 2.9,
+        boxstyle="round,pad=0.02,rounding_size=0.12",
+        facecolor=face, edgecolor="0.3", linewidth=1.8,
+    ))
+    ax4_cm.text(x + 1.6, y + 2.15, name, ha="center", va="center",
+                fontsize=FS_ANNOT + 2, fontweight="bold")
+    ax4_cm.text(x + 1.6, y + 1.35, long_name, ha="center", va="center",
+                fontsize=FS_ANNOT - 1, color="0.25")
+    cm_val_texts[name] = ax4_cm.text(
+        x + 1.6, y + 0.55, "", ha="center", va="center",
+        fontsize=FS_AX_TITLE - 1, fontweight="bold",
+    )
+ax4_cm.text(2.9, 8.55, r"pred $= 0$", ha="center",
+            fontsize=FS_ANNOT + 1, fontweight="bold")
+ax4_cm.text(6.9, 8.55, r"pred $= 1$", ha="center",
+            fontsize=FS_ANNOT + 1, fontweight="bold")
+ax4_cm.text(0.45, 6.65, r"true $= 0$", ha="center", va="center",
+            rotation=90, fontsize=FS_ANNOT + 1, fontweight="bold")
+ax4_cm.text(0.45, 2.95, r"true $= 1$", ha="center", va="center",
+            rotation=90, fontsize=FS_ANNOT + 1, fontweight="bold")
 
-ax_sl = fig4.add_axes([0.20, 0.07, 0.60, 0.04])
+# Bottom-right: live bars for all rates
+metric_names = ["TPR\nRecall", "TNR", "FPR", "FNR", "Precision", "F1", "Accuracy"]
+metric_keys = ["TPR", "TNR", "FPR", "FNR", "Precision", "F1", "Accuracy"]
+metric_colors = [C_REC, C_OK, C_ACCENT, C_BIN, C_PREC, "#1a5276", "#85929e"]
+bars_met = ax4_met.bar(
+    np.arange(len(metric_names)), np.zeros(len(metric_names)),
+    color=metric_colors, edgecolor="white", width=0.72,
+)
+ax4_met.set_xticks(np.arange(len(metric_names)))
+ax4_met.set_xticklabels(metric_names, fontsize=FS_TICK - 1)
+ax4_met.set_ylim(0, 1.18)
+ax4_met.set_ylabel("rate", fontsize=FS_AXIS)
+ax4_met.set_title("All rates live", fontsize=FS_AX_TITLE - 1)
+ax4_met.grid(True, axis="y", alpha=0.3)
+bar_labels = [
+    ax4_met.text(i, 0.05, "", ha="center", va="bottom",
+                 fontsize=FS_ANNOT - 1, fontweight="bold")
+    for i in range(len(metric_names))
+]
+
+ax_sl = fig4.add_axes([0.18, 0.04, 0.64, 0.035])
 slider_thr = Slider(
     ax_sl, r"threshold", float(scores.min()), float(scores.max()),
     valinit=THR0, valstep=0.05,
@@ -401,35 +872,43 @@ slider_thr = Slider(
 def _update_thr(_=None):
     thr = float(slider_thr.val)
     thr_line.set_xdata([thr, thr])
+    # Live predicted-positive region (score >= threshold)
+    y0, y1 = ax4_hist.get_ylim()
+    pred_span.set_x(thr)
+    pred_span.set_width(max(x_right_hist - thr, 0.0))
+    pred_span.set_y(y0)
+    pred_span.set_height(max(y1 - y0, 0.0))
     yp = predict_at(thr)
     tp, tn, fp, fn = confusion_counts(y_true, yp)
     r = rates_from_counts(tp, tn, fp, fn)
-    hud4.set_text(
-        f"threshold = {thr:.2f}\n\n"
-        f"TP={tp}   FP={fp}\n"
-        f"FN={fn}   TN={tn}\n\n"
-        f"Recall    = TPR = {r['Recall']:.2f}\n"
-        f"Precision         = {r['Precision']:.2f}\n"
-        f"FPR               = {r['FPR']:.2f}\n"
-        f"F1                = {r['F1']:.2f}\n\n"
-        "Lower threshold: catch more (Recall up),\n"
-        "but more false alarms (Precision down)."
-    )
+
+    cm_title.set_text(f"Confusion matrix @ thr = {thr:.2f}")
+    cm_val_texts["TN"].set_text(str(tn))
+    cm_val_texts["FP"].set_text(str(fp))
+    cm_val_texts["FN"].set_text(str(fn))
+    cm_val_texts["TP"].set_text(str(tp))
+
+    values = [r[k] for k in metric_keys]
+    for bar, lab, val in zip(bars_met, bar_labels, values):
+        bar.set_height(val)
+        lab.set_y(val + 0.03)
+        lab.set_text(f"{val:.2f}")
+
     fig4.canvas.draw_idle()
 
 
 slider_thr.on_changed(_update_thr)
 _update_thr()
-print("Step 5: drag threshold; watch Precision / Recall.")
+print("Step 6: drag threshold; matrix + all rates update live.")
 show_maximized(fig4)
 
 
 # -------------------------------------------------------
-# FIGURE 6: F-score
+# FIGURE 7: F-score
 # -------------------------------------------------------
 fig5, (ax5a, ax5b) = new_figure(1, 2)
 fig5.suptitle(
-    r"Step 6: F-score -- harmonic mean of Precision and Recall",
+    r"Step 7: F-score -- harmonic mean of Precision and Recall",
     fontsize=FS_FIGURE_TITLE - 2, fontweight="bold",
 )
 
@@ -487,11 +966,11 @@ show_maximized(fig5)
 
 
 # -------------------------------------------------------
-# FIGURE 7: Imbalance -- accuracy lies, F1 complains
+# FIGURE 8: Imbalance -- accuracy lies, F1 complains
 # -------------------------------------------------------
 fig6, (ax6a, ax6b) = new_figure(1, 2)
 fig6.suptitle(
-    "Step 7: Class imbalance -- Accuracy can look great while F1 collapses",
+    "Step 8: Class imbalance -- Accuracy can look great while F1 collapses",
     fontsize=FS_FIGURE_TITLE - 4, fontweight="bold",
 )
 
@@ -547,11 +1026,11 @@ show_maximized(fig6)
 
 
 # -------------------------------------------------------
-# FIGURE 8: Takeaway
+# FIGURE 9: Takeaway
 # -------------------------------------------------------
 fig7, ax7 = new_figure()
 fig7.suptitle(
-    "Step 8: F-score family in one breath",
+    "Step 9: F-score family in one breath",
     fontsize=FS_FIGURE_TITLE, fontweight="bold",
 )
 blank_slide(ax7)
@@ -595,11 +1074,12 @@ Steps:
   1. Why counts beat bare accuracy
   2. TP / TN / FP / FN
   3. TPR / TNR / FPR / FNR
-  4. Recall and Precision
-  5. Threshold slider tradeoff
-  6. F1 harmonic mean (+ F_beta)
-  7. Imbalance: Accuracy vs F1
-  8. Takeaway
+  4. Drag area mosaic (live bars)
+  5. Recall and Precision
+  6. Threshold slider tradeoff
+  7. F1 harmonic mean (+ F_beta)
+  8. Imbalance: Accuracy vs F1
+  9. Takeaway
 
 See also: 035_regression_classification.py, 190_loss_functions.py,
           194_Loss_Binary_Cross_Entropy.py
