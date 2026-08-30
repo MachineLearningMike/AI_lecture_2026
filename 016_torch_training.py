@@ -7,7 +7,7 @@ The notebook is a conceptual lean version of 070_torch_training.py:
   - one parameter w, no bias:  y_hat = w * x
   - MSE loss
   - full-batch gradient descent on 30 noisy points near y = 2x
-  - no animation -- just the loop, stripped bare
+  - same fit/loss animation style as 070
 
 Sketch:
   1. Notebook code block 1 -- setup
@@ -18,16 +18,20 @@ Sketch:
   6. One full-batch training step as a cycle
   7. The training loop, line by line
   8. After training -- w approaches 2
-  9. Mental checklist before richer models
+  9. Animation -- prediction line fits one step at a time (as in 070)
+  10. Mental checklist before richer models
 
 Companion: 015_torch_training.ipynb, 070_torch_training.py, 080_model.py.
 """
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
+from matplotlib import animation
 from _config import (
     FS_FIGURE_TITLE,
     FS_AX_TITLE,
@@ -46,6 +50,10 @@ from matplotlib.patches import FancyBboxPatch
 import numpy as np
 
 torch.manual_seed(523)
+
+ANIM_FPS = 4
+ANIM_HOLD_SEC = 2.0
+OUT_GIF = Path(__file__).resolve().parent / '016_torch_training.gif'
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -138,9 +146,14 @@ opt = torch.optim.SGD(model.parameters(), lr=LR)
 
 w0 = model.weight.item()
 STEPS = 150
+xs_line = torch.linspace(0.5, 5.5, 50).unsqueeze(1)
 w_path = [w0]
 grad_path = []
 loss_path = []
+# Histories for the 070-style animation (include the initial state).
+with torch.no_grad():
+    loss_hist = [loss_fn(model(x), y).item()]
+    pred_hist = [model(xs_line).squeeze(1).clone()]
 
 for _ in range(STEPS):
     y_hat = model(x)
@@ -151,6 +164,9 @@ for _ in range(STEPS):
     opt.step()
     w_path.append(model.weight.item())
     loss_path.append(loss.item())
+    with torch.no_grad():
+        loss_hist.append(loss_fn(model(x), y).item())
+        pred_hist.append(model(xs_line).squeeze(1).clone())
 
 w_final = model.weight.item()
 mse_final = loss_fn(model(x), y).item()
@@ -160,6 +176,9 @@ loss_path = np.array(loss_path)
 
 x_np = x.numpy().ravel()
 y_np = y.numpy().ravel()
+xs_np = xs_line.numpy().ravel()
+true_ys = (2.0 * xs_line).numpy().ravel()
+pred_np = [p.numpy() for p in pred_hist]
 
 
 # Code cells for Steps 1-2 (same recipe as the live run above).
@@ -584,11 +603,98 @@ show_maximized(fig7)
 
 
 # -------------------------------------------------------
-# FIGURE 9: Checklist
+# FIGURE 9: Animation (same style as 070)
+# -------------------------------------------------------
+fig_anim, axes_anim = plt.subplots(1, 2, figsize=screen_figsize(), dpi=FIGURE_DPI)
+fig_anim.suptitle(
+    'Step 9: Watch one weight learn  (y = w x, no bias)',
+    fontsize=FS_FIGURE_TITLE, fontweight='bold',
+)
+
+ax_fit = axes_anim[0]
+ax_fit.scatter(x_np, y_np, s=80, c='royalblue', label='data', zorder=3)
+ax_fit.plot(xs_np, true_ys, 'k--', lw=1.8, alpha=0.65, label=r'true $y=2x$')
+fit_line, = ax_fit.plot([], [], color='crimson', lw=2.8, label=r'predict $y=wx$')
+hud = ax_fit.text(
+    0.02, 0.98, '', transform=ax_fit.transAxes, va='top', ha='left',
+    fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+)
+ax_fit.set_xlabel('x', fontsize=FS_AXIS)
+ax_fit.set_ylabel('y', fontsize=FS_AXIS)
+ax_fit.set_title('Fit improves with each training step', fontsize=FS_AX_TITLE)
+ax_fit.tick_params(axis='both', labelsize=FS_TICK)
+ax_fit.legend(loc='lower right', fontsize=FS_LEGEND)
+ax_fit.grid(True, alpha=0.3)
+y_lo = min(float(y_np.min()), float(true_ys.min()), min(p.min() for p in pred_np)) - 1.0
+y_hi = max(float(y_np.max()), float(true_ys.max()), max(p.max() for p in pred_np)) + 1.0
+ax_fit.set_xlim(0.3, 5.7)
+ax_fit.set_ylim(y_lo, y_hi)
+
+ax_loss = axes_anim[1]
+loss_line, = ax_loss.plot([], [], color='seagreen', lw=2.5)
+loss_dot, = ax_loss.plot([], [], 'o', color='seagreen', ms=8)
+ax_loss.set_xlim(0, len(loss_hist) - 1)
+ax_loss.set_ylim(0.0, max(loss_hist) * 1.1 + 1e-6)
+ax_loss.set_xlabel('training step', fontsize=FS_AXIS)
+ax_loss.set_ylabel('MSE', fontsize=FS_AXIS)
+ax_loss.set_title('Full-batch loss', fontsize=FS_AX_TITLE)
+ax_loss.tick_params(axis='both', labelsize=FS_TICK)
+ax_loss.grid(True, alpha=0.3)
+
+fig_anim.tight_layout(rect=[0, 0, 1, 0.94])
+
+n_frames = len(w_path)
+hold = max(1, int(round(ANIM_HOLD_SEC * ANIM_FPS)))
+frame_ids = list(range(n_frames)) + [n_frames - 1] * hold
+
+
+def init_anim():
+    fit_line.set_data([], [])
+    loss_line.set_data([], [])
+    loss_dot.set_data([], [])
+    hud.set_text('')
+    return fit_line, loss_line, loss_dot, hud
+
+
+def update_anim(frame):
+    fit_line.set_data(xs_np, pred_np[frame])
+    steps = list(range(frame + 1))
+    loss_line.set_data(steps, loss_hist[: frame + 1])
+    loss_dot.set_data([frame], [loss_hist[frame]])
+    hud.set_text(
+        f'training step {frame}/{n_frames - 1}\n'
+        f'w = {w_path[frame]:.3f}\n'
+        f'MSE = {loss_hist[frame]:.3f}'
+    )
+    return fit_line, loss_line, loss_dot, hud
+
+
+anim = animation.FuncAnimation(
+    fig_anim, update_anim, init_func=init_anim,
+    frames=frame_ids, interval=1000 / ANIM_FPS, blit=False,
+)
+
+if OUT_GIF.is_file() and OUT_GIF.stat().st_size > 0:
+    print(f'\nSkipping GIF export (already exists): {OUT_GIF}')
+else:
+    print(f'Saving animation to {OUT_GIF} ...')
+    try:
+        anim.save(OUT_GIF, writer=animation.PillowWriter(fps=ANIM_FPS))
+        print(f'Saved: {OUT_GIF}')
+    except Exception as exc:
+        print(f'Skipping GIF export ({OUT_GIF.name}): {exc}')
+        print('Install pillow to enable animation export: pip install pillow')
+
+show_maximized(fig_anim)
+
+
+# -------------------------------------------------------
+# FIGURE 10: Checklist
 # -------------------------------------------------------
 fig8, ax8 = new_figure()
 fig8.suptitle(
-    'Step 9: Before you touch a bigger model -- this checklist',
+    'Step 10: Before you touch a bigger model -- this checklist',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 blank_slide(ax8)
@@ -611,7 +717,7 @@ for i, line in enumerate(checks):
 
 ax8.text(
     6.0, 0.45,
-    'Next: 070_torch_training.py (animated), then 080_model.py (bias / richer fits).',
+    'Next: 080_model.py (bias / richer fits). Animation above matches 070.',
     ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
 )
 show_maximized(fig8)
