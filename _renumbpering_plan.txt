@@ -1,0 +1,100 @@
+Renumbering plan for lecture code files
+=======================================
+
+Goal
+----
+Rename every lecture script that matches `ddd_*.py` so that:
+- the descriptive suffix after the underscore is unchanged
+- the existing order (sorted by current `ddd`) is preserved
+- consecutive files differ by exactly 10 in their numeric prefix
+
+Numbering rule
+--------------
+- Start at 010 for the first file in current order.
+- Each next file gets previous + 10.
+- Resulting prefixes are always multiples of 10: 010, 020, 030, ...
+- Zero-pad to three digits (`ddd`), same pattern as today.
+
+Why start at 010
+----------------
+Most of the course already uses the 010 / 020 / 030 style. Starting at 010 keeps
+that convention and gives a clean gap of 10 between every consecutive file,
+including the early consecutive block (005–009) and the tight inserts
+(144/145, 221/231/241).
+
+File count: 42
+Final range: 010 … 420
+  (010 + 10 * (42 - 1) = 420)
+
+Proposed mapping (old -> new)
+-----------------------------
+ 1. 005_lecture_strategy.py              -> 010_lecture_strategy.py
+ 2. 006_continuous_end_to_end.py         -> 020_continuous_end_to_end.py
+ 3. 007_intelligence.py                  -> 030_intelligence.py
+ 4. 008_distribution.py                  -> 040_distribution.py
+ 5. 009_discriminative_generative.py     -> 050_discriminative_generative.py
+ 6. 010_gaussian.py                      -> 060_gaussian.py
+ 7. 020_torch_training.py                -> 070_torch_training.py
+ 8. 030_model.py                         -> 080_model.py
+ 9. 040_central_limit_theorem.py         -> 090_central_limit_theorem.py
+10. 050_average_of_random.py             -> 100_average_of_random.py
+11. 060_product_of_random.py             -> 110_product_of_random.py
+12. 070_maximum_likelihood.py            -> 120_maximum_likelihood.py
+13. 080_exponential.py                   -> 130_exponential.py
+14. 090_derivative.py                    -> 140_derivative.py
+15. 100_fastest_ascent.py                -> 150_fastest_ascent.py
+16. 110_stochastic_ascent.py             -> 160_stochastic_ascent.py
+17. 120_rolling_ball.py                  -> 170_rolling_ball.py
+18. 130_momentum.py                      -> 180_momentum.py
+19. 140_loss_functions.py                -> 190_loss_functions.py
+20. 144_SGD_concept.py                   -> 200_SGD_concept.py
+21. 145_SGD_training.py                  -> 210_SGD_training.py
+22. 150_inductive_bias.py                -> 220_inductive_bias.py
+23. 160_normalization.py                 -> 230_normalization.py
+24. 170_dropout.py                       -> 240_dropout.py
+25. 180_neural_non_linearity.py          -> 250_neural_non_linearity.py
+26. 190_transformer.py                   -> 260_transformer.py
+27. 200_transformer_code.py              -> 270_transformer_code.py
+28. 210_machine_translation.py           -> 280_machine_translation.py
+29. 220_off_the_shelf_transformer.py     -> 290_off_the_shelf_transformer.py
+30. 221_linear_transformation.py         -> 300_linear_transformation.py
+31. 230_dot_inner_scalar_product.py      -> 310_dot_inner_scalar_product.py
+32. 231_softmax.py                       -> 320_softmax.py
+33. 240_QKV_attention.py                 -> 330_QKV_attention.py
+34. 241_Wq_Wk_Wv.py                      -> 340_Wq_Wk_Wv.py
+35. 260_positional_encoding.py           -> 350_positional_encoding.py
+36. 270_chain_of_adds.py                 -> 360_chain_of_adds.py
+37. 280_model_dimension.py               -> 370_model_dimension.py
+38. 290_Transformer_inductive_bias.py    -> 380_Transformer_inductive_bias.py
+39. 300_video_transformer.py             -> 390_video_transformer.py
+40. 310_swin_transformer.py              -> 400_swin_transformer.py
+41. 320_BERT.py                          -> 410_BERT.py
+42. 330_GPT.py                           -> 420_GPT.py
+
+Safe rename procedure (when approved)
+-------------------------------------
+Many new names collide with existing names (e.g. current 100_... becomes 150_...,
+while another file also targets an intermediate number). Direct in-place renames
+would overwrite or fail.
+
+Two-phase approach:
+1. Rename every `ddd_name.py` -> `__tmp_##_name.py` using the new numbers.
+2. Rename each temp file to its final `NEW_ddd_name.py`.
+
+Prefer `git mv` so history is preserved.
+
+Out of scope for this rename
+----------------------------
+- Do not change file contents in this step (slide titles, print strings, comments
+  that mention old numbers stay as-is unless a follow-up pass is requested).
+- Do not rename non-matching files (README, helpers, this plan file, etc.).
+- Do not invent new descriptive suffixes.
+
+Open choice (confirm before execute)
+------------------------------------
+Starting number is proposed as 010. Alternatives if preferred:
+- Keep first file as 005, then 015, 025, ... (preserves current first number;
+  prefixes are no longer multiples of 10).
+- Start at 000 or 001 with gap 10.
+
+Default for execution: start at 010, gap 10, as mapped above.

@@ -3,7 +3,7 @@ _config.py
 
 Shared lecture figure font sizes.
 
-Baseline matches 170_dropout.py Step 1 on a full-screen lecture figure.
+Baseline matches 240_dropout.py Step 1 on a full-screen lecture figure.
 Individual modules may still nudge sizes relatively (e.g. FS_AXIS - 2 on a
 dense grid, or FS_AX_TITLE on a small GIF canvas) so text *looks* the same
 to readers even when canvases scale differently.
