@@ -20,8 +20,10 @@ Sketch:
   8. After training -- w approaches 2
   9. Animation -- prediction line fits one step at a time (as in 070)
   10. Mental checklist before richer models
+  11. What's wrong with what you just learned? -- goal, field use, generalization
 
-Companion: 015_torch_training.ipynb, 070_torch_training.py, 080_model.py.
+Companion: 015_torch_training.ipynb, 070_torch_training.py, 080_model.py,
+030_intelligence.py.
 """
 
 from __future__ import annotations
@@ -717,10 +719,96 @@ for i, line in enumerate(checks):
 
 ax8.text(
     6.0, 0.45,
-    'Next: 080_model.py (bias / richer fits). Animation above matches 070.',
+    'Next step asks what this loop is for. Then: 080_model.py.',
     ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
 )
 show_maximized(fig8)
+
+
+# -------------------------------------------------------
+# FIGURE 11: What's wrong with what you just learned?
+# -------------------------------------------------------
+fig9, ax9 = new_figure()
+fig9.suptitle(
+    "Step 11: What's wrong with what you just learned?",
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+blank_slide(ax9)
+
+round_box(ax9, 0.4, 6.35, 11.2, 1.35, '#1a5276', '#1a5276', lw=0)
+ax9.text(
+    6.0, 7.05,
+    'We taught the machinery of training -- not yet its purpose.',
+    ha='center', va='center', fontsize=FS_ANNOT + 2,
+    fontweight='bold', color='#f9e79f',
+)
+
+# Gap: mechanism without objective
+round_box(ax9, 0.4, 4.55, 5.4, 1.55, '#fadbd8', C_ACCENT, lw=2.0)
+ax9.text(
+    3.1, 5.55, 'What this file covered',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+    fontweight='bold', color=C_ACCENT,
+)
+ax9.text(
+    3.1, 4.95,
+    'model, loss, backward, step\n'
+    'how to drive the weight downhill',
+    ha='center', va='center', fontsize=FS_ANNOT,
+)
+
+round_box(ax9, 6.2, 4.55, 5.4, 1.55, C_GOAL, C_OK, lw=2.0)
+ax9.text(
+    8.9, 5.55, 'What was missing',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+    fontweight='bold', color=C_OK,
+)
+ax9.text(
+    8.9, 4.95,
+    'Why train at all?\n'
+    'No goal => no honest assessment.',
+    ha='center', va='center', fontsize=FS_ANNOT,
+)
+
+# Field use arrow story
+round_box(ax9, 0.4, 2.55, 3.5, 1.7, C_NEW, '#2874a6', lw=1.8)
+ax9.text(2.15, 3.7, 'Train', ha='center', fontsize=FS_ANNOT + 1,
+         fontweight='bold', color=C_DARK)
+ax9.text(2.15, 3.15, 'fit observed\ncases', ha='center', va='center',
+         fontsize=FS_ANNOT)
+
+arrow(ax9, 4.05, 3.4, 4.55, 3.4, C_DARK, lw=2.2)
+
+round_box(ax9, 4.7, 2.55, 3.5, 1.7, C_NEW, '#2874a6', lw=1.8)
+ax9.text(6.45, 3.7, 'Deploy', ha='center', fontsize=FS_ANNOT + 1,
+         fontweight='bold', color=C_DARK)
+ax9.text(6.45, 3.15, 'infer in the\nfield', ha='center', va='center',
+         fontsize=FS_ANNOT)
+
+arrow(ax9, 8.35, 3.4, 8.85, 3.4, C_DARK, lw=2.2)
+
+round_box(ax9, 9.0, 2.55, 2.6, 1.7, C_GOAL, C_OK, lw=2.0)
+ax9.text(10.3, 3.7, 'Succeed', ha='center', fontsize=FS_ANNOT + 1,
+         fontweight='bold', color=C_OK)
+ax9.text(10.3, 3.15, 'right choice\non new cases', ha='center', va='center',
+         fontsize=FS_ANNOT)
+
+# Generalization name + advice
+round_box(ax9, 0.4, 0.35, 11.2, 1.95, C_MUTE, '0.45', lw=1.8)
+ax9.text(
+    6.0, 1.7,
+    'That leap -- from observations to an unobserved case -- is generalization.\n'
+    'We cannot forever escape it: learn from what we saw, then choose where we have not.',
+    ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
+    color=C_DARK,
+)
+ax9.text(
+    6.0, 0.75,
+    'Advice: training loss is the practice score; field success is the real exam.\n'
+    'Hold out unseen cases. Optimize the loop -- but judge the model by what it has never trained on.',
+    ha='center', va='center', fontsize=FS_ANNOT,
+)
+show_maximized(fig9)
 
 
 # -------------------------------------------------------
@@ -746,4 +834,9 @@ This run:
 Teaching point:
   Bigger models reuse this same loop.
   If the loop is unclear, scale will not save you.
+
+What's still missing (Step 11):
+  The loop is mechanism. The goal is field inference on unobserved cases.
+  That goal has a name: generalization.
+  Without a goal, there is no assessment -- only a shrinking training loss.
 """)

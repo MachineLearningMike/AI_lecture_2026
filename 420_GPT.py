@@ -29,6 +29,7 @@ from _config import (
 )
 apply_rcparams(plt)
 import matplotlib.patches as patches
+from matplotlib.widgets import Button, Slider
 import numpy as np
 
 np.random.seed(42)
@@ -82,7 +83,8 @@ def add_note(ax, text, x=0.98, y=0.46, ha='right', va='top', facecolor='white'):
     )
 
 
-def softmax(z, axis=-1):
+def softmax(z, axis=-1, tau=1.0):
+    z = np.asarray(z, dtype=float) / max(float(tau), 1e-8)
     z = z - np.max(z, axis=axis, keepdims=True)
     e = np.exp(z)
     return e / e.sum(axis=axis, keepdims=True)
@@ -168,26 +170,26 @@ show_maximized(fig1)
 
 
 # -------------------------------------------------------
-# FIGURE 2: Causal LM objective
+# FIGURE 2: Causal LM objective + interactive temperature
 # -------------------------------------------------------
 fig2, axes2 = new_figure(1, 2)
 fig2.suptitle(
-    'Step 2: Pretraining = maximize P(token_t | token_1..t-1) over the corpus',
+    'Step 2: Pretraining = next-token prediction  (drag temperature)',
     fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
 )
+fig2.subplots_adjust(bottom=0.18, wspace=0.28)
 
 ax = axes2[0]
 ax.set_xlim(0, 12)
 ax.set_ylim(0, 8)
 ax.axis('off')
-ax.set_title('Teacher-forced next-token prediction', fontsize=FS_AX_TITLE - 2)
+ax.set_title('Teacher-forced causal LM', fontsize=FS_AX_TITLE - 2)
 
 xs = np.linspace(1.0, 11.0, len(TOKENS))
 for i, (x, tok) in enumerate(zip(xs, TOKENS)):
     color = '#f8d7da' if i == len(TOKENS) - 1 else '#dceaff'
     box(ax, x - 0.65, 5.8, 1.3, 1.0, tok, color, fontsize=FS_ANNOT - 2)
 
-# arrows: each position predicts the next
 for i in range(len(TOKENS) - 1):
     ax.annotate(
         '', xy=(xs[i + 1], 5.8), xytext=(xs[i], 5.8),
@@ -202,29 +204,63 @@ ax.text(
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
 box(ax, 2.5, 1.5, 7.0, 1.8,
-    'Self-supervised: labels = the text itself\n(no human annotation needed)',
+    'Self-supervised: labels = the text itself\n'
+    '(no human annotation needed)',
     '#d4edda')
 
-ax = axes2[1]
-ax.bar(VOCAB, probs, color='royalblue', edgecolor='k')
-ax.set_ylabel(r'$P($next$)$', fontsize=FS_AXIS)
-ax.set_title('Softmax over vocab given context', fontsize=FS_AX_TITLE - 2)
-ax.tick_params(axis='both', labelsize=FS_TICK - 4)
-ax.set_ylim(0, 1.05)
-for i, (v, p) in enumerate(zip(VOCAB, probs)):
-    ax.text(i, p + 0.03, f'{p:.2f}', ha='center', fontsize=FS_ANNOT - 2)
-ax.grid(True, axis='y', alpha=0.3)
-add_note(
-    ax,
-    f'Context: "{" ".join(CONTEXT)}"\n'
-    f'Target: "mat"\n'
-    f'NLL = {nll:.3f}\n\n'
-    'Pretrain minimizes\n'
-    'this NLL everywhere.',
-    y=0.98, va='top', facecolor='lightyellow',
+ax2b = axes2[1]
+TAU0 = 1.0
+p2 = softmax(logits, tau=TAU0)
+colors2 = ['seagreen' if v == 'mat' else 'royalblue' for v in VOCAB]
+bars2 = ax2b.bar(VOCAB, p2, color=colors2, edgecolor='k')
+ax2b.set_ylabel(r'$P($next$)$', fontsize=FS_AXIS)
+ax2b.set_title(
+    f'Context: "{" ".join(CONTEXT)}"  -> next?',
+    fontsize=FS_AX_TITLE - 2,
+)
+ax2b.tick_params(axis='both', labelsize=FS_TICK - 4)
+ax2b.set_ylim(0, 1.05)
+ax2b.grid(True, axis='y', alpha=0.3)
+txt2 = [
+    ax2b.text(i, p2[i] + 0.03, f'{p2[i]:.2f}', ha='center', fontsize=FS_ANNOT - 2)
+    for i in range(len(VOCAB))
+]
+hud2 = ax2b.text(
+    0.98, 0.98, '',
+    transform=ax2b.transAxes, ha='right', va='top', fontsize=FS_ANNOT - 1,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
 
-plt.tight_layout()
+ax_tau2 = fig2.add_axes([0.58, 0.06, 0.35, 0.04])
+sl_tau2 = Slider(ax_tau2, r'decode $\tau$', 0.15, 3.0, valinit=TAU0, valstep=0.05,
+                 color='royalblue')
+
+
+def _update_tau2(_=None):
+    tau = float(sl_tau2.val)
+    p = softmax(logits, tau=tau)
+    for bar, pi, txt in zip(bars2, p, txt2):
+        bar.set_height(pi)
+        txt.set_y(pi + 0.03)
+        txt.set_text(f'{pi:.2f}')
+    nll_t = -np.log(p[true_id] + 1e-12)
+    vibe = ('greedy / peaky' if tau < 0.5 else
+            'nucleus-ish mid' if tau < 1.5 else
+            'wild / flat')
+    hud2.set_text(
+        f'$\\tau$ = {tau:.2f}  ({vibe})\n'
+        f'P(mat) = {p[true_id]:.3f}\n'
+        f'NLL(mat) = {nll_t:.3f}\n\n'
+        'Pretrain fits $\\tau$=1 logits.\n'
+        'Temperature is a decode knob\n'
+        'on the learned distribution.'
+    )
+    fig2.canvas.draw_idle()
+
+
+sl_tau2.on_changed(_update_tau2)
+_update_tau2()
+print('Step 2: drag temperature -- pretrained next-token distribution reshapes.')
 show_maximized(fig2)
 
 
@@ -383,8 +419,8 @@ ax5.text(
     'Pretrain teaches "how language / knowledge continue".\n'
     'SFT teaches "how to answer like an assistant given a prompt".\n'
     'Alignment steers "which answers humans prefer / allow".\n\n'
-    'Base GPT (pretrained only) can complete text but may ignore instructions.\n'
-    'Chat models are mostly the later stages on top of a strong base.',
+    'Interactive deep-dives: Step 2 (tau), Step 6 (SFT vibe),\n'
+    'Step 9 (RLHF stages), Step 10 (HHH knobs + DPO).',
     ha='center', va='center', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
@@ -395,57 +431,120 @@ show_maximized(fig5)
 
 
 # -------------------------------------------------------
-# FIGURE 6: Supervised fine-tuning (SFT)
+# FIGURE 6: Supervised fine-tuning (SFT) -- before / after vibe
 # -------------------------------------------------------
 fig6, axes6 = new_figure(1, 2)
 fig6.suptitle(
-    'Step 6: Supervised fine-tuning (SFT) -- learn to follow instructions',
-    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    'Step 6: SFT -- drag the slider: base completer -> instruction follower',
+    fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
 )
+fig6.subplots_adjust(bottom=0.20, wspace=0.28)
 
-ax = axes6[0]
-ax.set_xlim(0, 10)
-ax.set_ylim(0, 8)
-ax.axis('off')
-ax.set_title('Chat-style training example', fontsize=FS_AX_TITLE - 2)
+SFT_PROMPT = 'User: Explain gravity to a child.'
+SFT_REPLIES = [
+    # stage 0: raw pretrained continuation vibe
+    'gravity to a child. Explain gravity to a\n'
+    'child. The child asked again. Chapter 3...',
+    # stage 1: half-aware
+    'Gravity... is a force. Force equals mass\n'
+    'times... (rambling textbook paste)',
+    # stage 2: mostly on-format
+    'Sure! Gravity is the invisible pull that\n'
+    'keeps your feet on the ground.',
+    # stage 3: polished SFT assistant
+    'Gravity is the pull that keeps us on the\n'
+    'ground and the Moon around Earth -- like\n'
+    'an invisible hug from the planet!',
+]
+# meters: follow / format / helpful  (0..1) per stage
+SFT_METERS = np.array([
+    [0.05, 0.10, 0.15],
+    [0.35, 0.30, 0.40],
+    [0.75, 0.80, 0.70],
+    [0.95, 0.95, 0.92],
+], dtype=float)
 
-box(ax, 0.5, 5.8, 9.0, 1.6,
-    'User: Explain gravity to a child.', '#dceaff')
-box(ax, 0.5, 3.6, 9.0, 1.8,
-    'Assistant: Gravity is the pull that keeps us\n'
-    'on the ground and the Moon around Earth...',
-    '#d4edda')
-ax.annotate('', xy=(5.0, 5.4), xytext=(5.0, 5.8),
-            arrowprops=dict(arrowstyle='->', lw=2))
-ax.text(
-    5.0, 1.5,
-    'Still next-token loss -- but only (or mainly) on the\n'
-    'ASSISTANT tokens. The model learns the chat template\n'
-    'and how good answers look.',
-    ha='center', va='center', fontsize=FS_ANNOT,
+ax6a = axes6[0]
+ax6a.set_xlim(0, 10)
+ax6a.set_ylim(0, 9)
+ax6a.axis('off')
+ax6a.set_title('Same prompt, changing model vibe', fontsize=FS_AX_TITLE - 2)
+box(ax6a, 0.5, 7.2, 9.0, 1.2, SFT_PROMPT, '#dceaff', fontsize=FS_ANNOT - 1)
+reply_box = patches.FancyBboxPatch(
+    (0.5, 3.6), 9.0, 3.0, boxstyle='round,pad=0.02,rounding_size=0.1',
+    facecolor='#f8d7da', edgecolor='k', lw=2,
+)
+ax6a.add_patch(reply_box)
+reply_txt = ax6a.text(
+    5.0, 5.1, SFT_REPLIES[0], ha='center', va='center',
+    fontsize=FS_ANNOT - 1, fontweight='bold',
+)
+stage_lbl = ax6a.text(
+    5.0, 3.1, '', ha='center', va='center', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
-
-ax = axes6[1]
-ax.axis('off')
-ax.set_title('What SFT buys you', fontsize=FS_AX_TITLE - 2)
-ax.text(
-    0.5, 0.55,
-    '• Instruction following ("do the task asked")\n'
-    '• Format: markdown, JSON, bullet answers, ...\n'
-    '• Multi-turn chat roles (system / user / assistant)\n'
-    '• Safety refusals that appear in the demos\n\n'
-    'Limits of SFT alone:\n'
-    '  - only as good as the demo distribution\n'
-    '  - does not rank TWO ok answers by preference\n'
-    '  - can still be sycophantic / verbose / unsafe\n'
-    '    outside the supervised set\n\n'
-    '=> preference alignment is the next stage.',
-    transform=ax.transAxes, ha='center', va='center', fontsize=FS_ANNOT + 1,
-    bbox=dict(boxstyle='round', facecolor='#f7f7ff', alpha=0.96),
+ax6a.text(
+    5.0, 1.3,
+    'Still next-token loss -- mainly on ASSISTANT tokens.\n'
+    'SFT teaches chat template + "what a good answer looks like".',
+    ha='center', va='center', fontsize=FS_ANNOT - 1,
+    bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
 )
 
-plt.tight_layout()
+ax6b = axes6[1]
+meter_names = ['Follows\ninstruction', 'Chat\nformat', 'Helpful\ntone']
+meter_colors = ['#5b8def', '#f0ad4e', '#5cb85c']
+bars6 = ax6b.bar(meter_names, SFT_METERS[0], color=meter_colors, edgecolor='k', width=0.65)
+ax6b.set_ylim(0, 1.15)
+ax6b.set_ylabel('toy score', fontsize=FS_AXIS)
+ax6b.set_title('Instruction-following meters', fontsize=FS_AX_TITLE - 2)
+ax6b.tick_params(axis='both', labelsize=FS_TICK - 2)
+ax6b.grid(True, axis='y', alpha=0.3)
+txt6 = [
+    ax6b.text(i, SFT_METERS[0, i] + 0.04, f'{SFT_METERS[0, i]:.2f}',
+              ha='center', fontsize=FS_ANNOT - 1)
+    for i in range(3)
+]
+hud6 = ax6b.text(
+    0.98, 0.98, '',
+    transform=ax6b.transAxes, ha='right', va='top', fontsize=FS_ANNOT - 1,
+    bbox=dict(boxstyle='round', facecolor='#f7f7ff', alpha=0.95),
+)
+
+ax_sft = fig6.add_axes([0.20, 0.06, 0.60, 0.045])
+sl_sft = Slider(ax_sft, 'SFT progress', 0, 3, valinit=0, valstep=1, color='#f0ad4e')
+
+
+def _update_sft(_=None):
+    k = int(sl_sft.val)
+    reply_txt.set_text(SFT_REPLIES[k])
+    reply_box.set_facecolor(['#f8d7da', '#fff3cd', '#d4edda', '#c3e6cb'][k])
+    labels = [
+        '0  BASE LM -- continues text, ignores the ask',
+        '1  early SFT -- knows topic, weak format',
+        '2  mid SFT -- on-template, shorter & clearer',
+        '3  SFT done -- answers like an assistant',
+    ]
+    stage_lbl.set_text(labels[k])
+    for bar, val, txt in zip(bars6, SFT_METERS[k], txt6):
+        bar.set_height(val)
+        txt.set_y(val + 0.04)
+        txt.set_text(f'{val:.2f}')
+    hud6.set_text(
+        'SFT alone:\n'
+        '  + follow / format\n'
+        '  - no ranking of two\n'
+        '    OK answers\n'
+        '  - still preference-\n'
+        '    blind outside demos\n\n'
+        'Next: RLHF / DPO'
+    )
+    fig6.canvas.draw_idle()
+
+
+sl_sft.on_changed(_update_sft)
+_update_sft()
+print('Step 6: drag SFT progress -- watch base completer become an assistant.')
 show_maximized(fig6)
 
 
@@ -552,107 +651,268 @@ show_maximized(fig8)
 
 
 # -------------------------------------------------------
-# FIGURE 9: Alignment -- RLHF sketch
+# FIGURE 9: RLHF pipeline -- SFT -> reward model -> PPO
 # -------------------------------------------------------
 fig9, axes9 = new_figure(1, 2)
 fig9.suptitle(
-    'Step 9: Alignment -- steer the model toward preferred behavior',
-    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    'Step 9: RLHF pipeline -- SFT  ->  Reward Model  ->  PPO  (step through)',
+    fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
+)
+fig9.subplots_adjust(bottom=0.22, wspace=0.30)
+
+RLHF_STAGES = [
+    {
+        'title': '1) Start from SFT policy',
+        'blurb': 'Supervised chat model is the\ninitial policy AND the KL reference.',
+        'highlight': 0,
+        'reward': 0.25,
+        'kl': 0.0,
+        'pref': 0.35,
+    },
+    {
+        'title': '2) Sample answers, humans rank',
+        'blurb': 'For each prompt, sample A/B/C...\nLabelers mark preferences A > B > C.',
+        'highlight': 1,
+        'reward': 0.25,
+        'kl': 0.0,
+        'pref': 0.55,
+    },
+    {
+        'title': '3) Train reward model R',
+        'blurb': 'Fit R(prompt, answer) so preferred\nreplies score higher (Bradley-Terry).',
+        'highlight': 2,
+        'reward': 0.55,
+        'kl': 0.05,
+        'pref': 0.70,
+    },
+    {
+        'title': '4) PPO policy update',
+        'blurb': 'Maximize R minus beta * KL(policy\n|| SFT ref). Steer without collapsing.',
+        'highlight': 3,
+        'reward': 0.88,
+        'kl': 0.35,
+        'pref': 0.90,
+    },
+]
+
+ax9a = axes9[0]
+ax9a.set_xlim(0, 12)
+ax9a.set_ylim(0, 10)
+ax9a.axis('off')
+ax9a.set_title('Pipeline (active stage highlighted)', fontsize=FS_AX_TITLE - 2)
+
+stage_boxes = []
+stage_specs = [
+    (0.4, 7.2, 2.6, 2.0, 'SFT\npolicy', '#dceaff'),
+    (3.4, 7.2, 2.6, 2.0, 'Sample +\nrank A>B', '#fff3cd'),
+    (6.4, 7.2, 2.6, 2.0, 'Reward\nmodel R', '#e2d5f1'),
+    (9.4, 7.2, 2.2, 2.0, 'PPO\nupdate', '#d4edda'),
+]
+for x, y, w, h, text, color in stage_specs:
+    rect = patches.FancyBboxPatch(
+        (x, y), w, h, boxstyle='round,pad=0.02,rounding_size=0.1',
+        facecolor=color, edgecolor='k', lw=2,
+    )
+    ax9a.add_patch(rect)
+    ax9a.text(x + w / 2, y + h / 2, text, ha='center', va='center',
+              fontsize=FS_ANNOT - 1, fontweight='bold')
+    stage_boxes.append(rect)
+
+for x0, x1 in [(3.0, 3.4), (6.0, 6.4), (9.0, 9.4)]:
+    ax9a.annotate('', xy=(x1, 8.2), xytext=(x0, 8.2),
+                  arrowprops=dict(arrowstyle='->', lw=2.5, color='seagreen'))
+
+# feedback arrow PPO -> policy
+ax9a.annotate(
+    '', xy=(1.7, 7.2), xytext=(10.5, 7.2),
+    arrowprops=dict(arrowstyle='->', lw=2, color='crimson',
+                    connectionstyle='arc3,rad=0.55'),
+)
+ax9a.text(6.0, 5.85, 'updated weights', color='crimson',
+          ha='center', fontsize=FS_ANNOT - 1, fontweight='bold')
+
+blurb9 = ax9a.text(
+    6.0, 3.6, '', ha='center', va='center', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+)
+ax9a.text(
+    6.0, 1.3,
+    'Objective sketch:  E[R]  -  β · KL(π || π_SFT)\n'
+    'Reward pulls toward preferences; KL keeps fluency / knowledge.',
+    ha='center', va='center', fontsize=FS_ANNOT - 1,
+    bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
 )
 
-ax = axes9[0]
-ax.set_xlim(0, 12)
-ax.set_ylim(0, 9)
-ax.axis('off')
-ax.set_title('RLHF loop (schematic)', fontsize=FS_AX_TITLE - 2)
-
-box(ax, 0.4, 6.8, 3.5, 1.5, 'Prompt', '#dceaff')
-box(ax, 4.3, 6.8, 3.5, 1.5, 'Policy LLM\nsamples answers', '#fff3cd')
-box(ax, 8.2, 6.8, 3.5, 1.5, 'Humans rank\nA > B > C', '#f8d7da')
-ax.annotate('', xy=(4.3, 7.5), xytext=(3.9, 7.5),
-            arrowprops=dict(arrowstyle='->', lw=2))
-ax.annotate('', xy=(8.2, 7.5), xytext=(7.8, 7.5),
-            arrowprops=dict(arrowstyle='->', lw=2))
-
-box(ax, 2.0, 4.2, 8.0, 1.6, 'Train reward model R(prompt, answer)', '#e2d5f1')
-ax.annotate('', xy=(6.0, 5.8), xytext=(10.0, 6.8),
-            arrowprops=dict(arrowstyle='->', lw=2, color='crimson'))
-
-box(ax, 2.0, 1.8, 8.0, 1.6,
-    'RL (e.g. PPO): update policy to raise R\n'
-    'with KL penalty vs the SFT reference',
-    '#d4edda')
-ax.annotate('', xy=(6.0, 3.4), xytext=(6.0, 4.2),
-            arrowprops=dict(arrowstyle='->', lw=2.5, color='seagreen'))
-
-ax = axes9[1]
-ax.axis('off')
-ax.set_title('What "aligned" usually targets', fontsize=FS_AX_TITLE - 2)
-ax.text(
-    0.5, 0.55,
-    'Common goals (HHH-style):\n'
-    '  • Helpful -- solve the user\'s task\n'
-    '  • Honest -- avoid fabrications when possible\n'
-    '  • Harmless -- refuse dangerous / disallowed asks\n\n'
-    'Also: style, brevity, citation habits, tool use, ...\n\n'
-    'Alignment is preference shaping on top of a base\n'
-    'model that already "knows" a lot from pretraining.\n'
-    'It does not magically add new world knowledge\n'
-    '(and can trade off capability if overdone).',
-    transform=ax.transAxes, ha='center', va='center', fontsize=FS_ANNOT + 1,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.96),
+ax9b = axes9[1]
+metric_names = ['Reward R', 'KL to SFT', 'Win-rate\nvs SFT']
+bars9 = ax9b.bar(metric_names, [0.25, 0.0, 0.35],
+                 color=['#9b59b6', '#e74c3c', '#27ae60'], edgecolor='k', width=0.65)
+ax9b.set_ylim(0, 1.15)
+ax9b.set_ylabel('toy units', fontsize=FS_AXIS)
+ax9b.set_title('As RLHF proceeds...', fontsize=FS_AX_TITLE - 2)
+ax9b.tick_params(axis='both', labelsize=FS_TICK - 2)
+ax9b.grid(True, axis='y', alpha=0.3)
+txt9 = [
+    ax9b.text(i, 0.29, '', ha='center', fontsize=FS_ANNOT - 1)
+    for i in range(3)
+]
+hud9 = ax9b.text(
+    0.98, 0.98, '',
+    transform=ax9b.transAxes, ha='right', va='top', fontsize=FS_ANNOT - 1,
+    bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.95),
 )
 
-plt.tight_layout()
+ax_rlhf = fig9.add_axes([0.15, 0.08, 0.45, 0.045])
+sl_rlhf = Slider(ax_rlhf, 'RLHF stage', 0, 3, valinit=0, valstep=1, color='#9b59b6')
+ax_btn_prev = fig9.add_axes([0.64, 0.075, 0.12, 0.05])
+ax_btn_next = fig9.add_axes([0.78, 0.075, 0.12, 0.05])
+btn_prev = Button(ax_btn_prev, 'Prev', color='#dee2e6', hovercolor='#adb5bd')
+btn_next = Button(ax_btn_next, 'Next', color='#dee2e6', hovercolor='#adb5bd')
+
+
+def _update_rlhf(_=None):
+    k = int(sl_rlhf.val)
+    st = RLHF_STAGES[k]
+    for i, rect in enumerate(stage_boxes):
+        rect.set_linewidth(4.5 if i == st['highlight'] else 2.0)
+        rect.set_edgecolor('crimson' if i == st['highlight'] else 'k')
+    blurb9.set_text(f"{st['title']}\n{st['blurb']}")
+    vals = [st['reward'], st['kl'], st['pref']]
+    for bar, val, txt in zip(bars9, vals, txt9):
+        bar.set_height(val)
+        txt.set_y(val + 0.04)
+        txt.set_text(f'{val:.2f}')
+    hud9.set_text(
+        'Classic InstructGPT-style\n'
+        'RLHF loop.\n\n'
+        'Too little β (KL): reward\n'
+        'hacking / style collapse.\n'
+        'Too much β: barely moves\n'
+        'off the SFT model.'
+    )
+    fig9.canvas.draw_idle()
+
+
+def _rlhf_prev(_):
+    sl_rlhf.set_val(max(0, int(sl_rlhf.val) - 1))
+
+
+def _rlhf_next(_):
+    sl_rlhf.set_val(min(3, int(sl_rlhf.val) + 1))
+
+
+sl_rlhf.on_changed(_update_rlhf)
+btn_prev.on_clicked(_rlhf_prev)
+btn_next.on_clicked(_rlhf_next)
+_update_rlhf()
+print('Step 9: step through RLHF -- SFT, rank, reward model, PPO.')
 show_maximized(fig9)
 
 
 # -------------------------------------------------------
-# FIGURE 10: DPO and preference alternatives
+# FIGURE 10: Alignment HHH tradeoffs + DPO
 # -------------------------------------------------------
 fig10, axes10 = new_figure(1, 2)
 fig10.suptitle(
-    'Step 10: Preferences without a full RL loop -- DPO and cousins',
+    'Step 10: Alignment tradeoffs (HHH) + DPO as a simpler preference method',
     fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
 )
+fig10.subplots_adjust(bottom=0.28, wspace=0.30)
 
-ax = axes10[0]
-ax.set_xlim(0, 10)
-ax.set_ylim(0, 8)
-ax.axis('off')
-ax.set_title('Preference pair', fontsize=FS_AX_TITLE - 2)
-
-box(ax, 0.5, 5.8, 9.0, 1.5, 'Prompt: "Summarize this article"', '#dceaff')
-box(ax, 0.5, 3.8, 4.2, 1.6, 'y_w  WINNER\n(preferred)', '#d4edda')
-box(ax, 5.3, 3.8, 4.2, 1.6, 'y_l  LOSER\n(rejected)', '#f8d7da')
-ax.text(
-    5.0, 1.6,
-    'DPO: directly increase likelihood of y_w\n'
-    'relative to y_l vs a reference (SFT) model.\n'
-    'Same preference data; simpler than PPO-RLHF.',
-    ha='center', va='center', fontsize=FS_ANNOT,
+ax10a = axes10[0]
+hhh_names = ['Helpful', 'Harmless', 'Honest']
+hhh_colors = ['#5cb85c', '#f0ad4e', '#5b8def']
+bars_hhh = ax10a.bar(
+    hhh_names, [0.7, 0.7, 0.7], width=0.65,
+    color=hhh_colors, edgecolor='k',
+)
+ax10a.set_ylim(0, 1.15)
+ax10a.set_ylabel('emphasis', fontsize=FS_AXIS)
+ax10a.set_title('Helpful / Harmless / Honest knobs', fontsize=FS_AX_TITLE - 2)
+ax10a.tick_params(axis='both', labelsize=FS_TICK - 2)
+ax10a.grid(True, axis='y', alpha=0.3)
+txt_hhh = [
+    ax10a.text(i, 0.74, '0.70', ha='center', fontsize=FS_ANNOT - 1)
+    for i in range(3)
+]
+behavior10 = fig10.text(
+    0.28, 0.20, '',
+    ha='center', va='top', fontsize=FS_ANNOT - 1,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
 
-ax = axes10[1]
-ax.axis('off')
-ax.set_title('Alignment menu (conceptual)', fontsize=FS_AX_TITLE - 2)
-ax.text(
-    0.5, 0.55,
-    '• SFT -- imitate good demos\n'
-    '• RLHF (PPO + reward model) -- optimize preference reward\n'
-    '• DPO / IPO / KTO -- preference losses without RL sampling\n'
-    '• RLAIF / constitutional -- AI feedback / written principles\n'
-    '• Rejection sampling / best-of-N -- filter at inference\n\n'
-    'Shared idea: a base model proposes; a preference signal\n'
-    'chooses; training (or decoding) shifts mass toward winners.\n\n'
-    'Still open: over-refusal, sycophancy, reward hacking,\n'
-    'and evaluating "aligned" beyond chat benchmarks.',
-    transform=ax.transAxes, ha='center', va='center', fontsize=FS_ANNOT + 1,
-    bbox=dict(boxstyle='round', facecolor='#f7f7ff', alpha=0.96),
+ax10b = axes10[1]
+ax10b.set_xlim(0, 10)
+ax10b.set_ylim(0, 10)
+ax10b.axis('off')
+ax10b.set_title('DPO: preferences without PPO', fontsize=FS_AX_TITLE - 2)
+box(ax10b, 0.5, 7.8, 9.0, 1.4, 'Prompt: "Summarize this article"', '#dceaff',
+    fontsize=FS_ANNOT - 1)
+box(ax10b, 0.5, 5.5, 4.2, 1.8, 'y_w  WINNER\n(preferred)', '#d4edda',
+    fontsize=FS_ANNOT - 1)
+box(ax10b, 5.3, 5.5, 4.2, 1.8, 'y_l  LOSER\n(rejected)', '#f8d7da',
+    fontsize=FS_ANNOT - 1)
+ax10b.text(
+    5.0, 3.3,
+    'DPO raises log π(y_w) relative to π(y_l)\n'
+    'vs a frozen SFT reference -- same prefs,\n'
+    'no reward model, no RL sampling loop.',
+    ha='center', va='center', fontsize=FS_ANNOT - 1,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+)
+ax10b.text(
+    5.0, 1.2,
+    'Menu: SFT · RLHF/PPO · DPO/IPO/KTO\n'
+    'RLAIF · constitutional · best-of-N\n'
+    'Open issues: over-refusal, sycophancy, reward hacking',
+    ha='center', va='center', fontsize=FS_ANNOT - 1,
+    bbox=dict(boxstyle='round', facecolor='#f7f7ff', alpha=0.95),
 )
 
-plt.tight_layout()
+ax_h = fig10.add_axes([0.08, 0.14, 0.35, 0.035])
+ax_ha = fig10.add_axes([0.08, 0.09, 0.35, 0.035])
+ax_ho = fig10.add_axes([0.08, 0.04, 0.35, 0.035])
+sl_help = Slider(ax_h, 'Helpful', 0.05, 1.0, valinit=0.70, valstep=0.05, color='#5cb85c')
+sl_harm = Slider(ax_ha, 'Harmless', 0.05, 1.0, valinit=0.70, valstep=0.05, color='#f0ad4e')
+sl_hon = Slider(ax_ho, 'Honest', 0.05, 1.0, valinit=0.70, valstep=0.05, color='#5b8def')
+
+
+def _hhh_behavior(h, s, o):
+    # toy conflict vignettes from the three knobs
+    if s >= 0.85 and h >= 0.75:
+        return ('High Harmless + Helpful: may OVER-REFUSE\n'
+                'borderline asks, or hedge every answer.')
+    if h >= 0.85 and o <= 0.35:
+        return ('High Helpful, low Honest: SYCOPHANCY risk --\n'
+                'eager answers that invent details.')
+    if o >= 0.85 and h <= 0.40:
+        return ('High Honest, low Helpful: safe hedges &\n'
+                '"I don\'t know" -- under-helps the user.')
+    if s >= 0.85 and o >= 0.75 and h <= 0.45:
+        return ('Harmless+Honest dominate: cautious refusals,\n'
+                'citations, narrow scope -- less can-do vibe.')
+    if abs(h - s) < 0.1 and abs(h - o) < 0.1:
+        return ('Balanced HHH: the usual chat-assistant target.\n'
+                'Real systems still argue over the weights.')
+    return ('Mixed tradeoff: alignment shapes style & refusals;\n'
+            'it does not magically add new world knowledge.')
+
+
+def _update_hhh(_=None):
+    vals = [float(sl_help.val), float(sl_harm.val), float(sl_hon.val)]
+    for bar, val, txt, x in zip(bars_hhh, vals, txt_hhh, (1.5, 5.0, 8.5)):
+        bar.set_height(val)
+        txt.set_y(val + 0.04)
+        txt.set_text(f'{val:.2f}')
+    behavior10.set_text(_hhh_behavior(*vals))
+    fig10.canvas.draw_idle()
+
+
+sl_help.on_changed(_update_hhh)
+sl_harm.on_changed(_update_hhh)
+sl_hon.on_changed(_update_hhh)
+_update_hhh()
+print('Step 10: drag HHH knobs -- see alignment tradeoffs; DPO on the right.')
 show_maximized(fig10)
 
 

@@ -16,11 +16,17 @@ Later work kept the encoder idea but revised the recipe:
   - ALBERT: parameter sharing + sentence-order objective
   - ELECTRA: replaced-token detection (more compute-efficient)
 
+Interactive playgrounds (Steps 12-14):
+  - MLM: drag mask position + mask rate; watch prediction bars
+  - NSP: drag same-pair <-> random-pair; watch IsNext scores
+  - Attention: morph causal <-> bidirectional heatmaps
+
 Companion to 260_transformer.py (encoder vs decoder) and
 350_positional_encoding.py (learned absolute PE in original BERT).
 """
 
 import matplotlib.pyplot as plt
+from matplotlib.widgets import Slider, Button
 from _config import (
     FS_FIGURE_TITLE,
     FS_AX_TITLE,
@@ -737,6 +743,347 @@ show_maximized(fig11)
 
 
 # -------------------------------------------------------
+# FIGURE 12: Interactive MLM playground
+# -------------------------------------------------------
+VOCAB_LIVE = ['cat', 'dog', 'mat', 'sat', 'the', 'on']
+# Content positions only ([CLS]/[SEP] stay fixed)
+CONTENT_IDX = [i for i, tok in enumerate(TOKENS) if tok not in ('[CLS]', '[SEP]')]
+# Soft affinities: each vocab word "likes" certain neighbors
+_AFFINITY = {
+    'cat': {'the': 1.4, 'sat': 1.8, 'on': 0.6, 'mat': 0.9},
+    'dog': {'the': 1.2, 'sat': 1.1, 'on': 0.5, 'mat': 0.4},
+    'mat': {'the': 1.0, 'on': 1.6, 'sat': 0.7, 'cat': 0.8},
+    'sat': {'cat': 1.7, 'the': 0.8, 'on': 1.2, 'mat': 0.9},
+    'the': {'cat': 0.9, 'mat': 0.8, 'sat': 0.5, 'on': 0.4},
+    'on': {'the': 1.1, 'mat': 1.5, 'sat': 0.9, 'cat': 0.5},
+}
+
+
+def toy_mlm_probs(mask_idx, mask_rate):
+    """Toy bidirectional cloze: context votes; extra masks flatten the peak."""
+    true = TOKENS[mask_idx]
+    # secondary masks from mask_rate (exclude primary + specials)
+    n_extra = int(round(mask_rate * max(len(CONTENT_IDX) - 1, 1)))
+    others = [i for i in CONTENT_IDX if i != mask_idx]
+    # deterministic order from mask_idx for stable demos
+    order = sorted(others, key=lambda i: (mask_idx * 17 + i * 31) % 997)
+    extra = set(order[:n_extra])
+    visible = [
+        TOKENS[i] for i in range(T)
+        if i != mask_idx and i not in extra and TOKENS[i] not in ('[CLS]', '[SEP]')
+    ]
+    logits = np.zeros(len(VOCAB_LIVE))
+    for k, w in enumerate(VOCAB_LIVE):
+        score = 0.15
+        for ctx in visible:
+            score += _AFFINITY.get(w, {}).get(ctx, 0.05)
+        # slight prior for the true token when context is rich
+        if w == true:
+            score += 0.55
+        logits[k] = score
+    # Higher mask rate / fewer visible neighbors => flatter (confused) distribution
+    context_strength = max(len(visible), 0)
+    temperature = 0.55 + 0.55 * mask_rate + 0.35 * (1.0 - context_strength / 5.0)
+    return softmax(logits / temperature), sorted(extra)
+
+
+fig12, (ax12a, ax12b) = new_figure(1, 2)
+fig12.suptitle(
+    'Step 12 (interactive): MLM playground -- drag mask position & rate',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+fig12.subplots_adjust(bottom=0.22)
+
+
+def _draw_mlm_seq(ax, mask_idx, extra):
+    ax.clear()
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 6)
+    ax.axis('off')
+    ax.set_title('Cloze input (pink = masked)', fontsize=FS_AX_TITLE - 2)
+    xs = np.linspace(1.0, 11.0, T)
+    for i, (x, tok) in enumerate(zip(xs, TOKENS)):
+        show = tok
+        if i == mask_idx or i in extra:
+            show = '[MASK]'
+            color = '#f8d7da'
+        elif tok in ('[CLS]', '[SEP]'):
+            color = '#e2d5f1'
+        else:
+            color = '#d4edda'
+        box(ax, x - 0.55, 3.4, 1.1, 1.0, show, color, fontsize=FS_ANNOT - 2)
+        ax.text(x, 2.9, tok if i == mask_idx else '', ha='center', va='top',
+                fontsize=FS_ANNOT - 2, color='crimson', fontweight='bold')
+    ax.text(
+        6.0, 1.2,
+        'Green = visible context  |  Pink = hidden\n'
+        'More masks => weaker bidirectional clues => flatter bars.',
+        ha='center', va='center', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
+    return xs
+
+
+bars12 = None
+txts12 = None
+hud12 = None
+
+
+def _update_mlm(_=None):
+    global bars12, txts12, hud12
+    mask_idx = CONTENT_IDX[int(round(sl_pos.val))]
+    mask_rate = float(sl_rate.val)
+    probs, extra = toy_mlm_probs(mask_idx, mask_rate)
+    _draw_mlm_seq(ax12a, mask_idx, extra)
+
+    ax12b.clear()
+    colors = ['#2ecc71' if w == TOKENS[mask_idx] else '#5dade2' for w in VOCAB_LIVE]
+    bars12 = ax12b.bar(VOCAB_LIVE, probs, color=colors, edgecolor='k')
+    txts12 = [
+        ax12b.text(i, probs[i] + 0.02, f'{probs[i]:.2f}',
+                   ha='center', va='bottom', fontsize=FS_ANNOT - 2)
+        for i in range(len(VOCAB_LIVE))
+    ]
+    ax12b.set_ylim(0, 1.05)
+    ax12b.set_ylabel('toy P(token | context)', fontsize=FS_AXIS)
+    ax12b.set_title(f'Predict masked \"{TOKENS[mask_idx]}\"', fontsize=FS_AX_TITLE - 2)
+    ax12b.tick_params(axis='both', labelsize=FS_TICK - 2)
+    ax12b.grid(True, axis='y', alpha=0.3)
+    nll = -np.log(probs[VOCAB_LIVE.index(TOKENS[mask_idx])] + 1e-12)
+    hud12 = ax12b.text(
+        0.98, 0.98,
+        f'mask idx = {mask_idx}\n'
+        f'extra masks = {len(extra)}\n'
+        f'rate ~ {100 * mask_rate:.0f}%\n'
+        f'NLL(true) = {nll:.2f}',
+        transform=ax12b.transAxes, ha='right', va='top', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.95),
+    )
+    fig12.canvas.draw_idle()
+
+
+ax_pos = fig12.add_axes([0.15, 0.10, 0.32, 0.04])
+ax_rate = fig12.add_axes([0.58, 0.10, 0.32, 0.04])
+sl_pos = Slider(
+    ax_pos, 'mask pos', 0, len(CONTENT_IDX) - 1,
+    valinit=CONTENT_IDX.index(MASK_IDX) if MASK_IDX in CONTENT_IDX else 0,
+    valstep=1, color='#8e44ad',
+)
+sl_rate = Slider(
+    ax_rate, 'mask rate', 0.05, 0.55,
+    valinit=0.15, valstep=0.05, color='#c0392b',
+)
+sl_pos.on_changed(_update_mlm)
+sl_rate.on_changed(_update_mlm)
+_update_mlm()
+print('Step 12: drag mask position + mask rate; watch prediction bars.')
+show_maximized(fig12)
+
+
+# -------------------------------------------------------
+# FIGURE 13: Interactive NSP playground
+# -------------------------------------------------------
+SENT_A = 'the cat sat'
+TRUE_B = 'on the mat'
+RANDOM_BS = [
+    'stocks rose today',
+    'bake two cups flour',
+    'quantum spins align',
+    'traffic jam ahead',
+]
+
+
+def nsp_probs(continuity):
+    """continuity=1 => true next; 0 => random topic mismatch."""
+    # Logit margin shrinks as continuity drops
+    margin = 2.8 * continuity - 0.9  # high => IsNext, low => NotNext
+    logits = np.array([margin, -margin])
+    return softmax(logits)
+
+
+fig13, (ax13a, ax13b) = new_figure(1, 2)
+fig13.suptitle(
+    'Step 13 (interactive): NSP -- same-pair vs random-pair vibe',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+fig13.subplots_adjust(bottom=0.24)
+
+
+def _draw_nsp_pair(ax, continuity):
+    ax.clear()
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 8)
+    ax.axis('off')
+    ax.set_title('Sentence pair packing', fontsize=FS_AX_TITLE - 2)
+    # Pick a random-ish B when continuity is low
+    if continuity >= 0.55:
+        sent_b = TRUE_B
+        tag = 'IsNext candidate'
+        col_b = '#d4edda'
+    else:
+        sent_b = RANDOM_BS[int((1.0 - continuity) * (len(RANDOM_BS) - 1) + 1e-9)]
+        tag = 'NotNext (topic jump)'
+        col_b = '#f8d7da'
+    box(ax, 0.5, 5.4, 9.0, 1.4, f'A: \"{SENT_A}\"', '#dceaff')
+    box(ax, 0.5, 3.4, 9.0, 1.4, f'B: \"{sent_b}\"', col_b)
+    box(ax, 2.0, 1.3, 6.0, 1.2, f'[CLS] head -> {tag}', '#fff3cd')
+    return sent_b
+
+
+def _update_nsp(_=None):
+    continuity = float(sl_cont.val)
+    _draw_nsp_pair(ax13a, continuity)
+    p = nsp_probs(continuity)
+    ax13b.clear()
+    cols = ['seagreen', 'crimson']
+    bars = ax13b.bar(['IsNext', 'NotNext'], p, color=cols, edgecolor='k')
+    for rect, pi in zip(bars, p):
+        ax13b.text(rect.get_x() + rect.get_width() / 2, pi + 0.03,
+                   f'{pi:.2f}', ha='center', va='bottom', fontsize=FS_ANNOT)
+    ax13b.set_ylim(0, 1.08)
+    ax13b.set_ylabel('P from [CLS] (toy)', fontsize=FS_AXIS)
+    ax13b.set_title('NSP decision margin', fontsize=FS_AX_TITLE - 2)
+    ax13b.tick_params(axis='both', labelsize=FS_TICK)
+    ax13b.grid(True, axis='y', alpha=0.3)
+    vibe = ('strong same-pair' if continuity > 0.75 else
+            'ambiguous' if continuity > 0.4 else
+            'random-pair mismatch')
+    ax13b.text(
+        0.5, 0.92, f'continuity = {continuity:.2f}\n{vibe}',
+        transform=ax13b.transAxes, ha='center', va='top', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.95),
+    )
+    fig13.canvas.draw_idle()
+
+
+ax_cont = fig13.add_axes([0.22, 0.12, 0.45, 0.045])
+sl_cont = Slider(
+    ax_cont, 'continuity', 0.0, 1.0,
+    valinit=0.85, valstep=0.05, color='#1e8449',
+)
+ax_btn_same = fig13.add_axes([0.72, 0.125, 0.11, 0.045])
+ax_btn_rand = fig13.add_axes([0.85, 0.125, 0.11, 0.045])
+btn_same = Button(ax_btn_same, 'Same pair', color='#d4edda', hovercolor='#a9dfbf')
+btn_rand = Button(ax_btn_rand, 'Random', color='#f8d7da', hovercolor='#f5b7b1')
+
+
+def _snap_same(_):
+    sl_cont.set_val(1.0)
+
+
+def _snap_rand(_):
+    sl_cont.set_val(0.0)
+
+
+btn_same.on_clicked(_snap_same)
+btn_rand.on_clicked(_snap_rand)
+sl_cont.on_changed(_update_nsp)
+_update_nsp()
+print('Step 13: drag continuity (or click Same/Random); watch IsNext bars.')
+show_maximized(fig13)
+
+
+# -------------------------------------------------------
+# FIGURE 14: Interactive bidirectional <-> causal attention
+# -------------------------------------------------------
+def mixed_attention(alpha):
+    """alpha=0: causal; alpha=1: full bidirectional (row-normalized)."""
+    m = attn_bi.copy()
+    for i in range(T):
+        if i + 1 < T:
+            m[i, i + 1:] *= alpha
+        row = m[i].sum()
+        if row > 0:
+            m[i] /= row
+    return m
+
+
+fig14, ax14 = new_figure()
+fig14.suptitle(
+    'Step 14 (interactive): morph causal GPT mask <-> BERT bidirectional',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+fig14.subplots_adjust(bottom=0.20)
+im14 = ax14.imshow(mixed_attention(1.0), cmap='viridis', vmin=0, vmax=attn_bi.max())
+ax14.set_xticks(range(T))
+ax14.set_yticks(range(T))
+ax14.set_xticklabels(TOKENS, rotation=45, ha='right')
+ax14.set_yticklabels(TOKENS)
+ax14.set_xlabel('key', fontsize=FS_AXIS)
+ax14.set_ylabel('query', fontsize=FS_AXIS)
+ax14.tick_params(axis='both', labelsize=FS_TICK - 4)
+cbar14 = fig14.colorbar(im14, ax=ax14, fraction=0.046, pad=0.04)
+future_patches = []
+hud14 = ax14.text(
+    0.02, 0.98, '',
+    transform=ax14.transAxes, ha='left', va='top', fontsize=FS_ANNOT,
+    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+)
+
+
+def _update_attn(_=None):
+    alpha = float(sl_bi.val)
+    m = mixed_attention(alpha)
+    im14.set_data(m)
+    # Red outlines on still-blocked / partially suppressed future cells
+    for p in future_patches:
+        p.remove()
+    future_patches.clear()
+    if alpha < 0.999:
+        for i in range(T):
+            for j in range(i + 1, T):
+                lw = 1.6 if alpha < 0.05 else 1.0
+                ec = 'red' if alpha < 0.35 else 'orange'
+                future_patches.append(
+                    ax14.add_patch(patches.Rectangle(
+                        (j - 0.5, i - 0.5), 1, 1,
+                        fill=False, edgecolor=ec, lw=lw, alpha=0.85,
+                    ))
+                )
+    mode = ('BERT full bidirectional' if alpha > 0.9 else
+            'GPT causal (no future)' if alpha < 0.1 else
+            'hybrid / partial future')
+    hud14.set_text(
+        f'bidirectionality α = {alpha:.2f}\n'
+        f'{mode}\n\n'
+        'Red/orange boxes mark\n'
+        'future keys (j > i).'
+    )
+    ax14.set_title(
+        f'Attention heatmap (α={alpha:.2f})',
+        fontsize=FS_AX_TITLE - 2,
+    )
+    fig14.canvas.draw_idle()
+
+
+ax_bi = fig14.add_axes([0.20, 0.08, 0.42, 0.045])
+sl_bi = Slider(
+    ax_bi, r'$\alpha$ bi', 0.0, 1.0,
+    valinit=1.0, valstep=0.05, color='#2980b9',
+)
+ax_btn_bert = fig14.add_axes([0.66, 0.08, 0.12, 0.045])
+ax_btn_gpt = fig14.add_axes([0.80, 0.08, 0.12, 0.045])
+btn_bert = Button(ax_btn_bert, 'BERT', color='#d1ecf1', hovercolor='#abd8e3')
+btn_gpt = Button(ax_btn_gpt, 'GPT', color='#f8d7da', hovercolor='#f5b7b1')
+
+
+def _snap_bert(_):
+    sl_bi.set_val(1.0)
+
+
+def _snap_gpt(_):
+    sl_bi.set_val(0.0)
+
+
+btn_bert.on_clicked(_snap_bert)
+btn_gpt.on_clicked(_snap_gpt)
+sl_bi.on_changed(_update_attn)
+_update_attn()
+print('Step 14: drag alpha (or click BERT/GPT); watch future keys unlock.')
+show_maximized(fig14)
+
+
+# -------------------------------------------------------
 # KEY INSIGHTS
 # -------------------------------------------------------
 # Tiny MLM sanity: cross-entropy on a one-hot toy prediction
@@ -783,6 +1130,11 @@ Post-BERT diversification of the RECIPE (not just depth/width):
               SOP (order) instead of NSP
   ELECTRA  -- generator proposes replacements; discriminator detects
               fakes on ALL tokens (denser signal than 15% MLM)
+
+Interactive playgrounds in this file:
+  Step 12 -- MLM: mask position + mask rate -> live prediction bars
+  Step 13 -- NSP: continuity slider / Same vs Random buttons
+  Step 14 -- Attention: alpha morphs causal GPT <-> bidirectional BERT
 
 Big picture:
   BERT made unsupervised pretraining + fine-tuning the NLP default.

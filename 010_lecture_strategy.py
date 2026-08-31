@@ -3,6 +3,13 @@
 
 Lecture strategy slides.
 
+Vision / Mission / Strategy / Attitude:
+    Vision -- They won't pay you for what AI can do cheaper.
+    Mission -- Defeat AI - the awkward generalization of expressed
+    current common human knowledge.
+    Strategy -- Bet on irreverent intuition. Master the un-expressible.
+    Attitude -- Be resilient.
+
 Baseline:
     Students do not yet have enough math or AI skill,
     but they must deliver AI as soon as possible.
@@ -11,7 +18,7 @@ Goal:
     Students gain confidence and fundamental intuition in AI,
     then begin to self-study AI, squeeze LLMs for AI work, and deliver AI.
 
-Strategy:
+Lecture gravity:
     Change the gravity of training.
     Begin with delivery and advance toward understanding,
     rather than begin with understanding and advance toward delivery.
@@ -111,6 +118,74 @@ C_NEW = '#d6eaf8'
 C_ACCENT = '#c0392b'
 C_OK = '#1e8449'
 C_MUTE = '#f4f6f7'
+C_DARK = '#1a5276'
+C_FUN = '#8e44ad'
+
+
+# -------------------------------------------------------
+# FIGURE 0: Vision / Mission / Strategy / Attitude
+# -------------------------------------------------------
+fig0, ax0 = new_figure()
+fig0.suptitle(
+    'Step 1: Vision / Mission / Strategy / Attitude',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+blank_slide(ax0)
+
+round_box(ax0, 0.5, 6.05, 11.0, 1.55, C_DARK, C_DARK, lw=0)
+ax0.text(
+    6.0, 7.15, 'VISION',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+    fontweight='bold', color='#f9e79f',
+)
+ax0.text(
+    6.0, 6.45,
+    "They won't pay you for what AI can do cheaper.",
+    ha='center', va='center', fontsize=FS_ANNOT + 2,
+    fontweight='bold', color='white',
+)
+
+round_box(ax0, 0.5, 4.15, 11.0, 1.7, C_WARN, C_ACCENT, lw=2.2)
+ax0.text(
+    6.0, 5.4, 'MISSION',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+    fontweight='bold', color=C_ACCENT,
+)
+ax0.text(
+    6.0, 4.65,
+    'Defeat AI - the awkward generalization\n'
+    'of expressed current common human knowledge.',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+    fontweight='bold', color='#641e16',
+)
+
+round_box(ax0, 0.5, 2.15, 11.0, 1.8, C_GOAL, C_OK, lw=2.2)
+ax0.text(
+    6.0, 3.45, 'STRATEGY',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+    fontweight='bold', color=C_OK,
+)
+ax0.text(
+    6.0, 2.65,
+    'Bet on irreverent intuition.\n'
+    'Master the un-expressible.',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+    fontweight='bold', color='#145a32',
+)
+
+round_box(ax0, 0.5, 0.35, 11.0, 1.55, '#f5eef8', C_FUN, lw=2.2)
+ax0.text(
+    6.0, 1.45, 'ATTITUDE',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+    fontweight='bold', color=C_FUN,
+)
+ax0.text(
+    6.0, 0.8, 'Be resilient.',
+    ha='center', va='center', fontsize=FS_ANNOT + 3,
+    fontweight='bold', color='#4a235a',
+)
+
+show_maximized(fig0)
 
 
 # -------------------------------------------------------
@@ -118,7 +193,7 @@ C_MUTE = '#f4f6f7'
 # -------------------------------------------------------
 fig1, ax1 = new_figure()
 fig1.suptitle(
-    'Step 1: Baseline -- where we actually start',
+    'Step 2: Baseline -- where we actually start',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 blank_slide(ax1)
@@ -167,7 +242,7 @@ show_maximized(fig1)
 # -------------------------------------------------------
 fig2, ax2 = new_figure()
 fig2.suptitle(
-    'Step 2: Goal -- what success looks like',
+    'Step 3: Goal -- what success looks like',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 blank_slide(ax2)
@@ -204,7 +279,7 @@ show_maximized(fig2)
 # -------------------------------------------------------
 fig3, ax3 = new_figure()
 fig3.suptitle(
-    'Step 3: Two possible gravities of training',
+    'Step 4: Two possible gravities of training',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 blank_slide(ax3)
@@ -261,7 +336,7 @@ show_maximized(fig3)
 # -------------------------------------------------------
 fig4, ax4 = new_figure()
 fig4.suptitle(
-    'Step 4: Strategy -- change the gravity of training',
+    'Step 5: Strategy -- change the gravity of training',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 blank_slide(ax4)
@@ -308,7 +383,7 @@ show_maximized(fig4)
 # -------------------------------------------------------
 fig5, ax5 = new_figure()
 fig5.suptitle(
-    'Step 5: How this lecture follows the strategy',
+    'Step 6: How this lecture follows the strategy',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 blank_slide(ax5)
@@ -350,7 +425,7 @@ show_maximized(fig5)
 # -------------------------------------------------------
 fig6, ax6 = new_figure()
 fig6.suptitle(
-    'Step 6: The contract',
+    'Step 7: The contract',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 blank_slide(ax6)
@@ -391,7 +466,7 @@ show_maximized(fig6)
 # -------------------------------------------------------
 fig7, ax7 = new_figure()
 fig7.suptitle(
-    'Step 7: Critical success factors',
+    'Step 8: Critical success factors',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 blank_slide(ax7)
@@ -462,6 +537,18 @@ print("\n" + "=" * 60)
 print("LECTURE STRATEGY")
 print("=" * 60)
 print("""
+Vision:
+  They won't pay you for what AI can do cheaper.
+
+Mission:
+  Defeat AI - the awkward generalization of expressed current common human knowledge.
+
+Strategy:
+  Bet on irreverent intuition. Master the un-expressible.
+
+Attitude:
+  Be resilient.
+
 Baseline:
   Students lack enough math and AI skill,
   yet must deliver AI quickly.
