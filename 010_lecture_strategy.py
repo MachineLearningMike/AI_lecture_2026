@@ -6,7 +6,7 @@ Lecture strategy slides.
 Vision / Mission / Strategy / Attitude:
     Vision -- They won't pay you for what AI can do cheaper.
     Mission -- Defeat AI - the awkward generalization of expressed
-    current common human knowledge.
+    historical common human knowledge.
     Strategy -- Bet on irreverent intuition. Master the un-expressible.
     Attitude -- Be resilient.
 
@@ -123,11 +123,37 @@ C_FUN = '#8e44ad'
 
 
 # -------------------------------------------------------
+# FIGURE -1: Opening quote
+# -------------------------------------------------------
+fig_q, ax_q = new_figure()
+fig_q.suptitle(
+    'Step 1',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+blank_slide(ax_q)
+
+round_box(ax_q, 1.5, 2.6, 9.0, 3.0, C_DARK, C_DARK, lw=0)
+ax_q.text(
+    6.0, 4.35,
+    '"AI is not a magic."',
+    ha='center', va='center',
+    fontsize=FS_FIGURE_TITLE + 2, fontweight='bold', color='#f9e79f',
+)
+ax_q.text(
+    6.0, 3.25,
+    '--- Yoshua Bengio',
+    ha='center', va='center',
+    fontsize=FS_AX_TITLE - 2, color='#d6eaf8',
+)
+show_maximized(fig_q)
+
+
+# -------------------------------------------------------
 # FIGURE 0: Vision / Mission / Strategy / Attitude
 # -------------------------------------------------------
 fig0, ax0 = new_figure()
 fig0.suptitle(
-    'Step 1: Vision / Mission / Strategy / Attitude',
+    'Step 2: Vision / Mission / Strategy / Attitude',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 blank_slide(ax0)
@@ -154,7 +180,7 @@ ax0.text(
 ax0.text(
     6.0, 4.65,
     'Defeat AI - the awkward generalization\n'
-    'of expressed current common human knowledge.',
+    'of expressed historical common human knowledge.',
     ha='center', va='center', fontsize=FS_ANNOT + 1,
     fontweight='bold', color='#641e16',
 )
@@ -193,7 +219,7 @@ show_maximized(fig0)
 # -------------------------------------------------------
 fig1, ax1 = new_figure()
 fig1.suptitle(
-    'Step 2: Baseline -- where we actually start',
+    'Step 3: Baseline -- where we actually start',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 blank_slide(ax1)
@@ -242,7 +268,7 @@ show_maximized(fig1)
 # -------------------------------------------------------
 fig2, ax2 = new_figure()
 fig2.suptitle(
-    'Step 3: Goal -- what success looks like',
+    'Step 4: Goal -- what success looks like',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 blank_slide(ax2)
@@ -279,7 +305,7 @@ show_maximized(fig2)
 # -------------------------------------------------------
 fig3, ax3 = new_figure()
 fig3.suptitle(
-    'Step 4: Two possible gravities of training',
+    'Step 5: Two possible gravities of training',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 blank_slide(ax3)
@@ -336,7 +362,7 @@ show_maximized(fig3)
 # -------------------------------------------------------
 fig4, ax4 = new_figure()
 fig4.suptitle(
-    'Step 5: Strategy -- change the gravity of training',
+    'Step 6: Strategy -- change the gravity of training',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 blank_slide(ax4)
@@ -383,7 +409,7 @@ show_maximized(fig4)
 # -------------------------------------------------------
 fig5, ax5 = new_figure()
 fig5.suptitle(
-    'Step 6: How this lecture follows the strategy',
+    'Step 7: How this lecture follows the strategy',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 blank_slide(ax5)
@@ -425,7 +451,7 @@ show_maximized(fig5)
 # -------------------------------------------------------
 fig6, ax6 = new_figure()
 fig6.suptitle(
-    'Step 7: The contract',
+    'Step 8: The contract',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 blank_slide(ax6)
@@ -466,7 +492,7 @@ show_maximized(fig6)
 # -------------------------------------------------------
 fig7, ax7 = new_figure()
 fig7.suptitle(
-    'Step 8: Critical success factors',
+    'Step 9: Critical success factors',
     fontsize=FS_FIGURE_TITLE, fontweight='bold',
 )
 blank_slide(ax7)
@@ -541,7 +567,7 @@ Vision:
   They won't pay you for what AI can do cheaper.
 
 Mission:
-  Defeat AI - the awkward generalization of expressed current common human knowledge.
+  Defeat AI - the awkward generalization of expressed historical common human knowledge.
 
 Strategy:
   Bet on irreverent intuition. Master the un-expressible.

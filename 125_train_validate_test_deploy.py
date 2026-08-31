@@ -207,28 +207,32 @@ fig0.suptitle(
 
 n_uneven = 240
 x_pts = np.arange(1, n_uneven + 1)
-# Slow global drift (smooth, large-scale)
-global_drift = (
+# Slow global drift (smooth, large-scale) -- larger amplitude
+global_drift = 2.4 * (
     0.55 * np.sin(2 * np.pi * x_pts / n_uneven)
     + 0.35 * (x_pts / n_uneven)
     - 0.25 * np.cos(4 * np.pi * x_pts / n_uneven)
 )
-# Local distribution: larger amplitude, and its own medium-scale drift
+# Local distribution: its own medium-scale drift; 2x local variance
 # (neighborhood mean and volatility both wander along x)
 local_mean_drift = 0.85 * np.sin(2 * np.pi * x_pts / (n_uneven / 6.0) + 0.4)
-local_scale = 0.45 + 1.15 * (0.5 + 0.5 * np.sin(2 * np.pi * x_pts / (n_uneven / 3.5) + 1.1))
-eps = RNG.normal(0.0, 1.0, size=n_uneven)
-# Stronger local correlation -> chunky neighborhood randomness
-for i in range(1, n_uneven):
-    eps[i] = 0.72 * eps[i - 1] + 0.28 * eps[i]
-local_noise = local_mean_drift + local_scale * eps
-y_pts = global_drift + local_noise
+local_scale = 2.0 * (0.45 + 1.15 * (0.5 + 0.5 * np.sin(2 * np.pi * x_pts / (n_uneven / 3.5) + 1.1)))
+# True local mean level: global slow drift + medium local mean wander
+local_mean = global_drift + local_mean_drift
 
-ax0.scatter(x_pts, y_pts, s=14, c=C_TRAIN, alpha=0.55, edgecolors="none",
-            label="data points", zorder=2)
+# Clouds = samples from the local distribution at each t (centered on true local mean)
+n_cloud = 14
+cloud_x, cloud_y = [], []
+for xi, mu_loc, s_loc in zip(x_pts, local_mean, local_scale):
+    cloud_x.append(xi + RNG.normal(0.0, 0.55, size=n_cloud))
+    cloud_y.append(mu_loc + RNG.normal(0.0, 0.22 * float(s_loc), size=n_cloud))
+cloud_x = np.concatenate(cloud_x)
+cloud_y = np.concatenate(cloud_y)
+ax0.scatter(cloud_x, cloud_y, s=8, c=C_TRAIN, alpha=0.28, edgecolors="none",
+            label="local sample clouds", zorder=2)
 ax0.plot(x_pts, global_drift, color=C_ACCENT, lw=2.6, label="global drift", zorder=3)
-ax0.plot(x_pts, global_drift + local_mean_drift, color=C_FUN, lw=1.8, ls="--",
-         alpha=0.85, label="local-mean drift", zorder=3)
+ax0.plot(x_pts, local_mean, color=C_FUN, lw=1.8, ls="--",
+         alpha=0.85, label="local mean (global + local)", zorder=3)
 
 # Call out a calm-ish window vs a wild local-variance window
 win0, win1 = 55, 95
@@ -237,15 +241,15 @@ ax0.axvspan(win0, win1, color=C_FUN, alpha=0.10, zorder=1)
 ax0.axvspan(win2, win3, color=C_BIN, alpha=0.12, zorder=1)
 ax0.annotate(
     "locally: large, wandering noise",
-    xy=(0.5 * (win0 + win1), float(y_pts[win0:win1].max())),
-    xytext=(15, float(np.nanmax(y_pts) * 0.92)),
+    xy=(0.5 * (win0 + win1), float(local_mean[win0:win1].max() + 0.4)),
+    xytext=(15, float(np.nanmax(cloud_y) * 0.92)),
     fontsize=FS_ANNOT, color=C_FUN, fontweight="bold",
     arrowprops=dict(arrowstyle="->", color=C_FUN, lw=1.8),
 )
 ax0.annotate(
     "local variance also drifts",
-    xy=(0.5 * (win2 + win3), float(y_pts[win2:win3].mean())),
-    xytext=(125, float(np.nanmin(y_pts) * 0.85)),
+    xy=(0.5 * (win2 + win3), float(local_mean[win2:win3].mean())),
+    xytext=(125, float(np.nanmin(cloud_y) * 0.85)),
     fontsize=FS_ANNOT, color=C_BIN, fontweight="bold",
     arrowprops=dict(arrowstyle="->", color=C_BIN, lw=1.8),
 )
@@ -257,11 +261,11 @@ ax0.annotate(
     arrowprops=dict(arrowstyle="->", color=C_ACCENT, lw=1.8),
 )
 
-ax0.set_xlabel("number of data points", fontsize=FS_AXIS)
-ax0.set_ylabel("abstract measure of each point", fontsize=FS_AXIS)
+ax0.set_xlabel("time", fontsize=FS_AXIS)
+ax0.set_ylabel("sample distribution", fontsize=FS_AXIS)
 ax0.set_title("local noise is large and drifting; a slower drift sits underneath",
               fontsize=FS_AX_TITLE - 2)
-ax0.legend(fontsize=FS_LEGEND - 1, loc="upper left")
+ax0.legend(fontsize=FS_LEGEND - 1, loc="lower left")
 ax0.grid(True, alpha=0.3)
 fig0.tight_layout(rect=[0, 0.12, 1, 0.92])
 fig0.text(
@@ -903,6 +907,8 @@ fig14.suptitle(
     fontsize=FS_FIGURE_TITLE - 4, fontweight="bold",
 )
 blank_slide(ax14)
+# Room below the default [0, 8] frame so the deploy box can sit 0.5 inch lower
+ax14.set_ylim(-0.7, 8.0)
 
 # Three overlapping circles (train large; validate & test same smaller size)
 # Coordinates in the blank_slide frame (0..12, 0..8)
@@ -952,9 +958,10 @@ ax14.annotate(
     ha="left", va="center",
 )
 
-round_box(ax14, 0.6, 0.35, 7.4, 1.35, C_WARN, C_ACCENT, lw=2.0)
+# Pull deploy callout down by ~0.5 inch (~0.55 data units on this slide)
+round_box(ax14, 0.6, -0.20, 7.4, 1.35, C_WARN, C_ACCENT, lw=2.0)
 ax14.text(
-    4.3, 1.02,
+    4.3, 0.47,
     "Deploy set will make it more complex.",
     ha="center", va="center", fontsize=FS_ANNOT + 2,
     fontweight="bold", color="#641e16",
