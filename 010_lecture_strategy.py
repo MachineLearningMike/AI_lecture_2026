@@ -123,11 +123,11 @@ C_FUN = '#8e44ad'
 
 
 # -------------------------------------------------------
-# FIGURE -1: Opening quote
+# FIGURE -2: Opening quote
 # -------------------------------------------------------
 fig_q, ax_q = new_figure()
 fig_q.suptitle(
-    'Step 1',
+    '',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 blank_slide(ax_q)
@@ -135,7 +135,7 @@ blank_slide(ax_q)
 round_box(ax_q, 1.5, 2.6, 9.0, 3.0, C_DARK, C_DARK, lw=0)
 ax_q.text(
     6.0, 4.35,
-    '"AI is not a magic."',
+    '"AI is not magic."',
     ha='center', va='center',
     fontsize=FS_FIGURE_TITLE + 2, fontweight='bold', color='#f9e79f',
 )
@@ -147,6 +147,30 @@ ax_q.text(
 )
 show_maximized(fig_q)
 
+# -------------------------------------------------------
+# FIGURE -2: Opening quote
+# -------------------------------------------------------
+fig_q, ax_q = new_figure()
+fig_q.suptitle(
+    '',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+blank_slide(ax_q)
+
+round_box(ax_q, 1.5, 2.6, 9.0, 3.0, C_DARK, C_DARK, lw=0)
+ax_q.text(
+    6.0, 4.35,
+    '"AI is underhyped."',
+    ha='center', va='center',
+    fontsize=FS_FIGURE_TITLE + 2, fontweight='bold', color='#f9e79f',
+)
+ax_q.text(
+    6.0, 3.25,
+    '--- Eric Schmidt',
+    ha='center', va='center',
+    fontsize=FS_AX_TITLE - 2, color='#d6eaf8',
+)
+show_maximized(fig_q)
 
 # -------------------------------------------------------
 # FIGURE 0: Vision / Mission / Strategy / Attitude
