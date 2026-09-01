@@ -218,7 +218,8 @@ ax0.text(
 ax0.text(
     6.0, 2.65,
     'Bet on irreverent intuition.\n'
-    'Master the un-expressible.',
+    'Master the un-expressible.\n'
+    'You + AI > AI',
     ha='center', va='center', fontsize=FS_ANNOT + 1,
     fontweight='bold', color='#145a32',
 )
