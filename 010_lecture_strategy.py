@@ -177,20 +177,21 @@ show_maximized(fig_q)
 # -------------------------------------------------------
 fig0, ax0 = new_figure()
 fig0.suptitle(
-    'Step 2: Vision / Mission / Strategy / Attitude',
+    'Vision / Mission / Strategy / Attitude',
     fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
 )
 blank_slide(ax0)
 
-round_box(ax0, 0.5, 6.05, 11.0, 1.55, C_DARK, C_DARK, lw=0)
+round_box(ax0, 0.5, 6.15, 11.0, 1.75, C_DARK, C_DARK, lw=0)
 ax0.text(
-    6.0, 7.15, 'VISION',
+    6.0, 7.55, 'VISION',
     ha='center', va='center', fontsize=FS_AX_TITLE - 2,
     fontweight='bold', color='#f9e79f',
 )
 ax0.text(
-    6.0, 6.45,
-    "They won't pay you for what AI can do cheaper.",
+    6.1, 6.75,
+    "You are losing jobs to AI - a fast-growing but awkwad generalization of\n"
+    "symbolically expressed historical common acquired knowledge.",
     ha='center', va='center', fontsize=FS_ANNOT + 2,
     fontweight='bold', color='white',
 )
@@ -203,13 +204,12 @@ ax0.text(
 )
 ax0.text(
     6.0, 4.65,
-    'Defeat AI - the awkward generalization\n'
-    'of expressed historical common human knowledge.',
+    'Transcend (harness, incorporate, and orchestrate) AI\n',
     ha='center', va='center', fontsize=FS_ANNOT + 1,
     fontweight='bold', color='#641e16',
 )
 
-round_box(ax0, 0.5, 2.15, 11.0, 1.8, C_GOAL, C_OK, lw=2.2)
+round_box(ax0, 0.5, 2.05, 11.0, 1.75, C_GOAL, C_OK, lw=2.2)
 ax0.text(
     6.0, 3.45, 'STRATEGY',
     ha='center', va='center', fontsize=FS_AX_TITLE - 2,
@@ -217,21 +217,21 @@ ax0.text(
 )
 ax0.text(
     6.0, 2.65,
-    'Bet on irreverent intuition.\n'
-    'Master the un-expressible.\n'
-    'You + AI > AI',
+    'Bet on being more human, with irreverent, inexpressible intuition\n'
+    'born from wild truth. Know AI. Build YOU x AI. Surpass AI. Feed AI wisely.',
     ha='center', va='center', fontsize=FS_ANNOT + 1,
     fontweight='bold', color='#145a32',
 )
 
-round_box(ax0, 0.5, 0.35, 11.0, 1.55, '#f5eef8', C_FUN, lw=2.2)
+round_box(ax0, 0.5, 0.30, 11.0, 1.50, '#f5eef8', C_FUN, lw=2.2)
 ax0.text(
     6.0, 1.45, 'ATTITUDE',
     ha='center', va='center', fontsize=FS_AX_TITLE - 2,
     fontweight='bold', color=C_FUN,
 )
 ax0.text(
-    6.0, 0.8, 'Be resilient.',
+    6.0, 0.6, 
+    'Stay resilient. Stay human.\n',
     ha='center', va='center', fontsize=FS_ANNOT + 3,
     fontweight='bold', color='#4a235a',
 )
