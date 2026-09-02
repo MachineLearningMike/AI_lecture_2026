@@ -75,7 +75,7 @@ def new_figure(*args, **kwargs):
     return plt.subplots(*args, **kwargs)
 
 
-def show_maximized(fig):
+def show_maximized(fig, after_footer=None):
     fig.set_dpi(FIGURE_DPI)
     fig.set_size_inches(screen_figsize(), forward=True)
     fig.canvas.draw_idle()
@@ -92,6 +92,9 @@ def show_maximized(fig):
                 except Exception:
                     pass
     add_step_footer(fig)
+    # Footer may call subplots_adjust; apply inch tweaks after that.
+    if after_footer is not None:
+        after_footer(fig)
     plt.show()
 
 
@@ -325,7 +328,15 @@ ax3.set_title(
 )
 ax3.set_aspect("auto")
 fig3.tight_layout(rect=[0, 0.02, 1, 0.92])
-show_maximized(fig3)
+
+
+def _shift_step3_left(_fig):
+    fw, _ = _fig.get_size_inches()
+    p = ax3.get_position()
+    ax3.set_position([p.x0 - 0.4 / fw, p.y0, p.width, p.height])
+
+
+show_maximized(fig3, after_footer=_shift_step3_left)
 
 
 # -------------------------------------------------------

@@ -13,9 +13,11 @@ Sketch:
   6. Reinforcement Learning -- learn from reward over time
   7. RL demo -- agent, environment, actions, rewards
   8. Contrast table -- what is given, what is learned, when to use which
+  9. Learning is binding -- externally vs internally bound
+  10. Cleaner terminology -- remap SL / SSL / UL; external ≠ human
 
 Companion to 080_model.py, 220_inductive_bias.py,
-251_discriminative_generative.py.
+251_discriminative_generative.py, 013_DL_future.py.
 """
 
 import matplotlib.pyplot as plt
@@ -596,6 +598,173 @@ show_maximized(fig8)
 
 
 # -------------------------------------------------------
+# FIGURE 9: Learning is binding
+# -------------------------------------------------------
+fig9, ax9 = new_figure()
+fig9.suptitle(
+    'Step 9: Learning is binding',
+    fontsize=FS_FIGURE_TITLE, fontweight='bold',
+)
+blank_slide(ax9)
+
+round_box(ax9, 0.4, 6.55, 11.2, 1.15, C_DARK, C_DARK, lw=0)
+ax9.text(
+    6.0, 7.12,
+    r'Learning $=$ binding: create a relationship that was not given beforehand.'
+    '\n'
+    r'$x \;\longleftrightarrow\; y$'
+    r'   or more generally   '
+    r'$x_1,x_2,\ldots \;\longleftrightarrow\;$ some structure',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+    fontweight='bold', color='#f9e79f',
+)
+
+# Two columns: externally-bound vs internally-bound
+round_box(ax9, 0.4, 1.55, 5.4, 4.7, C_SL, '#2874a6', lw=2.4)
+ax9.text(
+    3.1, 5.85,
+    'Externally-bound learning',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+    fontweight='bold', color='#2874a6',
+)
+ax9.text(
+    3.1, 5.15,
+    'Desired relationship supplied\nfrom outside the learner.',
+    ha='center', va='center', fontsize=FS_ANNOT,
+)
+ax9.text(
+    3.1, 4.25,
+    r'$x \longrightarrow y_{\mathrm{external}}$',
+    ha='center', va='center', fontsize=FS_ANNOT + 2,
+    fontweight='bold', color=C_DARK,
+)
+ax9.text(
+    3.1, 3.15,
+    'Example (human annotator):\n'
+    r'image $\longrightarrow$ "cat"'
+    '\n'
+    r'then $f_\theta(\mathrm{image})\approx$'
+    ' "cat"',
+    ha='center', va='center', fontsize=FS_ANNOT,
+)
+ax9.text(
+    3.1, 1.95,
+    'Traditional name: supervised.',
+    ha='center', va='center', fontsize=FS_TICK + 1,
+    fontweight='bold', color='#2874a6',
+)
+
+round_box(ax9, 6.2, 1.55, 5.4, 4.7, C_UL, C_OK, lw=2.4)
+ax9.text(
+    8.9, 5.85,
+    'Internally-bound learning',
+    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+    fontweight='bold', color=C_OK,
+)
+ax9.text(
+    8.9, 5.15,
+    'Relationship generated from the\ndata / system itself.',
+    ha='center', va='center', fontsize=FS_ANNOT,
+)
+ax9.text(
+    8.9, 4.25,
+    r'$x \longrightarrow y_{\mathrm{internal}}(x)$',
+    ha='center', va='center', fontsize=FS_ANNOT + 2,
+    fontweight='bold', color=C_DARK,
+)
+ax9.text(
+    8.9, 3.05,
+    r'$x \rightarrow x$   (autoencoder)'
+    '\n'
+    r'$x_{1:t}\rightarrow x_{t+1}$   (LLM)'
+    '\n'
+    r'$x_{\mathrm{masked}}\rightarrow x_{\mathrm{missing}}$',
+    ha='center', va='center', fontsize=FS_ANNOT,
+)
+ax9.text(
+    8.9, 1.95,
+    'Traditional names: self-supervised,\n'
+    '"unsupervised" (often).',
+    ha='center', va='center', fontsize=FS_TICK + 1,
+    fontweight='bold', color=C_OK,
+)
+
+ax9.text(
+    6.0, 0.75,
+    '"Unsupervised" mainly marks the absence of external binding --\n'
+    'not a positive mechanism of its own.',
+    ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
+    bbox=dict(boxstyle='round,pad=0.3', facecolor='lightyellow',
+              edgecolor='0.55', alpha=0.95),
+)
+show_maximized(fig9)
+
+
+# -------------------------------------------------------
+# FIGURE 10: Cleaner terminology + remap
+# -------------------------------------------------------
+fig10, ax10 = new_figure()
+fig10.suptitle(
+    'Step 10: Externally-bound vs internally-bound -- cleaner terms',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+blank_slide(ax10)
+
+round_box(ax10, 0.4, 6.5, 11.2, 1.2, C_DARK, C_DARK, lw=0)
+ax10.text(
+    6.0, 7.1,
+    'Learning is not primarily "fitting labels."\n'
+    'It is establishing useful bindings among patterns.',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+    fontweight='bold', color='#f9e79f',
+)
+
+# Remapping table
+remap = [
+    ('Traditional term', 'Binding terminology'),
+    ('Supervised learning', 'Externally-bound learning'),
+    ('Self-supervised learning', 'Internally-bound learning'),
+    ('Unsupervised learning', 'Ambiguous umbrella term'),
+    ('Image classification', 'Externally-bound'),
+    ('Autoencoder / GPT pretrain', 'Internally-bound'),
+]
+row_h = 0.72
+y_top = 5.95
+for r, (left, right) in enumerate(remap):
+    y = y_top - r * row_h
+    if r == 0:
+        face_l, face_r, edge = '#e8eef8', '#e8eef8', '0.45'
+    elif 'External' in right:
+        face_l, face_r, edge = C_MUTE, C_SL, '0.55'
+    elif 'Internal' in right:
+        face_l, face_r, edge = C_MUTE, C_UL, '0.55'
+    elif 'Ambiguous' in right:
+        face_l, face_r, edge = C_MUTE, C_OLD, '0.55'
+    else:
+        face_l, face_r, edge = C_MUTE, C_MUTE, '0.55'
+    round_box(ax10, 0.5, y - 0.28, 5.2, 0.62, face_l, edge, lw=1.2)
+    round_box(ax10, 6.0, y - 0.28, 5.5, 0.62, face_r, edge, lw=1.2)
+    ax10.text(3.1, y, left, ha='center', va='center',
+              fontsize=FS_ANNOT, fontweight='bold' if r == 0 else 'normal',
+              color=C_DARK)
+    ax10.text(8.75, y, right, ha='center', va='center',
+              fontsize=FS_ANNOT, fontweight='bold' if r == 0 else 'normal',
+              color=C_DARK)
+
+# RL caution + fundamental question
+round_box(ax10, 0.4, 0.35, 11.2, 1.35, C_RL, '#d68910', lw=2.0)
+ax10.text(
+    6.0, 1.0,
+    'Caution: "external" means external to the learner -- not necessarily human.\n'
+    'RL reward is externally supplied by the environment, yet not human labels.\n'
+    'Fundamental question: is the binding externally imposed or internally generated?',
+    ha='center', va='center', fontsize=FS_ANNOT,
+    fontweight='bold', color='#6e2c00',
+)
+show_maximized(fig10)
+
+
+# -------------------------------------------------------
 # KEY INSIGHTS
 # -------------------------------------------------------
 print("\n" + "=" * 60)
@@ -631,6 +800,18 @@ Step 8 -- how to choose:
   Real systems often stack UL pretraining + SL fine-tuning
   (+ optional RL-style preference / reward tuning).
 
+Step 9 -- Learning = binding:
+  Create a relationship not given beforehand: x <-> y (or structure).
+  Externally-bound: y supplied from outside (classic supervised).
+  Internally-bound: y generated from data/system (AE, LLM, masked).
+  "Unsupervised" marks absence of external binding, not a mechanism.
+
+Step 10 -- cleaner terminology:
+  SL -> externally-bound; SSL / many UL recipes -> internally-bound;
+  "unsupervised" is an ambiguous umbrella.
+  "External" = external to the learner (RL reward included), not = human.
+  Core question: is the binding externally imposed or internally generated?
+
 See also: 080_model.py, 220_inductive_bias.py,
-          251_discriminative_generative.py
+          251_discriminative_generative.py, 013_DL_future.py
 """)
