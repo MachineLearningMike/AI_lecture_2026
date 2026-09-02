@@ -1,0 +1,539 @@
+comment.txt
+AI lecture 2026 -- curriculum review against 010 strategy
+Focus: AI with deep learning as the spine
+Date note: written as a planning memo for the lecturer (not student slides)
+
+
+========================================================================
+0. What 010 commits you to (the filter for everything below)
+========================================================================
+
+Vision
+  Students are losing work to AI: a fast, awkward generalization of
+  symbolically expressed historical common knowledge.
+  They will not be paid for what AI can already do cheaper.
+
+Mission
+  Transcend AI: harness, incorporate, orchestrate it.
+  (Docstring also frames "defeat" as mastering what stays unexpressed.)
+
+Strategy
+  Bet on being more human: irreverent, inexpressible intuition.
+  Know AI. Build YOU x AI. Surpass AI. Feed AI wisely.
+
+Attitude
+  Stay resilient. Stay human.
+
+Baseline / Goal
+  Students lack math + AI fluency, yet must deliver soon.
+  Success = confidence + fundamental intuition, then self-study,
+  squeeze LLMs for work, and ship.
+
+Lecture gravity (non-negotiable design rule)
+  Begin delivery, advance toward understanding -- fast.
+  Habit per module: runnable demo -> name it -> just-enough math -> attempt.
+  Explicitly NOT: theory first, historical zoo, delivery only at the end.
+
+Critical success factors
+  Student resilience + insightful teaching (demo before formula).
+
+Implication for this review
+  A file that is excellent as math pedagogy can still be a *curriculum*
+  failure if its placement or prominence fights the gravity.
+  Numbering today is archaeological. Teaching order must not follow it.
+
+
+========================================================================
+1. What you already have (strength map)
+========================================================================
+
+A. Orientation and philosophy (strong, distinctive)
+  010_lecture_strategy.py
+  030_intelligence.py
+  012_DL_history.py
+  013_DL_future.py
+  020_continuous_end_to_end.py
+  These encode your voice: expressed vs unexpressed knowledge,
+  capability x generalization, end-to-end continuous reps,
+  deliver-first gravity. Keep them as the intellectual frame.
+
+B. Learning contracts and binding (recent, high leverage)
+  014_SL_UL_RL.py  (esp. Steps 9-10: learning = binding)
+  035_regression_classification.py
+  This is becoming a signature lens. Good.
+
+C. First runnable training stories (aligned with gravity)
+  016_torch_training.py (+ 015_torch_training.ipynb)
+  041_AI_fun.py
+  043_numpy_torch.py
+  198_back_propagation.py
+  080_model.py
+  You do have "see it run / touch it" material -- but it is not
+  early in the *number* order, and it is fragmented across IDs.
+
+D. Probability / stats toolkit (deep, sometimes too front-loaded by ID)
+  040, 042, 060, 085, 090, 095, 100, 110, 115, 116, 120, 130
+
+E. Optimization and loss family (very strong visual pedagogy)
+  140, 150, 160, 170, 180, 185, 191-196, 197, 210_SGD_training
+
+F. Model craft / bias / regularization
+  220, 230, 231, 240, 250, 251, 141, 142
+
+G. Evaluation and field use
+  122_F1_Score.py
+  125_train_validate_test_deploy.py
+
+H. Representation and Transformer / LLM spine (the product story)
+  199, 210_Embedding, 260-290, 300-380, 390, 400, 410, 420
+
+I. Side skill
+  011_Asian_interview.py  (career speaking; fits resilience, not DL core)
+
+
+========================================================================
+2. Missing topics (relative to an AI+DL course under YOUR mission)
+========================================================================
+
+Priority = how badly the gap fights Vision/Mission/Strategy/Gravity.
+
+------------------------------------------------------------------------
+P0 -- Missing for "squeeze LLMs / deliver AI / YOU x AI"
+------------------------------------------------------------------------
+These are almost absent as first-class lectures, yet 010's goal
+literally names them.
+
+  1. LLM as a tool for work (not only as an architecture)
+     - Prompting patterns, failure modes, verification loops
+     - Using models to draft code/analysis while the student stays accountable
+     - "Feed AI wisely" needs a concrete lab
+
+  2. Retrieval / grounding / tool use (RAG, function calling, agents-lite)
+     - Bridges expressed corpus knowledge vs fresh task context
+     - Directly serves Mission: orchestrate AI, do not worship it
+
+  3. A "ship a small AI" studio module
+     - One thin vertical slice: data -> train or call API -> evaluate -> demo
+     - Graded by attempt and explanation, not by SOTA score
+     - 010's Own-it stage is stated; the corpus barely scaffolds it
+
+  4. Fine-tuning vs prompting vs RAG decision lecture
+     - When external binding (labels) is worth collecting
+     - When internal binding (pretrain objectives) already suffices
+     - Ties beautifully to 014 Steps 9-10
+
+------------------------------------------------------------------------
+P1 -- Missing for a honest deep-learning spine
+------------------------------------------------------------------------
+History (012) names these; dedicated intuition lectures do not exist.
+
+  5. Convolution / CNN inductive bias
+     - Locality, weight sharing, translation structure
+     - Without this, AlexNet/ResNet in 012 are scoreboard names
+     - Also preps Swin (400) properly
+
+  6. Sequence models before Transformers (RNN / LSTM / seq2seq attention)
+     - Short, demo-first bridge: why recurrence, where it hurts,
+       what attention fixed
+     - 260 jumps to Transformer; students miss the problem that created it
+
+  7. Modern generative image models beyond "generative vs discriminative"
+     - Diffusion (named in 012) deserves at least one intuition lecture
+     - Optional: VAE as internally-bound latent binding
+
+  8. Optimizers students will actually meet
+     - Adam / AdamW (momentum 180 exists; Adam is only incidental in 080)
+     - Learning-rate schedules, warmup (Transformers need this story)
+
+  9. Overfitting / underfitting / capacity as a visual lecture
+     - Scattered across 125 / dropout / inductive bias
+     - Needs one memorable "see the fit fail" module
+
+ 10. Initialization + residual/highway idea outside Transformer-only 360
+     - Why deep nets needed residuals (He init, ResNet story)
+
+------------------------------------------------------------------------
+P2 -- Missing for generalization / field truth (your own themes)
+------------------------------------------------------------------------
+ 11. Unified generalization lecture
+     - Merge threads from 013 (levels), 220 (bias), 125 (splits),
+       014 (binding), distribution shift
+     - Right now the idea is strong but fragmented
+
+ 12. Dataset shift / domain shift lab
+     - 013 talks new distribution / new regime
+     - Almost no runnable "train on A, break on B" demo
+
+ 13. Generative / LLM evaluation
+     - 122 is classification-centric (good)
+     - Missing: perplexity intuition, win-rate / preference, hallucination checks
+
+ 14. RLHF / preference binding (thin today)
+     - 014 has classical RL; 420 mentions alignment
+     - Need explicit: preference data as externally-bound signal on top
+       of internally-bound pretraining
+
+------------------------------------------------------------------------
+P3 -- Nice-to-have / optional later
+------------------------------------------------------------------------
+ 15. Systems lite: mixed precision, batch size vs memory, data loaders
+ 16. CNN→ViT bridge lecture (patchify as tokenization of images)
+ 17. Multimodal binding (CLIP-style) as "external pairing without class names"
+ 18. Causal / unexpressed-knowledge methods (experiments, active data)
+     -- advanced; fits Mission but not week-1
+
+
+========================================================================
+3. Redundancies (merge, demote, or make explicitly layered)
+========================================================================
+
+R1. Training-loop cluster (high overlap)
+  016_torch_training.py
+  198_back_propagation.py
+  197_SGD_concept.py
+  210_SGD_training.py
+  (+ notebooks 015, 143)
+  Recommendation:
+    Keep ONE early "see training happen" hero (016).
+    Keep 198 as the autograd/chain-rule deep dive.
+    Merge 197 + 210_SGD into one "batch size / noise / LR" lecture.
+    Cross-link; do not reteach the full loop four times.
+
+R2. Discriminative / generative told twice
+  141_discriminative.py + 142_generative.py
+  251_discriminative_generative.py
+  Recommendation:
+    251 = conceptual contrast lecture.
+    141/142 = toy zoos. Either fold toys into 251 or mark 141/142
+    as optional lab appendices.
+
+R3. Loss introduction vs loss atlas
+  185 (what is loss + MSE 3D) vs 191 (MSE deep)
+  Recommendation:
+    Keep 185 as the gateway; make 191 the optional depth,
+    or fold 185's MSE surface into 191 and let 185 stay
+    "why objectives exist" only.
+
+R4. Normalization name collision
+  042_normalize.py     (feature/distribution scaling intuition)
+  230_normalization.py (BatchNorm vs LayerNorm)
+  Recommendation:
+    Rename in titles/docs: "scale the data" vs "normalize activations".
+    Teach 042 early with data; 230 later with deep nets.
+
+R5. Transformer code multiplicity
+  270_transformer_code.py
+  290_off_the_shelf_transformer.py
+  notebooks: 151, 209, (+ 210_machine_translation)
+  Recommendation:
+    One "from scratch shapes" path (270) and one "call the API" path (290).
+    Archive or clearly demote duplicate notebooks to avoid lecturer drift.
+
+R6. Inductive bias general vs Transformer-specific
+  220 vs 380
+  Not bad redundancy if sequenced as general -> applied.
+  Make the dependency explicit in the chapter map.
+
+R7. Softmax appears in multiple places
+  320_softmax.py, 195 CE, attention lectures
+  Keep 320 as the dedicated intuition; elsewhere only cite.
+
+R8. Number collisions / stale headers (housekeeping redundancy)
+  Two files share 210_: 210_Embedding.py and 210_SGD_training.py
+  Docstrings still say old names (381_SL_UL_RL, 200_SGD_concept, etc.)
+  This creates false "order" and broken companion references.
+
+
+========================================================================
+4. Shortcomings (structure, pedagogy, alignment -- not "bad slides")
+========================================================================
+
+S1. File order fights lecture gravity
+  Low numbers are heavy on strategy + probability.
+  Transformers/LLMs -- what 010 says to talk about early -- sit at 260-420.
+  If anyone teaches "in numerical order," you recreate Traditional Gravity.
+
+S2. Delivery-first is declared more than operationalized
+  Many modules are beautiful intuition theaters.
+  Fewer modules force a student artifact (talk track, tweak log, tiny ship).
+  041_AI_fun and 016 are closest; the Transformer half rarely asks for a ship.
+
+S3. Mission keywords under-taught as practice
+  "Squeeze LLMs", "orchestrate", "unexpressible intuition",
+  "expressed historical knowledge" appear in 010/012/013,
+  but the middle of the course becomes standard DL encyclopedia.
+  Risk: students remember losses and QKV, and still cannot run a
+  YOU x AI workflow on Monday.
+
+S4. CNN / pre-Transformer gap undercuts your own history lecture
+  012 celebrates AlexNet, LSTM, etc.
+  Without matching modules, history becomes museum wall, not felt constraint.
+
+S5. Generalization is your vertical axis (013) but not a curriculum spine
+  Binding (014), splits (125), bias (220), future challenges (013)
+  should be one recurring chorus. Today they are separate concerts.
+
+S6. Uneven depth
+  Loss family 191-196 is lavish (good for intuition).
+  Adam, CNNs, diffusion, LLM-tooling are thin or missing.
+  Depth distribution still mirrors "what was fun to animate,"
+  not always "what Mission needs."
+
+S7. Companion graph is local, not global
+  Files cite neighbors; there is no chapter map students can trust.
+  README is essentially empty.
+
+S8. Optional vs core is unmarked
+  100/110 product/average of r.v., 116 stress test, 390/400 variants
+  may be enrichment -- but nothing says so. Everything looks mandatory.
+
+S9. 011 placement
+  Valuable for Attitude / career resilience; confusing if read as DL Ch.1.
+  Treat as parallel track or capstone speaking clinic.
+
+
+========================================================================
+5. Proposed chapter grouping (IGNORE current file numbers)
+========================================================================
+
+Design principles for the grouping
+  - Gravity: each chapter starts with a runnable picture or demo.
+  - Mission: chapters that build YOU x AI are not optional side quests.
+  - DL focus: math is pulled just-in-time, not as a semester-long prelude.
+  - Binding lens (014): reused as vocabulary across chapters.
+  - Mark Core vs Lab vs Enrichment.
+
+------------------------------------------------------------------------
+CHAPTER A -- Contract and gravity
+------------------------------------------------------------------------
+Core:  010_lecture_strategy.py
+       030_intelligence.py
+Why:   Students need the why and the permission to start imperfectly.
+Attempt: say Vision/Mission in their own words; name one job AI cheapens.
+
+------------------------------------------------------------------------
+CHAPTER B -- Why deep learning (story before machinery)
+------------------------------------------------------------------------
+Core:  012_DL_history.py
+       013_DL_future.py
+       020_continuous_end_to_end.py
+Why:   Achievements, limits, continuous end-to-end as the modern move.
+       Capability x generalization becomes the scoreboard for later.
+Attempt: pick one capability and one generalization level; argue where
+         today's systems are strong vs fragile.
+
+------------------------------------------------------------------------
+CHAPTER C -- First delivery: a model that trains
+------------------------------------------------------------------------
+Core:  041_AI_fun.py          (confidence, play, failure is safe)
+       043_numpy_torch.py
+       016_torch_training.py (+ 015 notebook)
+Lab:   080_model.py           (small end-to-end classify/regress toy)
+Why:   Honor gravity immediately. See loss move. Touch a knob.
+Note:  Do NOT wait for the full probability chapter.
+
+------------------------------------------------------------------------
+CHAPTER D -- What learning even is (signal / binding)
+------------------------------------------------------------------------
+Core:  014_SL_UL_RL.py        (include binding Steps 9-10 as climax)
+       035_regression_classification.py
+Why:   Gives language for every later objective:
+       externally-bound vs internally-bound.
+Attempt: reclassify 3 systems they know (ImageNet classifier, GPT pretrain,
+         RLHF) in binding terms.
+
+------------------------------------------------------------------------
+CHAPTER E -- Data, distribution, and features (business gravity)
+------------------------------------------------------------------------
+Core:  040_distribution.py
+       042_normalize.py       (data scaling)
+       231_pipeline_feature_engineering.py
+Enrich: 251 early teaser only if needed
+Why:   040 already speaks client/business -- keep that energy.
+       Ties to Vision: data is expressed experience; shift breaks models.
+
+------------------------------------------------------------------------
+CHAPTER F -- Judge the work (metrics and field splits)
+------------------------------------------------------------------------
+Core:  122_F1_Score.py
+       125_train_validate_test_deploy.py
+Why:   Delivery without judgment is theater.
+       Deploy/monitor connects to generalization levels in 013.
+
+------------------------------------------------------------------------
+CHAPTER G -- Objectives (loss as the binding score)
+------------------------------------------------------------------------
+Core:  185_loss_functions.py
+       191 MSE, 192 MAE, 193 Huber
+       194 BCE, 195 CCE
+Lab:   196 KL
+Bridge: 120_maximum_likelihood.py   (just-in-time: why MSE↔Gaussian)
+Why:   Atlas is a strength -- keep it, but teach after students have
+       watched training, not before.
+
+------------------------------------------------------------------------
+CHAPTER H -- How parameters move (optimization)
+------------------------------------------------------------------------
+Core:  140_derivative.py
+       150_fastest_ascent.py
+       170_rolling_ball.py
+       160_stochastic_ascent.py
+       180_momentum.py
+       (merged) 197_SGD_concept + 210_SGD_training
+Lab:   198_back_propagation.py
+TODO:  add Adam/AdamW + LR schedule short module
+Why:   Math arrives because they already saw descent happen in Ch.C.
+
+------------------------------------------------------------------------
+CHAPTER I -- Probability toolkit (pull-on-demand, not a wall)
+------------------------------------------------------------------------
+Core path (short): 060_gaussian, 085_LLN, 090_CLT, 115_prob_vs_stats
+As needed:         095_Bayes, 130_exp_log
+Enrichment:        100, 110, 116
+Why:   Same content, demoted from "early encyclopedia" to "clarify
+       what you already used in losses and evaluation."
+
+------------------------------------------------------------------------
+CHAPTER J -- What a net is (function class and bias)
+------------------------------------------------------------------------
+Core:  220_inductive_bias.py
+       250_neural_non_linearity.py
+       240_dropout.py
+       230_normalization.py   (activation BN/LN)
+TODO:  CNN inductive bias module; init + residual module
+Why:   Prepare the claim "architecture is prior."
+
+------------------------------------------------------------------------
+CHAPTER K -- Two readings of distributions
+------------------------------------------------------------------------
+Core:  251_discriminative_generative.py
+Lab:   141, 142 as optional toys (or fold in)
+TODO:  diffusion intuition lecture
+Why:   Connects UL/internal binding to generative systems in 012/420.
+
+------------------------------------------------------------------------
+CHAPTER L -- Representation: tokens become geometry
+------------------------------------------------------------------------
+Core:  210_Embedding.py
+       199_word_vector.py
+       300_linear_transformation.py
+       310_dot_inner_scalar_product.py
+       320_softmax.py
+Why:   Linear algebra appears as the language of similarity and attention,
+       not as abstract prelude.
+
+------------------------------------------------------------------------
+CHAPTER M -- Transformer: deliver, then unpack
+------------------------------------------------------------------------
+Order inside chapter (gravity!):
+  1) 290_off_the_shelf_transformer.py     # call it / run translation-ish
+  2) 260_transformer.py                   # attention intuition
+  3) 330_QKV_attention.py + 340_Wq_Wk_Wv.py
+  4) 350_positional_encoding.py
+  5) 360_chain_of_adds.py + 370_model_dimension.py
+  6) 270_transformer_code.py              # shapes from scratch
+  7) 380_Transformer_inductive_bias.py
+Lab:   280_machine_translation.py
+TODO:  short RNN/LSTM "problem that attention solved" opener
+Why:   Matches Step 7 of 010: see it run -> touch -> name -> own.
+
+------------------------------------------------------------------------
+CHAPTER N -- LLM products and alignment binding
+------------------------------------------------------------------------
+Core:  410_BERT.py
+       420_GPT.py
+TODO:  prompting / tool-use / RAG studio
+       preference/RLHF as externally-bound layer on internal pretrain
+Why:   This is where Mission becomes practical.
+
+------------------------------------------------------------------------
+CHAPTER O -- Variants (enrichment, after the spine)
+------------------------------------------------------------------------
+Enrich: 390_video_transformer.py
+        400_swin_transformer.py
+        (future CNN, ViT bridge, multimodal)
+
+------------------------------------------------------------------------
+CHAPTER P -- Parallel human track (not DL chapter numbers)
+------------------------------------------------------------------------
+  011_Asian_interview.py
+  Optional speaking clinic throughout; or late "talk about AI" week.
+  Fits Attitude and Goal ("I talk about AI") without hijacking DL order.
+
+
+========================================================================
+6. Suggested core path vs full atlas (if time is short)
+========================================================================
+
+Minimal path that still obeys 010 (roughly 12-16 teaching sessions):
+  A 010, 030
+  B 012, 013, 020
+  C 041, 043, 016
+  D 014 (esp. binding), 035
+  E 040, 042
+  F 125 (and 122 if classification-heavy audience)
+  G 185 + 194/195 (sample of losses)
+  H 140, 170, 198 (light), merged SGD
+  J 220, 250
+  L 210_Embedding, 310, 320
+  M 290 -> 260 -> 330/340 -> 350
+  N 420 (+ new LLM-tooling studio)
+
+Everything else becomes Lab / Enrichment / just-in-time inserts.
+
+
+========================================================================
+7. Concrete remediation list (actionable)
+========================================================================
+
+Curriculum
+  [ ] Publish a chapter map (this file's Section 5) into README or a
+      000_curriculum.py slide so numbers stop dictating order.
+  [ ] Mark every existing file Core / Lab / Enrichment.
+  [ ] Add P0 modules: LLM tooling studio; RAG/tools; ship-a-small-AI.
+  [ ] Add P1 modules: CNN bias; RNN bridge; AdamW+schedule; overfitting demo.
+  [ ] Add a recurring "generalization checkpoint" slide template used in
+      C, F, M, N (reuse 013 levels + 014 binding words).
+
+Cleanup
+  [ ] Resolve duplicate 210_ filename collision.
+  [ ] Fix stale docstring titles (381_, 200_, etc.).
+  [ ] Dedupe transformer notebooks; one scratch + one off-the-shelf.
+  [ ] Rename 042 vs 230 in human titles to kill "normalize" confusion.
+  [ ] Merge or sequence-lock the training-loop cluster (016/197/198/210_SGD).
+
+Pedagogy
+  [ ] For each Core chapter, write one required Attempt
+      (speak / tweak / ship) -- matching 010 Figure "Own it".
+  [ ] Move first Transformer contact earlier than "after 25 math files."
+  [ ] Keep loss atlas; do not teach it before a training demo.
+
+Voice continuity (do not lose)
+  Expressed vs unexpressed knowledge
+  Learning = binding (external vs internal)
+  Capability x generalization
+  Continuous end-to-end over hand-built pipelines
+  Deliver -> understand, fast
+  Resilience
+
+
+========================================================================
+8. Bottom line
+========================================================================
+
+You already have an unusually strong intuition library for deep learning
+mechanics (loss, descent, attention, metrics) and a rare philosophical
+frame (010/012/013/014/020).
+
+The main gap is not "more math slides."
+The main gap is alignment:
+
+  (1) teaching order still looks like Traditional Gravity if numbers lead;
+  (2) Mission skills (squeeze/orchestrate/deliver with LLMs) are under-built;
+  (3) historical DL pillars (CNN, sequence models, diffusion, Adam) are
+      thinner than the beautiful loss/attention museums;
+  (4) generalization/binding is a chorus that should structure chapters,
+      not only appear as late conceptual highlights.
+
+Regroup by chapters A-P above. Keep the demos. Change the gravity of
+the *sequence*, not only the slogan on slide 010.
