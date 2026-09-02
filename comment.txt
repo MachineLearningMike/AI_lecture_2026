@@ -1,3 +1,8 @@
+NOTE (applied): File renames and chapter openers are live.
+Use README.md and _curriculum.py as the current map.
+Names inside this critique may still mention pre-rename IDs.
+========================================================================
+
 comment.txt
 AI lecture 2026 -- curriculum review against 010 strategy
 Focus: AI with deep learning as the spine
@@ -48,26 +53,26 @@ Implication for this review
 ========================================================================
 
 A. Orientation and philosophy (strong, distinctive)
-  010_lecture_strategy.py
-  030_intelligence.py
-  012_DL_history.py
-  013_DL_future.py
-  020_continuous_end_to_end.py
+  0110_lecture_strategy.py
+  0120_intelligence.py
+  0140_DL_history.py
+  0150_DL_future.py
+  0160_continuous_end_to_end.py
   These encode your voice: expressed vs unexpressed knowledge,
   capability x generalization, end-to-end continuous reps,
   deliver-first gravity. Keep them as the intellectual frame.
 
 B. Learning contracts and binding (recent, high leverage)
-  014_SL_UL_RL.py  (esp. Steps 9-10: learning = binding)
-  035_regression_classification.py
+  0280_SL_UL_RL.py  (esp. Steps 9-10: learning = binding)
+  0290_regression_classification.py
   This is becoming a signature lens. Good.
 
 C. First runnable training stories (aligned with gravity)
-  016_torch_training.py (+ 015_torch_training.ipynb)
-  041_AI_fun.py
-  043_numpy_torch.py
-  198_back_propagation.py
-  080_model.py
+  0250_torch_training.py (+ 0250_torch_training.ipynb)
+  0230_AI_fun.py
+  0240_numpy_torch.py
+  0540_back_propagation.py
+  0260_model.py
   You do have "see it run / touch it" material -- but it is not
   early in the *number* order, and it is fragmented across IDs.
 
@@ -81,14 +86,14 @@ F. Model craft / bias / regularization
   220, 230, 231, 240, 250, 251, 141, 142
 
 G. Evaluation and field use
-  122_F1_Score.py
-  125_train_validate_test_deploy.py
+  0350_F1_Score.py
+  0360_train_validate_test_deploy.py
 
 H. Representation and Transformer / LLM spine (the product story)
   199, 210_Embedding, 260-290, 300-380, 390, 400, 410, 420
 
 I. Side skill
-  011_Asian_interview.py  (career speaking; fits resilience, not DL core)
+  0990_Asian_interview.py  (career speaking; fits resilience, not DL core)
 
 
 ========================================================================
@@ -188,10 +193,10 @@ P3 -- Nice-to-have / optional later
 ========================================================================
 
 R1. Training-loop cluster (high overlap)
-  016_torch_training.py
-  198_back_propagation.py
-  197_SGD_concept.py
-  210_SGD_training.py
+  0250_torch_training.py
+  0540_back_propagation.py
+  0520_SGD_concept.py
+  0530_SGD_training.py
   (+ notebooks 015, 143)
   Recommendation:
     Keep ONE early "see training happen" hero (016).
@@ -200,8 +205,8 @@ R1. Training-loop cluster (high overlap)
     Cross-link; do not reteach the full loop four times.
 
 R2. Discriminative / generative told twice
-  141_discriminative.py + 142_generative.py
-  251_discriminative_generative.py
+  0730_discriminative_toys.py + 0740_generative_toys.py
+  0720_discriminative_generative.py
   Recommendation:
     251 = conceptual contrast lecture.
     141/142 = toy zoos. Either fold toys into 251 or mark 141/142
@@ -215,15 +220,15 @@ R3. Loss introduction vs loss atlas
     "why objectives exist" only.
 
 R4. Normalization name collision
-  042_normalize.py     (feature/distribution scaling intuition)
-  230_normalization.py (BatchNorm vs LayerNorm)
+  0320_normalize_data.py     (feature/distribution scaling intuition)
+  0700_normalize_activations.py (BatchNorm vs LayerNorm)
   Recommendation:
     Rename in titles/docs: "scale the data" vs "normalize activations".
     Teach 042 early with data; 230 later with deep nets.
 
 R5. Transformer code multiplicity
-  270_transformer_code.py
-  290_off_the_shelf_transformer.py
+  0890_transformer_code.py
+  0820_off_the_shelf_transformer.py
   notebooks: 151, 209, (+ 210_machine_translation)
   Recommendation:
     One "from scratch shapes" path (270) and one "call the API" path (290).
@@ -235,11 +240,11 @@ R6. Inductive bias general vs Transformer-specific
   Make the dependency explicit in the chapter map.
 
 R7. Softmax appears in multiple places
-  320_softmax.py, 195 CE, attention lectures
+  0800_softmax.py, 195 CE, attention lectures
   Keep 320 as the dedicated intuition; elsewhere only cite.
 
 R8. Number collisions / stale headers (housekeeping redundancy)
-  Two files share 210_: 210_Embedding.py and 210_SGD_training.py
+  Two files share 210_: 0760_Embedding.py and 0530_SGD_training.py
   Docstrings still say old names (381_SL_UL_RL, 200_SGD_concept, etc.)
   This creates false "order" and broken companion references.
 
@@ -306,17 +311,17 @@ Design principles for the grouping
 ------------------------------------------------------------------------
 CHAPTER A -- Contract and gravity
 ------------------------------------------------------------------------
-Core:  010_lecture_strategy.py
-       030_intelligence.py
+Core:  0110_lecture_strategy.py
+       0120_intelligence.py
 Why:   Students need the why and the permission to start imperfectly.
 Attempt: say Vision/Mission in their own words; name one job AI cheapens.
 
 ------------------------------------------------------------------------
 CHAPTER B -- Why deep learning (story before machinery)
 ------------------------------------------------------------------------
-Core:  012_DL_history.py
-       013_DL_future.py
-       020_continuous_end_to_end.py
+Core:  0140_DL_history.py
+       0150_DL_future.py
+       0160_continuous_end_to_end.py
 Why:   Achievements, limits, continuous end-to-end as the modern move.
        Capability x generalization becomes the scoreboard for later.
 Attempt: pick one capability and one generalization level; argue where
@@ -325,18 +330,18 @@ Attempt: pick one capability and one generalization level; argue where
 ------------------------------------------------------------------------
 CHAPTER C -- First delivery: a model that trains
 ------------------------------------------------------------------------
-Core:  041_AI_fun.py          (confidence, play, failure is safe)
-       043_numpy_torch.py
-       016_torch_training.py (+ 015 notebook)
-Lab:   080_model.py           (small end-to-end classify/regress toy)
+Core:  0230_AI_fun.py          (confidence, play, failure is safe)
+       0240_numpy_torch.py
+       0250_torch_training.py (+ 015 notebook)
+Lab:   0260_model.py           (small end-to-end classify/regress toy)
 Why:   Honor gravity immediately. See loss move. Touch a knob.
 Note:  Do NOT wait for the full probability chapter.
 
 ------------------------------------------------------------------------
 CHAPTER D -- What learning even is (signal / binding)
 ------------------------------------------------------------------------
-Core:  014_SL_UL_RL.py        (include binding Steps 9-10 as climax)
-       035_regression_classification.py
+Core:  0280_SL_UL_RL.py        (include binding Steps 9-10 as climax)
+       0290_regression_classification.py
 Why:   Gives language for every later objective:
        externally-bound vs internally-bound.
 Attempt: reclassify 3 systems they know (ImageNet classifier, GPT pretrain,
@@ -345,9 +350,9 @@ Attempt: reclassify 3 systems they know (ImageNet classifier, GPT pretrain,
 ------------------------------------------------------------------------
 CHAPTER E -- Data, distribution, and features (business gravity)
 ------------------------------------------------------------------------
-Core:  040_distribution.py
-       042_normalize.py       (data scaling)
-       231_pipeline_feature_engineering.py
+Core:  0310_distribution.py
+       0320_normalize_data.py       (data scaling)
+       0330_pipeline_feature_engineering.py
 Enrich: 251 early teaser only if needed
 Why:   040 already speaks client/business -- keep that energy.
        Ties to Vision: data is expressed experience; shift breaks models.
@@ -355,32 +360,32 @@ Why:   040 already speaks client/business -- keep that energy.
 ------------------------------------------------------------------------
 CHAPTER F -- Judge the work (metrics and field splits)
 ------------------------------------------------------------------------
-Core:  122_F1_Score.py
-       125_train_validate_test_deploy.py
+Core:  0350_F1_Score.py
+       0360_train_validate_test_deploy.py
 Why:   Delivery without judgment is theater.
        Deploy/monitor connects to generalization levels in 013.
 
 ------------------------------------------------------------------------
 CHAPTER G -- Objectives (loss as the binding score)
 ------------------------------------------------------------------------
-Core:  185_loss_functions.py
+Core:  0380_loss_functions.py
        191 MSE, 192 MAE, 193 Huber
        194 BCE, 195 CCE
 Lab:   196 KL
-Bridge: 120_maximum_likelihood.py   (just-in-time: why MSE↔Gaussian)
+Bridge: 0450_maximum_likelihood.py   (just-in-time: why MSE↔Gaussian)
 Why:   Atlas is a strength -- keep it, but teach after students have
        watched training, not before.
 
 ------------------------------------------------------------------------
 CHAPTER H -- How parameters move (optimization)
 ------------------------------------------------------------------------
-Core:  140_derivative.py
-       150_fastest_ascent.py
-       170_rolling_ball.py
-       160_stochastic_ascent.py
-       180_momentum.py
+Core:  0470_derivative.py
+       0480_fastest_ascent.py
+       0490_rolling_ball.py
+       0500_stochastic_ascent.py
+       0510_momentum.py
        (merged) 197_SGD_concept + 210_SGD_training
-Lab:   198_back_propagation.py
+Lab:   0540_back_propagation.py
 TODO:  add Adam/AdamW + LR schedule short module
 Why:   Math arrives because they already saw descent happen in Ch.C.
 
@@ -396,17 +401,17 @@ Why:   Same content, demoted from "early encyclopedia" to "clarify
 ------------------------------------------------------------------------
 CHAPTER J -- What a net is (function class and bias)
 ------------------------------------------------------------------------
-Core:  220_inductive_bias.py
-       250_neural_non_linearity.py
-       240_dropout.py
-       230_normalization.py   (activation BN/LN)
+Core:  0670_inductive_bias.py
+       0680_neural_non_linearity.py
+       0690_dropout.py
+       0700_normalize_activations.py   (activation BN/LN)
 TODO:  CNN inductive bias module; init + residual module
 Why:   Prepare the claim "architecture is prior."
 
 ------------------------------------------------------------------------
 CHAPTER K -- Two readings of distributions
 ------------------------------------------------------------------------
-Core:  251_discriminative_generative.py
+Core:  0720_discriminative_generative.py
 Lab:   141, 142 as optional toys (or fold in)
 TODO:  diffusion intuition lecture
 Why:   Connects UL/internal binding to generative systems in 012/420.
@@ -414,11 +419,11 @@ Why:   Connects UL/internal binding to generative systems in 012/420.
 ------------------------------------------------------------------------
 CHAPTER L -- Representation: tokens become geometry
 ------------------------------------------------------------------------
-Core:  210_Embedding.py
-       199_word_vector.py
-       300_linear_transformation.py
-       310_dot_inner_scalar_product.py
-       320_softmax.py
+Core:  0760_Embedding.py
+       0770_word_vector.py
+       0780_linear_transformation.py
+       0790_dot_inner_scalar_product.py
+       0800_softmax.py
 Why:   Linear algebra appears as the language of similarity and attention,
        not as abstract prelude.
 
@@ -426,22 +431,22 @@ Why:   Linear algebra appears as the language of similarity and attention,
 CHAPTER M -- Transformer: deliver, then unpack
 ------------------------------------------------------------------------
 Order inside chapter (gravity!):
-  1) 290_off_the_shelf_transformer.py     # call it / run translation-ish
-  2) 260_transformer.py                   # attention intuition
-  3) 330_QKV_attention.py + 340_Wq_Wk_Wv.py
-  4) 350_positional_encoding.py
-  5) 360_chain_of_adds.py + 370_model_dimension.py
-  6) 270_transformer_code.py              # shapes from scratch
-  7) 380_Transformer_inductive_bias.py
-Lab:   280_machine_translation.py
+  1) 0820_off_the_shelf_transformer.py     # call it / run translation-ish
+  2) 0830_transformer.py                   # attention intuition
+  3) 0840_QKV_attention.py + 0850_Wq_Wk_Wv.py
+  4) 0860_positional_encoding.py
+  5) 0870_chain_of_adds.py + 0880_model_dimension.py
+  6) 0890_transformer_code.py              # shapes from scratch
+  7) 0900_Transformer_inductive_bias.py
+Lab:   0910_machine_translation.py
 TODO:  short RNN/LSTM "problem that attention solved" opener
 Why:   Matches Step 7 of 010: see it run -> touch -> name -> own.
 
 ------------------------------------------------------------------------
 CHAPTER N -- LLM products and alignment binding
 ------------------------------------------------------------------------
-Core:  410_BERT.py
-       420_GPT.py
+Core:  0930_BERT.py
+       0940_GPT.py
 TODO:  prompting / tool-use / RAG studio
        preference/RLHF as externally-bound layer on internal pretrain
 Why:   This is where Mission becomes practical.
@@ -449,14 +454,14 @@ Why:   This is where Mission becomes practical.
 ------------------------------------------------------------------------
 CHAPTER O -- Variants (enrichment, after the spine)
 ------------------------------------------------------------------------
-Enrich: 390_video_transformer.py
-        400_swin_transformer.py
+Enrich: 0960_video_transformer.py
+        0970_swin_transformer.py
         (future CNN, ViT bridge, multimodal)
 
 ------------------------------------------------------------------------
 CHAPTER P -- Parallel human track (not DL chapter numbers)
 ------------------------------------------------------------------------
-  011_Asian_interview.py
+  0990_Asian_interview.py
   Optional speaking clinic throughout; or late "talk about AI" week.
   Fits Attitude and Goal ("I talk about AI") without hijacking DL order.
 
