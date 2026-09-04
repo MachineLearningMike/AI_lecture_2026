@@ -1,5 +1,5 @@
 """
-0600_probability_vs_statistics.py
+0620_probability_vs_statistics.py
 
 Probability vs statistics -- two directions of the same relationship.
 
@@ -21,9 +21,9 @@ Sketch:
   9. Where this shows up in modeling (generative vs discriminative; MLE)
   10. Takeaway: difference + relation
 
-Companion to 0580_law_of_large_numbers.py, 0590_central_limit_theorem.py,
-0610_Bayesian_theorem.py, 0450_maximum_likelihood.py,
-0720_discriminative_generative.py.
+Companion to 0600_law_of_large_numbers.py, 0610_central_limit_theorem.py,
+0630_Bayesian_theorem.py, 0470_maximum_likelihood.py,
+0740_discriminative_generative.py.
 """
 
 from __future__ import annotations

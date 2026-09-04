@@ -1,5 +1,5 @@
 """
-0290_regression_classification.py
+0310_regression_classification.py
 
 Regression vs classification -- intuition, and which loss embraces which.
 
@@ -11,7 +11,7 @@ Sketch:
   5. Side-by-side decision guide
 
 Companion to 190_loss_functions.py (taxonomy + CE),
-191_Mean_Squared_Error.py (MSE), 0380_loss_functions.py.
+191_Mean_Squared_Error.py (MSE), 0400_loss_functions.py.
 """
 
 from __future__ import annotations
@@ -468,5 +468,5 @@ Why this embrace?
   The loss must match what "wrong" means for that output type.
   Distance between reals  !=  wrong category probability.
 
-See also: 190_loss_functions.py, 191_Mean_Squared_Error.py, 0380_loss_functions.py
+See also: 190_loss_functions.py, 191_Mean_Squared_Error.py, 0400_loss_functions.py
 """)

@@ -12,7 +12,7 @@ Sketch:
   6. Takeaway: MSE is a soft, outlier-sensitive coach
   7. Torch -- from-scratch MSE vs nn.MSELoss
 
-Companion to 0380_loss_functions.py and 190_loss_functions.py.
+Companion to 0400_loss_functions.py and 190_loss_functions.py.
 """
 
 from __future__ import annotations
@@ -541,5 +541,5 @@ Step 5: Least squares leans toward outliers because that lowers MSE most.
 Step 6: MSE = smooth, outlier-sensitive training coach.
 Step 7: Torch -- ((yhat-y)**2).mean() matches nn.MSELoss().
 
-See also: 0380_loss_functions.py (definition + 3D bowl), 190_loss_functions.py
+See also: 0400_loss_functions.py (definition + 3D bowl), 190_loss_functions.py
 """)

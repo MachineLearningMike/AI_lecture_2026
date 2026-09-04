@@ -1,5 +1,5 @@
 """
-0780_linear_transformation.py
+0800_linear_transformation.py
 
 Linear spaces, R^n, and why a linear map T: R^n -> R^m is a matrix A.
 
@@ -27,7 +27,7 @@ Customer takeaway (Step 14):
   (W (P x) = (W P) x), so it does not reduce training power when the net
   already has learned linear maps -- which it always does.
 
-Companion to 0850_Wq_Wk_Wv.py (W_Q, W_K, W_V are linear maps on token space).
+Companion to 0870_Wq_Wk_Wv.py (W_Q, W_K, W_V are linear maps on token space).
 """
 
 from __future__ import annotations
@@ -1274,7 +1274,7 @@ Absorbing fixed linear preprocessing (Step 14) -- tell customers this:
   preprocessing "breaks" a model that already has learned linear layers
   (it always does). Nonlinear preprocessing is a different story.
 
-Bridge to 0850_Wq_Wk_Wv.py:
+Bridge to 0870_Wq_Wk_Wv.py:
   W_Q, W_K, W_V are shared matrices -- linear perspectives on token space --
   learned from the distribution of (X, Y), applied as Q=X W_Q, etc.
   A fixed linear change of X can be absorbed into those W_* the same way.

@@ -1,5 +1,5 @@
 """
-0860_positional_encoding.py
+0880_positional_encoding.py
 
 Sinusoidal positional encoding (Vaswani et al., 2017) -- intuition.
 
@@ -25,7 +25,7 @@ of adding a PE vector. Same geometric family as sinusoidal PE; RoPE is
 the usual choice in modern decoder LLMs because relative phase lives in
 the attention logit and pairs well with length-transfer recipes.
 
-Companion to 0830_transformer.py and 0960_video_transformer.py.
+Companion to 0850_transformer.py and 0980_video_transformer.py.
 """
 
 import matplotlib.pyplot as plt

@@ -1,13 +1,13 @@
 """
-0590_central_limit_theorem.py
+0610_central_limit_theorem.py
 
 Intuitive demo of the Central Limit Theorem (CLT):
 
   No matter how non-Gaussian the data are, the distribution of the
   SAMPLE MEAN becomes approximately Gaussian as the sample size grows.
 
-Companion to 0570_gaussian.py (Gaussian basics / Standard Error for a
-Gaussian source) and 0260_model.py (why non-linear models matter).
+Companion to 0590_gaussian.py (Gaussian basics / Standard Error for a
+Gaussian source) and 0280_model.py (why non-linear models matter).
 """
 
 import torch
@@ -337,7 +337,7 @@ print("""
    - Confidence intervals and p-values lean on the CLT
    - Even messy real-world data often yields well-behaved averages
 
-Note: 0570_gaussian.py Figure 3 used a Gaussian source, so means were
+Note: 0590_gaussian.py Figure 3 used a Gaussian source, so means were
 EXACTLY normal for every n (that was Standard Error, not CLT).
 This script is the real CLT demo -- non-Gaussian parents.
 """)

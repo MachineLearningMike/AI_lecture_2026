@@ -1,5 +1,5 @@
 """
-0720_discriminative_generative.py
+0740_discriminative_generative.py
 
 Discriminative vs generative understanding of a distribution.
 
@@ -720,5 +720,5 @@ Step 6 -- when D often fails:
   If G says "I don't know this situation," do not trust D there.
   G becomes a gate that reduces D's failures outside its comfort zone.
 
-See also: 0320_normalize_data.py Steps 10-11 (normalize; why N(0,1)).
+See also: 0340_normalize_data.py Steps 10-11 (normalize; why N(0,1)).
 """)

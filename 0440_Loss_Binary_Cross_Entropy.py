@@ -14,8 +14,8 @@ Sketch:
   8. Takeaway -- BCE as a soft coach for a Bernoulli label
   9. Torch -- from-scratch BCE vs nn.BCELoss
 
-Companion to 0290_regression_classification.py, 190_loss_functions.py,
-0800_softmax.py.
+Companion to 0310_regression_classification.py, 190_loss_functions.py,
+0820_softmax.py.
 """
 
 from __future__ import annotations
@@ -678,6 +678,6 @@ Steps:
   8. Takeaway
   9. Torch -- scratch BCE matches nn.BCELoss()
 
-See also: 0290_regression_classification.py, 190_loss_functions.py,
-          0430_Loss_Categorical_Cross_Entropy.py
+See also: 0310_regression_classification.py, 190_loss_functions.py,
+          0450_Loss_Categorical_Cross_Entropy.py
 """)

@@ -1,5 +1,5 @@
 """
-0230_AI_fun.py
+0250_AI_fun.py
 
 The fun of learning AI -- visual playgrounds, weird data, interactive toys.
 
@@ -16,8 +16,8 @@ Sketch:
   10. Watch supervised training: boundary + loss
   11. Visual takeaway collage
 
-Companion to 0120_intelligence.py, 0250_torch_training.py,
-0290_regression_classification.py, 381_SL_UL_RL.py.
+Companion to 0120_intelligence.py, 0270_torch_training.py,
+0310_regression_classification.py, 381_SL_UL_RL.py.
 """
 
 from __future__ import annotations
@@ -877,6 +877,6 @@ Toys: weird worlds, drag-line / ring / XOR,
       RL gridworld treasure hunt, multi-armed bandit,
       supervised training animation.
 
-See also: 0120_intelligence.py, 0250_torch_training.py,
-          0290_regression_classification.py, 381_SL_UL_RL.py
+See also: 0120_intelligence.py, 0270_torch_training.py,
+          0310_regression_classification.py, 381_SL_UL_RL.py
 """)

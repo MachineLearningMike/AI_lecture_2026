@@ -14,8 +14,8 @@ Sketch:
   8. Imbalance demo -- accuracy looks fine; F1 does not
   9. Takeaway
 
-Companion to 0290_regression_classification.py, 190_loss_functions.py,
-0420_Loss_Binary_Cross_Entropy.py.
+Companion to 0310_regression_classification.py, 190_loss_functions.py,
+0440_Loss_Binary_Cross_Entropy.py.
 """
 
 from __future__ import annotations
@@ -1215,6 +1215,6 @@ Steps:
   8. Imbalance: Accuracy vs F1
   9. Takeaway
 
-See also: 0290_regression_classification.py, 190_loss_functions.py,
-          0420_Loss_Binary_Cross_Entropy.py
+See also: 0310_regression_classification.py, 190_loss_functions.py,
+          0440_Loss_Binary_Cross_Entropy.py
 """)

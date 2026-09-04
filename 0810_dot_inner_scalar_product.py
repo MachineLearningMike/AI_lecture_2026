@@ -1,5 +1,5 @@
 """
-0790_dot_inner_scalar_product.py
+0810_dot_inner_scalar_product.py
 
 Dot / inner / scalar product -- same operation on R^n, three names.
 
@@ -32,8 +32,8 @@ Shift formula (derived below):
 
     X(a, b1)  =  X(a, b2)  +  ((b1 - b2) / |a|^2) a
 
-Companion to 0470_derivative.py (gradients / planes) and
-0830_transformer.py (attention scores are scaled dots).
+Companion to 0490_derivative.py (gradients / planes) and
+0850_transformer.py (attention scores are scaled dots).
 """
 
 from __future__ import annotations

@@ -1,5 +1,5 @@
 """
-0440_Loss_Kullback_Leibler_Divergence.py
+0460_Loss_Kullback_Leibler_Divergence.py
 
 Kullback-Leibler divergence -- the gap between cross-entropy and entropy.
 
@@ -13,8 +13,8 @@ Sketch:
   7. Takeaway -- KL is the geometric gap; CE is what we usually optimize
   8. Torch -- from-scratch KL vs nn.KLDivLoss
 
-Companion to 0420_Loss_Binary_Cross_Entropy.py,
-0430_Loss_Categorical_Cross_Entropy.py, 190_loss_functions.py.
+Companion to 0440_Loss_Binary_Cross_Entropy.py,
+0450_Loss_Categorical_Cross_Entropy.py, 190_loss_functions.py.
 """
 
 from __future__ import annotations
@@ -644,7 +644,7 @@ Steps:
   7. Takeaway
   8. Torch -- scratch KL matches nn.KLDivLoss(batchmean)
 
-See also: 0420_Loss_Binary_Cross_Entropy.py,
-          0430_Loss_Categorical_Cross_Entropy.py,
+See also: 0440_Loss_Binary_Cross_Entropy.py,
+          0450_Loss_Categorical_Cross_Entropy.py,
           190_loss_functions.py
 """)

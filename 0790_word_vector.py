@@ -1,5 +1,5 @@
 """
-0770_word_vector.py
+0790_word_vector.py
 
 Word2Vec, explained intuitively.
 
@@ -20,8 +20,8 @@ Sketch:
   8. Training moves the points
   9. Takeaway collage
 
-Companion to 0540_back_propagation.py, 0800_softmax.py, 0840_QKV_attention.py,
-0830_transformer.py.
+Companion to 0560_back_propagation.py, 0820_softmax.py, 0860_QKV_attention.py,
+0850_transformer.py.
 """
 
 from __future__ import annotations
@@ -597,6 +597,6 @@ Word2Vec intuition:
   4) Dot product + softmax = neighbor probabilities.
   5) Analogies emerge as vector arrows.
 
-See also: 0540_back_propagation.py, 0800_softmax.py,
-          0840_QKV_attention.py, 0830_transformer.py
+See also: 0560_back_propagation.py, 0820_softmax.py,
+          0860_QKV_attention.py, 0850_transformer.py
 """)

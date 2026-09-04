@@ -1,7 +1,7 @@
 """
-0250_torch_training.py
+0270_torch_training.py
 
-Lecture slides that explain 0250_torch_training.ipynb.
+Lecture slides that explain 0270_torch_training.ipynb.
 
 The notebook is a conceptual lean version of 070_torch_training.py:
   - one parameter w, no bias:  y_hat = w * x
@@ -22,7 +22,7 @@ Sketch:
   10. Mental checklist before richer models
   11. What's wrong with what you just learned? -- goal, field use, generalization
 
-Companion: 0250_torch_training.ipynb, 070_torch_training.py, 0260_model.py,
+Companion: 0270_torch_training.ipynb, 070_torch_training.py, 0280_model.py,
 0120_intelligence.py.
 """
 
@@ -55,7 +55,7 @@ torch.manual_seed(523)
 
 ANIM_FPS = 4
 ANIM_HOLD_SEC = 2.0
-OUT_GIF = Path(__file__).resolve().parent / '0250_torch_training.gif'
+OUT_GIF = Path(__file__).resolve().parent / '0270_torch_training.gif'
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -719,7 +719,7 @@ for i, line in enumerate(checks):
 
 ax8.text(
     6.0, 0.45,
-    'Next step asks what this loop is for. Then: 0260_model.py.',
+    'Next step asks what this loop is for. Then: 0280_model.py.',
     ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
 )
 show_maximized(fig8)
@@ -815,7 +815,7 @@ show_maximized(fig9)
 # KEY INSIGHTS
 # -------------------------------------------------------
 print("\n" + "=" * 60)
-print("123 -- EXPLAINING 0250_torch_training.ipynb")
+print("123 -- EXPLAINING 0270_torch_training.ipynb")
 print("=" * 60)
 print(f"""
 Notebook essence:

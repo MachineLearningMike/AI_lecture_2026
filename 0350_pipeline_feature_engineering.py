@@ -1,5 +1,5 @@
 """
-0330_pipeline_feature_engineering.py
+0350_pipeline_feature_engineering.py
 
 Data pipeline, features, and feature engineering -- with an end-to-end demo.
 
@@ -14,8 +14,8 @@ Sketch:
   8. Fit transforms on train only -- leakage warning
   9. Pipeline as a reusable chain
 
-Companion to 0320_normalize_data.py, 0260_model.py, 0700_normalize_activations.py,
-0240_numpy_torch.py.
+Companion to 0340_normalize_data.py, 0280_model.py, 0720_normalize_activations.py,
+0260_numpy_torch.py.
 """
 
 from __future__ import annotations
@@ -724,5 +724,5 @@ Step 9 -- ship the pipeline:
   Persist transform parameters with the model.
   Serving a model without its feature recipe is serving a different model.
 
-See also: 0320_normalize_data.py, 0260_model.py, 0700_normalize_activations.py
+See also: 0340_normalize_data.py, 0280_model.py, 0720_normalize_activations.py
 """)

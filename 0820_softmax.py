@@ -1,5 +1,5 @@
 """
-0800_softmax.py
+0820_softmax.py
 
 Softmax: differentiable, nonlinear normalization of a vector.
 
@@ -23,8 +23,8 @@ Properties worth remembering:
   keeps a smooth floor under losers -- they shrink but stay positive,
   so gradients can still flow.
 
-Companion to 0830_transformer.py / 0840_QKV_attention.py (attention weights)
-and 0790_dot_inner_scalar_product.py (scores that feed softmax).
+Companion to 0850_transformer.py / 0860_QKV_attention.py (attention weights)
+and 0810_dot_inner_scalar_product.py (scores that feed softmax).
 """
 
 from __future__ import annotations
@@ -591,6 +591,6 @@ Simulate deterministic policy:
   while keeping a smooth computational graph for training.
 
 See also:
-  0840_QKV_attention.py -- attention weights are a softmax over key scores
-  0830_transformer.py -- softmax(QK^T/sqrt(d))
+  0860_QKV_attention.py -- attention weights are a softmax over key scores
+  0850_transformer.py -- softmax(QK^T/sqrt(d))
 """)

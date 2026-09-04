@@ -1,12 +1,12 @@
 """
 041_numpy_torch.py
 
-NumPy ndarray vs Torch Tensor -- after 0310_distribution.py.
+NumPy ndarray vs Torch Tensor -- after 0330_distribution.py.
 
 Sketch:
   1. So what are NumPy and Torch?
 
-See also: 0310_distribution.py, 0320_normalize_data.py, 0720_discriminative_generative.py.
+See also: 0330_distribution.py, 0340_normalize_data.py, 0740_discriminative_generative.py.
 """
 
 import matplotlib.pyplot as plt
@@ -218,5 +218,5 @@ NumPy vs Torch (Step 1):
 
 Study, independently, the indexing and operations of arrays and tensors.
 
-See also: 0310_distribution.py, 0320_normalize_data.py
+See also: 0330_distribution.py, 0340_normalize_data.py
 """)

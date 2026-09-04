@@ -1,6 +1,6 @@
 
 """
-0480_fastest_ascent.py
+0500_fastest_ascent.py
 
 Why the fastest ascending direction is the GRADIENT vector
     grad f = (df/dx, df/dy, ...)
@@ -19,7 +19,7 @@ Geometry:
     does not change f. Therefore grad f is perpendicular to the contour:
     that normal direction is exactly the fastest ascent.
 
-Companion to 0470_derivative.py.
+Companion to 0490_derivative.py.
 """
 
 import matplotlib.pyplot as plt

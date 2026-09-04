@@ -13,8 +13,8 @@ Sketch:
   7. Takeaway -- CE embraces multi-class because labels are categorical
   8. Torch -- from-scratch CE vs nn.CrossEntropyLoss
 
-Companion to 194_Binary_Cross_Entropy.py, 0290_regression_classification.py,
-190_loss_functions.py, 0800_softmax.py.
+Companion to 194_Binary_Cross_Entropy.py, 0310_regression_classification.py,
+190_loss_functions.py, 0820_softmax.py.
 """
 
 from __future__ import annotations
@@ -597,6 +597,6 @@ Steps:
   7. Takeaway
   8. Torch -- scratch CE matches nn.CrossEntropyLoss()
 
-See also: 0420_Loss_Binary_Cross_Entropy.py, 0290_regression_classification.py,
-          190_loss_functions.py, 0800_softmax.py
+See also: 0440_Loss_Binary_Cross_Entropy.py, 0310_regression_classification.py,
+          190_loss_functions.py, 0820_softmax.py
 """)

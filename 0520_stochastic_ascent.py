@@ -1,5 +1,5 @@
 """
-0500_stochastic_ascent.py
+0520_stochastic_ascent.py
 
 Stochastic ascent: each step's direction is a NOISY version of the true
 gradient. Even so, accumulated steps still reach the highest point with
@@ -17,7 +17,7 @@ Also writes climbing animations (GIF export skipped if the file already exists; 
     stochastic_ascend_race.gif   -- true vs one noisy climber
     stochastic_ascend_swarm.gif   -- several noisy climbers at once
 
-Companion to 0480_fastest_ascent.py and 0510_momentum.py.
+Companion to 0500_fastest_ascent.py and 0530_momentum.py.
 """
 
 from pathlib import Path

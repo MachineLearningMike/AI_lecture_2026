@@ -1,5 +1,5 @@
 """
-0610_Bayesian_theorem.py
+0630_Bayesian_theorem.py
 
 Bayes' theorem -- update a belief when new evidence arrives.
 
@@ -19,8 +19,8 @@ Sketch:
   8. Interactive continuous update
   9. Takeaway
 
-Companion intuition for probability updates; pairs with 0570_gaussian.py,
-0590_central_limit_theorem.py, 0450_maximum_likelihood.py.
+Companion intuition for probability updates; pairs with 0590_gaussian.py,
+0610_central_limit_theorem.py, 0470_maximum_likelihood.py.
 """
 
 from __future__ import annotations

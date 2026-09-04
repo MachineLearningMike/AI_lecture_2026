@@ -1,5 +1,5 @@
 """
-0690_dropout.py
+0710_dropout.py
 
 Intuition for Dropout regularization.
 
@@ -17,7 +17,7 @@ Why it helps:
     - Trains an implicit ensemble of subnetworks
     - Acts like a strong inductive bias toward redundancy
 
-Companion to 0670_inductive_bias.py and 0700_normalize_activations.py.
+Companion to 0690_inductive_bias.py and 0720_normalize_activations.py.
 """
 
 import matplotlib.pyplot as plt
@@ -443,5 +443,5 @@ Typical keep probabilities:
 
 Related ideas:
   DropConnect, Stochastic Depth, and Mixup are cousins -- all inject
-  noise that shapes which solutions SGD prefers (see also 0670_inductive_bias.py).
+  noise that shapes which solutions SGD prefers (see also 0690_inductive_bias.py).
 """)

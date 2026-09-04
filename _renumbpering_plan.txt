@@ -31,45 +31,45 @@ Proposed mapping (old -> new)
  1. 005_lecture_strategy.py              -> 0110_lecture_strategy.py
  2. 006_continuous_end_to_end.py         -> 0160_continuous_end_to_end.py
  3. 007_intelligence.py                  -> 0120_intelligence.py
- 4. 008_distribution.py                  -> 0310_distribution.py
+ 4. 008_distribution.py                  -> 0330_distribution.py
  5. 009_discriminative_generative.py     -> 050_discriminative_generative.py
- 6. 010_gaussian.py                      -> 0570_gaussian.py
+ 6. 010_gaussian.py                      -> 0590_gaussian.py
  7. 020_torch_training.py                -> 070_torch_training.py
- 8. 030_model.py                         -> 0260_model.py
- 9. 040_central_limit_theorem.py         -> 0590_central_limit_theorem.py
-10. 050_average_of_random.py             -> 0630_average_of_random.py
-11. 060_product_of_random.py             -> 0640_product_of_random.py
-12. 070_maximum_likelihood.py            -> 0450_maximum_likelihood.py
-13. 080_exponential.py                   -> 0620_exponential.py
-14. 090_derivative.py                    -> 0470_derivative.py
-15. 100_fastest_ascent.py                -> 0480_fastest_ascent.py
-16. 110_stochastic_ascent.py             -> 0500_stochastic_ascent.py
-17. 120_rolling_ball.py                  -> 0490_rolling_ball.py
-18. 130_momentum.py                      -> 0510_momentum.py
+ 8. 030_model.py                         -> 0280_model.py
+ 9. 040_central_limit_theorem.py         -> 0610_central_limit_theorem.py
+10. 050_average_of_random.py             -> 0650_average_of_random.py
+11. 060_product_of_random.py             -> 0660_product_of_random.py
+12. 070_maximum_likelihood.py            -> 0470_maximum_likelihood.py
+13. 080_exponential.py                   -> 0640_exponential.py
+14. 090_derivative.py                    -> 0490_derivative.py
+15. 100_fastest_ascent.py                -> 0500_fastest_ascent.py
+16. 110_stochastic_ascent.py             -> 0520_stochastic_ascent.py
+17. 120_rolling_ball.py                  -> 0510_rolling_ball.py
+18. 130_momentum.py                      -> 0530_momentum.py
 19. 140_loss_functions.py                -> 190_loss_functions.py
 20. 144_SGD_concept.py                   -> 200_SGD_concept.py
-21. 145_SGD_training.py                  -> 0530_SGD_training.py
-22. 150_inductive_bias.py                -> 0670_inductive_bias.py
-23. 160_normalization.py                 -> 0700_normalize_activations.py
-24. 170_dropout.py                       -> 0690_dropout.py
-25. 180_neural_non_linearity.py          -> 0680_neural_non_linearity.py
-26. 190_transformer.py                   -> 0830_transformer.py
-27. 200_transformer_code.py              -> 0890_transformer_code.py
-28. 210_machine_translation.py           -> 0910_machine_translation.py
-29. 220_off_the_shelf_transformer.py     -> 0820_off_the_shelf_transformer.py
-30. 221_linear_transformation.py         -> 0780_linear_transformation.py
-31. 230_dot_inner_scalar_product.py      -> 0790_dot_inner_scalar_product.py
-32. 231_softmax.py                       -> 0800_softmax.py
-33. 240_QKV_attention.py                 -> 0840_QKV_attention.py
-34. 241_Wq_Wk_Wv.py                      -> 0850_Wq_Wk_Wv.py
-35. 260_positional_encoding.py           -> 0860_positional_encoding.py
-36. 270_chain_of_adds.py                 -> 0870_chain_of_adds.py
-37. 280_model_dimension.py               -> 0880_model_dimension.py
-38. 290_Transformer_inductive_bias.py    -> 0900_Transformer_inductive_bias.py
-39. 300_video_transformer.py             -> 0960_video_transformer.py
-40. 310_swin_transformer.py              -> 0970_swin_transformer.py
-41. 320_BERT.py                          -> 0930_BERT.py
-42. 330_GPT.py                           -> 0940_GPT.py
+21. 145_SGD_training.py                  -> 0550_SGD_training.py
+22. 150_inductive_bias.py                -> 0690_inductive_bias.py
+23. 160_normalization.py                 -> 0720_normalize_activations.py
+24. 170_dropout.py                       -> 0710_dropout.py
+25. 180_neural_non_linearity.py          -> 0700_neural_non_linearity.py
+26. 190_transformer.py                   -> 0850_transformer.py
+27. 200_transformer_code.py              -> 0910_transformer_code.py
+28. 210_machine_translation.py           -> 0930_machine_translation.py
+29. 220_off_the_shelf_transformer.py     -> 0840_off_the_shelf_transformer.py
+30. 221_linear_transformation.py         -> 0800_linear_transformation.py
+31. 230_dot_inner_scalar_product.py      -> 0810_dot_inner_scalar_product.py
+32. 231_softmax.py                       -> 0820_softmax.py
+33. 240_QKV_attention.py                 -> 0860_QKV_attention.py
+34. 241_Wq_Wk_Wv.py                      -> 0870_Wq_Wk_Wv.py
+35. 260_positional_encoding.py           -> 0880_positional_encoding.py
+36. 270_chain_of_adds.py                 -> 0890_chain_of_adds.py
+37. 280_model_dimension.py               -> 0900_model_dimension.py
+38. 290_Transformer_inductive_bias.py    -> 0920_Transformer_inductive_bias.py
+39. 300_video_transformer.py             -> 0980_video_transformer.py
+40. 310_swin_transformer.py              -> 0990_swin_transformer.py
+41. 320_BERT.py                          -> 0950_BERT.py
+42. 330_GPT.py                           -> 0960_GPT.py
 
 Safe rename procedure (when approved)
 -------------------------------------

@@ -1,5 +1,5 @@
 """
-0380_loss_functions.py
+0400_loss_functions.py
 
 What a loss function is, and Mean Squared Error as a browsable 3D shape.
 
@@ -7,7 +7,7 @@ Sketch:
   1. Loss functions -- what they are; why they matter for objective and performance
   2. Mean Squared Error -- formula + browsable 3D surface over one sample (y, y_hat)
 
-Companion to 190_loss_functions.py, 0450_maximum_likelihood.py, 0260_model.py.
+Companion to 190_loss_functions.py, 0470_maximum_likelihood.py, 0280_model.py.
 """
 
 from __future__ import annotations

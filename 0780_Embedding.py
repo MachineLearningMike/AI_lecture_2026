@@ -1,5 +1,5 @@
 """
-0760_Embedding.py
+0780_Embedding.py
 
 What an embedding is -- from discrete IDs to dense vectors you can compute with.
 
@@ -18,8 +18,8 @@ Sketch:
   7. Training moves the rows (tiny seeker)
   8. Takeaway
 
-Companion to 0770_word_vector.py (Word2Vec game), 0540_back_propagation.py,
-0860_positional_encoding.py, 0930_BERT.py.
+Companion to 0790_word_vector.py (Word2Vec game), 0560_back_propagation.py,
+0880_positional_encoding.py, 0950_BERT.py.
 """
 
 from __future__ import annotations
@@ -490,6 +490,6 @@ Embedding = learned lookup table E[id] -> vector in R^d.
 One-hot @ E is the same lookup.
 Geometry of rows carries meaning; training moves the rows.
 
-See also: 0770_word_vector.py, 0540_back_propagation.py,
-          0860_positional_encoding.py, 0930_BERT.py
+See also: 0790_word_vector.py, 0560_back_propagation.py,
+          0880_positional_encoding.py, 0950_BERT.py
 """)

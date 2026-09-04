@@ -1,5 +1,5 @@
 """
-0930_BERT.py
+0950_BERT.py
 
 BERT (Bidirectional Encoder Representations from Transformers)
 and its training techniques -- plus the post-BERT survey.
@@ -21,8 +21,8 @@ Interactive playgrounds (Steps 12-14):
   - NSP: drag same-pair <-> random-pair; watch IsNext scores
   - Attention: morph causal <-> bidirectional heatmaps
 
-Companion to 0830_transformer.py (encoder vs decoder) and
-0860_positional_encoding.py (learned absolute PE in original BERT).
+Companion to 0850_transformer.py (encoder vs decoder) and
+0880_positional_encoding.py (learned absolute PE in original BERT).
 """
 
 import matplotlib.pyplot as plt
@@ -1143,7 +1143,7 @@ Big picture:
   still live in the culture BERT popularized.
 
 See also:
-  0830_transformer.py -- encoder vs decoder attention
-  0860_positional_encoding.py -- PE alternatives (BERT used learned PE)
-  0690_dropout.py / 0700_normalize_activations.py -- regularizers inside the stack
+  0850_transformer.py -- encoder vs decoder attention
+  0880_positional_encoding.py -- PE alternatives (BERT used learned PE)
+  0710_dropout.py / 0720_normalize_activations.py -- regularizers inside the stack
 """)

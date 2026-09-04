@@ -1,5 +1,5 @@
 """
-0630_average_of_random.py
+0650_average_of_random.py
 
 Intuition for the mean of TWO identical random variables.
 
@@ -14,7 +14,7 @@ satisfies
     Std(M) = sigma / sqrt(2)    (narrower by ~1.41x)
 
 This is the n=2 special case of the Standard Error sigma/sqrt(n),
-and the first step toward the Central Limit Theorem (see 0590_central_limit_theorem.py).
+and the first step toward the Central Limit Theorem (see 0610_central_limit_theorem.py).
 """
 
 import torch
@@ -38,7 +38,7 @@ from scipy.stats import norm
 torch.manual_seed(42)
 np.random.seed(42)
 
-# Shared style (match 0590_central_limit_theorem.py)
+# Shared style (match 0610_central_limit_theorem.py)
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -367,7 +367,7 @@ So: averaging shrinks uncertainty; summing grows it.
 
 This is why n=2 already helps, and why in general
     Std(sample mean) = sigma / sqrt(n)
-(see 0570_gaussian.py and 0590_central_limit_theorem.py).
+(see 0590_gaussian.py and 0610_central_limit_theorem.py).
 
 Demo numbers (Gaussian, sigma={SIGMA:g}):
     std(X1) = {X1.std(unbiased=True).item():.4f}   (theory {SIGMA:.4f})

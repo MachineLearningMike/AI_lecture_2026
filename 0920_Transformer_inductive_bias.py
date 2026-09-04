@@ -1,11 +1,11 @@
 """
-0900_Transformer_inductive_bias.py
+0920_Transformer_inductive_bias.py
 
 What inductive biases does a Transformer bring?
 
 Inductive bias = preferences baked into the architecture that guide
 generalization when data alone underdetermine the answer
-(see 0670_inductive_bias.py).
+(see 0690_inductive_bias.py).
 
 Transformer biases (high level):
   1) Token-in-parallel processing with SHARED weights across positions
@@ -17,8 +17,8 @@ Transformer biases (high level):
   7) Residual additive accumulation of layer writes
   8) Weaker locality / translation biases than CNNs (unless added)
 
-Companion to 0830_transformer.py, 0860_positional_encoding.py,
-0870_chain_of_adds.py, 0880_model_dimension.py.
+Companion to 0850_transformer.py, 0880_positional_encoding.py,
+0890_chain_of_adds.py, 0900_model_dimension.py.
 """
 
 import matplotlib.pyplot as plt
@@ -389,7 +389,7 @@ ax.text(
     'small updates to a\n'
     'persistent stream\n'
     'rather than rewrite it.\n\n'
-    '(see 0870_chain_of_adds.py)',
+    '(see 0890_chain_of_adds.py)',
     transform=ax.transAxes, ha='center', va='center', fontsize=FS_ANNOT + 1,
     bbox=dict(boxstyle='round', facecolor='#ffe0b2', alpha=0.95),
 )
@@ -405,7 +405,7 @@ ax.text(
     'enters only through PE\n'
     '(sinusoidal, RoPE, ...)\n'
     'or relative biases.\n\n'
-    '(see 0860_positional_encoding.py)',
+    '(see 0880_positional_encoding.py)',
     transform=ax.transAxes, ha='center', va='center', fontsize=FS_ANNOT + 1,
     bbox=dict(boxstyle='round', facecolor='#e2d5f1', alpha=0.95),
 )
@@ -421,7 +421,7 @@ ax.text(
     'the shared maps are.\n'
     'Larger d => more capacity,\n'
     'more overfit risk.\n\n'
-    '(see 0880_model_dimension.py)',
+    '(see 0900_model_dimension.py)',
     transform=ax.transAxes, ha='center', va='center', fontsize=FS_ANNOT + 1,
     bbox=dict(boxstyle='round', facecolor='#d4edda', alpha=0.95),
 )

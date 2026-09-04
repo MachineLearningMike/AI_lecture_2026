@@ -3,9 +3,9 @@
 # 
 # Minimal **PyTorch** Transformer with **shape tracking** at every step.
 # 
-# Companion intuition: 0830_transformer.py | Positional encoding: 0860_positional_encoding.py
+# Companion intuition: 0850_transformer.py | Positional encoding: 0880_positional_encoding.py
 # 
-# > **Import note:** 0910_machine_translation.py / 0910_machine_translation.ipynb import **0890_transformer_code.py**, not this notebook.
+# > **Import note:** 0930_machine_translation.py / 0930_machine_translation.ipynb import **0910_transformer_code.py**, not this notebook.
 # > This notebook is a shape tour; some helpers used by 152 (last_attn_weights, configurable vocab sizes, etc.) live only in the .py file.
 # 
 

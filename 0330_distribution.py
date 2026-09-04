@@ -1,5 +1,5 @@
 """
-0310_distribution.py
+0330_distribution.py
 
 Why we study distributions -- from the lecture strategy.
 
@@ -15,8 +15,8 @@ Sketch:
   8. Dog vs cat photo clusters (two modes).
   9. Therefore we study distribution.
      NumPy / Torch: 041_numpy_torch.py.
-     Normalize arc: 0320_normalize_data.py.
-     (Discriminative vs generative lives in 0720_discriminative_generative.py.)
+     Normalize arc: 0340_normalize_data.py.
+     (Discriminative vs generative lives in 0740_discriminative_generative.py.)
 """
 
 import matplotlib.pyplot as plt
@@ -682,6 +682,6 @@ Zoom-in example (Step 8):
   -- still a distribution, now with two pile-ups.
 
 See also: 041_numpy_torch.py,
-          0320_normalize_data.py (normalize; why N(0,1); code),
-          0720_discriminative_generative.py
+          0340_normalize_data.py (normalize; why N(0,1); code),
+          0740_discriminative_generative.py
 """)

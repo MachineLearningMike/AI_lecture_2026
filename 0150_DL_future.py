@@ -31,7 +31,7 @@ Sketch:
   10. Takeaway for the course
 
 Companion to 012_historical_achievements_by_DL.py,
-0110_lecture_strategy.py, 0360_train_validate_test_deploy.py.
+0110_lecture_strategy.py, 0380_train_validate_test_deploy.py.
 """
 
 from __future__ import annotations

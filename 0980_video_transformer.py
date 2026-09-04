@@ -1,5 +1,5 @@
 """
-0960_video_transformer.py
+0980_video_transformer.py
 
 Video Transformer intuition.
 
@@ -13,7 +13,7 @@ Central design tension:
         1) attend over space within each frame
         2) attend over time within each spatial location
 
-Companion to 0830_transformer.py (token attention basics).
+Companion to 0850_transformer.py (token attention basics).
 """
 
 import matplotlib.pyplot as plt
@@ -567,5 +567,5 @@ Intuition to keep:
   Motion is correspondence across time -- temporal attention is how
   tokens find those correspondences.
 
-See also: 0830_transformer.py for plain self-attention mechanics.
+See also: 0850_transformer.py for plain self-attention mechanics.
 """)

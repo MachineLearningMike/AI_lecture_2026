@@ -1,5 +1,5 @@
 """
-0670_inductive_bias.py
+0690_inductive_bias.py
 
 Intuition for inductive bias: the assumptions a learner brings so it can
 generalize beyond the finite training set.
@@ -15,7 +15,7 @@ Demos:
     3) Regularization strength as a soft bias toward simplicity
     4) Bias--variance cartoon: too little vs too much bias
 
-Companion to 0260_model.py (linear vs deep) and 190_loss_functions.py
+Companion to 0280_model.py (linear vs deep) and 190_loss_functions.py
 (loss choice is also an inductive bias).
 """
 
@@ -394,7 +394,7 @@ Where bias comes from in ML:
   2) Architecture       (convolution => locality/translation structure)
   3) Regularization     (ridge/weight decay => prefer small weights)
   4) Loss function      (MSE vs MAE; see 190_loss_functions.py)
-  5) Optimizer / init   (implicit bias of SGD; see 0510_momentum.py)
+  5) Optimizer / init   (implicit bias of SGD; see 0530_momentum.py)
 
 Lesson from the figures:
   - Too little bias (very flexible fit): great train fit, wild extrapolation

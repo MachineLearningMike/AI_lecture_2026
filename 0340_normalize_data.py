@@ -1,7 +1,7 @@
 """
-0320_normalize_data.py
+0340_normalize_data.py
 
-Normalize a distribution -- continuation after 0310_distribution.py.
+Normalize a distribution -- continuation after 0330_distribution.py.
 
 Sketch:
   9. The same dog/cat clusters, tiny in a corner -- then normalized;
@@ -10,7 +10,7 @@ Sketch:
   11. Why N(0, 1)? -- activations live near zero-scale numbers.
   12. Normalization with NumPy or Torch.
 
-See also: 0310_distribution.py (why distribution), 0720_discriminative_generative.py.
+See also: 0330_distribution.py (why distribution), 0740_discriminative_generative.py.
 """
 
 import matplotlib.pyplot as plt
@@ -512,5 +512,5 @@ Normalization in code (Step 12):
   NumPy:  z = (x - x.mean()) / x.std()
   Torch:  z = (x - x.mean()) / x.std()
 
-See also: 0310_distribution.py, 0720_discriminative_generative.py
+See also: 0330_distribution.py, 0740_discriminative_generative.py
 """)

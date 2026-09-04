@@ -1,10 +1,10 @@
 """
-0890_transformer_code.py
+0910_transformer_code.py
 
 Minimal PyTorch Transformer encoder + decoder with SHAPE TRACKING.
 
-Companion intuition: 0830_transformer.py
-Positional encoding:   0860_positional_encoding.py
+Companion intuition: 0850_transformer.py
+Positional encoding:   0880_positional_encoding.py
 
 Notation used in comments:
   B  = batch size
@@ -17,7 +17,7 @@ Notation used in comments:
   D_FF = d_ff   (feed-forward hidden width)
 
 Run:
-  conda run -n torch27 python 0890_transformer_code.py
+  conda run -n torch27 python 0910_transformer_code.py
 """
 
 from __future__ import annotations

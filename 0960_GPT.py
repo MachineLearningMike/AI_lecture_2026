@@ -1,5 +1,5 @@
 """
-0940_GPT.py
+0960_GPT.py
 
 LLMs and GPT -- decoder-only Transformers that predict the next token.
 
@@ -10,8 +10,8 @@ Pipeline sketched here:
   4) Use: zero-shot / one-shot / few-shot prompting, chain-of-thought, tools
 
 GPT = Generative Pre-trained Transformer (Radford et al.), scaled into
-today's chat LLMs. Companion to 0830_transformer.py (causal mask) and
-0930_BERT.py (encoder / MLM fork of the same family).
+today's chat LLMs. Companion to 0850_transformer.py (causal mask) and
+0950_BERT.py (encoder / MLM fork of the same family).
 """
 
 import matplotlib.pyplot as plt
@@ -150,7 +150,7 @@ ax.text(
 
 ax = axes1[1]
 ax.axis('off')
-ax.set_title('Vs BERT (0930_BERT.py)', fontsize=FS_AX_TITLE - 2)
+ax.set_title('Vs BERT (0950_BERT.py)', fontsize=FS_AX_TITLE - 2)
 ax.text(
     0.5, 0.55,
     'BERT (encoder):\n'
@@ -987,7 +987,7 @@ ax.text(
     '6. Chain-of-thought spends tokens to think.\n\n'
     '7. Prompting and tools steer a frozen (or lightly\n'
     '   adapted) model at inference time.\n\n'
-    'Same stack as 0830_transformer.py -- pushed into\n'
+    'Same stack as 0850_transformer.py -- pushed into\n'
     'a full product recipe for generative AI.',
     transform=ax.transAxes, ha='center', va='center', fontsize=FS_ANNOT + 1,
     bbox=dict(boxstyle='round', facecolor='#f7f7ff', alpha=0.96),
@@ -1037,7 +1037,7 @@ Vs BERT:
   GPT:  causal decoder + next-token LM (+ SFT/align) -> generation / assistants
 
 See also:
-  0830_transformer.py -- causal vs bidirectional attention
-  0860_positional_encoding.py -- PE / RoPE used in modern GPTs
-  0930_BERT.py -- the encoder / fine-tune fork of the same family
+  0850_transformer.py -- causal vs bidirectional attention
+  0880_positional_encoding.py -- PE / RoPE used in modern GPTs
+  0950_BERT.py -- the encoder / fine-tune fork of the same family
 """)

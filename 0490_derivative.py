@@ -1,5 +1,5 @@
 """
-0470_derivative.py
+0490_derivative.py
 
 Derivatives and partial derivatives, with browsable 3D surfaces.
 
@@ -22,8 +22,8 @@ Coordinate freedom (important):
     and from (df/dz1, df/dz2) span the SAME tangent plane in ambient space.
     The hyperplane of tangent vectors is coordinate-independent.
 
-Companion to 0620_exponential.py (log derivative identity) and
-0490_rolling_ball.py (motion follows -grad).
+Companion to 0640_exponential.py (log derivative identity) and
+0510_rolling_ball.py (motion follows -grad).
 """
 
 import matplotlib.pyplot as plt

@@ -1,5 +1,5 @@
 """
-0650_stress_test.py
+0670_stress_test.py
 
 Stress-testing a popular misuse of the CLT / averaging intuition.
 
@@ -28,8 +28,8 @@ Sketch:
   7. Where CLT still applies (and where it does not)
   8. Takeaway
 
-Companion to 0580_law_of_large_numbers.py, 0590_central_limit_theorem.py,
-0610_Bayesian_theorem.py, 0600_probability_vs_statistics.py.
+Companion to 0600_law_of_large_numbers.py, 0610_central_limit_theorem.py,
+0630_Bayesian_theorem.py, 0620_probability_vs_statistics.py.
 """
 
 from __future__ import annotations

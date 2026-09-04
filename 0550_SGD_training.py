@@ -1,5 +1,5 @@
 """
-0530_SGD_training.py
+0550_SGD_training.py
 
 Train a model with Gradient Descent: full-batch vs mini-batch.
 
@@ -572,5 +572,5 @@ Takeaways:
   3) Economy: cheap noisy SGD steps buy more progress per unit of data.
   4) Late training: expect a noise floor unless you grow b or decay the lr.
 
-Next: 0510_momentum.py (smoother SGD steps), 0700_normalize_activations.py (better conditioning).
+Next: 0530_momentum.py (smoother SGD steps), 0720_normalize_activations.py (better conditioning).
 """)

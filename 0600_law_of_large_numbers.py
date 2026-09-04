@@ -1,5 +1,5 @@
 """
-0580_law_of_large_numbers.py
+0600_law_of_large_numbers.py
 
 Law of Large Numbers (LLN) -- the sample average settles on the true mean.
 
@@ -18,8 +18,8 @@ Sketch:
   6. LLN vs CLT -- two different promises
   7. Takeaway
 
-Companion to 0570_gaussian.py, 0590_central_limit_theorem.py,
-0630_average_of_random.py.
+Companion to 0590_gaussian.py, 0610_central_limit_theorem.py,
+0650_average_of_random.py.
 """
 
 from __future__ import annotations

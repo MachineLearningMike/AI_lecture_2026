@@ -1,5 +1,5 @@
 """
-0540_back_propagation.py
+0560_back_propagation.py
 
 Backpropagation on the simplest model, then how PyTorch builds a grad graph,
 runs backward(), and applies step() -- with a step-by-step forward/backward seeker.
@@ -22,8 +22,8 @@ Sketch:
   7. One optimizer step closes the loop
   8. Takeaway
 
-Companion to 0250_torch_training.py, 0470_derivative.py, 0520_SGD_concept.py,
-0730_discriminative_toys.py.
+Companion to 0270_torch_training.py, 0490_derivative.py, 0540_SGD_concept.py,
+0750_discriminative_toys.py.
 """
 
 from __future__ import annotations
@@ -49,7 +49,7 @@ import numpy as np
 try:
     import torch
 except ImportError as exc:  # pragma: no cover
-    raise SystemExit("0540_back_propagation.py needs PyTorch") from exc
+    raise SystemExit("0560_back_propagation.py needs PyTorch") from exc
 
 np.random.seed(198)
 torch.manual_seed(198)
@@ -792,5 +792,5 @@ Manual grads match torch.backward():
 Seeker (Next/Prev, slider, arrow keys/space):
   forward graph growth -> backward grad flow -> step -> free -> zero_grad
 
-See also: 0250_torch_training.py, 0470_derivative.py, 0520_SGD_concept.py
+See also: 0270_torch_training.py, 0490_derivative.py, 0540_SGD_concept.py
 """)

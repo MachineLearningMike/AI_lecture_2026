@@ -1,5 +1,5 @@
 """
-0850_Wq_Wk_Wv.py
+0870_Wq_Wk_Wv.py
 
 Learnable W_Q, W_K, W_V are linear "perspective" maps on tokens X:
 
@@ -24,7 +24,7 @@ Easy logic:
      "Different" is not "failed learning" -- it is another route the
      distribution made valuable for the loss.
 
-Companion to 0840_QKV_attention.py, 0800_softmax.py, 0870_chain_of_adds.py.
+Companion to 0860_QKV_attention.py, 0820_softmax.py, 0890_chain_of_adds.py.
 """
 
 from __future__ import annotations
@@ -662,11 +662,11 @@ Preprocessing note (for customers):
   so training can just learn an equivalent matrix. You need not fear that
   such linear data prep will ruin accuracy for a net that already has
   learned linear layers (it always does). Nonlinear prep is different.
-  Details / picture: 0780_linear_transformation.py Step 14.
+  Details / picture: 0800_linear_transformation.py Step 14.
 
 See also:
-  0840_QKV_attention.py     -- Q/K/V roles without emphasizing W
-  0780_linear_transformation.py -- why matrices, and absorbing preprocess
-  0800_softmax.py           -- weights from scores
-  0870_chain_of_adds.py     -- residual stream as running sum
+  0860_QKV_attention.py     -- Q/K/V roles without emphasizing W
+  0800_linear_transformation.py -- why matrices, and absorbing preprocess
+  0820_softmax.py           -- weights from scores
+  0890_chain_of_adds.py     -- residual stream as running sum
 """)

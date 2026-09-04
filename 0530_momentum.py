@@ -1,5 +1,5 @@
 """
-0510_momentum.py
+0530_momentum.py
 
 Role of momentum in SGD optimizers -- especially under minibatch noise.
 

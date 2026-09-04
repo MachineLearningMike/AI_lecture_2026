@@ -1,8 +1,8 @@
 """
-0910_machine_translation.py
+0930_machine_translation.py
 
 Tiny English -> French Neural Machine Translation using the encoder-decoder
-Transformer classes from 0890_transformer_code.py.
+Transformer classes from 0910_transformer_code.py.
 
 What this lecture shows:
   1) Build source/target vocabs + special tokens (PAD/BOS/EOS/UNK)
@@ -15,12 +15,12 @@ Cross-attention is the heart of classical NMT Transformers: each generated
 French token looks at the English encoder memory to decide what to say next.
 
 Companion:
-  0830_transformer.py      -- attention intuition
-  0890_transformer_code.py -- encoder / decoder implementation
+  0850_transformer.py      -- attention intuition
+  0910_transformer_code.py -- encoder / decoder implementation
 
 Run:
-  conda run -n torch27 python 0910_machine_translation.py
-  MPLBACKEND=Agg conda run -n torch27 python 0910_machine_translation.py
+  conda run -n torch27 python 0930_machine_translation.py
+  MPLBACKEND=Agg conda run -n torch27 python 0930_machine_translation.py
 """
 
 from __future__ import annotations
@@ -53,7 +53,7 @@ if str(HERE) not in sys.path:
 
 from importlib import import_module
 
-t151 = import_module("0890_transformer_code")
+t151 = import_module("0910_transformer_code")
 
 Seq2SeqTransformer = t151.Seq2SeqTransformer
 make_pad_mask = t151.make_pad_mask

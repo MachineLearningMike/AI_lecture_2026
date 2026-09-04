@@ -5,75 +5,75 @@
     "012_DL_history.py": "0140_DL_history.py",
     "013_DL_future.py": "0150_DL_future.py",
     "020_continuous_end_to_end.py": "0160_continuous_end_to_end.py",
-    "041_AI_fun.py": "0230_AI_fun.py",
-    "043_numpy_torch.py": "0240_numpy_torch.py",
-    "016_torch_training.py": "0250_torch_training.py",
-    "080_model.py": "0260_model.py",
-    "015_torch_training.ipynb": "0250_torch_training.ipynb",
-    "016_torch_training.gif": "0250_torch_training.gif",
-    "014_SL_UL_RL.py": "0280_SL_UL_RL.py",
-    "035_regression_classification.py": "0290_regression_classification.py",
-    "040_distribution.py": "0310_distribution.py",
-    "042_normalize.py": "0320_normalize_data.py",
-    "231_pipeline_feature_engineering.py": "0330_pipeline_feature_engineering.py",
-    "122_F1_Score.py": "0350_F1_Score.py",
-    "125_train_validate_test_deploy.py": "0360_train_validate_test_deploy.py",
-    "185_loss_functions.py": "0380_loss_functions.py",
-    "191_Loss_Mean_Squared_Error.py": "0390_Loss_Mean_Squared_Error.py",
-    "192_Loss_Mean_Absolute_Error.py": "0400_Loss_Mean_Absolute_Error.py",
-    "193_Loss_Huber_Loss.py": "0410_Loss_Huber_Loss.py",
-    "194_Loss_Binary_Cross_Entropy.py": "0420_Loss_Binary_Cross_Entropy.py",
-    "195_Loss_Categorical_Cross_Entropy.py": "0430_Loss_Categorical_Cross_Entropy.py",
-    "196_Loss_Kullback_Leibler_Divergence.py": "0440_Loss_Kullback_Leibler_Divergence.py",
-    "120_maximum_likelihood.py": "0450_maximum_likelihood.py",
-    "140_derivative.py": "0470_derivative.py",
-    "150_fastest_ascent.py": "0480_fastest_ascent.py",
-    "170_rolling_ball.py": "0490_rolling_ball.py",
-    "160_stochastic_ascent.py": "0500_stochastic_ascent.py",
-    "180_momentum.py": "0510_momentum.py",
-    "197_SGD_concept.py": "0520_SGD_concept.py",
-    "210_SGD_training.py": "0530_SGD_training.py",
-    "198_back_propagation.py": "0540_back_propagation.py",
-    "143_SGD_code.ipynb": "0520_SGD_code.ipynb",
-    "060_gaussian.py": "0570_gaussian.py",
-    "085_law_of_large_numbers.py": "0580_law_of_large_numbers.py",
-    "090_central_limit_theorem.py": "0590_central_limit_theorem.py",
-    "115_probability_vs_statistics.py": "0600_probability_vs_statistics.py",
-    "095_Bayesian_theorem.py": "0610_Bayesian_theorem.py",
-    "130_exponential.py": "0620_exponential.py",
-    "100_average_of_random.py": "0630_average_of_random.py",
-    "110_product_of_random.py": "0640_product_of_random.py",
-    "116_stress_test.py": "0650_stress_test.py",
-    "220_inductive_bias.py": "0670_inductive_bias.py",
-    "250_neural_non_linearity.py": "0680_neural_non_linearity.py",
-    "240_dropout.py": "0690_dropout.py",
-    "230_normalization.py": "0700_normalize_activations.py",
-    "251_discriminative_generative.py": "0720_discriminative_generative.py",
-    "141_discriminative.py": "0730_discriminative_toys.py",
-    "142_generative.py": "0740_generative_toys.py",
-    "210_Embedding.py": "0760_Embedding.py",
-    "199_word_vector.py": "0770_word_vector.py",
-    "300_linear_transformation.py": "0780_linear_transformation.py",
-    "310_dot_inner_scalar_product.py": "0790_dot_inner_scalar_product.py",
-    "320_softmax.py": "0800_softmax.py",
-    "290_off_the_shelf_transformer.py": "0820_off_the_shelf_transformer.py",
-    "260_transformer.py": "0830_transformer.py",
-    "330_QKV_attention.py": "0840_QKV_attention.py",
-    "340_Wq_Wk_Wv.py": "0850_Wq_Wk_Wv.py",
-    "350_positional_encoding.py": "0860_positional_encoding.py",
-    "360_chain_of_adds.py": "0870_chain_of_adds.py",
-    "370_model_dimension.py": "0880_model_dimension.py",
-    "270_transformer_code.py": "0890_transformer_code.py",
-    "380_Transformer_inductive_bias.py": "0900_Transformer_inductive_bias.py",
-    "280_machine_translation.py": "0910_machine_translation.py",
-    "210_machine_translation.ipynb": "0910_machine_translation.ipynb",
-    "151_transformer_code.ipynb": "0890_transformer_code_scratch.ipynb",
-    "209_transformer_code.ipynb": "0890_transformer_code_alt.ipynb",
-    "410_BERT.py": "0930_BERT.py",
-    "420_GPT.py": "0940_GPT.py",
-    "390_video_transformer.py": "0960_video_transformer.py",
-    "400_swin_transformer.py": "0970_swin_transformer.py",
-    "011_Asian_interview.py": "0990_Asian_interview.py"
+    "041_AI_fun.py": "0250_AI_fun.py",
+    "043_numpy_torch.py": "0260_numpy_torch.py",
+    "016_torch_training.py": "0270_torch_training.py",
+    "080_model.py": "0280_model.py",
+    "015_torch_training.ipynb": "0270_torch_training.ipynb",
+    "016_torch_training.gif": "0270_torch_training.gif",
+    "014_SL_UL_RL.py": "0300_SL_UL_RL.py",
+    "035_regression_classification.py": "0310_regression_classification.py",
+    "040_distribution.py": "0330_distribution.py",
+    "042_normalize.py": "0340_normalize_data.py",
+    "231_pipeline_feature_engineering.py": "0350_pipeline_feature_engineering.py",
+    "122_F1_Score.py": "0370_F1_Score.py",
+    "125_train_validate_test_deploy.py": "0380_train_validate_test_deploy.py",
+    "185_loss_functions.py": "0400_loss_functions.py",
+    "191_Loss_Mean_Squared_Error.py": "0410_Loss_Mean_Squared_Error.py",
+    "192_Loss_Mean_Absolute_Error.py": "0420_Loss_Mean_Absolute_Error.py",
+    "193_Loss_Huber_Loss.py": "0430_Loss_Huber_Loss.py",
+    "194_Loss_Binary_Cross_Entropy.py": "0440_Loss_Binary_Cross_Entropy.py",
+    "195_Loss_Categorical_Cross_Entropy.py": "0450_Loss_Categorical_Cross_Entropy.py",
+    "196_Loss_Kullback_Leibler_Divergence.py": "0460_Loss_Kullback_Leibler_Divergence.py",
+    "120_maximum_likelihood.py": "0470_maximum_likelihood.py",
+    "140_derivative.py": "0490_derivative.py",
+    "150_fastest_ascent.py": "0500_fastest_ascent.py",
+    "170_rolling_ball.py": "0510_rolling_ball.py",
+    "160_stochastic_ascent.py": "0520_stochastic_ascent.py",
+    "180_momentum.py": "0530_momentum.py",
+    "197_SGD_concept.py": "0540_SGD_concept.py",
+    "210_SGD_training.py": "0550_SGD_training.py",
+    "198_back_propagation.py": "0560_back_propagation.py",
+    "143_SGD_code.ipynb": "0540_SGD_code.ipynb",
+    "060_gaussian.py": "0590_gaussian.py",
+    "085_law_of_large_numbers.py": "0600_law_of_large_numbers.py",
+    "090_central_limit_theorem.py": "0610_central_limit_theorem.py",
+    "115_probability_vs_statistics.py": "0620_probability_vs_statistics.py",
+    "095_Bayesian_theorem.py": "0630_Bayesian_theorem.py",
+    "130_exponential.py": "0640_exponential.py",
+    "100_average_of_random.py": "0650_average_of_random.py",
+    "110_product_of_random.py": "0660_product_of_random.py",
+    "116_stress_test.py": "0670_stress_test.py",
+    "220_inductive_bias.py": "0690_inductive_bias.py",
+    "250_neural_non_linearity.py": "0700_neural_non_linearity.py",
+    "240_dropout.py": "0710_dropout.py",
+    "230_normalization.py": "0720_normalize_activations.py",
+    "251_discriminative_generative.py": "0740_discriminative_generative.py",
+    "141_discriminative.py": "0750_discriminative_toys.py",
+    "142_generative.py": "0760_generative_toys.py",
+    "210_Embedding.py": "0780_Embedding.py",
+    "199_word_vector.py": "0790_word_vector.py",
+    "300_linear_transformation.py": "0800_linear_transformation.py",
+    "310_dot_inner_scalar_product.py": "0810_dot_inner_scalar_product.py",
+    "320_softmax.py": "0820_softmax.py",
+    "290_off_the_shelf_transformer.py": "0840_off_the_shelf_transformer.py",
+    "260_transformer.py": "0850_transformer.py",
+    "330_QKV_attention.py": "0860_QKV_attention.py",
+    "340_Wq_Wk_Wv.py": "0870_Wq_Wk_Wv.py",
+    "350_positional_encoding.py": "0880_positional_encoding.py",
+    "360_chain_of_adds.py": "0890_chain_of_adds.py",
+    "370_model_dimension.py": "0900_model_dimension.py",
+    "270_transformer_code.py": "0910_transformer_code.py",
+    "380_Transformer_inductive_bias.py": "0920_Transformer_inductive_bias.py",
+    "280_machine_translation.py": "0930_machine_translation.py",
+    "210_machine_translation.ipynb": "0930_machine_translation.ipynb",
+    "151_transformer_code.ipynb": "0910_transformer_code_scratch.ipynb",
+    "209_transformer_code.ipynb": "0910_transformer_code_alt.ipynb",
+    "410_BERT.py": "0950_BERT.py",
+    "420_GPT.py": "0960_GPT.py",
+    "390_video_transformer.py": "0980_video_transformer.py",
+    "400_swin_transformer.py": "0990_swin_transformer.py",
+    "011_Asian_interview.py": "1010_Asian_interview.py"
   },
   "chapters": [
     {
@@ -116,28 +116,28 @@
       ]
     },
     {
-      "opener": "0220_Ch04_First_Delivery.py",
+      "opener": "0240_Ch04_First_Delivery.py",
       "code": "Ch03",
       "title": "First delivery -- see a model train",
       "rows": [
         [
           "Core",
-          "0230_AI_fun.py",
+          "0250_AI_fun.py",
           "Safe playground -- confidence first"
         ],
         [
           "Core",
-          "0240_numpy_torch.py",
+          "0260_numpy_torch.py",
           "ndarray vs Tensor"
         ],
         [
           "Core",
-          "0250_torch_training.py",
+          "0270_torch_training.py",
           "Lean training loop (+ notebook)"
         ],
         [
           "Lab",
-          "0260_model.py",
+          "0280_model.py",
           "Small end-to-end model toy"
         ],
         [
@@ -153,151 +153,151 @@
       ]
     },
     {
-      "opener": "0270_Ch05_Learning_As_Binding.py",
+      "opener": "0290_Ch05_Learning_As_Binding.py",
       "code": "Ch04",
       "title": "Learning as binding",
       "rows": [
         [
           "Core",
-          "0280_SL_UL_RL.py",
+          "0300_SL_UL_RL.py",
           "SL / UL / RL + binding climax"
         ],
         [
           "Core",
-          "0290_regression_classification.py",
+          "0310_regression_classification.py",
           "Two kinds of prediction questions"
         ]
       ]
     },
     {
-      "opener": "0300_Ch06_Data_And_Distribution.py",
+      "opener": "0320_Ch06_Data_And_Distribution.py",
       "code": "Ch05",
       "title": "Data and distribution",
       "rows": [
         [
           "Core",
-          "0310_distribution.py",
+          "0330_distribution.py",
           "Why distributions -- business gravity"
         ],
         [
           "Core",
-          "0320_normalize_data.py",
+          "0340_normalize_data.py",
           "Scale the data (not activation BN/LN)"
         ],
         [
           "Core",
-          "0330_pipeline_feature_engineering.py",
+          "0350_pipeline_feature_engineering.py",
           "Pipeline and features"
         ]
       ]
     },
     {
-      "opener": "0340_Ch07_Evaluation.py",
+      "opener": "0360_Ch07_Evaluation.py",
       "code": "Ch06",
       "title": "Evaluation and field use",
       "rows": [
         [
           "Core",
-          "0350_F1_Score.py",
+          "0370_F1_Score.py",
           "Confusion matrix, precision, recall, F1"
         ],
         [
           "Core",
-          "0360_train_validate_test_deploy.py",
+          "0380_train_validate_test_deploy.py",
           "Train / validate / test / deploy"
         ]
       ]
     },
     {
-      "opener": "0370_Ch08_Loss_Objectives.py",
+      "opener": "0390_Ch08_Loss_Objectives.py",
       "code": "Ch07",
       "title": "Loss -- scoring the binding",
       "rows": [
         [
           "Core",
-          "0380_loss_functions.py",
+          "0400_loss_functions.py",
           "What a loss is"
         ],
         [
           "Core",
-          "0390_Loss_Mean_Squared_Error.py",
+          "0410_Loss_Mean_Squared_Error.py",
           "MSE"
         ],
         [
           "Core",
-          "0400_Loss_Mean_Absolute_Error.py",
+          "0420_Loss_Mean_Absolute_Error.py",
           "MAE"
         ],
         [
           "Core",
-          "0410_Loss_Huber_Loss.py",
+          "0430_Loss_Huber_Loss.py",
           "Huber"
         ],
         [
           "Core",
-          "0420_Loss_Binary_Cross_Entropy.py",
+          "0440_Loss_Binary_Cross_Entropy.py",
           "BCE"
         ],
         [
           "Core",
-          "0430_Loss_Categorical_Cross_Entropy.py",
+          "0450_Loss_Categorical_Cross_Entropy.py",
           "Categorical CE"
         ],
         [
           "Lab",
-          "0440_Loss_Kullback_Leibler_Divergence.py",
+          "0460_Loss_Kullback_Leibler_Divergence.py",
           "KL"
         ],
         [
           "Core",
-          "0450_maximum_likelihood.py",
+          "0470_maximum_likelihood.py",
           "MLE bridge to MSE / MAE"
         ]
       ]
     },
     {
-      "opener": "0460_Ch09_Optimization.py",
+      "opener": "0480_Ch09_Optimization.py",
       "code": "Ch08",
       "title": "Optimization -- how parameters move",
       "rows": [
         [
           "Core",
-          "0470_derivative.py",
+          "0490_derivative.py",
           "Derivatives / partials"
         ],
         [
           "Core",
-          "0480_fastest_ascent.py",
+          "0500_fastest_ascent.py",
           "Gradient direction"
         ],
         [
           "Core",
-          "0490_rolling_ball.py",
+          "0510_rolling_ball.py",
           "Descent physics intuition"
         ],
         [
           "Core",
-          "0500_stochastic_ascent.py",
+          "0520_stochastic_ascent.py",
           "Noisy steps still climb"
         ],
         [
           "Core",
-          "0510_momentum.py",
+          "0530_momentum.py",
           "Momentum under noise"
         ],
         [
           "Core",
-          "0520_SGD_concept.py",
+          "0540_SGD_concept.py",
           "SGD concept"
         ],
         [
           "Core",
-          "0530_SGD_training.py",
+          "0550_SGD_training.py",
           "Full-batch vs minibatch"
         ],
         [
           "Lab",
-          "0540_back_propagation.py",
+          "0560_back_propagation.py",
           "Chain rule + autograd"
         ],
         [
@@ -308,80 +308,80 @@
       ]
     },
     {
-      "opener": "0560_Ch10_Probability_Toolkit.py",
+      "opener": "0580_Ch10_Probability_Toolkit.py",
       "code": "Ch09",
       "title": "Probability toolkit (just-in-time)",
       "rows": [
         [
           "Core",
-          "0570_gaussian.py",
+          "0590_gaussian.py",
           "Gaussian basics"
         ],
         [
           "Core",
-          "0580_law_of_large_numbers.py",
+          "0600_law_of_large_numbers.py",
           "LLN"
         ],
         [
           "Core",
-          "0590_central_limit_theorem.py",
+          "0610_central_limit_theorem.py",
           "CLT"
         ],
         [
           "Core",
-          "0600_probability_vs_statistics.py",
+          "0620_probability_vs_statistics.py",
           "Two directions"
         ],
         [
           "Core",
-          "0610_Bayesian_theorem.py",
+          "0630_Bayesian_theorem.py",
           "Bayes update"
         ],
         [
           "Core",
-          "0620_exponential.py",
+          "0640_exponential.py",
           "exp / log in ML"
         ],
         [
           "Enrichment",
-          "0630_average_of_random.py",
+          "0650_average_of_random.py",
           "Average of r.v.s"
         ],
         [
           "Enrichment",
-          "0640_product_of_random.py",
+          "0660_product_of_random.py",
           "Product of r.v.s"
         ],
         [
           "Enrichment",
-          "0650_stress_test.py",
+          "0670_stress_test.py",
           "Misuse of averaging intuition"
         ]
       ]
     },
     {
-      "opener": "0660_Ch11_Neural_Function_Class.py",
+      "opener": "0680_Ch11_Neural_Function_Class.py",
       "code": "Ch10",
       "title": "What a net is -- function class and bias",
       "rows": [
         [
           "Core",
-          "0670_inductive_bias.py",
+          "0690_inductive_bias.py",
           "Inductive bias"
         ],
         [
           "Core",
-          "0680_neural_non_linearity.py",
+          "0700_neural_non_linearity.py",
           "Nonlinearity / manifolds"
         ],
         [
           "Core",
-          "0690_dropout.py",
+          "0710_dropout.py",
           "Dropout"
         ],
         [
           "Core",
-          "0700_normalize_activations.py",
+          "0720_normalize_activations.py",
           "BatchNorm vs LayerNorm"
         ],
         [
@@ -402,23 +402,23 @@
       ]
     },
     {
-      "opener": "0710_Ch12_Discriminative_Generative.py",
+      "opener": "0730_Ch12_Discriminative_Generative.py",
       "code": "Ch11",
       "title": "Discriminative vs generative",
       "rows": [
         [
           "Core",
-          "0720_discriminative_generative.py",
+          "0740_discriminative_generative.py",
           "Conceptual contrast"
         ],
         [
           "Lab",
-          "0730_discriminative_toys.py",
+          "0750_discriminative_toys.py",
           "Discriminative toys"
         ],
         [
           "Lab",
-          "0740_generative_toys.py",
+          "0760_generative_toys.py",
           "Generative toys"
         ],
         [
@@ -429,90 +429,90 @@
       ]
     },
     {
-      "opener": "0750_Ch13_Representation.py",
+      "opener": "0770_Ch13_Representation.py",
       "code": "Ch12",
       "title": "Representation -- tokens become geometry",
       "rows": [
         [
           "Core",
-          "0760_Embedding.py",
+          "0780_Embedding.py",
           "Embedding tables"
         ],
         [
           "Core",
-          "0770_word_vector.py",
+          "0790_word_vector.py",
           "Word2Vec intuition"
         ],
         [
           "Core",
-          "0780_linear_transformation.py",
+          "0800_linear_transformation.py",
           "Linear maps as matrices"
         ],
         [
           "Core",
-          "0790_dot_inner_scalar_product.py",
+          "0810_dot_inner_scalar_product.py",
           "Dot product / similarity"
         ],
         [
           "Core",
-          "0800_softmax.py",
+          "0820_softmax.py",
           "Softmax"
         ]
       ]
     },
     {
-      "opener": "0810_Ch14_Transformer.py",
+      "opener": "0830_Ch14_Transformer.py",
       "code": "Ch13",
       "title": "Transformer -- deliver, then unpack",
       "rows": [
         [
           "Core",
-          "0820_off_the_shelf_transformer.py",
+          "0840_off_the_shelf_transformer.py",
           "Call library blocks first"
         ],
         [
           "Core",
-          "0830_transformer.py",
+          "0850_transformer.py",
           "Self-attention intuition"
         ],
         [
           "Core",
-          "0840_QKV_attention.py",
+          "0860_QKV_attention.py",
           "Q, K, V meanings"
         ],
         [
           "Core",
-          "0850_Wq_Wk_Wv.py",
+          "0870_Wq_Wk_Wv.py",
           "Learned projections"
         ],
         [
           "Core",
-          "0860_positional_encoding.py",
+          "0880_positional_encoding.py",
           "Positions"
         ],
         [
           "Core",
-          "0870_chain_of_adds.py",
+          "0890_chain_of_adds.py",
           "Residual chain"
         ],
         [
           "Core",
-          "0880_model_dimension.py",
+          "0900_model_dimension.py",
           "Width vs sequence length"
         ],
         [
           "Lab",
-          "0890_transformer_code.py",
+          "0910_transformer_code.py",
           "Shapes from scratch"
         ],
         [
           "Core",
-          "0900_Transformer_inductive_bias.py",
+          "0920_Transformer_inductive_bias.py",
           "Transformer priors"
         ],
         [
           "Lab",
-          "0910_machine_translation.py",
+          "0930_machine_translation.py",
           "Tiny NMT"
         ],
         [
@@ -523,18 +523,18 @@
       ]
     },
     {
-      "opener": "0920_Ch15_LLMs.py",
+      "opener": "0940_Ch15_LLMs.py",
       "code": "Ch14",
       "title": "LLMs and products",
       "rows": [
         [
           "Core",
-          "0930_BERT.py",
+          "0950_BERT.py",
           "Encoder pretraining + survey"
         ],
         [
           "Core",
-          "0940_GPT.py",
+          "0960_GPT.py",
           "Decoder LLMs, SFT path"
         ],
         [
@@ -555,30 +555,30 @@
       ]
     },
     {
-      "opener": "0950_Ch16_Variants.py",
+      "opener": "0970_Ch16_Variants.py",
       "code": "Ch15",
       "title": "Variants (enrichment)",
       "rows": [
         [
           "Enrichment",
-          "0960_video_transformer.py",
+          "0980_video_transformer.py",
           "Video tokens / attention"
         ],
         [
           "Enrichment",
-          "0970_swin_transformer.py",
+          "0990_swin_transformer.py",
           "Shifted windows"
         ]
       ]
     },
     {
-      "opener": "0980_ChParallel_Speaking.py",
+      "opener": "1000_ChParallel_Speaking.py",
       "code": "Parallel",
       "title": "Speaking clinic (parallel track)",
       "rows": [
         [
           "Core",
-          "0990_Asian_interview.py",
+          "1010_Asian_interview.py",
           "Native vs Asian English bank"
         ]
       ]
@@ -592,42 +592,42 @@
     "0140_DL_history.py",
     "0150_DL_future.py",
     "0160_continuous_end_to_end.py",
-    "0220_Ch04_First_Delivery.py",
-    "0230_AI_fun.py",
-    "0240_numpy_torch.py",
-    "0250_torch_training.py",
-    "0270_Ch05_Learning_As_Binding.py",
-    "0280_SL_UL_RL.py",
-    "0290_regression_classification.py",
-    "0300_Ch06_Data_And_Distribution.py",
-    "0310_distribution.py",
-    "0320_normalize_data.py",
-    "0340_Ch07_Evaluation.py",
-    "0360_train_validate_test_deploy.py",
-    "0350_F1_Score.py",
-    "0370_Ch08_Loss_Objectives.py",
-    "0380_loss_functions.py",
-    "0420_Loss_Binary_Cross_Entropy.py",
-    "0430_Loss_Categorical_Cross_Entropy.py",
-    "0460_Ch09_Optimization.py",
-    "0470_derivative.py",
-    "0490_rolling_ball.py",
-    "0540_back_propagation.py",
-    "0520_SGD_concept.py",
-    "0660_Ch11_Neural_Function_Class.py",
-    "0670_inductive_bias.py",
-    "0680_neural_non_linearity.py",
-    "0750_Ch13_Representation.py",
-    "0760_Embedding.py",
-    "0790_dot_inner_scalar_product.py",
-    "0800_softmax.py",
-    "0810_Ch14_Transformer.py",
-    "0820_off_the_shelf_transformer.py",
-    "0830_transformer.py",
-    "0840_QKV_attention.py",
-    "0850_Wq_Wk_Wv.py",
-    "0860_positional_encoding.py",
-    "0920_Ch15_LLMs.py",
-    "0940_GPT.py"
+    "0240_Ch04_First_Delivery.py",
+    "0250_AI_fun.py",
+    "0260_numpy_torch.py",
+    "0270_torch_training.py",
+    "0290_Ch05_Learning_As_Binding.py",
+    "0300_SL_UL_RL.py",
+    "0310_regression_classification.py",
+    "0320_Ch06_Data_And_Distribution.py",
+    "0330_distribution.py",
+    "0340_normalize_data.py",
+    "0360_Ch07_Evaluation.py",
+    "0380_train_validate_test_deploy.py",
+    "0370_F1_Score.py",
+    "0390_Ch08_Loss_Objectives.py",
+    "0400_loss_functions.py",
+    "0440_Loss_Binary_Cross_Entropy.py",
+    "0450_Loss_Categorical_Cross_Entropy.py",
+    "0480_Ch09_Optimization.py",
+    "0490_derivative.py",
+    "0510_rolling_ball.py",
+    "0560_back_propagation.py",
+    "0540_SGD_concept.py",
+    "0680_Ch11_Neural_Function_Class.py",
+    "0690_inductive_bias.py",
+    "0700_neural_non_linearity.py",
+    "0770_Ch13_Representation.py",
+    "0780_Embedding.py",
+    "0810_dot_inner_scalar_product.py",
+    "0820_softmax.py",
+    "0830_Ch14_Transformer.py",
+    "0840_off_the_shelf_transformer.py",
+    "0850_transformer.py",
+    "0860_QKV_attention.py",
+    "0870_Wq_Wk_Wv.py",
+    "0880_positional_encoding.py",
+    "0940_Ch15_LLMs.py",
+    "0960_GPT.py"
   ]
 }

@@ -1,5 +1,5 @@
 """
-0870_chain_of_adds.py
+0890_chain_of_adds.py
 
 How Transformer's chained residual additions form a cumulative mix.
 
@@ -24,7 +24,7 @@ layer contributes (LayerScale, ReZero, gated residuals):
 The learned alphas are a simple readout of which layers write strongly
 into the residual -- and help deep nets start near identity.
 
-Companion to 0830_transformer.py and 0860_positional_encoding.py.
+Companion to 0850_transformer.py and 0880_positional_encoding.py.
 """
 
 import matplotlib.pyplot as plt
@@ -627,7 +627,7 @@ Why this matters:
      reshape each layer's residual contribution
 
 See also:
-  0830_transformer.py -- what attention writes
-  0680_neural_non_linearity.py -- what FFN writes
-  0700_normalize_activations.py -- LayerNorm around the writes
+  0850_transformer.py -- what attention writes
+  0700_neural_non_linearity.py -- what FFN writes
+  0720_normalize_activations.py -- LayerNorm around the writes
 """)

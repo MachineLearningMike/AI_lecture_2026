@@ -1,5 +1,5 @@
 """
-0880_model_dimension.py
+0900_model_dimension.py
 
 Model dimension (d_model / width) vs sequence length (T).
 
@@ -14,7 +14,7 @@ Key facts for Transformers / sequence models:
        too small -> underfit
        too large -> overfit (especially with limited data)
 
-Companion to 0830_transformer.py and 0670_inductive_bias.py.
+Companion to 0850_transformer.py and 0690_inductive_bias.py.
 """
 
 import matplotlib.pyplot as plt

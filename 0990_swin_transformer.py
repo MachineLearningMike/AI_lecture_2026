@@ -1,5 +1,5 @@
 """
-0970_swin_transformer.py
+0990_swin_transformer.py
 
 Swin Transformer intuition (Shifted WINdow Transformer).
 
@@ -11,7 +11,7 @@ Core ideas vs plain ViT:
   3) HIERARCHICAL stages with patch merging
      => multi-scale feature maps (like a CNN backbone)
 
-Companion to 0830_transformer.py and 0960_video_transformer.py.
+Companion to 0850_transformer.py and 0980_video_transformer.py.
 """
 
 import matplotlib.pyplot as plt
@@ -639,6 +639,6 @@ Where it is used:
   The hierarchical map is the key practical advantage over single-scale ViT.
 
 See also:
-  0830_transformer.py -- attention mechanics
-  0960_video_transformer.py -- space-time variants of similar efficiency ideas
+  0850_transformer.py -- attention mechanics
+  0980_video_transformer.py -- space-time variants of similar efficiency ideas
 """)

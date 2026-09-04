@@ -13,7 +13,7 @@ Sketch:
   7. Torch -- from-scratch MAE vs nn.L1Loss
 
 Companion to 191_Mean_Squared_Error.py, 190_loss_functions.py,
-0380_loss_functions.py, 0290_regression_classification.py.
+0400_loss_functions.py, 0310_regression_classification.py.
 """
 
 from __future__ import annotations
@@ -558,5 +558,5 @@ Step 5: MAE fit stays with the bulk; MSE fit leans toward the outlier.
 Step 6: MAE = fair unit pricing, kinked at 0, median-minded.
 Step 7: Torch -- (yhat-y).abs().mean() matches nn.L1Loss().
 
-See also: 191_Mean_Squared_Error.py, 190_loss_functions.py, 0290_regression_classification.py
+See also: 191_Mean_Squared_Error.py, 190_loss_functions.py, 0310_regression_classification.py
 """)

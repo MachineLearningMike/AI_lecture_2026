@@ -16,8 +16,8 @@ Sketch:
   9. Learning is binding -- externally vs internally bound
   10. Cleaner terminology -- remap SL / SSL / UL; external ≠ human
 
-Companion to 0260_model.py, 0670_inductive_bias.py,
-0720_discriminative_generative.py, 0150_DL_future.py.
+Companion to 0280_model.py, 0690_inductive_bias.py,
+0740_discriminative_generative.py, 0150_DL_future.py.
 """
 
 import matplotlib.pyplot as plt
@@ -812,6 +812,6 @@ Step 10 -- cleaner terminology:
   "External" = external to the learner (RL reward included), not = human.
   Core question: is the binding externally imposed or internally generated?
 
-See also: 0260_model.py, 0670_inductive_bias.py,
-          0720_discriminative_generative.py, 0150_DL_future.py
+See also: 0280_model.py, 0690_inductive_bias.py,
+          0740_discriminative_generative.py, 0150_DL_future.py
 """)

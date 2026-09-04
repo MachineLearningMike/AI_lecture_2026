@@ -1,5 +1,5 @@
 """
-0700_normalize_activations.py
+0720_normalize_activations.py
 
 Intuition for Batch Normalization vs Layer Normalization.
 
@@ -17,8 +17,8 @@ The difference is WHICH AXIS the mean/var are computed over:
     BatchNorm  -- for each FEATURE, pool over the BATCH  (and spatial dims)
     LayerNorm  -- for each SAMPLE (token), pool over the FEATURES
 
-Companion to 0260_model.py (deeper nets need stable activation scales) and
-0510_momentum.py / 190_loss_functions.py (optimization geometry).
+Companion to 0280_model.py (deeper nets need stable activation scales) and
+0530_momentum.py / 190_loss_functions.py (optimization geometry).
 """
 
 import matplotlib.pyplot as plt

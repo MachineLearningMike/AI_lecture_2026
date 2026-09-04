@@ -21,8 +21,8 @@ Intuition this lecture makes visible:
   4) What hurts stability (too-large lr, too-small batches, sharp curvature)
   5) Why batch size matters (noise scale ~ 1/sqrt(b); same data budget, different paths)
 
-Companion to 070_torch_training.py, 0510_momentum.py, 190_loss_functions.py,
-0530_SGD_training.py.
+Companion to 070_torch_training.py, 0530_momentum.py, 190_loss_functions.py,
+0550_SGD_training.py.
 """
 
 from __future__ import annotations
@@ -577,8 +577,8 @@ rows = [
     (3.5, "#f8d7da", "Gradient noise (small batch)\n"
      "Pushes you sideways each SGD step; large lr amplifies that."),
     (1.2, "#d4edda", "Practical knobs\n"
-     "decrease lr, increase batch, add momentum (0510_momentum.py),\n"
-     "or normalize/scale features (0700_normalize_activations.py)."),
+     "decrease lr, increase batch, add momentum (0530_momentum.py),\n"
+     "or normalize/scale features (0720_normalize_activations.py)."),
 ]
 for y, color, text in rows:
     ax.add_patch(plt.Rectangle((0.5, y), 9.0, 1.9, facecolor=color, edgecolor="k", lw=2))
@@ -702,7 +702,7 @@ Finite-sum objective on N={N_DATA} ravine examples:
    - learning rate too large  -> bounce / diverge (worse under noise)
    - batch size too small     -> huge gradient variance
    - sharp curvature          -> same lr overshoots more
-   Momentum (0510_momentum.py) helps average out noisy pushes.
+   Momentum (0530_momentum.py) helps average out noisy pushes.
 
 4) Why batch size matters
    Gradient noise scales ~ 1/sqrt(b).

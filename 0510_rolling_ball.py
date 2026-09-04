@@ -1,5 +1,5 @@
 """
-0490_rolling_ball.py
+0510_rolling_ball.py
 
 A ball rolling down a hill -- physics animation as intuition for
 gradient descent: the landscape is a loss surface, gravity pulls
@@ -9,7 +9,7 @@ Shows the animation live. Also saves a GIF next to this script
 (GIF export is skipped if the file already exists):
     rolling_ball.gif
 
-Companion metaphor for training loops in 0260_model.py.
+Companion metaphor for training loops in 0280_model.py.
 """
 
 from pathlib import Path

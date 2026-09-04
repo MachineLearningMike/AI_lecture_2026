@@ -1,5 +1,5 @@
 """
-0840_QKV_attention.py
+0860_QKV_attention.py
 
 What Q, K, V mean in Transformer attention.
 
@@ -22,7 +22,7 @@ What training learns:
   Which projections (perspectives) of the same underlying tokens make
   this retrieve-and-mix step reduce the loss best.
 
-Companion to 0830_transformer.py, 0890_transformer_code.py, 310_dot_*.py.
+Companion to 0850_transformer.py, 0910_transformer_code.py, 310_dot_*.py.
 """
 
 from __future__ import annotations
@@ -532,7 +532,7 @@ In a Transformer layer:
   Multi-head = several such perspectives at once.
 
 See also:
-  0830_transformer.py -- attention heatmaps / block diagram
-  0890_transformer_code.py -- shapes through QKV
-  0790_dot_inner_scalar_product.py -- why dots measure agreement
+  0850_transformer.py -- attention heatmaps / block diagram
+  0910_transformer_code.py -- shapes through QKV
+  0810_dot_inner_scalar_product.py -- why dots measure agreement
 """)

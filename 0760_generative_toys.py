@@ -1,5 +1,5 @@
 """
-0740_generative_toys.py
+0760_generative_toys.py
 
 Typical generative models -- listed and shown as interactive toys.
 
@@ -19,8 +19,8 @@ Sketch:
   10. Same world, many generative skins
   11. Takeaway collage
 
-Companion to 0730_discriminative_toys.py, 0720_discriminative_generative.py,
-0310_distribution.py, 0570_gaussian.py.
+Companion to 0750_discriminative_toys.py, 0740_discriminative_generative.py,
+0330_distribution.py, 0590_gaussian.py.
 """
 
 from __future__ import annotations
@@ -828,7 +828,7 @@ Typical generative models (shown):
 
 Idea: model P(x) or P(x|y) -- score and sample, not only label.
 
-See also: 0730_discriminative_toys.py,
-          0720_discriminative_generative.py,
-          0310_distribution.py, 0570_gaussian.py
+See also: 0750_discriminative_toys.py,
+          0740_discriminative_generative.py,
+          0330_distribution.py, 0590_gaussian.py
 """)

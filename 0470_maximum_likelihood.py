@@ -1,5 +1,5 @@
 """
-0450_maximum_likelihood.py
+0470_maximum_likelihood.py
 
 Intuition for Maximum Likelihood Estimation (MLE), and why for a
 Gaussian noise model:
@@ -8,7 +8,7 @@ Gaussian noise model:
 
 NOT mean absolute error (MAE).  MAE is the MLE for Laplace noise instead.
 
-Companion to 0570_gaussian.py (Gaussian PDF) and 0260_model.py (MSE training).
+Companion to 0590_gaussian.py (Gaussian PDF) and 0280_model.py (MSE training).
 """
 
 import torch
@@ -403,7 +403,7 @@ Demo numbers (n={N}, true mu={MU_TRUE:g}, sigma={SIGMA:g}):
     grid argmin MSE                    = {mu_mse:.4f}
     grid argmin MAE                    = {mu_mae:.4f}
 
-Takeaway for ML training (see 0260_model.py):
+Takeaway for ML training (see 0280_model.py):
     Using MSE loss is not an arbitrary choice -- it IS maximum
     likelihood under Gaussian residual noise.
 """)

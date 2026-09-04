@@ -1,5 +1,5 @@
 """
-0680_neural_non_linearity.py
+0700_neural_non_linearity.py
 
 How neural nets create non-linearity and non-linear manifolds.
 
@@ -10,7 +10,7 @@ Key facts:
   4) Mixing several neurons (and stacking layers) bends those contours into
      curved level sets -- a non-linear manifold in input space.
 
-Companion to 0260_model.py (simple vs complex net) and 0670_inductive_bias.py.
+Companion to 0280_model.py (simple vs complex net) and 0690_inductive_bias.py.
 """
 
 import matplotlib.pyplot as plt
@@ -676,6 +676,6 @@ print(f"""
       purely linear models cannot.
 
 See also:
-  0260_model.py  -- linear neuron fails on a cubic
-  0670_inductive_bias.py -- which non-linear family you choose is a bias
+  0280_model.py  -- linear neuron fails on a cubic
+  0690_inductive_bias.py -- which non-linear family you choose is a bias
 """)

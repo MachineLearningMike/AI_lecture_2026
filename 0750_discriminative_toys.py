@@ -1,5 +1,5 @@
 """
-0730_discriminative_toys.py
+0750_discriminative_toys.py
 
 Typical discriminative models -- listed and shown as interactive toys.
 
@@ -18,8 +18,8 @@ Sketch:
   9. Side-by-side: same data, many discriminative skins
   10. Takeaway collage
 
-Companion to 0290_regression_classification.py, 0720_discriminative_generative.py,
-0800_softmax.py, 0680_neural_non_linearity.py.
+Companion to 0310_regression_classification.py, 0740_discriminative_generative.py,
+0820_softmax.py, 0700_neural_non_linearity.py.
 """
 
 from __future__ import annotations
@@ -698,7 +698,7 @@ Typical discriminative models (shown):
 
 Idea: model P(y|x) or a decision rule -- not full P(x).
 
-See also: 0290_regression_classification.py,
-          0720_discriminative_generative.py,
-          0800_softmax.py, 0680_neural_non_linearity.py
+See also: 0310_regression_classification.py,
+          0740_discriminative_generative.py,
+          0820_softmax.py, 0700_neural_non_linearity.py
 """)

@@ -1,5 +1,5 @@
 """
-0830_transformer.py
+0850_transformer.py
 
 Transformer intuition -- especially self-attention.
 
@@ -12,8 +12,8 @@ Core idea:
 That lets every position directly mix information from every other
 position in one step (global receptive field), without recurrence.
 
-Companion to 0700_normalize_activations.py (LayerNorm in Transformers),
-0690_dropout.py, and 0680_neural_non_linearity.py (FFN non-linearity).
+Companion to 0720_normalize_activations.py (LayerNorm in Transformers),
+0710_dropout.py, and 0700_neural_non_linearity.py (FFN non-linearity).
 
 Also sketches recent improvements (efficiency, long context, MoE,
 alignment) and how Transformer usage diversified far beyond MT.
@@ -492,10 +492,10 @@ ax5.text(
     '  (non-linear MLP)\n\n'
     'Diagram: original\n'
     '  post-norm (Vaswani).\n'
-    '0890_transformer_code.py\n'
+    '0910_transformer_code.py\n'
     '  uses Pre-LN for stability\n'
     '  (LN before Attn/FFN).\n'
-    'See also 0700_normalize_activations.py',
+    'See also 0720_normalize_activations.py',
     ha='left', va='center', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
 )
@@ -631,7 +631,7 @@ ax.set_title('Recent improvements (same core, better engineering)', fontsize=FS_
 improvements = [
     (0.4, 8.7, 9.2, 1.8, 'Long context & efficient attention',
      'FlashAttention, KV cache, sliding / sparse / linear attention\n'
-     'RoPE / ALiBi for length transfer  (see 0860_positional_encoding.py)',
+     'RoPE / ALiBi for length transfer  (see 0880_positional_encoding.py)',
      '#dceaff'),
     (0.4, 6.5, 9.2, 1.8, 'Scale without one giant dense FFN',
      'Mixture-of-Experts (MoE): route tokens to a few experts\n'
@@ -692,7 +692,7 @@ ax.text(
     5.0, 0.7,
     'Anything that can be turned into a sequence of tokens / patches / frames\n'
     'can reuse the Transformer inductive bias -- often with small domain tweaks\n'
-    '(see 380_*, 0960_video_transformer.py, 0970_swin_transformer.py).',
+    '(see 380_*, 0980_video_transformer.py, 0990_swin_transformer.py).',
     ha='center', va='center', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
@@ -764,11 +764,11 @@ Diversification of usage:
   science (proteins/molecules), time series & tabular, robotics,
   retrieval/search. Domain tweaks (patching, windows, masks) sit on
   top of the same attend+FFN inductive bias
-  (see 0900_Transformer_inductive_bias.py, 0960_video_transformer.py,
-   0970_swin_transformer.py).
+  (see 0920_Transformer_inductive_bias.py, 0980_video_transformer.py,
+   0990_swin_transformer.py).
 
 What the FFN adds:
   Attention routes information across tokens.
   The feed-forward MLP applies non-linear processing per token
-  (see 0680_neural_non_linearity.py).
+  (see 0700_neural_non_linearity.py).
 """)

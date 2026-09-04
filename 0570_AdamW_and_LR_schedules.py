@@ -1,5 +1,5 @@
 """
-0550_AdamW_and_LR_schedules.py
+0570_AdamW_and_LR_schedules.py
 
 Adam / AdamW and learning-rate schedules -- what students actually meet
 after plain SGD + momentum.
@@ -13,8 +13,8 @@ Sketch:
   6. PyTorch-facing recipe + when to use what
   7. Takeaway for Ch08
 
-Companion to 0510_momentum.py, 0520_SGD_concept.py, 0530_SGD_training.py,
-0540_back_propagation.py.
+Companion to 0530_momentum.py, 0540_SGD_concept.py, 0550_SGD_training.py,
+0560_back_propagation.py.
 """
 
 from __future__ import annotations
