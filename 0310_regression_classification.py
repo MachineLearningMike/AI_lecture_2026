@@ -9,6 +9,7 @@ Sketch:
   3. Classification -- choose among discrete labels
   4. Which loss embraces which -- and why
   5. Side-by-side decision guide
+  6. Continuous classification = regression?
 
 Companion to 190_loss_functions.py (taxonomy + CE),
 191_Mean_Squared_Error.py (MSE), 0400_loss_functions.py.
@@ -454,6 +455,84 @@ show_maximized(fig5)
 
 
 # -------------------------------------------------------
+# FIGURE 6: Continuous classification = regression?
+# -------------------------------------------------------
+fig6, ax6 = new_figure()
+fig6.suptitle(
+    'Step 6: Continuous classification = regression?',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+blank_slide(ax6)
+
+round_box(ax6, 0.35, 6.45, 11.3, 1.25, C_DARK, C_DARK, lw=0)
+ax6.text(
+    6.0, 7.05,
+    'Thought experiment: classes cover the whole target space,\n'
+    'and each class has only a single datapoint.',
+    ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
+    color='#f9e79f',
+)
+
+# Left: continuum of singleton "classes"
+round_box(ax6, 0.35, 3.55, 5.5, 2.65, C_MUTE, '0.45', lw=1.5)
+ax6.text(3.1, 5.85, 'Extreme "classification"', ha='center',
+         fontsize=FS_TICK, fontweight='bold', color=C_DARK)
+# little class ticks along a line
+ax6.plot([0.85, 5.35], [4.85, 4.85], color='0.35', lw=2.0, solid_capstyle='round')
+for i, yi in enumerate(np.linspace(0.85, 5.35, 9)):
+    ax6.plot(yi, 4.85, 'o', color=C_ACCENT if i in (2, 5, 7) else C_DARK, ms=7)
+    if i in (2, 5, 7):
+        ax6.text(yi, 5.2, rf'$c_{{{i}}}$', ha='center', fontsize=FS_TICK - 1,
+                 fontweight='bold', color=C_ACCENT)
+ax6.text(
+    3.1, 4.05,
+    'Every real value is its own class.\n'
+    'One observed point per class.\n'
+    r'Choosing a class $=$ choosing a number $y$.',
+    ha='center', va='center', fontsize=FS_TICK + 1, fontweight='bold',
+)
+
+# Right: regression
+round_box(ax6, 6.15, 3.55, 5.5, 2.65, C_GOAL, C_OK, lw=1.8)
+ax6.text(8.9, 5.85, 'That is regression', ha='center',
+         fontsize=FS_TICK, fontweight='bold', color=C_OK)
+xs = np.linspace(6.55, 11.0, 40)
+ys = 4.55 + 0.55 * np.sin(1.3 * (xs - 6.55)) + 0.15 * (xs - 8.8)
+ax6.plot(xs, ys, color=C_OK, lw=2.5)
+ax6.scatter(
+    [7.1, 8.2, 9.4, 10.4],
+    [4.55 + 0.55 * np.sin(1.3 * (np.array([7.1, 8.2, 9.4, 10.4]) - 6.55))
+     + 0.15 * (np.array([7.1, 8.2, 9.4, 10.4]) - 8.8)],
+    s=45, color=C_DARK, zorder=3,
+)
+ax6.text(
+    8.9, 4.0,
+    r'Predict a continuous $y$ on a continuum.'
+    '\n'
+    'No discrete menu left to choose from.',
+    ha='center', va='center', fontsize=FS_TICK + 1, fontweight='bold',
+    color='#145a32',
+)
+
+arrow(ax6, 5.95, 4.85, 6.2, 4.85, C_DARK, 2.2)
+
+# Thought box
+round_box(ax6, 0.35, 0.35, 11.3, 2.95, '#fef9e7', '#b7950b', lw=1.8)
+ax6.text(6.0, 2.9, 'Thought', ha='center',
+         fontsize=FS_TICK, fontweight='bold', color='#7d6608')
+ax6.text(
+    6.0, 1.55,
+    'Intuitively: yes — if labels tile the whole space and each label is a singleton,\n'
+    '\"which class?\" collapses to \"which number?\", so continuous classification becomes regression.\n\n'
+    'The catch is the geometry of wrongness. Plain categorical CE treats class $3.01$ as unrelated\n'
+    'to class $3.00$; MSE knows they are almost the same. Equivalence is real only when the label set\n'
+    'carries a continuum metric (or fine ordered bins). Otherwise you reinvented regression — without its ruler.',
+    ha='center', va='center', fontsize=FS_TICK + 1, fontweight='bold',
+)
+show_maximized(fig6)
+
+
+# -------------------------------------------------------
 # KEY INSIGHTS
 # -------------------------------------------------------
 print("\n" + "=" * 60)
@@ -467,6 +546,12 @@ Multi-class: one of K labels    ->  categorical (+ softmax)        ->  Categoric
 Why this embrace?
   The loss must match what "wrong" means for that output type.
   Distance between reals  !=  wrong category probability.
+
+Continuous classification = regression?
+  If classes cover the whole target space and each class has one datapoint,
+  choosing a class is choosing a number -- classification collapses to regression.
+  Caveat: CE on unordered labels does not know nearby numbers are "almost right";
+  MSE does. Real equivalence needs a continuum metric on the labels (or fine bins).
 
 See also: 190_loss_functions.py, 191_Mean_Squared_Error.py, 0400_loss_functions.py
 """)

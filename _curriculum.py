@@ -145,6 +145,8 @@ CHAPTERS: list[dict] = [
         ),
         "attempt": "Map one real work task onto the ladder level you will ship this week.",
         "rows": [
+            ("Core", "0172_Opportunity.py", "Why exploit LLMs now -- local PCs vs hyperscale growth"),
+            ("Core", "0173_train_GPT.py", "How ChatGPT-class models are trained (pre/post)"),
             ("Core", "0180_exploit_stage1_talk.py", "Stage I: talk -- NL, instructions, context, few-shot"),
             ("Core", "0190_exploit_stage2_data.py", "Stage II: data processor -- text/JSON/multimodal"),
             ("Core", "0200_exploit_stage3_compute.py", "Stage III: tools, Python, DB, your ML models"),
@@ -402,6 +404,8 @@ CORE_PATH = [
     "0150_DL_future.py",
     "0160_continuous_end_to_end.py",
     "0170_Ch03_Exploit_LLM.py",
+    "0172_Opportunity.py",
+    "0173_train_GPT.py",
     "0180_exploit_stage1_talk.py",
     "0190_exploit_stage2_data.py",
     "0200_exploit_stage3_compute.py",
