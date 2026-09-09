@@ -136,14 +136,14 @@ C_OLD = '#fce4d6'
 # -------------------------------------------------------
 N = 30
 x = torch.linspace(1.0, 5.0, N).unsqueeze(1)
-y = 2.0 * x + 0.15 * torch.randn(N, 1)
+y = 2.0 * x + 1.5 * torch.randn(N, 1)
 
 model = nn.Linear(1, 1, bias=False)
 with torch.no_grad():
-    model.weight.fill_(-0.5)  # start far from 2 so the path is visible
+    model.weight.fill_(-1.5)  # start far from 2 so the path is visible
 loss_fn = nn.MSELoss()
 # Full-batch gradient descent on all N rows each step (PyTorch optimizer API).
-LR = 0.005
+LR = 0.002
 opt = torch.optim.SGD(model.parameters(), lr=LR)
 
 w0 = model.weight.item()
@@ -192,7 +192,7 @@ NB_CODE_1 = (
     '\n'
     'N = 30\n'
     'x = torch.linspace(1.0, 5.0, N).unsqueeze(1)\n'
-    'y = 2.0 * x + 0.15 * torch.randn(N, 1)  # mild noise; truth y=2x\n'
+    'y = 2.0 * x + 1.5 * torch.randn(N, 1)  # mild noise; truth y=2x\n'
     '\n'
     'model = nn.Linear(1, 1, bias=False)     # one weight w; y_hat = w * x\n'
     'with torch.no_grad():\n'

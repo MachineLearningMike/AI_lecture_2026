@@ -131,6 +131,11 @@ C_BIN = "#d68910"
 C_GRAY = "#85929e"
 C_ACTIVE = "#f9e79f"
 
+# Data-units per cm (measured for screen_figsize lecture axes).
+CM_X = 0.533
+CM_Y = 0.673
+CM_Y_STEP6 = 0.899  # two-panel Step 6 axes, ylim 0..10
+
 
 CAPABILITIES = [
     ("Recognition", "What is this?", r"$x \rightarrow y$"),
@@ -315,7 +320,16 @@ ax3.set_ylim(-0.5, n_gen - 0.5)
 ax3.set_xticks(range(n_cap))
 ax3.set_xticklabels(caps_short, rotation=35, ha="right", fontsize=FS_TICK - 2)
 ax3.set_yticks(range(n_gen))
-ax3.set_yticklabels(GEN_LEVELS, fontsize=FS_TICK - 1)
+# Distinguish the harder generalization altitudes on the axis itself.
+gen_labels_explained = [
+    "Familiar",
+    "New examples",
+    "New distribution\n(same world, P shifts)",
+    "New regime\n(off training support)",
+    "Structural novelty\n(new combo of known parts)",
+    "New rules\n(governing structure changes)",
+]
+ax3.set_yticklabels(gen_labels_explained, fontsize=FS_TICK - 2)
 # Y labels stay dark (readable); row color carries the blue story
 for tick in ax3.get_yticklabels():
     tick.set_color(C_DARK)
@@ -323,11 +337,20 @@ for tick in ax3.get_yticklabels():
 ax3.set_xlabel("capability (harder →)", fontsize=FS_AXIS)
 ax3.set_ylabel("generalization (light blue → deep blue ↑)", fontsize=FS_AXIS)
 ax3.set_title(
-    "filled = blue altitude by generalization level; green = empty / frontier",
-    fontsize=FS_AX_TITLE - 3,
+    "Distribution ≠ regime ≠ structural novelty ≠ new rules  |  "
+    "blue = workable altitude; green = frontier",
+    fontsize=FS_AX_TITLE - 4,
 )
 ax3.set_aspect("auto")
-fig3.tight_layout(rect=[0, 0.02, 1, 0.92])
+fig3.tight_layout(rect=[0, 0.06, 1, 0.90])
+fig3.text(
+    0.5, 0.015,
+    "Distribution: P_train ≠ P_test, still same support-ish world.   "
+    "Regime: states outside training support.   "
+    "Structural novelty: new combinations of familiar parts.   "
+    "New rules: the dynamics / grammar themselves change.",
+    ha="center", va="bottom", fontsize=FS_TICK - 2, color=C_DARK,
+)
 
 
 def _shift_step3_left(_fig):
@@ -360,19 +383,26 @@ gen_detail = [
 gen_faces = [GEN_COLORS[0], GEN_COLORS[2], GEN_COLORS[3], GEN_COLORS[4], GEN_COLORS[5]]
 gen_edges = [GEN_EDGE[0], GEN_EDGE[2], GEN_EDGE[3], GEN_EDGE[4], GEN_EDGE[5]]
 gen_tcols = [GEN_TEXT[0], GEN_TEXT[2], GEN_TEXT[3], GEN_TEXT[4], GEN_TEXT[5]]
+_s4_n = len(gen_detail)
+_s4_margin = 0.15
+_s4_gap = 0.06 + 0.5 * CM_X  # extend space between cards by 0.5cm
+_s4_w = min(2.15 + 1.0 * CM_X, (12.0 - 2 * _s4_margin - (_s4_n - 1) * _s4_gap) / _s4_n)
+_s4_xs = [_s4_margin + i * (_s4_w + _s4_gap) for i in range(_s4_n)]
 for i, (title, body) in enumerate(gen_detail):
-    x = 0.35 + i * 2.3
+    x = _s4_xs[i]
     face, edge, tcol = gen_faces[i], gen_edges[i], gen_tcols[i]
-    round_box(ax4, x, 2.0, 2.15, 4.8, face, edge, lw=2.6)
+    round_box(ax4, x, 2.0, _s4_w, 4.8, face, edge, lw=2.6)
     # Vertical boundary separators between levels
     if i > 0:
-        ax4.plot([x - 0.075, x - 0.075], [2.0, 6.8], color="0.1", lw=2.5, zorder=5)
-    ax4.text(x + 1.075, 5.85, title, ha="center",
+        ax4.plot([x - _s4_gap / 2, x - _s4_gap / 2], [2.0, 6.8],
+                 color="0.1", lw=2.5, zorder=5)
+    ax4.text(x + _s4_w / 2, 5.85, title, ha="center",
              fontsize=FS_TICK, fontweight="bold", color=tcol)
-    ax4.text(x + 1.075, 3.6, body, ha="center", va="center",
+    ax4.text(x + _s4_w / 2, 3.6, body, ha="center", va="center",
              fontsize=FS_TICK + 1, color=tcol)
     if i < 4:
-        arrow(ax4, x + 2.2, 4.4, x + 2.25, 4.4, "0.2", lw=2.0)
+        arrow(ax4, x + _s4_w + 0.01, 4.4, x + _s4_w + _s4_gap - 0.01, 4.4,
+              "0.2", lw=2.0)
 
 ax4.text(
     6.0, 0.8,
@@ -478,10 +508,14 @@ LEVEL_DETAIL = [
 def draw_cap(k):
     ax6a.clear(); ax6b.clear()
     k = int(np.clip(k, 0, len(CAPABILITIES) - 1))
+    _s6_dy = 1.0 * CM_Y_STEP6  # move both panels down 1cm
     ax6a.set_xlim(0, 10); ax6a.set_ylim(0, 10); ax6a.axis("off")
-    ax6a.set_title("capability", fontsize=FS_AX_TITLE - 2, fontweight="bold")
+    ax6a.text(5.0, 9.55 - _s6_dy + 1.5 * CM_Y_STEP6, "capability",
+              ha="center", va="center",
+              fontsize=FS_AX_TITLE - 2, fontweight="bold", color=C_DARK,
+              clip_on=False)
     for i, (name, q, _) in enumerate(CAPABILITIES):
-        y = 9.0 - i * 1.0
+        y = 9.0 - _s6_dy - i * 1.0
         face = C_ACTIVE if i == k else C_MUTE
         edge = C_ACCENT if i == k else "0.55"
         round_box(ax6a, 0.5, y, 9.0, 0.85, face, edge, lw=1.8 if i == k else 1.2)
@@ -492,14 +526,17 @@ def draw_cap(k):
     name, q, form = CAPABILITIES[k]
     detail = LEVEL_DETAIL[k][1]
     ax6b.set_xlim(0, 10); ax6b.set_ylim(0, 10); ax6b.axis("off")
-    round_box(ax6b, 0.4, 0.8, 9.2, 8.4, C_NEW, "#2874a6", lw=2.2)
-    ax6b.text(5.0, 8.4, name, ha="center", fontsize=FS_AX_TITLE - 2,
-              fontweight="bold", color=C_DARK)
-    ax6b.text(5.0, 7.4, q, ha="center", fontsize=FS_ANNOT, style="italic",
-              color="#2874a6")
-    ax6b.text(5.0, 6.5, form, ha="center", fontsize=FS_ANNOT + 1,
-              fontweight="bold", color=C_FUN)
-    ax6b.text(5.0, 3.6, detail, ha="center", va="center", fontsize=FS_ANNOT)
+    _s6_box_y = 0.8 - _s6_dy
+    patch = round_box(ax6b, 0.4, _s6_box_y, 9.2, 8.4, C_NEW, "#2874a6", lw=2.2)
+    patch.set_clip_on(False)
+    ax6b.text(5.0, 8.4 - _s6_dy, name, ha="center", fontsize=FS_AX_TITLE - 2,
+              fontweight="bold", color=C_DARK, clip_on=False)
+    ax6b.text(5.0, 7.4 - _s6_dy, q, ha="center", fontsize=FS_ANNOT, style="italic",
+              color="#2874a6", clip_on=False)
+    ax6b.text(5.0, 6.5 - _s6_dy, form, ha="center", fontsize=FS_ANNOT + 1,
+              fontweight="bold", color=C_FUN, clip_on=False)
+    ax6b.text(5.0, 3.6 - _s6_dy, detail, ha="center", va="center",
+              fontsize=FS_ANNOT, clip_on=False)
 
 
 ax_c = fig6.add_axes([0.30, 0.05, 0.40, 0.04])

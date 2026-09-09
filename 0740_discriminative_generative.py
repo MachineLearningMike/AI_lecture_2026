@@ -12,6 +12,7 @@ Sketch:
   5. Create a model that can create a new cat image.
   6. What if a discriminative model D often fails?
      Train G on situations where D works; if G says "I don't know," don't trust D.
+  7. Zoom-in: pigs vs ants -- a thin decision rule is not a world model.
 """
 
 import matplotlib.pyplot as plt
@@ -684,6 +685,89 @@ show_maximized(fig6)
 
 
 # -------------------------------------------------------
+# FIGURE 7: Zoom-in -- pigs vs ants
+# -------------------------------------------------------
+fig7, ax7 = new_figure()
+fig7.suptitle(
+    'Step 7: Zoom-in on discriminative vs generative',
+    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+)
+blank_slide(ax7)
+
+round_box(ax7, 0.4, 6.55, 11.2, 1.15, C_DARK, C_DARK, lw=0)
+ax7.text(
+    6.0, 7.1,
+    'Features: appearance, place, color, weight.  Task: tell pigs from ants.',
+    ha='center', va='center', fontsize=FS_ANNOT + 1,
+    fontweight='bold', color='#f9e79f',
+)
+
+# Discriminative shortcut
+round_box(ax7, 0.4, 3.85, 5.5, 2.45, C_OLD, '#e67e22', lw=2.2)
+ax7.text(3.15, 5.85, 'Discriminative shortcut', ha='center',
+         fontsize=FS_ANNOT, fontweight='bold', color='#a04000')
+ax7.text(
+    3.15, 4.75,
+    'A thin rule may suffice:\n'
+    'weight > 1 kg  =>  "pig"\n'
+    'otherwise       =>  "ant"\n\n'
+    'Appearance, place, and color\n'
+    'can be ignored for this task.',
+    ha='center', va='center', fontsize=FS_TICK + 1,
+)
+
+# Contaminated sets
+round_box(ax7, 6.1, 3.85, 5.5, 2.45, C_MUTE, '0.45', lw=1.8)
+ax7.text(8.85, 5.85, 'What the labels secretly mean', ha='center',
+         fontsize=FS_ANNOT, fontweight='bold', color=C_DARK)
+ax7.text(
+    8.85, 4.75,
+    'Hidden "set of pigs": every heavy thing --\n'
+    'true pigs, plus rocks, laptops, ...\n\n'
+    'Hidden "set of ants": the remainder --\n'
+    'true ants, plus leaves, crumbs, ...\n\n'
+    'The world was split by a boundary,\n'
+    'not by two true animal worlds.',
+    ha='center', va='center', fontsize=FS_TICK + 1,
+)
+
+# Generate from D fails
+round_box(ax7, 0.4, 1.85, 5.5, 1.75, '#f8d7da', C_ACCENT, lw=2.0)
+ax7.text(3.15, 3.2, 'Ask D to "make a pig"', ha='center',
+         fontsize=FS_TICK + 1, fontweight='bold', color=C_ACCENT)
+ax7.text(
+    3.15, 2.4,
+    'It samples its pig-labeled set.\n'
+    'A brick that weighs 2 kg qualifies.\n'
+    'Discrimination succeeded; creation failed.',
+    ha='center', va='center', fontsize=FS_TICK + 1,
+)
+
+# True generative
+round_box(ax7, 6.1, 1.85, 5.5, 1.75, C_GOAL, C_OK, lw=2.2)
+ax7.text(8.85, 3.2, 'Train G on the true pig world', ha='center',
+         fontsize=FS_TICK + 1, fontweight='bold', color=C_OK)
+ax7.text(
+    8.85, 2.4,
+    'G models the joint of features that\n'
+    'real pigs actually take. Non-pigs are\n'
+    'the remainder -- learned for free.',
+    ha='center', va='center', fontsize=FS_TICK + 1,
+)
+
+round_box(ax7, 0.4, 0.25, 11.2, 1.4, C_NEW, '#2874a6', lw=2.0)
+ax7.text(
+    6.0, 0.95,
+    'Generate what?  Some realistic feature values --\n'
+    'a plausible (appearance, place, color, weight), not merely a label or a weight threshold.\n'
+    'Even a model that invents only a believable pig weight (let alone look and color) is generative.',
+    ha='center', va='center', fontsize=FS_TICK + 1, fontweight='bold',
+    color=C_DARK,
+)
+show_maximized(fig7)
+
+
+# -------------------------------------------------------
 # KEY INSIGHTS
 # -------------------------------------------------------
 print("\n" + "=" * 60)
@@ -719,6 +803,13 @@ Step 6 -- when D often fails:
   Train G on situations where D works well.
   If G says "I don't know this situation," do not trust D there.
   G becomes a gate that reduces D's failures outside its comfort zone.
+
+Step 7 -- zoom-in (pigs vs ants):
+  A discriminative rule may use weight alone: >1 kg => pig, else ant.
+  Its "pig set" is contaminated (anything heavy); the remainder is "ants."
+  Sampling that set to "generate a pig" can yield a brick.
+  A generative model learns the true pig feature world; non-pigs are the
+  remainder. Generating means producing some realistic feature values.
 
 See also: 0340_normalize_data.py Steps 10-11 (normalize; why N(0,1)).
 """)

@@ -17,14 +17,14 @@ from datetime import date
 FS_FIGURE_TITLE = 24
 FS_AX_TITLE = 18
 FS_AXIS = 14
-FS_TICK = 12
+FS_TICK = 14
 FS_ANNOT = 14
-FS_LEGEND = 12
+FS_LEGEND = 14
 
 # Footer on every Step figure (shown via show_maximized -> add_step_footer)
 FS_FOOTER = 9
 FOOTER_COLOR = "0.45"
-FOOTER_TEMPLATE = "Directed by Mike. Powered by Grok. Presented on {date}."
+FOOTER_TEMPLATE = "DL/RL Basics. CCH. {date}."
 # Placement: "bottom" (horizontal, centered) or "left" (vertical along left edge)
 FOOTER_PLACEMENT = "left"
 

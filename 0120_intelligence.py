@@ -10,6 +10,7 @@ Sketch (refined):
   4. AI seeks right choices for a given goal.
   5. AI vs other sciences/tech: who does the choosing.
   6. More on intelligence in the sessions ahead.
+  7. Consciousness: matter and consciousness; felt experience as the frontier; open questions.
 """
 
 import matplotlib.pyplot as plt
@@ -363,6 +364,90 @@ show_maximized(fig6)
 
 
 # -------------------------------------------------------
+# FIGURE 7: Consciousness
+# -------------------------------------------------------
+fig7, ax7 = new_figure()
+fig7.suptitle(
+    'Step 7: Consciousness',
+    fontsize=FS_FIGURE_TITLE, fontweight='bold',
+)
+blank_slide(ax7)
+
+# Two ingredients
+round_box(ax7, 0.5, 6.35, 5.35, 1.15, C_OLD, '#e67e22', lw=2.0)
+ax7.text(3.175, 6.925, 'Matter', ha='center', va='center',
+         fontsize=FS_AX_TITLE - 2, fontweight='bold', color='#a04000')
+
+round_box(ax7, 6.15, 6.35, 5.35, 1.15, C_NEW, '#2874a6', lw=2.0)
+ax7.text(8.825, 6.925, 'Consciousness', ha='center', va='center',
+         fontsize=FS_AX_TITLE - 2, fontweight='bold', color=C_DARK)
+
+ax7.text(
+    6.0, 5.95,
+    'A convenient view: two interacting fundamental ingredients.',
+    ha='center', va='center', fontsize=FS_ANNOT, color='#333333',
+)
+
+# What consciousness is / frontier
+round_box(ax7, 0.5, 3.85, 5.35, 1.85, C_MUTE, '0.45', lw=1.8)
+ax7.text(3.175, 5.3, 'Consciousness is \u2026', ha='center', va='center',
+         fontsize=FS_AX_TITLE - 3, fontweight='bold', color='#333333')
+ax7.text(
+    3.175, 4.45,
+    'We leave what it is open.\n'
+    'Not settled in this course.',
+    ha='center', va='center', fontsize=FS_ANNOT,
+)
+
+round_box(ax7, 6.15, 3.85, 5.35, 1.85, C_GOAL, C_OK, lw=2.2)
+ax7.text(8.825, 5.3, 'Frontier in contact with others',
+         ha='center', va='center',
+         fontsize=FS_AX_TITLE - 4, fontweight='bold', color=C_OK)
+ax7.text(
+    8.825, 4.45,
+    'Felt experience:\n'
+    'feeling / experiencing\n'
+    'subjectively -- what it is like.',
+    ha='center', va='center', fontsize=FS_ANNOT - 1,
+)
+
+# Stone / robot thought experiment
+round_box(ax7, 0.5, 2.05, 11.0, 1.55, C_WARN, C_ACCENT, lw=2.0)
+ax7.text(
+    6.0, 3.2,
+    'A stone or smart robot rolls downhill, hits a rock hard, and scatters.',
+    ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
+    color='#922b21',
+)
+ax7.text(
+    6.0, 2.45,
+    'We do not ask "Are you OK?" or feel sympathy --\n'
+    'we believe it does not feel what it is like to hit.',
+    ha='center', va='center', fontsize=FS_ANNOT, color='#641e16',
+)
+
+# Beliefs + open questions
+beliefs = [
+    (0.5, 0.2, 3.5, 1.65, 'No feeling, no knowing?',
+     'If it cannot feel,\ncan it understand and know?'),
+    (4.25, 0.2, 3.5, 1.65, 'Feelings can reflect truth',
+     'A person\'s feelings\nmay reflect the truth.'),
+    (8.0, 0.2, 3.5, 1.65, 'Open questions',
+     'Can machines have consciousness?\n'
+     'Are we conscious machines\n'
+     'simulated by intelligent giants?'),
+]
+for x, y, w, h, title, body in beliefs:
+    round_box(ax7, x, y, w, h, C_DARK, C_DARK, lw=0)
+    ax7.text(x + w / 2, y + h - 0.28, title, ha='center', va='top',
+             fontsize=FS_ANNOT, fontweight='bold', color='#f9e79f')
+    ax7.text(x + w / 2, y + 0.55, body, ha='center', va='center',
+             fontsize=FS_ANNOT - 2, color='#d6eaf8')
+
+show_maximized(fig7)
+
+
+# -------------------------------------------------------
 # KEY INSIGHTS
 # -------------------------------------------------------
 print("\n" + "=" * 60)
@@ -391,4 +476,17 @@ AI vs other science & tech (Step 5):
 
 Next (Step 6):
   Later sessions develop goals, learning, and systems that choose.
+
+Consciousness (Step 7):
+  Convenient dual view: matter and consciousness as two
+  interacting fundamental ingredients.
+  Consciousness itself is left open ("..."); its frontier in
+  contact with others is felt experience -- feeling / experiencing
+  subjectively (what it is like).
+  We withhold sympathy from a stone or smart robot that scatters
+  on impact because we believe it does not feel what it is like to hit.
+  Common beliefs: without feeling, no understanding and knowing;
+  a person's feelings can reflect the truth.
+  Open: Can machines have consciousness?
+  Are we conscious machines simulated by intelligent giants?
 """)

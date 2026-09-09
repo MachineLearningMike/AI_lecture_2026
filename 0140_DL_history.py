@@ -119,6 +119,15 @@ C_BIN = "#d68910"
 C_GRAY = "#85929e"
 C_ACTIVE = "#f9e79f"
 
+# Approximate data-units per cm on lecture axes (measured for screen_figsize).
+# blank_slide (0..12 x, 0..8 y): ~22.5cm x 11.9cm
+CM_X = 0.533
+CM_Y = 0.673
+# Two-panel Step 5 left axis (0..10 y): ~11.1cm tall
+CM_Y_STEP5 = 0.899
+# Two-panel Step 7 axis (0..12 y): ~11.9cm tall
+CM_Y_STEP7 = 1.009
+
 
 # -------------------------------------------------------
 # FIGURE 0: Full list first
@@ -130,37 +139,47 @@ fig0.suptitle(
 )
 blank_slide(ax0)
 
+_s1_dy = 2 * CM_Y          # move content down 2cm
+_s1_dh = 1 * CM_Y          # shrink box height 1cm (tighten lead/body gap)
+_s1_h = 3.3 - _s1_dh       # ~2.63
+_s1_y_top = 5.55 - _s1_dy  # ~4.20
+_s1_y_bot = 1.55 - _s1_dy  # ~0.20
+
+
 problems_list = [
-    (0.35, 5.55, "2012+",
+    (0.35, _s1_y_top, "2012+",
      "Image classification\nObject detection\nFace recognition"),
-    (3.25, 5.55, "2013+",
+    (3.25, _s1_y_top, "2013+",
      "Speech recognition\nSpeech synthesis\nAtari / game control"),
-    (6.15, 5.55, "2014+",
+    (6.15, _s1_y_top, "2014+",
      "Machine translation\nImage captioning\nImage generation (GAN)"),
-    (9.05, 5.55, "2016+",
+    (9.05, _s1_y_top, "2016+",
      "Go (AlphaGo)\nSelf-play mastery\nSearch guided by nets"),
-    (0.35, 1.55, "2017+",
+    (0.35, _s1_y_bot, "2017+",
      "Transformers\nLanguage understanding\nNeural TTS quality"),
-    (3.25, 1.55, "2018+",
+    (3.25, _s1_y_bot, "2018+",
      "BERT / GPT era\nPretrained language\nTransfer learning"),
-    (6.15, 1.55, "2020+",
+    (6.15, _s1_y_bot, "2020+",
      "Protein folding\nLarge language models\nText-to-image"),
-    (9.05, 1.55, "2022+",
+    (9.05, _s1_y_bot, "2022+",
      "AI assistants\nCode generation\nWeather / science nets"),
 ]
 for x0, y0, era, body in problems_list:
-    round_box(ax0, x0, y0, 2.7, 3.3, C_GOAL if y0 > 4 else C_NEW,
-              C_OK if y0 > 4 else "#2874a6", lw=1.8)
-    ax0.text(x0 + 1.35, y0 + 2.7, era, ha="center",
+    upper = y0 > 3.0
+    round_box(ax0, x0, y0, 2.7, _s1_h, C_GOAL if upper else C_NEW,
+              C_OK if upper else "#2874a6", lw=1.8)
+    # Lead near top; body kept from bottom -- gap narrows as height shrinks
+    ax0.text(x0 + 1.35, y0 + _s1_h - 0.60, era, ha="center",
              fontsize=FS_ANNOT, fontweight="bold",
-             color=C_OK if y0 > 4 else "#2874a6")
-    ax0.text(x0 + 1.35, y0 + 1.3, body, ha="center", va="center",
+             color=C_OK if upper else "#2874a6")
+    ax0.text(x0 + 1.35, y0 + 1.30, body, ha="center", va="center",
              fontsize=FS_TICK + 1)
 
 ax0.text(
-    6.0, 0.55,
+    6.0, 0.08 - CM_Y,  # bottom caption down 1cm
     "Next slides: why these count as breakthroughs -- and how to credit them carefully.",
     ha="center", fontsize=FS_ANNOT, fontweight="bold", color=C_DARK,
+    clip_on=False,
 )
 show_maximized(fig0)
 
@@ -236,31 +255,49 @@ era_recent = [
 
 
 def _draw_band(y_spine, items, face, edge, recent=False):
+    # Shorten stems from axis to cards by ~2cm (leave a small stub).
+    lead_up = max(0.20, 1.15 - 2 * CM_Y)
+    lead_dn = max(0.20, 0.70 - 2 * CM_Y)
+    box_h = 1.85
     n = len(items)
     xs = np.linspace(1.0, 11.0, n)
-    ax2.plot([0.7, 11.3], [y_spine, y_spine], color=C_DARK, lw=2.6, zorder=1)
+    ax2.plot([0.7, 11.3], [y_spine, y_spine], color=C_DARK, lw=2.6,
+             zorder=1, clip_on=False)
     for i, ((year, name, note), x) in enumerate(zip(items, xs)):
         up = i % 2 == 0
-        y_box = y_spine + 1.15 if up else y_spine - 2.55
-        stem_end = y_box if up else y_box + 1.85
+        y_box = y_spine + lead_up if up else y_spine - lead_dn - box_h
+        stem_end = y_box if up else y_box + box_h
         ax2.scatter([x], [y_spine], s=55,
-                    c=C_ACCENT if recent else C_FUN, zorder=3)
-        ax2.plot([x, x], [y_spine, stem_end], color="0.55", lw=1.1)
-        round_box(ax2, x - 0.62, y_box, 1.24, 1.85, face, edge, lw=1.4)
+                    c=C_ACCENT if recent else C_FUN, zorder=3, clip_on=False)
+        ax2.plot([x, x], [y_spine, stem_end], color="0.55", lw=1.1,
+                 clip_on=False)
+        patch = round_box(ax2, x - 0.62, y_box, 1.24, box_h, face, edge, lw=1.4)
+        patch.set_clip_on(False)
         ax2.text(x, y_box + 1.42, str(year), ha="center",
-                 fontsize=FS_TICK - 2, fontweight="bold", color=C_DARK)
+                 fontsize=FS_TICK - 2, fontweight="bold", color=C_DARK,
+                 clip_on=False)
         ax2.text(x, y_box + 0.95, name, ha="center",
-                 fontsize=7, fontweight="bold")
-        ax2.text(x, y_box + 0.35, note, ha="center", va="center", fontsize=6.5)
+                 fontsize=9, fontweight="bold", clip_on=False)
+        ax2.text(x, y_box + 0.35, note, ha="center", va="center", fontsize=8,
+                 clip_on=False)
 
 
-ax2.text(0.4, 7.35, "2012 -- 2018", ha="left", fontsize=FS_ANNOT,
-         fontweight="bold", color="#2874a6")
-_draw_band(6.35, era_early, C_NEW, "#2874a6", recent=False)
+# 1st axis: up 0.5in then down 1in; 2nd axis: down 0.5in then down 1cm.
+_s3_half_in = 0.5 * 2.54 * CM_Y
+_s3_y1 = 6.35 + _s3_half_in - 1.0 * 2.54 * CM_Y
+_s3_y2 = 2.55 - _s3_half_in - 1.0 * CM_Y
+# Era labels net left 1in from 0.4 (left 2in, then right 1in); down 2cm.
+_s3_label_x = 0.4 - 1.0 * 2.54 * CM_X
+_s3_label_dy = 2.0 * CM_Y
+ax2.text(_s3_label_x, _s3_y1 + 1.0 - _s3_label_dy, "2012 -- 2018", ha="left",
+         fontsize=FS_ANNOT, fontweight="bold", color="#2874a6",
+         clip_on=False)
+_draw_band(_s3_y1, era_early, C_NEW, "#2874a6", recent=False)
 
-ax2.text(0.4, 3.55, "2019 -- 2026", ha="left", fontsize=FS_ANNOT,
-         fontweight="bold", color=C_ACCENT)
-_draw_band(2.55, era_recent, C_GOAL, C_OK, recent=True)
+ax2.text(_s3_label_x, _s3_y2 + 1.0 - _s3_label_dy, "2019 -- 2026", ha="left",
+         fontsize=FS_ANNOT, fontweight="bold", color=C_ACCENT,
+         clip_on=False)
+_draw_band(_s3_y2, era_recent, C_GOAL, C_OK, recent=True)
 show_maximized(fig2)
 
 
@@ -330,9 +367,14 @@ def draw_kind(k):
     ax4a.clear(); ax4b.clear()
     k = int(np.clip(k, 0, 4))
     ax4a.set_xlim(0, 10); ax4a.set_ylim(0, 10); ax4a.axis("off")
-    ax4a.set_title("kind of hardness", fontsize=FS_AX_TITLE - 2, fontweight="bold")
+    # Left panel: down 2cm, then up 1cm.
+    _s5_dy = 2 * CM_Y_STEP5 - 1 * CM_Y_STEP5
+    _s5_y0 = 8.2 - _s5_dy
+    ax4a.text(5.0, _s5_y0 + 1.25 + 0.40, "kind of hardness",
+              ha="center", va="center",
+              fontsize=FS_AX_TITLE - 2, fontweight="bold", color=C_DARK)
     for i in range(5):
-        y = 8.2 - i * 1.5
+        y = _s5_y0 - i * 1.5
         face = C_ACTIVE if i == k else C_MUTE
         edge = C_ACCENT if i == k else "0.55"
         round_box(ax4a, 0.6, y, 8.8, 1.25, face, edge, lw=2.0 if i == k else 1.3)
@@ -396,28 +438,27 @@ fig5.suptitle(
 )
 blank_slide(ax5)
 
+_s6_w = 5.4 + 3 * CM_X   # extend textbox width by 3cm (~7.0)
+_s6_x = (12.0 - _s6_w) / 2.0
+# Wider cards no longer fit side-by-side; stack them and keep readable heights.
 corr = [
-    (0.4, 4.3, "AlexNet ≠ invention of CNNs",
+    (_s6_x, 5.35, 2.25, "AlexNet ≠ invention of CNNs",
      "LeCun et al. built practical CNNs decades earlier.\n"
      "2012 showed: large CNN + ImageNet + GPU + ReLU/dropout\n"
      "could crush the old vision pipeline."),
-    (0.4, 0.5, "AlphaGo ≠ \"just a neural net\"",
+    (_s6_x, 2.85, 2.25, "AlphaGo ≠ \"just a neural net\"",
      "Policy/value nets + RL + Monte Carlo tree search.\n"
      "Deep learning learned how to guide search."),
-    (6.2, 2.4, "AlphaFold ≠ one inventor",
+    (_s6_x, 0.35, 2.25, "AlphaFold ≠ one inventor",
      "Jumper & Hassabis led; Evans, Senior and a large\n"
      "DeepMind team built architecture, data, inference.\n"
      "Credit the team, not a slogan."),
 ]
-for x0, y0, title, body in corr:
-    w = 5.4 if x0 < 5 else 5.4
-    h = 3.2 if y0 > 2 else 3.4
-    if title.startswith("AlphaFold"):
-        h = 4.8
-    round_box(ax5, x0, y0, w, h, C_MUTE, C_DARK, lw=1.8)
-    ax5.text(x0 + w / 2, y0 + h - 0.55, title, ha="center",
+for x0, y0, h, title, body in corr:
+    round_box(ax5, x0, y0, _s6_w, h, C_MUTE, C_DARK, lw=1.8)
+    ax5.text(x0 + _s6_w / 2, y0 + h - 0.40, title, ha="center",
              fontsize=FS_ANNOT, fontweight="bold", color=C_DARK)
-    ax5.text(x0 + w / 2, y0 + h / 2 - 0.2, body, ha="center", va="center",
+    ax5.text(x0 + _s6_w / 2, y0 + h / 2 - 0.15, body, ha="center", va="center",
              fontsize=FS_TICK + 1)
 show_maximized(fig5)
 
@@ -431,9 +472,13 @@ fig6.suptitle(
     fontsize=FS_FIGURE_TITLE - 2, fontweight="bold",
 )
 
+_s7_dy = 2 * CM_Y_STEP7  # move both panels down by 2cm
+_s7_title_up = 1.0 * 2.54 * CM_Y_STEP7  # panel titles up 1 inch
+_s7_title_y = 11.55 - _s7_dy + _s7_title_up - 2.0 * CM_Y_STEP7  # then down 2cm
 axes6[0].set_xlim(0, 10); axes6[0].set_ylim(0, 12); axes6[0].axis("off")
-axes6[0].set_title("Enabling breakthroughs", fontsize=FS_AX_TITLE - 2,
-                   fontweight="bold", color="#2874a6")
+axes6[0].text(5.0, _s7_title_y, "Enabling breakthroughs",
+              ha="center", va="center", fontsize=FS_AX_TITLE - 2,
+              fontweight="bold", color="#2874a6", clip_on=False)
 enablers = [
     "1943  McCulloch & Pitts — neuron",
     "1958  Rosenblatt — perceptron",
@@ -445,14 +490,17 @@ enablers = [
     "2014  Goodfellow et al. — GANs",
     "2017  Vaswani et al. — Transformer",
 ]
+# Slightly tighter stride so the shifted list still clears y=0.
+_s7_step_e = min(1.1, (10.5 - _s7_dy - 0.20) / (len(enablers) - 1))
 for i, line in enumerate(enablers):
-    y = 10.5 - i * 1.1
+    y = 10.5 - _s7_dy - i * _s7_step_e
     round_box(axes6[0], 0.4, y, 9.2, 0.95, C_NEW, "#2874a6", lw=1.3)
     axes6[0].text(5.0, y + 0.45, line, ha="center", va="center", fontsize=FS_TICK)
 
 axes6[1].set_xlim(0, 10); axes6[1].set_ylim(0, 12); axes6[1].axis("off")
-axes6[1].set_title("Problems subsequently cracked", fontsize=FS_AX_TITLE - 2,
-                   fontweight="bold", color=C_OK)
+axes6[1].text(5.0, _s7_title_y, "Problems subsequently cracked",
+              ha="center", va="center", fontsize=FS_AX_TITLE - 2,
+              fontweight="bold", color=C_OK, clip_on=False)
 cracked = [
     "Handwriting / digit recognition",
     "Image classification & detection",
@@ -465,8 +513,9 @@ cracked = [
     "Code generation & assistants",
     "Competitive weather forecasting",
 ]
+_s7_step_c = min(1.0, (10.7 - _s7_dy - 0.20) / (len(cracked) - 1))
 for i, line in enumerate(cracked):
-    y = 10.7 - i * 1.0
+    y = 10.7 - _s7_dy - i * _s7_step_c
     round_box(axes6[1], 0.4, y, 9.2, 0.88, C_GOAL, C_OK, lw=1.3)
     axes6[1].text(5.0, y + 0.42, line, ha="center", va="center", fontsize=FS_TICK)
 show_maximized(fig6)
@@ -577,9 +626,19 @@ fig10.suptitle(
 )
 
 panels = [
-    (axes10[0], "Learn the shift", "Representation became\nlearnable.", C_NEW, "#2874a6"),
-    (axes10[1], "Credit carefully", "Ideas ≠ last paper.\nTeams matter.", C_GOAL, C_OK),
-    (axes10[2], "Stay unfinished", "Many hard problems\nremain open.\nThat is your job.",
+    (axes10[0], "Learn the shift",
+     "Representation became\nlearnable.",
+     C_NEW, "#2874a6"),
+    (axes10[1], "Credit carefully",
+     "The famous last paper is rarely\n"
+     "the whole invention.\n\n"
+     "Separate enabling ideas from later\n"
+     "scale and systems.\n\n"
+     "Credit the lineage and the team,\n"
+     "not a slogan or a single name.",
+     C_GOAL, C_OK),
+    (axes10[2], "Stay unfinished",
+     "Many hard problems\nremain open.\nThat is your job.",
      "#f5eef8", C_FUN),
 ]
 for ax, title, body, face, edge in panels:

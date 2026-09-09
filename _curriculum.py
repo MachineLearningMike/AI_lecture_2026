@@ -182,6 +182,8 @@ CHAPTERS: list[dict] = [
         "attempt": "Reclassify ImageNet, GPT pretrain, and RLHF in binding terms.",
         "rows": [
             ("Core", "0300_SL_UL_RL.py", "SL / UL / RL + binding climax"),
+            ("Enrichment", "0301_Bellman_equality.py", "Bellman equality intuition"),
+            ("Enrichment", "0302_policy_gradient_methods.py", "REINFORCE / AC / PPO family"),
             ("Core", "0310_regression_classification.py", "Two kinds of prediction questions"),
         ],
     },
@@ -323,6 +325,7 @@ CHAPTERS: list[dict] = [
         "rows": [
             ("Core", "0780_Embedding.py", "Embedding tables"),
             ("Core", "0790_word_vector.py", "Word2Vec intuition"),
+            ("Enrichment", "0941_word_to_vector.py", "Train word2vec / NEG / GloVe"),
             ("Core", "0800_linear_transformation.py", "Linear maps as matrices"),
             ("Core", "0810_dot_inner_scalar_product.py", "Dot product / similarity"),
             ("Core", "0820_softmax.py", "Softmax"),
@@ -361,8 +364,12 @@ CHAPTERS: list[dict] = [
         ),
         "attempt": "Contrast masked pretraining vs next-token pretraining in binding words.",
         "rows": [
+            ("Enrichment", "0941_word_to_vector.py", "Classical word2vec training bridge"),
             ("Core", "0950_BERT.py", "Encoder pretraining + survey"),
             ("Core", "0960_GPT.py", "Decoder LLMs, SFT path"),
+            ("Enrichment", "0961_VAE.py", "VAE training / ELBO + KL + visuals"),
+            ("Enrichment", "0962_GAN.py", "GAN minimax losses + visuals"),
+            ("Enrichment", "0963_Diffusion.py", "Diffusion noise-prediction loss + visuals"),
             ("TODO", "", "RLHF / preference as external binding on top of pretrain"),
         ],
     },

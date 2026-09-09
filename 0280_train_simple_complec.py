@@ -61,7 +61,8 @@ USE_COMPLEX_MODEL = False  # Set to False for simple model, True for complex mod
 torch.manual_seed(42)
 
 N = 1000
-X = torch.randn(N, 1) + 1.0  # inputs centered near 1
+X_org = torch.randn(N, 1) + 1.0  # inputs centered near 1
+X = X_org + 0.1 * torch.rand(N, 1)
 
 # True underlying function (noise-free): y = a * x^p + b
 a, b, power = 2.0, 1.0, 3

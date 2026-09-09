@@ -218,7 +218,7 @@ ax0.text(
 ax0.text(
     6.0, 2.65,
     'Bet on being more human, with irreverent, inexpressible intuition\n'
-    'born from wild truth. Know AI. Build YOU x AI. Surpass AI. Feed AI wisely.',
+    'born from wild truth. Know AI. Build YOU x AI. Feed AI wisely.',
     ha='center', va='center', fontsize=FS_ANNOT + 1,
     fontweight='bold', color='#145a32',
 )
@@ -257,14 +257,14 @@ ax1.text(
 )
 ax1.text(
     6.0, 5.55,
-    'Students do not yet have enough math skill.\n'
-    'Students do not yet have enough AI skill.\n'
-    'And still -- they must deliver AI as soon as possible.',
+    'Students have little math skills.\n'
+    'Students have surface-level AI skills.\n'
+    'And still -- they want to deliver AI as soon as possible.',
     ha='center', va='center', fontsize=FS_ANNOT + 2,
 )
 
 round_box(ax1, 0.6, 1.0, 5.0, 3.0, C_MUTE)
-ax1.text(3.1, 3.5, 'Not enough of', ha='center', fontsize=FS_AX_TITLE - 2,
+ax1.text(3.1, 3.5, 'Little of', ha='center', fontsize=FS_AX_TITLE - 2,
          fontweight='bold')
 ax1.text(
     3.1, 2.3,
@@ -574,7 +574,7 @@ round_box(ax7, 0.6, _box_y, 10.8, _box_h, 'lightyellow', '0.55', lw=1.6)
 ax7.text(
     6.0, _box_y + _box_h / 2,
     'What we teach you today with ease took us years of painful self-study\n'
-    'buried in endless academic papers.',
+    'buried in endless AI literature.',
     ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
 )
 

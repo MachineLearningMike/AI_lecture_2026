@@ -131,17 +131,17 @@ fig1.suptitle(
 )
 
 ax = axes1[0]
-ax.set_xlim(0, 10)
+ax.set_xlim(0, 12.5)
 ax.set_ylim(0, 8)
 ax.axis('off')
 ax.set_title('One architecture, three eras', fontsize=FS_AX_TITLE - 2)
 
-box(ax, 0.5, 5.8, 9.0, 1.5, 'GPT-1 / GPT-2: generative pretrain + fine-tune / zero-shot', '#dceaff')
-box(ax, 0.5, 3.9, 9.0, 1.5, 'GPT-3: in-context learning emerges at scale (few-shot)', '#fff3cd')
-box(ax, 0.5, 2.0, 9.0, 1.5, 'ChatGPT era: SFT + alignment -> helpful assistants', '#d4edda')
+box(ax, 0.5, 5.8, 11.5, 1.5, 'GPT-1 / GPT-2: generative pretrain + fine-tune / zero-shot', '#dceaff')
+box(ax, 0.5, 3.9, 11.5, 1.5, 'GPT-3: in-context learning emerges at scale (few-shot)', '#fff3cd')
+box(ax, 0.5, 2.0, 11.5, 1.5, 'ChatGPT era: SFT + alignment -> helpful assistants', '#d4edda')
 
 ax.text(
-    5.0, 0.7,
+    6.25, 0.7,
     'LLM = Large Language Model: same Transformer idea,\n'
     'pushed to enough parameters + data that new behaviors appear.',
     ha='center', va='center', fontsize=FS_ANNOT,
@@ -203,7 +203,7 @@ ax.text(
     ha='center', va='center', fontsize=FS_ANNOT,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
-box(ax, 2.5, 1.5, 7.0, 1.8,
+box(ax, 1.5, 1.5, 9.0, 1.8,
     'Self-supervised: labels = the text itself\n'
     '(no human annotation needed)',
     '#d4edda')
@@ -506,8 +506,8 @@ txt6 = [
     for i in range(3)
 ]
 hud6 = ax6b.text(
-    0.98, 0.98, '',
-    transform=ax6b.transAxes, ha='right', va='top', fontsize=FS_ANNOT - 1,
+    0.98, 0.02, '',
+    transform=ax6b.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT - 1,
     bbox=dict(boxstyle='round', facecolor='#f7f7ff', alpha=0.95),
 )
 
@@ -835,8 +835,9 @@ txt_hhh = [
     ax10a.text(i, 0.74, '0.70', ha='center', fontsize=FS_ANNOT - 1)
     for i in range(3)
 ]
+_fw10, _fh10 = screen_figsize()
 behavior10 = fig10.text(
-    0.28, 0.20, '',
+    0.28, 0.20 + 0.4 / _fh10, '',
     ha='center', va='top', fontsize=FS_ANNOT - 1,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )

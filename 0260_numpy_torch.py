@@ -101,6 +101,8 @@ C_MUTE = '#f4f6f7'
 C_GOAL = '#d4edda'
 C_OLD = '#fce4d6'
 
+# blank_slide axes ~0..12 x 0..8: ~1cm ≈ 0.673 data units (y)
+CM_Y = 0.673
 
 
 # FIGURE 1: So what are NumPy and Torch?
@@ -183,20 +185,27 @@ ax1.text(
     ha='center', va='center', fontsize=FS_ANNOT + 1,
 )
 
-round_box(ax1, 0.5, 1.0, 11.0, 0.9, 'lightyellow', '0.55', lw=1.6)
+# Bottom two textboxes moved down 1cm.
+_s1_bot_dy = 1.0 * CM_Y
+_s1_y_yellow = 1.0 - _s1_bot_dy
+_s1_y_warn = 0.15 - _s1_bot_dy
+patch_y = round_box(ax1, 0.5, _s1_y_yellow, 11.0, 0.9, 'lightyellow', '0.55', lw=1.6)
+patch_y.set_clip_on(False)
 ax1.text(
-    6.0, 1.45,
+    6.0, _s1_y_yellow + 0.45,
     'Same mental model: operate on whole arrays, not one scalar at a time.\n'
     'NumPy explores and prepares data.  Torch learns from it.',
     ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
+    clip_on=False,
 )
 
-round_box(ax1, 0.5, 0.15, 11.0, 0.7, '#f8d7da', C_ACCENT, lw=1.8)
+patch_w = round_box(ax1, 0.5, _s1_y_warn, 11.0, 0.7, '#f8d7da', C_ACCENT, lw=1.8)
+patch_w.set_clip_on(False)
 ax1.text(
-    6.0, 0.5,
+    6.0, _s1_y_warn + 0.35,
     'Study, independently, the indexing and operations of arrays and tensors.',
     ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
-    color=C_ACCENT,
+    color=C_ACCENT, clip_on=False,
 )
 
 show_maximized(fig1)
