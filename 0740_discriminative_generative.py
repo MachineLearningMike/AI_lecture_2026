@@ -107,6 +107,9 @@ C_MUTE = '#f4f6f7'
 C_GOAL = '#d4edda'
 C_OLD = '#fce4d6'
 
+# blank_slide axes ~0..12 x 0..8: ~1cm ≈ 0.673 data units (y)
+CM_Y = 0.673
+
 
 # -------------------------------------------------------
 # FIGURE 1: Two readings of a distribution
@@ -694,20 +697,42 @@ fig7.suptitle(
 )
 blank_slide(ax7)
 
-round_box(ax7, 0.4, 6.55, 11.2, 1.15, C_DARK, C_DARK, lw=0)
+# Row layout tweaks: row1 up 1cm; row2 taller by 1.5cm; bottom two rows down 1.5cm.
+_s7_row1_up = 1.0 * CM_Y
+_s7_row2_dh = 1.5 * CM_Y
+_s7_bot_down = 1.5 * CM_Y
+
+_s7_y1 = 6.55 + _s7_row1_up
+_s7_h1 = 1.15
+_s7_y2 = 3.85 - _s7_row2_dh          # grow row 2 downward; keep top
+_s7_h2 = 2.45 + _s7_row2_dh
+_s7_y3 = 1.85 - _s7_bot_down
+_s7_h3 = 1.75
+_s7_y4 = 0.25 - _s7_bot_down
+_s7_h4 = 1.4
+
+# Headline/body spacing: left baseline; denser right card gets more air under title.
+_s7_title_from_top = 0.45
+_s7_title_to_body_left = 1.10
+_s7_title_to_body_right = 1.60
+_s7_title_y = _s7_y2 + _s7_h2 - _s7_title_from_top
+_s7_body_y_left = _s7_title_y - _s7_title_to_body_left
+_s7_body_y_right = _s7_title_y - _s7_title_to_body_right
+
+round_box(ax7, 0.4, _s7_y1, 11.2, _s7_h1, C_DARK, C_DARK, lw=0)
 ax7.text(
-    6.0, 7.1,
+    6.0, _s7_y1 + 0.55,
     'Features: appearance, place, color, weight.  Task: tell pigs from ants.',
     ha='center', va='center', fontsize=FS_ANNOT + 1,
-    fontweight='bold', color='#f9e79f',
+    fontweight='bold', color='#f9e79f', clip_on=False,
 )
 
 # Discriminative shortcut
-round_box(ax7, 0.4, 3.85, 5.5, 2.45, C_OLD, '#e67e22', lw=2.2)
-ax7.text(3.15, 5.85, 'Discriminative shortcut', ha='center',
+round_box(ax7, 0.4, _s7_y2, 5.5, _s7_h2, C_OLD, '#e67e22', lw=2.2)
+ax7.text(3.15, _s7_title_y, 'Discriminative shortcut', ha='center',
          fontsize=FS_ANNOT, fontweight='bold', color='#a04000')
 ax7.text(
-    3.15, 4.75,
+    3.15, _s7_body_y_left,
     'A thin rule may suffice:\n'
     'weight > 1 kg  =>  "pig"\n'
     'otherwise       =>  "ant"\n\n'
@@ -716,12 +741,12 @@ ax7.text(
     ha='center', va='center', fontsize=FS_TICK + 1,
 )
 
-# Contaminated sets
-round_box(ax7, 6.1, 3.85, 5.5, 2.45, C_MUTE, '0.45', lw=1.8)
-ax7.text(8.85, 5.85, 'What the labels secretly mean', ha='center',
+# Contaminated sets -- extra space between headline and body
+round_box(ax7, 6.1, _s7_y2, 5.5, _s7_h2, C_MUTE, '0.45', lw=1.8)
+ax7.text(8.85, _s7_title_y, 'What the labels secretly mean', ha='center',
          fontsize=FS_ANNOT, fontweight='bold', color=C_DARK)
 ax7.text(
-    8.85, 4.75,
+    8.85, _s7_body_y_right,
     'Hidden "set of pigs": every heavy thing --\n'
     'true pigs, plus rocks, laptops, ...\n\n'
     'Hidden "set of ants": the remainder --\n'
@@ -732,37 +757,40 @@ ax7.text(
 )
 
 # Generate from D fails
-round_box(ax7, 0.4, 1.85, 5.5, 1.75, '#f8d7da', C_ACCENT, lw=2.0)
-ax7.text(3.15, 3.2, 'Ask D to "make a pig"', ha='center',
-         fontsize=FS_TICK + 1, fontweight='bold', color=C_ACCENT)
+patch3l = round_box(ax7, 0.4, _s7_y3, 5.5, _s7_h3, '#f8d7da', C_ACCENT, lw=2.0)
+patch3l.set_clip_on(False)
+ax7.text(3.15, _s7_y3 + 1.35, 'Ask D to "make a pig"', ha='center',
+         fontsize=FS_TICK + 1, fontweight='bold', color=C_ACCENT, clip_on=False)
 ax7.text(
-    3.15, 2.4,
+    3.15, _s7_y3 + 0.55,
     'It samples its pig-labeled set.\n'
     'A brick that weighs 2 kg qualifies.\n'
     'Discrimination succeeded; creation failed.',
-    ha='center', va='center', fontsize=FS_TICK + 1,
+    ha='center', va='center', fontsize=FS_TICK + 1, clip_on=False,
 )
 
 # True generative
-round_box(ax7, 6.1, 1.85, 5.5, 1.75, C_GOAL, C_OK, lw=2.2)
-ax7.text(8.85, 3.2, 'Train G on the true pig world', ha='center',
-         fontsize=FS_TICK + 1, fontweight='bold', color=C_OK)
+patch3r = round_box(ax7, 6.1, _s7_y3, 5.5, _s7_h3, C_GOAL, C_OK, lw=2.2)
+patch3r.set_clip_on(False)
+ax7.text(8.85, _s7_y3 + 1.35, 'Train G on the true pig world', ha='center',
+         fontsize=FS_TICK + 1, fontweight='bold', color=C_OK, clip_on=False)
 ax7.text(
-    8.85, 2.4,
+    8.85, _s7_y3 + 0.55,
     'G models the joint of features that\n'
     'real pigs actually take. Non-pigs are\n'
     'the remainder -- learned for free.',
-    ha='center', va='center', fontsize=FS_TICK + 1,
+    ha='center', va='center', fontsize=FS_TICK + 1, clip_on=False,
 )
 
-round_box(ax7, 0.4, 0.25, 11.2, 1.4, C_NEW, '#2874a6', lw=2.0)
+patch4 = round_box(ax7, 0.4, _s7_y4, 11.2, _s7_h4, C_NEW, '#2874a6', lw=2.0)
+patch4.set_clip_on(False)
 ax7.text(
-    6.0, 0.95,
+    6.0, _s7_y4 + 0.70,
     'Generate what?  Some realistic feature values --\n'
     'a plausible (appearance, place, color, weight), not merely a label or a weight threshold.\n'
     'Even a model that invents only a believable pig weight (let alone look and color) is generative.',
     ha='center', va='center', fontsize=FS_TICK + 1, fontweight='bold',
-    color=C_DARK,
+    color=C_DARK, clip_on=False,
 )
 show_maximized(fig7)
 
