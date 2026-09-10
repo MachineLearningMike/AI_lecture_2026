@@ -15,6 +15,7 @@ from _config import (
     SCREEN_FRACTION,
     apply_rcparams,
     add_step_footer,
+    run_slide_deck,
 )
 apply_rcparams(plt)
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -173,112 +174,122 @@ X_sorted_np = X_sorted.numpy()
 Y_true_sorted_np = Y_true_sorted.numpy()
 X_grid_np = X_grid.numpy()
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=screen_figsize(), dpi=FIGURE_DPI)
-fig.suptitle(f'Model: {model_name}', fontsize=FS_FIGURE_TITLE, fontweight='bold')
+def build_step_1():
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=screen_figsize(), dpi=FIGURE_DPI)
+    fig.suptitle(f'Model: {model_name}', fontsize=FS_FIGURE_TITLE, fontweight='bold')
 
-ax1.scatter(X_np, Y_np, alpha=0.3, label='Data with noise', color='blue', s=5)
-ax1.plot(X_sorted_np, Y_true_sorted_np, color='green', linewidth=2,
-         label='True function', alpha=0.8)
-ax1.plot(X_grid_np, preds_before, color='red', linewidth=2, label='Model guesses')
-ax1.set_title('Before training (random guesses)', fontsize=FS_AX_TITLE)
-ax1.set_xlabel('X', fontsize=FS_AXIS)
-ax1.set_ylabel('Y', fontsize=FS_AXIS)
-ax1.tick_params(axis='both', labelsize=FS_TICK)
-ax1.legend(fontsize=FS_LEGEND)
-ax1.grid(True, alpha=0.3)
-ax1.set_ylim(-50, 150)
+    ax1.scatter(X_np, Y_np, alpha=0.3, label='Data with noise', color='blue', s=5)
+    ax1.plot(X_sorted_np, Y_true_sorted_np, color='green', linewidth=2,
+             label='True function', alpha=0.8)
+    ax1.plot(X_grid_np, preds_before, color='red', linewidth=2, label='Model guesses')
+    ax1.set_title('Before training (random guesses)', fontsize=FS_AX_TITLE)
+    ax1.set_xlabel('X', fontsize=FS_AXIS)
+    ax1.set_ylabel('Y', fontsize=FS_AXIS)
+    ax1.tick_params(axis='both', labelsize=FS_TICK)
+    ax1.legend(fontsize=FS_LEGEND)
+    ax1.grid(True, alpha=0.3)
+    ax1.set_ylim(-50, 150)
 
-# -------------------------------------------------------
-# 4. TRAIN THE MODEL
-# -------------------------------------------------------
-print("=" * 60)
-print(f"Training {model_name}...")
-print("=" * 60)
+    # -------------------------------------------------------
+    # 4. TRAIN THE MODEL
+    # -------------------------------------------------------
+    print("=" * 60)
+    print(f"Training {model_name}...")
+    print("=" * 60)
 
-model.train()
-losses = []
+    model.train()
+    losses = []
 
-for epoch in range(epochs):
-    predictions = model(X_n)
-    loss = criterion(predictions, Y_n)
+    for epoch in range(epochs):
+        predictions = model(X_n)
+        loss = criterion(predictions, Y_n)
 
-    optimizer.zero_grad()
-    loss.backward()
+        optimizer.zero_grad()
+        loss.backward()
+        if USE_COMPLEX_MODEL:
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+        optimizer.step()
+
+        losses.append(loss.item())
+
+        if (epoch + 1) % max(1, epochs // 10) == 0:
+            print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.6f}')
+
+    # -------------------------------------------------------
+    # 5. PLOT: AFTER TRAINING (Learned Model)
+    # -------------------------------------------------------
+    model.eval()
+    with torch.no_grad():
+        preds_after = denormalize_y(model(X_grid_n)).numpy()
+        preds_data = denormalize_y(model(X_n))
+        mse_vs_true = torch.mean((preds_data - Y_true) ** 2).item()
+        mse_vs_data = torch.mean((preds_data - Y) ** 2).item()
+
+    ax2.scatter(X_np, Y_np, alpha=0.3, label='Data with noise', color='blue', s=5)
+    ax2.plot(X_sorted_np, Y_true_sorted_np, color='green', linewidth=2,
+             label='True function', alpha=0.8)
+    ax2.plot(X_grid_np, preds_after, color='red', linewidth=2, label='Model predictions')
+    ax2.set_title('After training', fontsize=FS_AX_TITLE)
+    ax2.set_xlabel('X', fontsize=FS_AXIS)
+    ax2.set_ylabel('Y', fontsize=FS_AXIS)
+    ax2.tick_params(axis='both', labelsize=FS_TICK)
+    ax2.legend(fontsize=FS_LEGEND)
+    ax2.grid(True, alpha=0.3)
+    ax2.set_ylim(-50, 150)
+
+    ax2.text(
+        0.05, 0.95, f'True: Y = {a:.1f}X^{power} + {b:.1f}',
+        transform=ax2.transAxes, fontsize=FS_ANNOT, verticalalignment='top',
+        bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.8),
+    )
+
     if USE_COMPLEX_MODEL:
-        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-    optimizer.step()
+        ax2.text(
+            0.05, 0.82, 'Complex model\n(4 layers, ReLU + Tanh)',
+            transform=ax2.transAxes, fontsize=FS_ANNOT, verticalalignment='top',
+            bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.8),
+        )
+    else:
+        slope, intercept = linear_params_in_original_space(model)
+        ax2.text(
+            0.05, 0.82, f'Pred: Y = {slope:.2f}X + {intercept:.2f}',
+            transform=ax2.transAxes, fontsize=FS_ANNOT, verticalalignment='top',
+            bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.8),
+        )
 
-    losses.append(loss.item())
+    plt.tight_layout()
+    return fig
 
-    if (epoch + 1) % max(1, epochs // 10) == 0:
-        print(f'Epoch [{epoch + 1}/{epochs}], Loss: {loss.item():.6f}')
-
-# -------------------------------------------------------
-# 5. PLOT: AFTER TRAINING (Learned Model)
-# -------------------------------------------------------
-model.eval()
-with torch.no_grad():
-    preds_after = denormalize_y(model(X_grid_n)).numpy()
-    preds_data = denormalize_y(model(X_n))
-    mse_vs_true = torch.mean((preds_data - Y_true) ** 2).item()
-    mse_vs_data = torch.mean((preds_data - Y) ** 2).item()
-
-ax2.scatter(X_np, Y_np, alpha=0.3, label='Data with noise', color='blue', s=5)
-ax2.plot(X_sorted_np, Y_true_sorted_np, color='green', linewidth=2,
-         label='True function', alpha=0.8)
-ax2.plot(X_grid_np, preds_after, color='red', linewidth=2, label='Model predictions')
-ax2.set_title('After training', fontsize=FS_AX_TITLE)
-ax2.set_xlabel('X', fontsize=FS_AXIS)
-ax2.set_ylabel('Y', fontsize=FS_AXIS)
-ax2.tick_params(axis='both', labelsize=FS_TICK)
-ax2.legend(fontsize=FS_LEGEND)
-ax2.grid(True, alpha=0.3)
-ax2.set_ylim(-50, 150)
-
-ax2.text(
-    0.05, 0.95, f'True: Y = {a:.1f}X^{power} + {b:.1f}',
-    transform=ax2.transAxes, fontsize=FS_ANNOT, verticalalignment='top',
-    bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.8),
-)
-
-if USE_COMPLEX_MODEL:
-    ax2.text(
-        0.05, 0.82, 'Complex model\n(4 layers, ReLU + Tanh)',
-        transform=ax2.transAxes, fontsize=FS_ANNOT, verticalalignment='top',
-        bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.8),
-    )
-else:
-    slope, intercept = linear_params_in_original_space(model)
-    ax2.text(
-        0.05, 0.82, f'Pred: Y = {slope:.2f}X + {intercept:.2f}',
-        transform=ax2.transAxes, fontsize=FS_ANNOT, verticalalignment='top',
-        bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.8),
-    )
-
-plt.tight_layout()
-show_maximized(fig)
 
 # -------------------------------------------------------
 # 6. PLOT: TRAINING LOSS CURVE
 # -------------------------------------------------------
-fig_loss, ax_loss = plt.subplots(1, 1, figsize=screen_figsize(), dpi=FIGURE_DPI)
-ax_loss.plot(losses, color='blue', linewidth=2)
-ax_loss.set_title(
-    f'Training loss over time ({model_name})',
-    fontsize=FS_AX_TITLE,
-)
-ax_loss.set_xlabel('Epoch', fontsize=FS_AXIS)
-ax_loss.set_ylabel('Normalized MSE loss', fontsize=FS_AXIS)
-ax_loss.tick_params(axis='both', labelsize=FS_TICK)
-ax_loss.grid(True, alpha=0.3)
-if USE_COMPLEX_MODEL:
-    ax_loss.set_yscale('log')
-plt.tight_layout()
-show_maximized(fig_loss)
+def build_step_2():
+    fig_loss, ax_loss = plt.subplots(1, 1, figsize=screen_figsize(), dpi=FIGURE_DPI)
+    ax_loss.plot(losses, color='blue', linewidth=2)
+    ax_loss.set_title(
+        f'Training loss over time ({model_name})',
+        fontsize=FS_AX_TITLE,
+    )
+    ax_loss.set_xlabel('Epoch', fontsize=FS_AXIS)
+    ax_loss.set_ylabel('Normalized MSE loss', fontsize=FS_AXIS)
+    ax_loss.tick_params(axis='both', labelsize=FS_TICK)
+    ax_loss.grid(True, alpha=0.3)
+    if USE_COMPLEX_MODEL:
+        ax_loss.set_yscale('log')
+    plt.tight_layout()
+    return fig_loss
+
 
 # -------------------------------------------------------
 # 7. FINAL RESULTS
 # -------------------------------------------------------
+
+run_slide_deck([
+    build_step_1,
+    build_step_2,
+])
+
 print("\n" + "=" * 60)
 print("TRAINING COMPLETE")
 print("=" * 60)

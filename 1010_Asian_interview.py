@@ -25,6 +25,7 @@ from _config import (
     SCREEN_FRACTION,
     apply_rcparams,
     add_step_footer,
+    run_slide_deck,
 )
 apply_rcparams(plt)
 from matplotlib.patches import FancyBboxPatch
@@ -770,56 +771,58 @@ def draw_qa_slide(step_no: int, section: str, question: str,
 # -------------------------------------------------------
 # Step 0
 # -------------------------------------------------------
-fig0, ax0 = new_figure()
-fig0.suptitle(
-    'Step 0: Two voices per question -- Native vs Asian English',
-    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
-)
-blank_slide(ax0)
+def build_step_1():
+    fig0, ax0 = new_figure()
+    fig0.suptitle(
+        'Step 0: Two voices per question -- Native vs Asian English',
+        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    )
+    blank_slide(ax0)
 
-round_box(ax0, 0.4, 6.25, 11.2, 1.35, C_DARK, C_DARK, lw=0)
-ax0.text(
-    6.0, 6.9,
-    'Left = how a native might say it.\n'
-    'Right = Asian English with more noise / grammar errors -- your practice target.',
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-    fontweight='bold', color='white',
-)
+    round_box(ax0, 0.4, 6.25, 11.2, 1.35, C_DARK, C_DARK, lw=0)
+    ax0.text(
+        6.0, 6.9,
+        'Left = how a native might say it.\n'
+        'Right = Asian English with more noise / grammar errors -- your practice target.',
+        ha='center', va='center', fontsize=FS_ANNOT + 1,
+        fontweight='bold', color='white',
+    )
 
-cards = [
-    (0.4, 3.35, C_NATIVE, C_OK, 'Native panel',
-     'Clean articles, tense, agreement.\n'
-     'Same technical idea.\n'
-     'Use only as a reference,\n'
-     'not as something to fake-fluently recite.'),
-    (4.2, 3.35, C_ASIAN, '#d68910', 'Asian panel',
-     'Missing a/the, topic-comment,\n'
-     'verb forms, soft stops.\n'
-     'More noise on purpose.\n'
-     '«...» -> [*k] marks twists.'),
-    (8.0, 3.35, C_GOAL, C_OK, 'Practice rule',
-     'Read Q.\n'
-     'Glance at Asian skeleton.\n'
-     'Speak 15-25 seconds.\n'
-     'Stop. Do not polish into essay English.'),
-]
-for x, y, face, edge, title, body in cards:
-    round_box(ax0, x, y, 3.5, 2.55, face, edge, lw=2.0)
-    ax0.text(x + 1.75, y + 2.1, title, ha='center',
-             fontsize=FS_ANNOT + 1, fontweight='bold', color=edge)
-    ax0.text(x + 1.75, y + 0.95, body, ha='center', va='center',
-             fontsize=FS_ANNOT)
+    cards = [
+        (0.4, 3.35, C_NATIVE, C_OK, 'Native panel',
+         'Clean articles, tense, agreement.\n'
+         'Same technical idea.\n'
+         'Use only as a reference,\n'
+         'not as something to fake-fluently recite.'),
+        (4.2, 3.35, C_ASIAN, '#d68910', 'Asian panel',
+         'Missing a/the, topic-comment,\n'
+         'verb forms, soft stops.\n'
+         'More noise on purpose.\n'
+         '«...» -> [*k] marks twists.'),
+        (8.0, 3.35, C_GOAL, C_OK, 'Practice rule',
+         'Read Q.\n'
+         'Glance at Asian skeleton.\n'
+         'Speak 15-25 seconds.\n'
+         'Stop. Do not polish into essay English.'),
+    ]
+    for x, y, face, edge, title, body in cards:
+        round_box(ax0, x, y, 3.5, 2.55, face, edge, lw=2.0)
+        ax0.text(x + 1.75, y + 2.1, title, ha='center',
+                 fontsize=FS_ANNOT + 1, fontweight='bold', color=edge)
+        ax0.text(x + 1.75, y + 0.95, body, ha='center', va='center',
+                 fontsize=FS_ANNOT)
 
-round_box(ax0, 0.4, 0.35, 11.2, 2.65, C_OLD, '#e67e22', lw=2.0)
-ax0.text(
-    6.0, 1.65,
-    'Why two versions?\n'
-    'Fluency can sound AI-copied in an interview.\n'
-    'Clear ideas in irregular English can sound real -- and still technically sharp.\n\n'
-    'Paradox: do not chase native fluency first. Chase clear thinking in speakable English.',
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-)
-show_maximized(fig0)
+    round_box(ax0, 0.4, 0.35, 11.2, 2.65, C_OLD, '#e67e22', lw=2.0)
+    ax0.text(
+        6.0, 1.65,
+        'Why two versions?\n'
+        'Fluency can sound AI-copied in an interview.\n'
+        'Clear ideas in irregular English can sound real -- and still technically sharp.\n\n'
+        'Paradox: do not chase native fluency first. Chase clear thinking in speakable English.',
+        ha='center', va='center', fontsize=FS_ANNOT + 1,
+    )
+    return fig0
+
 
 
 # -------------------------------------------------------
@@ -834,53 +837,61 @@ for i, (section, question, native, asian) in enumerate(BANK, start=1):
 # -------------------------------------------------------
 # Step 51: Emergency phrases -- dual versions
 # -------------------------------------------------------
-figE, axE = new_figure()
-figE.suptitle(
-    'Step 51: Emergency phrases -- Native vs Asian',
-    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
-)
-blank_slide(axE)
+def build_step_2():
+    figE, axE = new_figure()
+    figE.suptitle(
+        'Step 51: Emergency phrases -- Native vs Asian',
+        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    )
+    blank_slide(axE)
 
-pairs = [
-    ('Need time',
-     'Let me think about this for a second.',
-     'Let me think this for one second.'),
-    ('Unclear Q',
-     'Do you mean from the modeling side, or the production side?',
-     'You mean modeling side, or production side?'),
-    ('Stuck',
-     'I know what I want to say, but I need a simpler way to say it.',
-     'I know what I want say, but I need simpler way to say it.'),
-    ('Only intuition',
-     'This is more intuition than something I can prove right now.',
-     'This more intuition than something I can prove right now.'),
-    ('Disagree',
-     'I am not completely convinced by that.',
-     'I am not completely convince by that.'),
-    ('Don\'t know',
-     'I do not know the standard solution. I can tell you how I would investigate it.',
-     'I don\'t know standard solution. I can tell how I would investigate.'),
-]
+    pairs = [
+        ('Need time',
+         'Let me think about this for a second.',
+         'Let me think this for one second.'),
+        ('Unclear Q',
+         'Do you mean from the modeling side, or the production side?',
+         'You mean modeling side, or production side?'),
+        ('Stuck',
+         'I know what I want to say, but I need a simpler way to say it.',
+         'I know what I want say, but I need simpler way to say it.'),
+        ('Only intuition',
+         'This is more intuition than something I can prove right now.',
+         'This more intuition than something I can prove right now.'),
+        ('Disagree',
+         'I am not completely convinced by that.',
+         'I am not completely convince by that.'),
+        ('Don\'t know',
+         'I do not know the standard solution. I can tell you how I would investigate it.',
+         'I don\'t know standard solution. I can tell how I would investigate.'),
+    ]
 
-axE.text(3.05, 7.35, 'Native', ha='center', fontsize=FS_ANNOT + 1,
-         fontweight='bold', color=C_OK)
-axE.text(8.7, 7.35, 'Asian', ha='center', fontsize=FS_ANNOT + 1,
-         fontweight='bold', color='#9a7d0a')
+    axE.text(3.05, 7.35, 'Native', ha='center', fontsize=FS_ANNOT + 1,
+             fontweight='bold', color=C_OK)
+    axE.text(8.7, 7.35, 'Asian', ha='center', fontsize=FS_ANNOT + 1,
+             fontweight='bold', color='#9a7d0a')
 
-for i, (tag, native, asian) in enumerate(pairs):
-    y = 6.35 - i * 0.95
-    round_box(axE, 0.25, y, 1.7, 0.8, C_MUTE, '0.45', lw=1.4)
-    axE.text(1.1, y + 0.4, tag, ha='center', va='center',
-             fontsize=FS_ANNOT - 1, fontweight='bold', color=C_DARK)
-    round_box(axE, 2.05, y, 4.55, 0.8, C_NATIVE, C_OK, lw=1.4)
-    axE.text(4.3, y + 0.4, wrap_block(native, width=36),
-             ha='center', va='center', fontsize=FS_ANNOT - 1, color='#145a32')
-    round_box(axE, 6.75, y, 4.9, 0.8, C_ASIAN, '#d68910', lw=1.4)
-    axE.text(9.2, y + 0.4, wrap_block(asian, width=38),
-             ha='center', va='center', fontsize=FS_ANNOT - 1, color='#6e2c00')
+    for i, (tag, native, asian) in enumerate(pairs):
+        y = 6.35 - i * 0.95
+        round_box(axE, 0.25, y, 1.7, 0.8, C_MUTE, '0.45', lw=1.4)
+        axE.text(1.1, y + 0.4, tag, ha='center', va='center',
+                 fontsize=FS_ANNOT - 1, fontweight='bold', color=C_DARK)
+        round_box(axE, 2.05, y, 4.55, 0.8, C_NATIVE, C_OK, lw=1.4)
+        axE.text(4.3, y + 0.4, wrap_block(native, width=36),
+                 ha='center', va='center', fontsize=FS_ANNOT - 1, color='#145a32')
+        round_box(axE, 6.75, y, 4.9, 0.8, C_ASIAN, '#d68910', lw=1.4)
+        axE.text(9.2, y + 0.4, wrap_block(asian, width=38),
+                 ha='center', va='center', fontsize=FS_ANNOT - 1, color='#6e2c00')
 
-show_maximized(figE)
+    return figE
 
+
+
+
+run_slide_deck([
+    build_step_1,
+    build_step_2,
+])
 
 # -------------------------------------------------------
 # KEY INSIGHTS

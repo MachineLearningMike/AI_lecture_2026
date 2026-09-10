@@ -32,6 +32,7 @@ from _config import (
     SCREEN_FRACTION,
     apply_rcparams,
     add_step_footer,
+    run_slide_deck,
 )
 apply_rcparams(plt)
 import matplotlib.patches as patches
@@ -111,95 +112,99 @@ def dropout(x, p=0.5, training=True, rng=RNG):
 # -------------------------------------------------------
 # FIGURE 1: What dropout does to a hidden layer
 # -------------------------------------------------------
-fig1, axes1 = new_figure(1, 2)
-fig1.suptitle(
-    r'Step 1: During training, randomly drop units (keep prob $p$)',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_1():
+    fig1, axes1 = new_figure(1, 2)
+    fig1.suptitle(
+        r'Step 1: During training, randomly drop units (keep prob $p$)',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-n_units = 12
-h = RNG.normal(size=n_units)
-p_keep = 0.5
-h_drop, mask = dropout(h, p=p_keep, training=True, rng=np.random.default_rng(0))
+    n_units = 12
+    h = RNG.normal(size=n_units)
+    p_keep = 0.5
+    h_drop, mask = dropout(h, p=p_keep, training=True, rng=np.random.default_rng(0))
 
-ax = axes1[0]
-colors = ['seagreen' if m else 'lightgray' for m in mask]
-ax.bar(np.arange(n_units), h, color='steelblue', edgecolor='k', linewidth=0.5)
-ax.axhline(0, color='k', alpha=0.3)
-ax.set_title('Before dropout', fontsize=FS_AX_TITLE)
-ax.set_xlabel('hidden unit', fontsize=FS_AXIS)
-ax.set_ylabel('activation', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-ax.grid(True, axis='y', alpha=0.3)
-ax.text(
-    0.98, 0.02,
-    'Full layer is active.\n'
-    'Units can co-adapt\n'
-    'to each other.',
-    transform=ax.transAxes, va='bottom', ha='right', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
+    ax = axes1[0]
+    colors = ['seagreen' if m else 'lightgray' for m in mask]
+    ax.bar(np.arange(n_units), h, color='steelblue', edgecolor='k', linewidth=0.5)
+    ax.axhline(0, color='k', alpha=0.3)
+    ax.set_title('Before dropout', fontsize=FS_AX_TITLE)
+    ax.set_xlabel('hidden unit', fontsize=FS_AXIS)
+    ax.set_ylabel('activation', fontsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    ax.grid(True, axis='y', alpha=0.3)
+    ax.text(
+        0.98, 0.02,
+        'Full layer is active.\n'
+        'Units can co-adapt\n'
+        'to each other.',
+        transform=ax.transAxes, va='bottom', ha='right', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
 
-ax = axes1[1]
-ax.bar(np.arange(n_units), h_drop, color=colors, edgecolor='k', linewidth=0.5)
-ax.axhline(0, color='k', alpha=0.3)
-ax.set_title(rf'After dropout (p={p_keep:g}), inverted scaling', fontsize=FS_AX_TITLE)
-ax.set_xlabel('hidden unit', fontsize=FS_AXIS)
-ax.set_ylabel('activation', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-ax.grid(True, axis='y', alpha=0.3)
-kept = int(mask.sum())
-ax.text(
-    0.98, 0.02,
-    f'Kept {kept}/{n_units} units.\n'
-    f'Gray = dropped (0).\n'
-    f'Green kept values are\n'
-    f'scaled by 1/p = {1/p_keep:g}.',
-    transform=ax.transAxes, va='bottom', ha='right', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
-)
+    ax = axes1[1]
+    ax.bar(np.arange(n_units), h_drop, color=colors, edgecolor='k', linewidth=0.5)
+    ax.axhline(0, color='k', alpha=0.3)
+    ax.set_title(rf'After dropout (p={p_keep:g}), inverted scaling', fontsize=FS_AX_TITLE)
+    ax.set_xlabel('hidden unit', fontsize=FS_AXIS)
+    ax.set_ylabel('activation', fontsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    ax.grid(True, axis='y', alpha=0.3)
+    kept = int(mask.sum())
+    ax.text(
+        0.98, 0.02,
+        f'Kept {kept}/{n_units} units.\n'
+        f'Gray = dropped (0).\n'
+        f'Green kept values are\n'
+        f'scaled by 1/p = {1/p_keep:g}.',
+        transform=ax.transAxes, va='bottom', ha='right', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
+    )
 
-plt.tight_layout()
-show_maximized(fig1)
+    plt.tight_layout()
+    return fig1
+
 
 
 # -------------------------------------------------------
 # FIGURE 2: Different minibatches = different subnetworks
 # -------------------------------------------------------
-fig2, ax2 = new_figure()
-fig2.suptitle(
-    'Step 2: Each step trains a random subnetwork -- an implicit ensemble',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_2():
+    fig2, ax2 = new_figure()
+    fig2.suptitle(
+        'Step 2: Each step trains a random subnetwork -- an implicit ensemble',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-n_sgd_steps = 10
-masks = np.stack(
-    [np.random.default_rng(s).random(n_units) < p_keep for s in range(n_sgd_steps)],
-    axis=0,
-)
-# show as a binary grid: rows=steps, cols=units
-cmap = ListedColormap(['#d0d0d0', '#2e8b57'])
-im = ax2.imshow(masks.astype(float), aspect='auto', cmap=cmap, vmin=0, vmax=1)
-ax2.set_xlabel('hidden unit', fontsize=FS_AXIS)
-ax2.set_ylabel('training step (minibatch)', fontsize=FS_AXIS)
-ax2.set_title('Green = kept, gray = dropped', fontsize=FS_AX_TITLE)
-ax2.set_yticks(range(n_sgd_steps))
-ax2.set_xticks(range(n_units))
-ax2.tick_params(axis='both', labelsize=FS_TICK)
-ax2.text(
-    0.98, 0.50,
-    'No two steps see the\n'
-    'exact same active set.\n\n'
-    'At test time we average\n'
-    'their behavior by using\n'
-    'the FULL network\n'
-    '(no drops).',
-    transform=ax2.transAxes, va='center', ha='right', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
+    n_sgd_steps = 10
+    masks = np.stack(
+        [np.random.default_rng(s).random(n_units) < p_keep for s in range(n_sgd_steps)],
+        axis=0,
+    )
+    # show as a binary grid: rows=steps, cols=units
+    cmap = ListedColormap(['#d0d0d0', '#2e8b57'])
+    im = ax2.imshow(masks.astype(float), aspect='auto', cmap=cmap, vmin=0, vmax=1)
+    ax2.set_xlabel('hidden unit', fontsize=FS_AXIS)
+    ax2.set_ylabel('training step (minibatch)', fontsize=FS_AXIS)
+    ax2.set_title('Green = kept, gray = dropped', fontsize=FS_AX_TITLE)
+    ax2.set_yticks(range(n_sgd_steps))
+    ax2.set_xticks(range(n_units))
+    ax2.tick_params(axis='both', labelsize=FS_TICK)
+    ax2.text(
+        0.98, 0.50,
+        'No two steps see the\n'
+        'exact same active set.\n\n'
+        'At test time we average\n'
+        'their behavior by using\n'
+        'the FULL network\n'
+        '(no drops).',
+        transform=ax2.transAxes, va='center', ha='right', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
 
-plt.tight_layout()
-show_maximized(fig2)
+    plt.tight_layout()
+    return fig2
+
 
 
 # -------------------------------------------------------
@@ -280,136 +285,148 @@ params_drop, loss_drop = train_mlp(p_keep=0.5, seed=1)
 y_nodrop, _, _ = mlp_forward(x_grid, *params_nodrop, p=1.0, training=False)
 y_drop, _, _ = mlp_forward(x_grid, *params_drop, p=1.0, training=False)
 
-fig3, axes3 = new_figure(1, 2)
-fig3.suptitle(
-    'Step 3: Same MLP -- dropout hurts train fit a bit, helps generalization',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_3():
+    fig3, axes3 = new_figure(1, 2)
+    fig3.suptitle(
+        'Step 3: Same MLP -- dropout hurts train fit a bit, helps generalization',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-ax = axes3[0]
-ax.plot(x_grid, y_true, 'k--', linewidth=2.0, alpha=0.7, label='truth')
-ax.scatter(x_train, y_train, s=45, c='red', zorder=5, edgecolor='k',
-           linewidth=0.4, label='train data')
-ax.plot(x_grid, y_nodrop, color='crimson', linewidth=2.6, label='no dropout')
-ax.plot(x_grid, y_drop, color='royalblue', linewidth=2.6, label=r'dropout $p=0.5$')
-ax.set_title('Learned functions', fontsize=FS_AX_TITLE)
-ax.set_xlabel('x', fontsize=FS_AXIS)
-ax.set_ylabel('y', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-ax.legend(loc='lower right', fontsize=FS_LEGEND, framealpha=0.95)
-ax.text(
-    0.98, 0.98,
-    'Without dropout the net\n'
-    'chases noise wiggles.\n\n'
-    'With dropout it stays\n'
-    'closer to the smooth\n'
-    'truth (stronger bias).',
-    transform=ax.transAxes, ha='right', va='top', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
-)
-ax.grid(True, alpha=0.3)
+    ax = axes3[0]
+    ax.plot(x_grid, y_true, 'k--', linewidth=2.0, alpha=0.7, label='truth')
+    ax.scatter(x_train, y_train, s=45, c='red', zorder=5, edgecolor='k',
+               linewidth=0.4, label='train data')
+    ax.plot(x_grid, y_nodrop, color='crimson', linewidth=2.6, label='no dropout')
+    ax.plot(x_grid, y_drop, color='royalblue', linewidth=2.6, label=r'dropout $p=0.5$')
+    ax.set_title('Learned functions', fontsize=FS_AX_TITLE)
+    ax.set_xlabel('x', fontsize=FS_AXIS)
+    ax.set_ylabel('y', fontsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    ax.legend(loc='lower right', fontsize=FS_LEGEND, framealpha=0.95)
+    ax.text(
+        0.98, 0.98,
+        'Without dropout the net\n'
+        'chases noise wiggles.\n\n'
+        'With dropout it stays\n'
+        'closer to the smooth\n'
+        'truth (stronger bias).',
+        transform=ax.transAxes, ha='right', va='top', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
+    )
+    ax.grid(True, alpha=0.3)
 
-ax = axes3[1]
-ax.plot(loss_nodrop, color='crimson', linewidth=2.2, label='no dropout')
-ax.plot(loss_drop, color='royalblue', linewidth=2.2, label=r'dropout $p=0.5$')
-ax.set_title('Mini-batch loss', fontsize=FS_AX_TITLE)
-ax.set_xlabel('SGD step', fontsize=FS_AXIS)
-ax.set_ylabel('MSE', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-add_vcenter_legend_and_note(
-    ax,
-    'Dropout usually raises\n'
-    'mini-batch loss (harder fit)\n'
-    'but can lower true risk.\n\n'
-    'Regularization often\n'
-    'looks like "worse"\n'
-    'training numbers.',
-)
-ax.grid(True, alpha=0.3)
+    ax = axes3[1]
+    ax.plot(loss_nodrop, color='crimson', linewidth=2.2, label='no dropout')
+    ax.plot(loss_drop, color='royalblue', linewidth=2.2, label=r'dropout $p=0.5$')
+    ax.set_title('Mini-batch loss', fontsize=FS_AX_TITLE)
+    ax.set_xlabel('SGD step', fontsize=FS_AXIS)
+    ax.set_ylabel('MSE', fontsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    add_vcenter_legend_and_note(
+        ax,
+        'Dropout usually raises\n'
+        'mini-batch loss (harder fit)\n'
+        'but can lower true risk.\n\n'
+        'Regularization often\n'
+        'looks like "worse"\n'
+        'training numbers.',
+    )
+    ax.grid(True, alpha=0.3)
 
-plt.tight_layout()
-show_maximized(fig3)
+    plt.tight_layout()
+    return fig3
+
 
 
 # -------------------------------------------------------
 # FIGURE 4: Co-adaptation cartoon + inverted dropout expectation
 # -------------------------------------------------------
-fig4, axes4 = new_figure(1, 2)
-fig4.suptitle(
-    'Step 4: Break co-adaptation; keep expectations consistent at test time',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_4():
+    fig4, axes4 = new_figure(1, 2)
+    fig4.suptitle(
+        'Step 4: Break co-adaptation; keep expectations consistent at test time',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-ax = axes4[0]
-ax.set_xlim(0, 10)
-ax.set_ylim(0, 6)
-ax.axis('off')
-ax.set_title('Co-adaptation without dropout', fontsize=FS_AX_TITLE)
+    ax = axes4[0]
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 6)
+    ax.axis('off')
+    ax.set_title('Co-adaptation without dropout', fontsize=FS_AX_TITLE)
 
-# simple nodes
-positions_in = [(1.5, 4.5), (1.5, 3.0), (1.5, 1.5)]
-positions_h = [(5.0, 5.0), (5.0, 3.5), (5.0, 2.0), (5.0, 0.8)]
-positions_out = [(8.5, 3.0)]
+    # simple nodes
+    positions_in = [(1.5, 4.5), (1.5, 3.0), (1.5, 1.5)]
+    positions_h = [(5.0, 5.0), (5.0, 3.5), (5.0, 2.0), (5.0, 0.8)]
+    positions_out = [(8.5, 3.0)]
 
-for (x, y) in positions_in:
-    ax.add_patch(patches.Circle((x, y), 0.28, facecolor='steelblue', edgecolor='k'))
-for (x, y) in positions_h:
-    ax.add_patch(patches.Circle((x, y), 0.28, facecolor='darkorange', edgecolor='k'))
-ax.add_patch(patches.Circle(positions_out[0], 0.32, facecolor='seagreen', edgecolor='k'))
+    for (x, y) in positions_in:
+        ax.add_patch(patches.Circle((x, y), 0.28, facecolor='steelblue', edgecolor='k'))
+    for (x, y) in positions_h:
+        ax.add_patch(patches.Circle((x, y), 0.28, facecolor='darkorange', edgecolor='k'))
+    ax.add_patch(patches.Circle(positions_out[0], 0.32, facecolor='seagreen', edgecolor='k'))
 
-# emphasize a clique of co-adapted hidden units
-for i, hpos in enumerate(positions_h):
-    for ip in positions_in:
-        ax.plot([ip[0], hpos[0]], [ip[1], hpos[1]], color='0.75', lw=0.8, zorder=0)
-    ax.plot([hpos[0], positions_out[0][0]], [hpos[1], positions_out[0][1]],
-            color='crimson' if i < 2 else '0.75',
-            lw=2.5 if i < 2 else 0.8, zorder=0)
+    # emphasize a clique of co-adapted hidden units
+    for i, hpos in enumerate(positions_h):
+        for ip in positions_in:
+            ax.plot([ip[0], hpos[0]], [ip[1], hpos[1]], color='0.75', lw=0.8, zorder=0)
+        ax.plot([hpos[0], positions_out[0][0]], [hpos[1], positions_out[0][1]],
+                color='crimson' if i < 2 else '0.75',
+                lw=2.5 if i < 2 else 0.8, zorder=0)
 
-ax.text(1.5, 5.3, 'inputs', ha='center', fontsize=FS_ANNOT)
-ax.text(5.0, 5.7, 'hidden', ha='center', fontsize=FS_ANNOT)
-ax.text(8.5, 3.7, 'out', ha='center', fontsize=FS_ANNOT)
-ax.text(
-    0.72, 0.08,
-    'Two hidden units "conspire" to explain the label together.\n'
-    'If either is unreliable alone, the model is brittle.\n'
-    'Dropout forces each kept unit to be useful without its partners.',
-    transform=ax.transAxes, ha='left', va='bottom', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
-)
+    ax.text(1.5, 5.3, 'inputs', ha='center', fontsize=FS_ANNOT)
+    ax.text(5.0, 5.7, 'hidden', ha='center', fontsize=FS_ANNOT)
+    ax.text(8.5, 3.7, 'out', ha='center', fontsize=FS_ANNOT)
+    ax.text(
+        0.72, 0.08,
+        'Two hidden units "conspire" to explain the label together.\n'
+        'If either is unreliable alone, the model is brittle.\n'
+        'Dropout forces each kept unit to be useful without its partners.',
+        transform=ax.transAxes, ha='left', va='bottom', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
+    )
 
-ax = axes4[1]
-# Expectation cartoon: train scaling
-ps = np.array([0.3, 0.5, 0.7, 0.9, 1.0])
-# Suppose unit activation a=2. Without scaling, E[train]=p*a; with inverted, E=a
-a = 2.0
-e_naive = ps * a
-e_inverted = np.ones_like(ps) * a
-ax.plot(ps, e_naive, 'o-', color='crimson', linewidth=2.5, label='naive drop (no /p)')
-ax.plot(ps, e_inverted, 's-', color='royalblue', linewidth=2.5, label='inverted dropout (x/p)')
-ax.axhline(a, color='k', linestyle='--', alpha=0.5, label='test-time activation a')
-ax.set_xlabel(r'keep probability $p$', fontsize=FS_AXIS)
-ax.set_ylabel('expected activation', fontsize=FS_AXIS)
-ax.set_title('Why scale by 1/p in training', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-ax.legend(
-    loc='upper left', bbox_to_anchor=(0.0, 0.88),
-    fontsize=FS_LEGEND, framealpha=0.95, borderaxespad=0.0,
-)
-ax.text(
-    0.98, 0.46,
-    'Inverted dropout:\n'
-    '  train: keep x/p, else 0\n'
-    '  test:  use x as-is\n\n'
-    'Then E[train] ≈ test,\n'
-    'so no test rescaling.',
-    transform=ax.transAxes, ha='right', va='top', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
-)
-ax.grid(True, alpha=0.3)
+    ax = axes4[1]
+    # Expectation cartoon: train scaling
+    ps = np.array([0.3, 0.5, 0.7, 0.9, 1.0])
+    # Suppose unit activation a=2. Without scaling, E[train]=p*a; with inverted, E=a
+    a = 2.0
+    e_naive = ps * a
+    e_inverted = np.ones_like(ps) * a
+    ax.plot(ps, e_naive, 'o-', color='crimson', linewidth=2.5, label='naive drop (no /p)')
+    ax.plot(ps, e_inverted, 's-', color='royalblue', linewidth=2.5, label='inverted dropout (x/p)')
+    ax.axhline(a, color='k', linestyle='--', alpha=0.5, label='test-time activation a')
+    ax.set_xlabel(r'keep probability $p$', fontsize=FS_AXIS)
+    ax.set_ylabel('expected activation', fontsize=FS_AXIS)
+    ax.set_title('Why scale by 1/p in training', fontsize=FS_AX_TITLE)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    ax.legend(
+        loc='upper left', bbox_to_anchor=(0.0, 0.88),
+        fontsize=FS_LEGEND, framealpha=0.95, borderaxespad=0.0,
+    )
+    ax.text(
+        0.98, 0.46,
+        'Inverted dropout:\n'
+        '  train: keep x/p, else 0\n'
+        '  test:  use x as-is\n\n'
+        'Then E[train] ≈ test,\n'
+        'so no test rescaling.',
+        transform=ax.transAxes, ha='right', va='top', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
+    )
+    ax.grid(True, alpha=0.3)
 
-plt.tight_layout()
-show_maximized(fig4)
+    plt.tight_layout()
+    return fig4
 
+
+
+
+run_slide_deck([
+    build_step_1,
+    build_step_2,
+    build_step_3,
+    build_step_4,
+])
 
 # -------------------------------------------------------
 # KEY INSIGHTS

@@ -33,6 +33,7 @@ from _config import (
     SCREEN_FRACTION,
     apply_rcparams,
     add_step_footer,
+    run_slide_deck,
 )
 apply_rcparams(plt)
 import matplotlib.patches as patches
@@ -149,232 +150,240 @@ X_ln, ln_mean, ln_var = layer_norm(X)
 # -------------------------------------------------------
 # FIGURE 1: Why normalize? -- wild activation scales
 # -------------------------------------------------------
-fig1, axes1 = new_figure(1, 2)
-fig1.suptitle(
-    'Step 1: Raw activations are poorly scaled -- hard for the next layer',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_1():
+    fig1, axes1 = new_figure(1, 2)
+    fig1.suptitle(
+        'Step 1: Raw activations are poorly scaled -- hard for the next layer',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-ax = axes1[0]
-im = ax.imshow(X, aspect='auto', cmap='coolwarm')
-ax.set_xlabel('feature j', fontsize=FS_AXIS)
-ax.set_ylabel('batch sample i', fontsize=FS_AXIS)
-ax.set_title('Activation matrix X[i, j]', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-cbar = fig1.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
-cbar.ax.tick_params(labelsize=FS_ANNOT)
-ax.text(
-    0.02, 0.98,
-    'Columns: different feature scales\n'
-    'Rows: some samples globally larger',
-    transform=ax.transAxes, va='top', ha='left', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
+    ax = axes1[0]
+    im = ax.imshow(X, aspect='auto', cmap='coolwarm')
+    ax.set_xlabel('feature j', fontsize=FS_AXIS)
+    ax.set_ylabel('batch sample i', fontsize=FS_AXIS)
+    ax.set_title('Activation matrix X[i, j]', fontsize=FS_AX_TITLE)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    cbar = fig1.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    cbar.ax.tick_params(labelsize=FS_ANNOT)
+    ax.text(
+        0.02, 0.98,
+        'Columns: different feature scales\n'
+        'Rows: some samples globally larger',
+        transform=ax.transAxes, va='top', ha='left', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
 
-ax = axes1[1]
-for j in range(F):
-    ax.scatter(np.full(B, j), X[:, j], s=40, alpha=0.85, label=f'f{j}' if j < 3 else None)
-ax.axhline(0, color='k', alpha=0.3)
-ax.set_xlabel('feature j', fontsize=FS_AXIS)
-ax.set_ylabel('activation value', fontsize=FS_AXIS)
-ax.set_title('Per-feature spread is all over the place', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-add_vcenter_legend_and_note(
-    ax,
-    'Next layer sees a mix of\n'
-    'tiny and huge numbers.\n'
-    'Gradients / learning rates\n'
-    'become awkward.\n\n'
-    'Normalization rebalances\n'
-    'these scales.',
-)
-ax.grid(True, alpha=0.3)
+    ax = axes1[1]
+    for j in range(F):
+        ax.scatter(np.full(B, j), X[:, j], s=40, alpha=0.85, label=f'f{j}' if j < 3 else None)
+    ax.axhline(0, color='k', alpha=0.3)
+    ax.set_xlabel('feature j', fontsize=FS_AXIS)
+    ax.set_ylabel('activation value', fontsize=FS_AXIS)
+    ax.set_title('Per-feature spread is all over the place', fontsize=FS_AX_TITLE)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    add_vcenter_legend_and_note(
+        ax,
+        'Next layer sees a mix of\n'
+        'tiny and huge numbers.\n'
+        'Gradients / learning rates\n'
+        'become awkward.\n\n'
+        'Normalization rebalances\n'
+        'these scales.',
+    )
+    ax.grid(True, alpha=0.3)
 
-plt.tight_layout()
-show_maximized(fig1)
+    plt.tight_layout()
+    return fig1
+
 
 
 # -------------------------------------------------------
 # FIGURE 2: What axis do we average over?
 # -------------------------------------------------------
-fig2, axes2 = new_figure(1, 2)
-fig2.suptitle(
-    'Step 2: BatchNorm pools over batch; LayerNorm pools over features',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_2():
+    fig2, axes2 = new_figure(1, 2)
+    fig2.suptitle(
+        'Step 2: BatchNorm pools over batch; LayerNorm pools over features',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
 
-def draw_matrix_with_groups(ax, title, mode):
-    """Schematic: highlight BN columns vs LN rows."""
-    ax.set_xlim(-0.5, F - 0.5)
-    ax.set_ylim(B - 0.5, -0.5)
-    ax.set_aspect('equal')
-    ax.set_xlabel('feature j', fontsize=FS_AXIS)
-    ax.set_ylabel('sample i', fontsize=FS_AXIS)
-    ax.set_title(title, fontsize=FS_AX_TITLE)
-    ax.tick_params(axis='both', labelsize=FS_TICK)
-    ax.set_xticks(range(F))
-    ax.set_yticks(range(B))
+    def draw_matrix_with_groups(ax, title, mode):
+        """Schematic: highlight BN columns vs LN rows."""
+        ax.set_xlim(-0.5, F - 0.5)
+        ax.set_ylim(B - 0.5, -0.5)
+        ax.set_aspect('equal')
+        ax.set_xlabel('feature j', fontsize=FS_AXIS)
+        ax.set_ylabel('sample i', fontsize=FS_AXIS)
+        ax.set_title(title, fontsize=FS_AX_TITLE)
+        ax.tick_params(axis='both', labelsize=FS_TICK)
+        ax.set_xticks(range(F))
+        ax.set_yticks(range(B))
 
-    # cell faces from data (normalized display)
-    vmax = np.percentile(np.abs(X), 95)
-    for i in range(B):
-        for j in range(F):
-            val = X[i, j] / (vmax + 1e-8)
-            color = plt.cm.coolwarm((val + 1) / 2)
-            rect = patches.Rectangle((j - 0.5, i - 0.5), 1, 1,
-                                     facecolor=color, edgecolor='white', linewidth=1.0)
-            ax.add_patch(rect)
+        # cell faces from data (normalized display)
+        vmax = np.percentile(np.abs(X), 95)
+        for i in range(B):
+            for j in range(F):
+                val = X[i, j] / (vmax + 1e-8)
+                color = plt.cm.coolwarm((val + 1) / 2)
+                rect = patches.Rectangle((j - 0.5, i - 0.5), 1, 1,
+                                         facecolor=color, edgecolor='white', linewidth=1.0)
+                ax.add_patch(rect)
 
-    if mode == 'bn':
-        # emphasize one feature column
-        j = 4
-        ax.add_patch(patches.Rectangle(
-            (j - 0.5, -0.5), 1, B, fill=False, edgecolor='crimson', linewidth=3.5,
-        ))
-        ax.text(
-            0.5, -0.12,
-            r'BN: mean/var over $i$ (batch) for fixed $j$',
-            transform=ax.transAxes, ha='center', va='top', fontsize=FS_ANNOT,
-            color='crimson', fontweight='bold',
-        )
-    else:
-        i = 2
-        ax.add_patch(patches.Rectangle(
-            (-0.5, i - 0.5), F, 1, fill=False, edgecolor='royalblue', linewidth=3.5,
-        ))
-        ax.text(
-            0.5, -0.12,
-            r'LN: mean/var over $j$ (features) for fixed $i$',
-            transform=ax.transAxes, ha='center', va='top', fontsize=FS_ANNOT,
-            color='royalblue', fontweight='bold',
-        )
+        if mode == 'bn':
+            # emphasize one feature column
+            j = 4
+            ax.add_patch(patches.Rectangle(
+                (j - 0.5, -0.5), 1, B, fill=False, edgecolor='crimson', linewidth=3.5,
+            ))
+            ax.text(
+                0.5, -0.12,
+                r'BN: mean/var over $i$ (batch) for fixed $j$',
+                transform=ax.transAxes, ha='center', va='top', fontsize=FS_ANNOT,
+                color='crimson', fontweight='bold',
+            )
+        else:
+            i = 2
+            ax.add_patch(patches.Rectangle(
+                (-0.5, i - 0.5), F, 1, fill=False, edgecolor='royalblue', linewidth=3.5,
+            ))
+            ax.text(
+                0.5, -0.12,
+                r'LN: mean/var over $j$ (features) for fixed $i$',
+                transform=ax.transAxes, ha='center', va='top', fontsize=FS_ANNOT,
+                color='royalblue', fontweight='bold',
+            )
 
 
-draw_matrix_with_groups(
-    axes2[0],
-    'BatchNorm -- normalize each COLUMN',
-    'bn',
-)
-draw_matrix_with_groups(
-    axes2[1],
-    'LayerNorm -- normalize each ROW',
-    'ln',
-)
+    draw_matrix_with_groups(
+        axes2[0],
+        'BatchNorm -- normalize each COLUMN',
+        'bn',
+    )
+    draw_matrix_with_groups(
+        axes2[1],
+        'LayerNorm -- normalize each ROW',
+        'ln',
+    )
 
-plt.tight_layout()
-show_maximized(fig2)
+    plt.tight_layout()
+    return fig2
+
 
 
 # -------------------------------------------------------
 # FIGURE 3: After BN vs after LN
 # -------------------------------------------------------
-fig3, axes3 = new_figure(1, 3)
-fig3.suptitle(
-    'Step 3: Same X, two normalizations -- different invariants',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
-
-panels = [
-    (X, 'Raw X', 'Raw'),
-    (X_bn, 'After BatchNorm', 'BN'),
-    (X_ln, 'After LayerNorm', 'LN'),
-]
-vmax = max(np.percentile(np.abs(m), 98) for m, _, _ in panels)
-for ax, (mat, title, tag) in zip(axes3, panels):
-    im = ax.imshow(mat, aspect='auto', cmap='coolwarm', vmin=-vmax, vmax=vmax)
-    ax.set_title(title, fontsize=FS_AX_TITLE)
-    ax.set_xlabel('feature j', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_TICK)
-    if tag == 'Raw':
-        ax.set_ylabel('sample i', fontsize=FS_AXIS)
-    # stats box
-    if tag == 'BN':
-        note = (
-            'Each column ~ N(0,1)\n'
-            f'col means≈0\n'
-            f'col stds≈1\n\n'
-            'Depends on the\n'
-            'other batch items'
-        )
-    elif tag == 'LN':
-        note = (
-            'Each row ~ N(0,1)\n'
-            f'row means≈0\n'
-            f'row stds≈1\n\n'
-            'Independent of\n'
-            'batch mates'
-        )
-    else:
-        note = (
-            f'feature stds:\n'
-            + ', '.join(f'{s:.1f}' for s in X.std(axis=0))
-        )
-    ax.text(
-        0.02, 0.98, note,
-        transform=ax.transAxes, va='top', ha='left', fontsize=FS_ANNOT,
-        bbox=dict(boxstyle='round', facecolor='white', alpha=0.92),
+def build_step_3():
+    fig3, axes3 = new_figure(1, 3)
+    fig3.suptitle(
+        'Step 3: Same X, two normalizations -- different invariants',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
     )
 
-fig3.colorbar(im, ax=axes3.ravel().tolist(), fraction=0.02, pad=0.02)
-plt.tight_layout()
-show_maximized(fig3)
+    panels = [
+        (X, 'Raw X', 'Raw'),
+        (X_bn, 'After BatchNorm', 'BN'),
+        (X_ln, 'After LayerNorm', 'LN'),
+    ]
+    vmax = max(np.percentile(np.abs(m), 98) for m, _, _ in panels)
+    for ax, (mat, title, tag) in zip(axes3, panels):
+        im = ax.imshow(mat, aspect='auto', cmap='coolwarm', vmin=-vmax, vmax=vmax)
+        ax.set_title(title, fontsize=FS_AX_TITLE)
+        ax.set_xlabel('feature j', fontsize=FS_AXIS)
+        ax.tick_params(axis='both', labelsize=FS_TICK)
+        if tag == 'Raw':
+            ax.set_ylabel('sample i', fontsize=FS_AXIS)
+        # stats box
+        if tag == 'BN':
+            note = (
+                'Each column ~ N(0,1)\n'
+                f'col means≈0\n'
+                f'col stds≈1\n\n'
+                'Depends on the\n'
+                'other batch items'
+            )
+        elif tag == 'LN':
+            note = (
+                'Each row ~ N(0,1)\n'
+                f'row means≈0\n'
+                f'row stds≈1\n\n'
+                'Independent of\n'
+                'batch mates'
+            )
+        else:
+            note = (
+                f'feature stds:\n'
+                + ', '.join(f'{s:.1f}' for s in X.std(axis=0))
+            )
+        ax.text(
+            0.02, 0.98, note,
+            transform=ax.transAxes, va='top', ha='left', fontsize=FS_ANNOT,
+            bbox=dict(boxstyle='round', facecolor='white', alpha=0.92),
+        )
+
+    fig3.colorbar(im, ax=axes3.ravel().tolist(), fraction=0.02, pad=0.02)
+    plt.tight_layout()
+    return fig3
+
 
 
 # -------------------------------------------------------
 # FIGURE 4: Distributions + when to use which
 # -------------------------------------------------------
-fig4, axes4 = new_figure(1, 2)
-fig4.suptitle(
-    'Step 4: BN couples samples; LN does not -- pick based on the setting',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_4():
+    fig4, axes4 = new_figure(1, 2)
+    fig4.suptitle(
+        'Step 4: BN couples samples; LN does not -- pick based on the setting',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-ax = axes4[0]
-# Show one feature's values across the batch, before/after BN
-feat = 5
-ax.plot(np.arange(B), X[:, feat], 'o-', color='0.5', linewidth=2, label='raw feature 5')
-ax.plot(np.arange(B), X_bn[:, feat], 's-', color='crimson', linewidth=2, label='after BN')
-ax.plot(np.arange(B), X_ln[:, feat], '^-', color='royalblue', linewidth=2, label='after LN')
-ax.axhline(0, color='k', alpha=0.3)
-ax.set_xlabel('batch index i', fontsize=FS_AXIS)
-ax.set_ylabel('activation', fontsize=FS_AXIS)
-ax.set_title('Tracking one feature across the batch', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-add_vcenter_legend_and_note(
-    ax,
-    'BN forces THIS feature\n'
-    'to have mean 0 / var 1\n'
-    'across the batch.\n\n'
-    'LN changes it only as\n'
-    'part of each sample\'s\n'
-    'own feature vector.',
-)
-ax.grid(True, alpha=0.3)
+    ax = axes4[0]
+    # Show one feature's values across the batch, before/after BN
+    feat = 5
+    ax.plot(np.arange(B), X[:, feat], 'o-', color='0.5', linewidth=2, label='raw feature 5')
+    ax.plot(np.arange(B), X_bn[:, feat], 's-', color='crimson', linewidth=2, label='after BN')
+    ax.plot(np.arange(B), X_ln[:, feat], '^-', color='royalblue', linewidth=2, label='after LN')
+    ax.axhline(0, color='k', alpha=0.3)
+    ax.set_xlabel('batch index i', fontsize=FS_AXIS)
+    ax.set_ylabel('activation', fontsize=FS_AXIS)
+    ax.set_title('Tracking one feature across the batch', fontsize=FS_AX_TITLE)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    add_vcenter_legend_and_note(
+        ax,
+        'BN forces THIS feature\n'
+        'to have mean 0 / var 1\n'
+        'across the batch.\n\n'
+        'LN changes it only as\n'
+        'part of each sample\'s\n'
+        'own feature vector.',
+    )
+    ax.grid(True, alpha=0.3)
 
-ax = axes4[1]
-ax.axis('off')
-ax.set_title('Practical intuition', fontsize=FS_AX_TITLE)
-ax.text(
-    0.5, 0.55,
-    'BatchNorm\n'
-    '  • Stats over the batch (per channel/feature)\n'
-    '  • Great for CNNs / large batches\n'
-    '  • Train vs eval differ (running averages)\n'
-    '  • Noisy / odd if batch size is tiny\n\n'
-    'LayerNorm\n'
-    '  • Stats over features (per sample / token)\n'
-    '  • Great for Transformers / RNNs / NLP\n'
-    '  • Same behavior train and eval\n'
-    '  • Works with batch size 1\n\n'
-    'Both keep activations in a friendly numeric range,\n'
-    'then gamma/beta let the net re-scale if needed.',
-    transform=ax.transAxes, ha='center', va='center', fontsize=FS_AXIS - 2,
-    bbox=dict(boxstyle='round', facecolor='#f7f7ff', alpha=0.96),
-)
+    ax = axes4[1]
+    ax.axis('off')
+    ax.set_title('Practical intuition', fontsize=FS_AX_TITLE)
+    ax.text(
+        0.5, 0.55,
+        'BatchNorm\n'
+        '  • Stats over the batch (per channel/feature)\n'
+        '  • Great for CNNs / large batches\n'
+        '  • Train vs eval differ (running averages)\n'
+        '  • Noisy / odd if batch size is tiny\n\n'
+        'LayerNorm\n'
+        '  • Stats over features (per sample / token)\n'
+        '  • Great for Transformers / RNNs / NLP\n'
+        '  • Same behavior train and eval\n'
+        '  • Works with batch size 1\n\n'
+        'Both keep activations in a friendly numeric range,\n'
+        'then gamma/beta let the net re-scale if needed.',
+        transform=ax.transAxes, ha='center', va='center', fontsize=FS_AXIS - 2,
+        bbox=dict(boxstyle='round', facecolor='#f7f7ff', alpha=0.96),
+    )
 
-plt.tight_layout()
-show_maximized(fig4)
+    plt.tight_layout()
+    return fig4
+
 
 
 # -------------------------------------------------------
@@ -385,144 +394,158 @@ show_maximized(fig4)
 #   (gamma, beta) = (sigma, mu) -> undo BN: y ~= x  (original scale/shift)
 #   other (gamma, beta)         -> any new scale/shift on the unit axis
 # -------------------------------------------------------
-fig5, axes5 = new_figure(1, 2)
-fig5.suptitle(
-    r'Step 5: $\gamma,\beta$ keep the option of "just normalize" AND open new scale/shift',
-    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
-)
+def build_step_5():
+    fig5, axes5 = new_figure(1, 2)
+    fig5.suptitle(
+        r'Step 5: $\gamma,\beta$ keep the option of "just normalize" AND open new scale/shift',
+        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    )
 
-feat_demo = 5
-x_feat = X[:, feat_demo]
-mu_f = float(x_feat.mean())
-sig_f = float(x_feat.std() + 1e-12)
-x_hat_f = (x_feat - mu_f) / sig_f
+    feat_demo = 5
+    x_feat = X[:, feat_demo]
+    mu_f = float(x_feat.mean())
+    sig_f = float(x_feat.std() + 1e-12)
+    x_hat_f = (x_feat - mu_f) / sig_f
 
-# Three affine readouts of the same x_hat
-y_keep = 1.0 * x_hat_f + 0.0                    # default init: standardized
-y_orig = sig_f * x_hat_f + mu_f                  # recover original (~ identity)
-gamma_new, beta_new = 2.2, -1.5
-y_new = gamma_new * x_hat_f + beta_new           # a new learned scale/shift
+    # Three affine readouts of the same x_hat
+    y_keep = 1.0 * x_hat_f + 0.0                    # default init: standardized
+    y_orig = sig_f * x_hat_f + mu_f                  # recover original (~ identity)
+    gamma_new, beta_new = 2.2, -1.5
+    y_new = gamma_new * x_hat_f + beta_new           # a new learned scale/shift
 
-ax = axes5[0]
-ax.axis('off')
-ax.set_title('Formula: standardize, then optional affine', fontsize=FS_AX_TITLE)
-ax.text(
-    0.5, 0.55,
-    r'$\hat x = \dfrac{x-\mu}{\sqrt{\sigma^2+\varepsilon}}$'
-    '\n\n'
-    r'$y = \gamma\,\hat x + \beta$'
-    '\n\n'
-    r'$\bullet\ \gamma=1,\ \beta=0$'
-    '   keeps standardized behavior'
-    '\n'
-    r'$\bullet\ \gamma=\sigma,\ \beta=\mu$'
-    '   recovers original $x$ (approx.)'
-    '\n'
-    r'$\bullet\ \gamma,\beta$ free'
-    '   learn ANY new scale & shift'
-    '\n\n'
-    'So BN/LN do not permanently erase scale/shift capacity:\n'
-    'they fix a clean coordinate, then let the net re-paint affine.',
-    transform=ax.transAxes, ha='center', va='center', fontsize=FS_AXIS - 1,
-    bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.96),
-)
+    ax = axes5[0]
+    ax.axis('off')
+    ax.set_title('Formula: standardize, then optional affine', fontsize=FS_AX_TITLE)
+    ax.text(
+        0.5, 0.55,
+        r'$\hat x = \dfrac{x-\mu}{\sqrt{\sigma^2+\varepsilon}}$'
+        '\n\n'
+        r'$y = \gamma\,\hat x + \beta$'
+        '\n\n'
+        r'$\bullet\ \gamma=1,\ \beta=0$'
+        '   keeps standardized behavior'
+        '\n'
+        r'$\bullet\ \gamma=\sigma,\ \beta=\mu$'
+        '   recovers original $x$ (approx.)'
+        '\n'
+        r'$\bullet\ \gamma,\beta$ free'
+        '   learn ANY new scale & shift'
+        '\n\n'
+        'So BN/LN do not permanently erase scale/shift capacity:\n'
+        'they fix a clean coordinate, then let the net re-paint affine.',
+        transform=ax.transAxes, ha='center', va='center', fontsize=FS_AXIS - 1,
+        bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.96),
+    )
 
-ax = axes5[1]
-idx = np.arange(B)
-ax.plot(idx, x_feat, 'o-', color='0.45', lw=2.0, label=r'raw $x$')
-ax.plot(idx, y_keep, 's-', color='seagreen', lw=2.2, label=r'$\gamma=1,\beta=0$ (keep norm)')
-ax.plot(idx, y_orig, '^-', color='royalblue', lw=2.2, label=r'$\gamma=\sigma,\beta=\mu$ (≈ original)')
-ax.plot(idx, y_new, 'D-', color='crimson', lw=2.2,
-        label=rf'$\gamma={gamma_new:g},\beta={beta_new:g}$ (new)')
-ax.axhline(0, color='k', alpha=0.3)
-ax.set_xlabel('batch index', fontsize=FS_AXIS)
-ax.set_ylabel('activation (one BN feature)', fontsize=FS_AXIS)
-ax.set_title('Same $\\hat x$; different $(\\gamma,\\beta)$ readouts', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-ax.legend(fontsize=FS_LEGEND, loc='best')
-ax.grid(True, alpha=0.3)
-ax.text(
-    0.02, 0.02,
-    rf'feature {feat_demo}:  $\mu={mu_f:.2f}$,  $\sigma={sig_f:.2f}$' + '\n'
-    r'green $\approx$ unit scale; blue tracks raw; red is a new affine.',
-    transform=ax.transAxes, va='bottom', ha='left', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
+    ax = axes5[1]
+    idx = np.arange(B)
+    ax.plot(idx, x_feat, 'o-', color='0.45', lw=2.0, label=r'raw $x$')
+    ax.plot(idx, y_keep, 's-', color='seagreen', lw=2.2, label=r'$\gamma=1,\beta=0$ (keep norm)')
+    ax.plot(idx, y_orig, '^-', color='royalblue', lw=2.2, label=r'$\gamma=\sigma,\beta=\mu$ (≈ original)')
+    ax.plot(idx, y_new, 'D-', color='crimson', lw=2.2,
+            label=rf'$\gamma={gamma_new:g},\beta={beta_new:g}$ (new)')
+    ax.axhline(0, color='k', alpha=0.3)
+    ax.set_xlabel('batch index', fontsize=FS_AXIS)
+    ax.set_ylabel('activation (one BN feature)', fontsize=FS_AXIS)
+    ax.set_title('Same $\\hat x$; different $(\\gamma,\\beta)$ readouts', fontsize=FS_AX_TITLE)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    ax.legend(fontsize=FS_LEGEND, loc='best')
+    ax.grid(True, alpha=0.3)
+    ax.text(
+        0.02, 0.02,
+        rf'feature {feat_demo}:  $\mu={mu_f:.2f}$,  $\sigma={sig_f:.2f}$' + '\n'
+        r'green $\approx$ unit scale; blue tracks raw; red is a new affine.',
+        transform=ax.transAxes, va='bottom', ha='left', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
 
-plt.tight_layout()
-show_maximized(fig5)
+    plt.tight_layout()
+    return fig5
+
 
 
 # -------------------------------------------------------
 # FIGURE 6: Tiny training cartoon -- loss curvature / scales
 # -------------------------------------------------------
-fig6, axes6 = new_figure(1, 2)
-fig6.suptitle(
-    'Step 6: Normalization makes the loss landscape less awkwardly stretched',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_6():
+    fig6, axes6 = new_figure(1, 2)
+    fig6.suptitle(
+        'Step 6: Normalization makes the loss landscape less awkwardly stretched',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-# 2D quadratic with very different axis scales = "before BN"
-# After normalizing features, axes become comparable.
+    # 2D quadratic with very different axis scales = "before BN"
+    # After normalizing features, axes become comparable.
 
-def bowl(w1, w2, s1, s2):
-    return 0.5 * ((s1 * w1) ** 2 + (s2 * w2) ** 2)
+    def bowl(w1, w2, s1, s2):
+        return 0.5 * ((s1 * w1) ** 2 + (s2 * w2) ** 2)
 
 
-w = np.linspace(-3, 3, 200)
-W1, W2 = np.meshgrid(w, w)
+    w = np.linspace(-3, 3, 200)
+    W1, W2 = np.meshgrid(w, w)
 
-ax = axes6[0]
-Z = bowl(W1, W2, s1=4.0, s2=0.4)
-cs = ax.contour(W1, W2, Z, levels=15, cmap='Reds')
-ax.plot(0, 0, 'k*', markersize=12)
-lr = 0.08
-x = np.array([2.5, 2.0], dtype=float)
-traj = [x.copy()]
-for _ in range(25):
-    g = np.array([4.0 ** 2 * x[0], 0.4 ** 2 * x[1]])
-    x = x - lr * g
-    traj.append(x.copy())
-traj = np.stack(traj)
-ax.plot(traj[:, 0], traj[:, 1], 'o-', color='crimson', markersize=3, linewidth=1.5)
-ax.set_title('Unnormalized features\n(elongated / zigzaggy GD)', fontsize=FS_AX_TITLE)
-ax.set_xlabel(r'$w_1$', fontsize=FS_AXIS)
-ax.set_ylabel(r'$w_2$', fontsize=FS_AXIS)
-ax.set_aspect('equal')
-ax.tick_params(axis='both', labelsize=FS_TICK)
-ax.grid(True, alpha=0.3)
+    ax = axes6[0]
+    Z = bowl(W1, W2, s1=4.0, s2=0.4)
+    cs = ax.contour(W1, W2, Z, levels=15, cmap='Reds')
+    ax.plot(0, 0, 'k*', markersize=12)
+    lr = 0.08
+    x = np.array([2.5, 2.0], dtype=float)
+    traj = [x.copy()]
+    for _ in range(25):
+        g = np.array([4.0 ** 2 * x[0], 0.4 ** 2 * x[1]])
+        x = x - lr * g
+        traj.append(x.copy())
+    traj = np.stack(traj)
+    ax.plot(traj[:, 0], traj[:, 1], 'o-', color='crimson', markersize=3, linewidth=1.5)
+    ax.set_title('Unnormalized features\n(elongated / zigzaggy GD)', fontsize=FS_AX_TITLE)
+    ax.set_xlabel(r'$w_1$', fontsize=FS_AXIS)
+    ax.set_ylabel(r'$w_2$', fontsize=FS_AXIS)
+    ax.set_aspect('equal')
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    ax.grid(True, alpha=0.3)
 
-ax = axes6[1]
-Z2 = bowl(W1, W2, s1=1.0, s2=1.0)
-ax.contour(W1, W2, Z2, levels=15, cmap='Blues')
-ax.plot(0, 0, 'k*', markersize=12)
-x = np.array([2.5, 2.0], dtype=float)
-traj = [x.copy()]
-for _ in range(25):
-    g = np.array([1.0 ** 2 * x[0], 1.0 ** 2 * x[1]])
-    x = x - lr * g
-    traj.append(x.copy())
-traj = np.stack(traj)
-ax.plot(traj[:, 0], traj[:, 1], 'o-', color='royalblue', markersize=3, linewidth=1.5)
-ax.set_title('Normalized features\n(rounder bowl, smoother path)', fontsize=FS_AX_TITLE)
-ax.set_xlabel(r'$w_1$', fontsize=FS_AXIS)
-ax.set_ylabel(r'$w_2$', fontsize=FS_AXIS)
-ax.set_aspect('equal')
-ax.tick_params(axis='both', labelsize=FS_TICK)
-ax.grid(True, alpha=0.3)
-ax.text(
-    0.02, 0.98,
-    'Same GD, same lr.\n'
-    'Normalization changes\n'
-    'the geometry the\n'
-    'optimizer walks on.',
-    transform=ax.transAxes, va='top', ha='left', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
+    ax = axes6[1]
+    Z2 = bowl(W1, W2, s1=1.0, s2=1.0)
+    ax.contour(W1, W2, Z2, levels=15, cmap='Blues')
+    ax.plot(0, 0, 'k*', markersize=12)
+    x = np.array([2.5, 2.0], dtype=float)
+    traj = [x.copy()]
+    for _ in range(25):
+        g = np.array([1.0 ** 2 * x[0], 1.0 ** 2 * x[1]])
+        x = x - lr * g
+        traj.append(x.copy())
+    traj = np.stack(traj)
+    ax.plot(traj[:, 0], traj[:, 1], 'o-', color='royalblue', markersize=3, linewidth=1.5)
+    ax.set_title('Normalized features\n(rounder bowl, smoother path)', fontsize=FS_AX_TITLE)
+    ax.set_xlabel(r'$w_1$', fontsize=FS_AXIS)
+    ax.set_ylabel(r'$w_2$', fontsize=FS_AXIS)
+    ax.set_aspect('equal')
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    ax.grid(True, alpha=0.3)
+    ax.text(
+        0.02, 0.98,
+        'Same GD, same lr.\n'
+        'Normalization changes\n'
+        'the geometry the\n'
+        'optimizer walks on.',
+        transform=ax.transAxes, va='top', ha='left', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
 
-plt.tight_layout()
-show_maximized(fig6)
+    plt.tight_layout()
+    return fig6
 
+
+
+
+run_slide_deck([
+    build_step_1,
+    build_step_2,
+    build_step_3,
+    build_step_4,
+    build_step_5,
+    build_step_6,
+])
 
 # -------------------------------------------------------
 # KEY INSIGHTS

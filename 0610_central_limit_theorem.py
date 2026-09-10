@@ -23,6 +23,7 @@ from _config import (
     SCREEN_FRACTION,
     apply_rcparams,
     add_step_footer,
+    run_slide_deck,
 )
 apply_rcparams(plt)
 import numpy as np
@@ -146,35 +147,37 @@ def show_maximized(fig):
 # -------------------------------------------------------
 # FIGURE 1: Look at the parent distributions themselves
 # -------------------------------------------------------
-fig1, axes1 = new_figure(1, 3)
-fig1.suptitle(
-    'Step 1: The parent distributions are not Gaussian',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
-
-for ax, dist in zip(axes1, DISTRIBUTIONS):
-    samples = dist['sampler'](5000)
-    ax.hist(
-        samples.numpy(), bins=50, density=True, alpha=0.75,
-        color=dist['color'], edgecolor='black', linewidth=0.4,
+def build_step_1():
+    fig1, axes1 = new_figure(1, 3)
+    fig1.suptitle(
+        'Step 1: The parent distributions are not Gaussian',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
     )
-    ax.axvline(dist['mu'], color='red', linestyle='--', linewidth=1.5,
-               label=f"mean = {dist['mu']:g}")
-    ax.set_title(f"{dist['name']}\n({dist['note']})", fontsize=FS_AX_TITLE)
-    ax.set_xlabel('x', fontsize=FS_AXIS)
-    ax.set_ylabel('Density', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_TICK)
-    ax.text(
-        0.5, 0.5, dist['pdf_text'],
-        transform=ax.transAxes, fontsize=FS_ANNOT,
-        verticalalignment='center', horizontalalignment='center',
-        bbox=dict(boxstyle='round', facecolor='white', alpha=0.9),
-    )
-    ax.legend(loc='upper left', fontsize=FS_LEGEND)
-    ax.grid(True, alpha=0.3)
 
-plt.tight_layout()
-show_maximized(fig1)
+    for ax, dist in zip(axes1, DISTRIBUTIONS):
+        samples = dist['sampler'](5000)
+        ax.hist(
+            samples.numpy(), bins=50, density=True, alpha=0.75,
+            color=dist['color'], edgecolor='black', linewidth=0.4,
+        )
+        ax.axvline(dist['mu'], color='red', linestyle='--', linewidth=1.5,
+                   label=f"mean = {dist['mu']:g}")
+        ax.set_title(f"{dist['name']}\n({dist['note']})", fontsize=FS_AX_TITLE)
+        ax.set_xlabel('x', fontsize=FS_AXIS)
+        ax.set_ylabel('Density', fontsize=FS_AXIS)
+        ax.tick_params(axis='both', labelsize=FS_TICK)
+        ax.text(
+            0.5, 0.5, dist['pdf_text'],
+            transform=ax.transAxes, fontsize=FS_ANNOT,
+            verticalalignment='center', horizontalalignment='center',
+            bbox=dict(boxstyle='round', facecolor='white', alpha=0.9),
+        )
+        ax.legend(loc='upper left', fontsize=FS_LEGEND)
+        ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    return fig1
+
 
 
 # -------------------------------------------------------
@@ -241,73 +244,84 @@ for dist in DISTRIBUTIONS:
 # FIGURE 3: Same idea, zoomed -- standardize to N(0,1)
 # Shows all parents collapse onto the same bell curve
 # -------------------------------------------------------
-fig3, axes3 = new_figure(1, 3)
-fig3.suptitle(
-    'Step 3: After standardizing, every parent looks like N(0,1)',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
-
-n_focus = 30
-z_grid = np.linspace(-4, 4, 400)
-
-for ax, dist in zip(axes3, DISTRIBUTIONS):
-    means = sample_means(dist['sampler'], n_focus)
-    se = np.sqrt(dist['var'] / n_focus)
-    z = (means.numpy() - dist['mu']) / se
-
-    ax.hist(
-        z, bins=40, density=True, alpha=0.75,
-        color=dist['color'], edgecolor='black', linewidth=0.4,
-        label=f'standardized means (n={n_focus})',
+def build_step_2():
+    fig3, axes3 = new_figure(1, 3)
+    fig3.suptitle(
+        'Step 3: After standardizing, every parent looks like N(0,1)',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
     )
-    ax.plot(z_grid, norm.pdf(z_grid, 0, 1), 'r-', linewidth=2, label='N(0,1)')
-    ax.set_title(dist['name'], fontsize=FS_AX_TITLE)
-    ax.set_xlabel('Standardized sample mean', fontsize=FS_AXIS)
-    ax.set_ylabel('Density', fontsize=FS_AXIS)
-    ax.tick_params(axis='both', labelsize=FS_TICK)
-    ax.set_xlim(-4, 4)
-    ax.legend(loc='center', fontsize=FS_LEGEND)
-    ax.grid(True, alpha=0.3)
 
-plt.tight_layout()
-show_maximized(fig3)
+    n_focus = 30
+    z_grid = np.linspace(-4, 4, 400)
+
+    for ax, dist in zip(axes3, DISTRIBUTIONS):
+        means = sample_means(dist['sampler'], n_focus)
+        se = np.sqrt(dist['var'] / n_focus)
+        z = (means.numpy() - dist['mu']) / se
+
+        ax.hist(
+            z, bins=40, density=True, alpha=0.75,
+            color=dist['color'], edgecolor='black', linewidth=0.4,
+            label=f'standardized means (n={n_focus})',
+        )
+        ax.plot(z_grid, norm.pdf(z_grid, 0, 1), 'r-', linewidth=2, label='N(0,1)')
+        ax.set_title(dist['name'], fontsize=FS_AX_TITLE)
+        ax.set_xlabel('Standardized sample mean', fontsize=FS_AXIS)
+        ax.set_ylabel('Density', fontsize=FS_AXIS)
+        ax.tick_params(axis='both', labelsize=FS_TICK)
+        ax.set_xlim(-4, 4)
+        ax.legend(loc='center', fontsize=FS_LEGEND)
+        ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    return fig3
+
 
 
 # -------------------------------------------------------
 # FIGURE 4: Standard Error shrinks like 1/sqrt(n)
 # -------------------------------------------------------
-fig4, ax4 = new_figure()
-fig4.suptitle(
-    r'Step 4: Precision improves as $1/\sqrt{n}$  (standard error)',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_3():
+    fig4, ax4 = new_figure()
+    fig4.suptitle(
+        r'Step 4: Precision improves as $1/\sqrt{n}$  (standard error)',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-n_values = np.array([1, 2, 5, 10, 20, 30, 50, 100])
+    n_values = np.array([1, 2, 5, 10, 20, 30, 50, 100])
 
-for dist in DISTRIBUTIONS:
-    empirical_std = []
-    for n in n_values:
-        means = sample_means(dist['sampler'], int(n), num_experiments=3000)
-        empirical_std.append(means.std(unbiased=True).item())
-    theory = np.sqrt(dist['var'] / n_values)
-    ax4.plot(n_values, empirical_std, 'o-', color=dist['color'],
-             linewidth=2, label=f"{dist['name']} (simulated)")
-    ax4.plot(n_values, theory, '--', color=dist['color'], alpha=0.7,
-             linewidth=1.5)
+    for dist in DISTRIBUTIONS:
+        empirical_std = []
+        for n in n_values:
+            means = sample_means(dist['sampler'], int(n), num_experiments=3000)
+            empirical_std.append(means.std(unbiased=True).item())
+        theory = np.sqrt(dist['var'] / n_values)
+        ax4.plot(n_values, empirical_std, 'o-', color=dist['color'],
+                 linewidth=2, label=f"{dist['name']} (simulated)")
+        ax4.plot(n_values, theory, '--', color=dist['color'], alpha=0.7,
+                 linewidth=1.5)
 
-ax4.set_xlabel('Sample size n', fontsize=FS_AXIS)
-ax4.set_ylabel('Std. dev. of the sample mean (SE)', fontsize=FS_AXIS)
-ax4.tick_params(axis='both', labelsize=FS_TICK)
-ax4.legend(fontsize=FS_LEGEND)
-ax4.grid(True, alpha=0.3)
-ax4.set_title(
-    r'Dashed: theory $\sigma/\sqrt{n}$   |   Dots: simulation',
-    fontsize=FS_AX_TITLE,
-)
+    ax4.set_xlabel('Sample size n', fontsize=FS_AXIS)
+    ax4.set_ylabel('Std. dev. of the sample mean (SE)', fontsize=FS_AXIS)
+    ax4.tick_params(axis='both', labelsize=FS_TICK)
+    ax4.legend(fontsize=FS_LEGEND)
+    ax4.grid(True, alpha=0.3)
+    ax4.set_title(
+        r'Dashed: theory $\sigma/\sqrt{n}$   |   Dots: simulation',
+        fontsize=FS_AX_TITLE,
+    )
 
-plt.tight_layout()
-show_maximized(fig4)
+    plt.tight_layout()
+    return fig4
 
+
+
+
+run_slide_deck([
+    build_step_1,
+    build_step_2,
+    build_step_3,
+])
 
 # -------------------------------------------------------
 # KEY INSIGHTS

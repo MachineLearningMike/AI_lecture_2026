@@ -38,6 +38,7 @@ from _config import (
     SCREEN_FRACTION,
     apply_rcparams,
     add_step_footer,
+    run_slide_deck,
 )
 apply_rcparams(plt)
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401  (registers 3d)
@@ -289,584 +290,598 @@ def _draw_partial_lines_on_tangent(
 # -------------------------------------------------------
 # FIGURE 1: 1D derivative = tangent slope
 # -------------------------------------------------------
-fig1, axes1 = plt.subplots(1, 2, figsize=screen_figsize(), dpi=FIGURE_DPI)
-fig1.suptitle(
-    r"Step 1: Derivative $f'(x)$ is the slope of the tangent line",
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_1():
+    fig1, axes1 = plt.subplots(1, 2, figsize=screen_figsize(), dpi=FIGURE_DPI)
+    fig1.suptitle(
+        r"Step 1: Derivative $f'(x)$ is the slope of the tangent line",
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-x = np.linspace(-1.0, 5.5, 400)
-y = f1d(x)
-x0 = 3.2
-y0 = f1d(x0)
-s0 = f1d_prime(x0)
+    x = np.linspace(-1.0, 5.5, 400)
+    y = f1d(x)
+    x0 = 3.2
+    y0 = f1d(x0)
+    s0 = f1d_prime(x0)
 
-ax = axes1[0]
-_coated_line(ax, x, y, color='royalblue', lw=1.8, label=r'$f(x)$')
-xt = np.linspace(x0 - 1.2, x0 + 1.2, 50)
-_coated_line(
-    ax, xt, y0 + s0 * (xt - x0), color='crimson', lw=1.8,
-    label=rf"tangent, slope $f'({x0:g})={s0:.2f}$",
-)
-ax.scatter([x0], [y0], s=80, c='k', zorder=5)
-ax.set_xlabel('x', fontsize=FS_AXIS)
-ax.set_ylabel('f(x)', fontsize=FS_AXIS)
-ax.set_title('Curve + tangent at one point', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-ax.legend(fontsize=FS_LEGEND)
-ax.grid(True, alpha=0.3)
-ax.text(
-    0.02, 0.98,
-    'Steeper tangent => larger |f\'(x)|.\n'
-    'Sign tells uphill (+) vs downhill (-).',
-    transform=ax.transAxes, va='top', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
+    ax = axes1[0]
+    _coated_line(ax, x, y, color='royalblue', lw=1.8, label=r'$f(x)$')
+    xt = np.linspace(x0 - 1.2, x0 + 1.2, 50)
+    _coated_line(
+        ax, xt, y0 + s0 * (xt - x0), color='crimson', lw=1.8,
+        label=rf"tangent, slope $f'({x0:g})={s0:.2f}$",
+    )
+    ax.scatter([x0], [y0], s=80, c='k', zorder=5)
+    ax.set_xlabel('x', fontsize=FS_AXIS)
+    ax.set_ylabel('f(x)', fontsize=FS_AXIS)
+    ax.set_title('Curve + tangent at one point', fontsize=FS_AX_TITLE)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    ax.legend(fontsize=FS_LEGEND)
+    ax.grid(True, alpha=0.3)
+    ax.text(
+        0.02, 0.98,
+        'Steeper tangent => larger |f\'(x)|.\n'
+        'Sign tells uphill (+) vs downhill (-).',
+        transform=ax.transAxes, va='top', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
 
-ax = axes1[1]
-_coated_line(ax, x, f1d_prime(x), color='crimson', lw=1.8, label=r"$f'(x)$")
-_coated_line(ax, [x.min(), x.max()], [0, 0], color='k', lw=1.0)
-_coated_line(ax, [x0, x0], [min(f1d_prime(x)), max(f1d_prime(x))],
-             color='0.4', lw=1.0, ls='--')
-ax.scatter([x0], [s0], s=80, c='k', zorder=5)
-ax.set_xlabel('x', fontsize=FS_AXIS)
-ax.set_ylabel(r"$f'(x)$", fontsize=FS_AXIS)
-ax.set_title('Derivative as a function of x', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-ax.legend(fontsize=FS_LEGEND)
-ax.grid(True, alpha=0.3)
+    ax = axes1[1]
+    _coated_line(ax, x, f1d_prime(x), color='crimson', lw=1.8, label=r"$f'(x)$")
+    _coated_line(ax, [x.min(), x.max()], [0, 0], color='k', lw=1.0)
+    _coated_line(ax, [x0, x0], [min(f1d_prime(x)), max(f1d_prime(x))],
+                 color='0.4', lw=1.0, ls='--')
+    ax.scatter([x0], [s0], s=80, c='k', zorder=5)
+    ax.set_xlabel('x', fontsize=FS_AXIS)
+    ax.set_ylabel(r"$f'(x)$", fontsize=FS_AXIS)
+    ax.set_title('Derivative as a function of x', fontsize=FS_AX_TITLE)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    ax.legend(fontsize=FS_LEGEND)
+    ax.grid(True, alpha=0.3)
 
-fig1.tight_layout(rect=[0, 0, 1, 0.95])
-show_maximized(fig1)
+    fig1.tight_layout(rect=[0, 0, 1, 0.95])
+    return fig1
+
 
 
 # -------------------------------------------------------
 # FIGURE 2: Browsable 3D surface of z = f(x,y)
 # -------------------------------------------------------
 COAT_LINES = False  # no white coats for Steps 2-10
-fig2 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
-fig2.suptitle(
-    r'Step 2: Browse $z=f(x,y)$ in 3D  (drag to rotate)',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
-ax = fig2.add_subplot(111, projection='3d')
+def build_step_2():
+    fig2 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
+    fig2.suptitle(
+        r'Step 2: Browse $z=f(x,y)$ in 3D  (drag to rotate)',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
+    ax = fig2.add_subplot(111, projection='3d')
 
-xs = np.linspace(-2.0, 2.0, 80)
-ys = np.linspace(-2.0, 2.0, 80)
-XX, YY = np.meshgrid(xs, ys)
-ZZ = f2d(XX, YY)
+    xs = np.linspace(-2.0, 2.0, 80)
+    ys = np.linspace(-2.0, 2.0, 80)
+    XX, YY = np.meshgrid(xs, ys)
+    ZZ = f2d(XX, YY)
 
-z_floor2 = float(np.min(ZZ)) - 0.28
-surf = ax.plot_surface(
-    XX, YY, ZZ, cmap=SURF_CMAP, linewidth=0, antialiased=True, alpha=SURF_ALPHA,
-)
-# Contour map on the domain floor under the graph (thinner tones)
-ax.contourf(
-    XX, YY, ZZ, zdir='z', offset=z_floor2,
-    levels=20, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA,
-)
-_plot_floor_contour_polylines(
-    ax, XX, YY, ZZ, z_floor2 + 0.02, levels=20, color='0.35', lw=0.9,
-)
-_draw_floor_xy_axes(ax, 0.0, 0.0, z_floor2, half=1.6)
-ax.set_xlabel('x', fontsize=FS_AXIS)
-ax.set_ylabel('y', fontsize=FS_AXIS)
-ax.set_zlabel('z = f(x,y)', fontsize=FS_AXIS)
-ax.set_zlim(z_floor2 - 0.05, float(np.max(ZZ)) + 0.1)
-ax.tick_params(labelsize=FS_ANNOT)
-ax.legend(loc='upper left', fontsize=FS_LEGEND - 1, framealpha=0.92)
-fig2.colorbar(surf, ax=ax, shrink=0.55, pad=0.08, label='f(x,y)')
-ax.text2D(
-    0.02, 0.95,
-    'Surface = graph $z=f(x,y)$.\n'
-    'Floor = contour map of $f$ on the domain $(x,y)$.\n'
-    'Red = $x$-axis, green = $y$-axis on the floor.',
-    transform=ax.transAxes, fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='white', alpha=0.92),
-)
-show_maximized(fig2)
+    z_floor2 = float(np.min(ZZ)) - 0.28
+    surf = ax.plot_surface(
+        XX, YY, ZZ, cmap=SURF_CMAP, linewidth=0, antialiased=True, alpha=SURF_ALPHA,
+    )
+    # Contour map on the domain floor under the graph (thinner tones)
+    ax.contourf(
+        XX, YY, ZZ, zdir='z', offset=z_floor2,
+        levels=20, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA,
+    )
+    _plot_floor_contour_polylines(
+        ax, XX, YY, ZZ, z_floor2 + 0.02, levels=20, color='0.35', lw=0.9,
+    )
+    _draw_floor_xy_axes(ax, 0.0, 0.0, z_floor2, half=1.6)
+    ax.set_xlabel('x', fontsize=FS_AXIS)
+    ax.set_ylabel('y', fontsize=FS_AXIS)
+    ax.set_zlabel('z = f(x,y)', fontsize=FS_AXIS)
+    ax.set_zlim(z_floor2 - 0.05, float(np.max(ZZ)) + 0.1)
+    ax.tick_params(labelsize=FS_ANNOT)
+    ax.legend(loc='upper left', fontsize=FS_LEGEND - 1, framealpha=0.92)
+    fig2.colorbar(surf, ax=ax, shrink=0.55, pad=0.08, label='f(x,y)')
+    ax.text2D(
+        0.02, 0.95,
+        'Surface = graph $z=f(x,y)$.\n'
+        'Floor = contour map of $f$ on the domain $(x,y)$.\n'
+        'Red = $x$-axis, green = $y$-axis on the floor.',
+        transform=ax.transAxes, fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.92),
+    )
+    return fig2
+
 
 
 # -------------------------------------------------------
 # FIGURE 3: Partial derivatives as directional slopes
 # -------------------------------------------------------
-fig3 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
-fig3.suptitle(
-    r'Step 3: Partials $\partial f/\partial x$ and $\partial f/\partial y$ at a point',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
-ax = fig3.add_subplot(111, projection='3d')
+def build_step_3():
+    fig3 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
+    fig3.suptitle(
+        r'Step 3: Partials $\partial f/\partial x$ and $\partial f/\partial y$ at a point',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
+    ax = fig3.add_subplot(111, projection='3d')
 
-ax.plot_surface(XX, YY, ZZ, cmap=SURF_CMAP, linewidth=0, alpha=SURF_ALPHA)
+    ax.plot_surface(XX, YY, ZZ, cmap=SURF_CMAP, linewidth=0, alpha=SURF_ALPHA)
 
-# Point of interest -- modest height and modest partials so the tangent
-# plane stays compact and the slice/tangent lines read cleanly.
-px, py = 0.40, 0.12
-pz = f2d(px, py)
-fx = f2d_dx(px, py)
-fy = f2d_dy(px, py)
+    # Point of interest -- modest height and modest partials so the tangent
+    # plane stays compact and the slice/tangent lines read cleanly.
+    px, py = 0.40, 0.12
+    pz = f2d(px, py)
+    fx = f2d_dx(px, py)
+    fy = f2d_dy(px, py)
 
-ax.scatter([px], [py], [pz], s=80, c='k', depthshade=False)
+    ax.scatter([px], [py], [pz], s=80, c='k', depthshade=False)
 
-# Curve along x (y fixed) and its tangent
-t = np.linspace(-0.55, 0.55, 40)
-x_line = px + t
-y_line = np.full_like(t, py)
-z_line = f2d(x_line, y_line)
-_coated_line(ax, x_line, y_line, z_line, color=C_DX, label='slice y=const')
-# Curve along y (x fixed)
-y_line2 = py + t
-x_line2 = np.full_like(t, px)
-z_line2 = f2d(x_line2, y_line2)
-_coated_line(ax, x_line2, y_line2, z_line2, color=C_DY, label='slice x=const')
+    # Curve along x (y fixed) and its tangent
+    t = np.linspace(-0.55, 0.55, 40)
+    x_line = px + t
+    y_line = np.full_like(t, py)
+    z_line = f2d(x_line, y_line)
+    _coated_line(ax, x_line, y_line, z_line, color=C_DX, label='slice y=const')
+    # Curve along y (x fixed)
+    y_line2 = py + t
+    x_line2 = np.full_like(t, px)
+    z_line2 = f2d(x_line2, y_line2)
+    _coated_line(ax, x_line2, y_line2, z_line2, color=C_DY, label='slice x=const')
 
-# Contour map + domain x/y axes on the floor
-z_floor3 = float(np.min(ZZ)) - 0.28
-ax.contourf(
-    XX, YY, ZZ, zdir='z', offset=z_floor3,
-    levels=20, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA,
-)
-_plot_floor_contour_polylines(
-    ax, XX, YY, ZZ, z_floor3 + 0.02, levels=20, color='0.35', lw=0.9,
-)
-_plot_floor_contour_polylines(
-    ax, XX, YY, ZZ, z_floor3 + 0.02, levels=[pz], color='#111111', lw=2.0,
-)
-z_ax3 = _draw_floor_xy_axes(ax, px, py, z_floor3, half=0.75)
-# Floor mirrors of the surface slices + tangent partial lines
-_mirror_on_floor(ax, x_line, y_line, z_ax3, color=C_DX)
-_mirror_on_floor(ax, x_line2, y_line2, z_ax3, color=C_DY)
-_draw_partial_lines_on_tangent(
-    ax, px, py, pz, fx, fy, half=0.55, ls='--',
-    label_x=rf'$\partial f/\partial x={fx:.2f}$',
-    label_y=rf'$\partial f/\partial y={fy:.2f}$',
-    z_floor=z_ax3,
-)
-ax.scatter([px], [py], [z_ax3], s=55, c='k', depthshade=False, zorder=5)
+    # Contour map + domain x/y axes on the floor
+    z_floor3 = float(np.min(ZZ)) - 0.28
+    ax.contourf(
+        XX, YY, ZZ, zdir='z', offset=z_floor3,
+        levels=20, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA,
+    )
+    _plot_floor_contour_polylines(
+        ax, XX, YY, ZZ, z_floor3 + 0.02, levels=20, color='0.35', lw=0.9,
+    )
+    _plot_floor_contour_polylines(
+        ax, XX, YY, ZZ, z_floor3 + 0.02, levels=[pz], color='#111111', lw=2.0,
+    )
+    z_ax3 = _draw_floor_xy_axes(ax, px, py, z_floor3, half=0.75)
+    # Floor mirrors of the surface slices + tangent partial lines
+    _mirror_on_floor(ax, x_line, y_line, z_ax3, color=C_DX)
+    _mirror_on_floor(ax, x_line2, y_line2, z_ax3, color=C_DY)
+    _draw_partial_lines_on_tangent(
+        ax, px, py, pz, fx, fy, half=0.55, ls='--',
+        label_x=rf'$\partial f/\partial x={fx:.2f}$',
+        label_y=rf'$\partial f/\partial y={fy:.2f}$',
+        z_floor=z_ax3,
+    )
+    ax.scatter([px], [py], [z_ax3], s=55, c='k', depthshade=False, zorder=5)
 
-ax.set_xlabel('x', fontsize=FS_AXIS)
-ax.set_ylabel('y', fontsize=FS_AXIS)
-ax.set_zlabel('f', fontsize=FS_AXIS)
-ax.set_zlim(z_floor3 - 0.05, float(np.max(ZZ)) + 0.1)
-ax.tick_params(labelsize=FS_ANNOT)
-ax.legend(loc='upper left', fontsize=FS_LEGEND - 1)
-ax.text2D(
-    0.02, 0.02,
-    'Red: move only x  -> slope = df/dx\n'
-    'Green: move only y -> slope = df/dy\n'
-    'Floor: red $x$-axis + green $y$-axis through $p$.',
-    transform=ax.transAxes, fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
-show_maximized(fig3)
+    ax.set_xlabel('x', fontsize=FS_AXIS)
+    ax.set_ylabel('y', fontsize=FS_AXIS)
+    ax.set_zlabel('f', fontsize=FS_AXIS)
+    ax.set_zlim(z_floor3 - 0.05, float(np.max(ZZ)) + 0.1)
+    ax.tick_params(labelsize=FS_ANNOT)
+    ax.legend(loc='upper left', fontsize=FS_LEGEND - 1)
+    ax.text2D(
+        0.02, 0.02,
+        'Red: move only x  -> slope = df/dx\n'
+        'Green: move only y -> slope = df/dy\n'
+        'Floor: red $x$-axis + green $y$-axis through $p$.',
+        transform=ax.transAxes, fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
+    return fig3
+
 
 
 # -------------------------------------------------------
 # FIGURE 4: Tangent plane + partial tangent lines + climb direction
 # -------------------------------------------------------
-fig4 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
-fig4.suptitle(
-    r'Step 4: Tangent plane with partial lines and climbing direction',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
-ax = fig4.add_subplot(111, projection='3d')
+def build_step_4():
+    fig4 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
+    fig4.suptitle(
+        r'Step 4: Tangent plane with partial lines and climbing direction',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
+    ax = fig4.add_subplot(111, projection='3d')
 
-ax.plot_surface(XX, YY, ZZ, cmap=SURF_CMAP, linewidth=0, alpha=SURF_ALPHA)
-ax.scatter([px], [py], [pz], s=70, c='k', depthshade=False, label='point p')
+    ax.plot_surface(XX, YY, ZZ, cmap=SURF_CMAP, linewidth=0, alpha=SURF_ALPHA)
+    ax.scatter([px], [py], [pz], s=70, c='k', depthshade=False, label='point p')
 
-# tangent plane patch around the point (kept compact with modest slopes)
-u = np.linspace(-0.55, 0.55, 14)
-v = np.linspace(-0.55, 0.55, 14)
-UU, VV = np.meshgrid(u, v)
-ZZ_plane = pz + fx * UU + fy * VV
-ax.plot_surface(px + UU, py + VV, ZZ_plane, color='orange', alpha=0.45)
+    # tangent plane patch around the point (kept compact with modest slopes)
+    u = np.linspace(-0.55, 0.55, 14)
+    v = np.linspace(-0.55, 0.55, 14)
+    UU, VV = np.meshgrid(u, v)
+    ZZ_plane = pz + fx * UU + fy * VV
+    ax.plot_surface(px + UU, py + VV, ZZ_plane, color='orange', alpha=0.45)
 
-# Climbing / descent: same arrow length, opposite directions in the tangent plane
-g_norm = np.hypot(fx, fy) + 1e-12
-ux, uy = fx / g_norm, fy / g_norm
-# 3D direction along the plane: (ux, uy, |grad|) has Euclidean length sqrt(1+|grad|^2)
-climb_dir = np.array([ux, uy, g_norm], dtype=float)
-climb_dir = climb_dir / (np.linalg.norm(climb_dir) + 1e-12)
-arrow_len = 0.85
+    # Climbing / descent: same arrow length, opposite directions in the tangent plane
+    g_norm = np.hypot(fx, fy) + 1e-12
+    ux, uy = fx / g_norm, fy / g_norm
+    # 3D direction along the plane: (ux, uy, |grad|) has Euclidean length sqrt(1+|grad|^2)
+    climb_dir = np.array([ux, uy, g_norm], dtype=float)
+    climb_dir = climb_dir / (np.linalg.norm(climb_dir) + 1e-12)
+    arrow_len = 0.85
 
-# Contour map + red/green x/y axes on the floor + climb/descent direction
-z_floor4 = float(np.min(ZZ)) - 0.28
-ax.contourf(
-    XX, YY, ZZ, zdir='z', offset=z_floor4,
-    levels=20, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA,
-)
-_plot_floor_contour_polylines(
-    ax, XX, YY, ZZ, z_floor4 + 0.02, levels=20, color='0.35', lw=0.9,
-)
-_plot_floor_contour_polylines(
-    ax, XX, YY, ZZ, z_floor4 + 0.02, levels=[pz], color='#111111', lw=2.0,
-)
-z_ax4 = _draw_floor_xy_axes(ax, px, py, z_floor4, half=0.75)
-# Partial lines on the hyperplane + matching floor lines
-_draw_partial_lines_on_tangent(
-    ax, px, py, pz, fx, fy, half=0.55,
-    label_x=rf'$\partial f/\partial x$ line (slope={fx:.2f})',
-    label_y=rf'$\partial f/\partial y$ line (slope={fy:.2f})',
-    z_floor=z_ax4,
-)
-_coated_arrow3d(
-    ax, (px, py, pz), arrow_len * climb_dir,
-    color=C_CLIMB, lw=PARTIAL_LW,
-    label=rf'climb $\nabla f$  ($|\nabla f|={g_norm:.2f}$)',
-)
-_coated_arrow3d(
-    ax, (px, py, pz), -arrow_len * climb_dir,
-    color=C_DESC, lw=PARTIAL_LW,
-    label=r'descent $-\nabla f$ (GD)',
-)
-# Floor mirrors of climb / descent (same colors, white-coated)
-floor_seg = np.linspace(0.0, arrow_len, 40)
-_mirror_on_floor(
-    ax, px + floor_seg * ux, py + floor_seg * uy, z_ax4,
-    color=C_CLIMB, label=r'floor: climb $\nabla f$',
-)
-_mirror_on_floor(
-    ax, px - floor_seg * ux, py - floor_seg * uy, z_ax4,
-    color=C_DESC, label=r'floor: descent $-\nabla f$',
-)
-ax.scatter([px], [py], [z_ax4], s=55, c='k', depthshade=False, zorder=5)
+    # Contour map + red/green x/y axes on the floor + climb/descent direction
+    z_floor4 = float(np.min(ZZ)) - 0.28
+    ax.contourf(
+        XX, YY, ZZ, zdir='z', offset=z_floor4,
+        levels=20, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA,
+    )
+    _plot_floor_contour_polylines(
+        ax, XX, YY, ZZ, z_floor4 + 0.02, levels=20, color='0.35', lw=0.9,
+    )
+    _plot_floor_contour_polylines(
+        ax, XX, YY, ZZ, z_floor4 + 0.02, levels=[pz], color='#111111', lw=2.0,
+    )
+    z_ax4 = _draw_floor_xy_axes(ax, px, py, z_floor4, half=0.75)
+    # Partial lines on the hyperplane + matching floor lines
+    _draw_partial_lines_on_tangent(
+        ax, px, py, pz, fx, fy, half=0.55,
+        label_x=rf'$\partial f/\partial x$ line (slope={fx:.2f})',
+        label_y=rf'$\partial f/\partial y$ line (slope={fy:.2f})',
+        z_floor=z_ax4,
+    )
+    _coated_arrow3d(
+        ax, (px, py, pz), arrow_len * climb_dir,
+        color=C_CLIMB, lw=PARTIAL_LW,
+        label=rf'climb $\nabla f$  ($|\nabla f|={g_norm:.2f}$)',
+    )
+    _coated_arrow3d(
+        ax, (px, py, pz), -arrow_len * climb_dir,
+        color=C_DESC, lw=PARTIAL_LW,
+        label=r'descent $-\nabla f$ (GD)',
+    )
+    # Floor mirrors of climb / descent (same colors, white-coated)
+    floor_seg = np.linspace(0.0, arrow_len, 40)
+    _mirror_on_floor(
+        ax, px + floor_seg * ux, py + floor_seg * uy, z_ax4,
+        color=C_CLIMB, label=r'floor: climb $\nabla f$',
+    )
+    _mirror_on_floor(
+        ax, px - floor_seg * ux, py - floor_seg * uy, z_ax4,
+        color=C_DESC, label=r'floor: descent $-\nabla f$',
+    )
+    ax.scatter([px], [py], [z_ax4], s=55, c='k', depthshade=False, zorder=5)
 
-ax.set_xlabel('x', fontsize=FS_AXIS)
-ax.set_ylabel('y', fontsize=FS_AXIS)
-ax.set_zlabel('f', fontsize=FS_AXIS)
-ax.set_zlim(z_floor4 - 0.05, float(np.max(ZZ)) + 0.1)
-ax.tick_params(labelsize=FS_ANNOT)
-ax.legend(loc='upper left', fontsize=FS_LEGEND)
-ax.text2D(
-    0.02, 0.02,
-    'Floor: red $x$-axis + green $y$-axis + $\\pm\\nabla f$ direction.\n'
-    'Red / green: partial lines in the plane (same colors as the floor axes).\n'
-    'Orange / purple: climb $\\nabla f$ and descent $-\\nabla f$, equal length.',
-    transform=ax.transAxes, fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
-show_maximized(fig4)
+    ax.set_xlabel('x', fontsize=FS_AXIS)
+    ax.set_ylabel('y', fontsize=FS_AXIS)
+    ax.set_zlabel('f', fontsize=FS_AXIS)
+    ax.set_zlim(z_floor4 - 0.05, float(np.max(ZZ)) + 0.1)
+    ax.tick_params(labelsize=FS_ANNOT)
+    ax.legend(loc='upper left', fontsize=FS_LEGEND)
+    ax.text2D(
+        0.02, 0.02,
+        'Floor: red $x$-axis + green $y$-axis + $\\pm\\nabla f$ direction.\n'
+        'Red / green: partial lines in the plane (same colors as the floor axes).\n'
+        'Orange / purple: climb $\\nabla f$ and descent $-\\nabla f$, equal length.',
+        transform=ax.transAxes, fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
+    return fig4
+
 
 
 # -------------------------------------------------------
 # FIGURE 5: Gradient field on the contour map + 3D uphill arrow
 # -------------------------------------------------------
-fig5 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
-fig5.suptitle(
-    r'Step 5: Gradient $\nabla f=(\partial_x f,\partial_y f)$ points uphill',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_5():
+    fig5 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
+    fig5.suptitle(
+        r'Step 5: Gradient $\nabla f=(\partial_x f,\partial_y f)$ points uphill',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-# Shared point on BOTH panels.
-px5, py5 = 1.0, 0.5
-pz5 = f2d(px5, py5)
-fx5, fy5 = f2d_dx(px5, py5), f2d_dy(px5, py5)
+    # Shared point on BOTH panels.
+    px5, py5 = 1.0, 0.5
+    pz5 = f2d(px5, py5)
+    fx5, fy5 = f2d_dx(px5, py5), f2d_dy(px5, py5)
 
-ax0 = fig5.add_subplot(1, 2, 1)
-cs = ax0.contourf(XX, YY, ZZ, levels=20, cmap=FLOOR_CMAP, alpha=0.75)
-# 2D floor contours: NOT white-coated (filled map + plain contour lines only)
-ax0.contour(XX, YY, ZZ, levels=20, colors='0.35', linewidths=0.6, alpha=0.45)
-ax0.contour(
-    XX, YY, ZZ, levels=[pz5], colors='#1a1a1a', linewidths=2.0, alpha=0.95,
-)
-# Background quiver field (subsampled) -- plain, not coated
-step = 6
-GX = f2d_dx(XX, YY)
-GY = f2d_dy(XX, YY)
-ax0.quiver(
-    XX[::step, ::step], YY[::step, ::step],
-    GX[::step, ::step], GY[::step, ::step],
-    color='0.45', angles='xy', scale_units='xy', scale=8.0, alpha=0.45,
-)
-# Gradient vector AT p (horizontal): points to increasing f, normal to the contour
-g5 = np.hypot(fx5, fy5) + 1e-12
-grad_disp = 0.55  # display length in domain units
-# White-coated climb arrow at p
-_coated_line(
-    ax0,
-    [px5, px5 + grad_disp * fx5 / g5],
-    [py5, py5 + grad_disp * fy5 / g5],
-    color=C_CLIMB, lw=PARTIAL_LW, label=r'$\nabla f$ at $p$', zorder=6,
-)
-# Arrow head (white undercoat only when COAT_LINES is on)
-if COAT_LINES:
+    ax0 = fig5.add_subplot(1, 2, 1)
+    cs = ax0.contourf(XX, YY, ZZ, levels=20, cmap=FLOOR_CMAP, alpha=0.75)
+    # 2D floor contours: NOT white-coated (filled map + plain contour lines only)
+    ax0.contour(XX, YY, ZZ, levels=20, colors='0.35', linewidths=0.6, alpha=0.45)
+    ax0.contour(
+        XX, YY, ZZ, levels=[pz5], colors='#1a1a1a', linewidths=2.0, alpha=0.95,
+    )
+    # Background quiver field (subsampled) -- plain, not coated
+    step = 6
+    GX = f2d_dx(XX, YY)
+    GY = f2d_dy(XX, YY)
+    ax0.quiver(
+        XX[::step, ::step], YY[::step, ::step],
+        GX[::step, ::step], GY[::step, ::step],
+        color='0.45', angles='xy', scale_units='xy', scale=8.0, alpha=0.45,
+    )
+    # Gradient vector AT p (horizontal): points to increasing f, normal to the contour
+    g5 = np.hypot(fx5, fy5) + 1e-12
+    grad_disp = 0.55  # display length in domain units
+    # White-coated climb arrow at p
+    _coated_line(
+        ax0,
+        [px5, px5 + grad_disp * fx5 / g5],
+        [py5, py5 + grad_disp * fy5 / g5],
+        color=C_CLIMB, lw=PARTIAL_LW, label=r'$\nabla f$ at $p$', zorder=6,
+    )
+    # Arrow head (white undercoat only when COAT_LINES is on)
+    if COAT_LINES:
+        ax0.annotate(
+            '',
+            xy=(px5 + grad_disp * fx5 / g5, py5 + grad_disp * fy5 / g5),
+            xytext=(px5, py5),
+            arrowprops=dict(arrowstyle='->', color='white', lw=PARTIAL_LW + COAT_EXTRA,
+                            mutation_scale=18),
+            zorder=6,
+        )
     ax0.annotate(
         '',
         xy=(px5 + grad_disp * fx5 / g5, py5 + grad_disp * fy5 / g5),
         xytext=(px5, py5),
-        arrowprops=dict(arrowstyle='->', color='white', lw=PARTIAL_LW + COAT_EXTRA,
-                        mutation_scale=18),
-        zorder=6,
+        arrowprops=dict(arrowstyle='->', color=C_CLIMB, lw=PARTIAL_LW, mutation_scale=14),
+        zorder=7,
     )
-ax0.annotate(
-    '',
-    xy=(px5 + grad_disp * fx5 / g5, py5 + grad_disp * fy5 / g5),
-    xytext=(px5, py5),
-    arrowprops=dict(arrowstyle='->', color=C_CLIMB, lw=PARTIAL_LW, mutation_scale=14),
-    zorder=7,
-)
-# Tangent to the contour at p: rotate grad by 90 deg -> (-fy, fx)
-tx, ty = -fy5 / g5, fx5 / g5
-tang_half = 0.70
-_coated_line(
-    ax0,
-    [px5 - tang_half * tx, px5 + tang_half * tx],
-    [py5 - tang_half * ty, py5 + tang_half * ty],
-    color='navy', lw=PARTIAL_LW,
-    label=r'contour tangent at $p$  ($\perp\nabla f$)', zorder=5,
-)
-# Red x-axis / green y-axis cues through p (same palette as 3D floors)
-axis_half5 = 0.55
-_coated_line(
-    ax0, [px5 - axis_half5, px5 + axis_half5], [py5, py5],
-    color=C_DX, lw=PARTIAL_LW, zorder=4, label=r'$x$-axis',
-)
-_coated_line(
-    ax0, [px5, px5], [py5 - axis_half5, py5 + axis_half5],
-    color=C_DY, lw=PARTIAL_LW, zorder=4, label=r'$y$-axis',
-)
-ax0.scatter([px5], [py5], c='k', s=70, zorder=7, label=r'$p=(1.0,\ 0.5)$')
-ax0.set_aspect('equal')
-ax0.set_xlabel('x', fontsize=FS_AXIS)
-ax0.set_ylabel('y', fontsize=FS_AXIS)
-ax0.set_title(r'$\nabla f \perp$ contour through $p$', fontsize=FS_AX_TITLE)
-ax0.tick_params(axis='both', labelsize=FS_TICK)
-ax0.legend(loc='upper right', fontsize=FS_LEGEND - 1, framealpha=0.92)
-fig5.colorbar(cs, ax=ax0, fraction=0.046, pad=0.04)
+    # Tangent to the contour at p: rotate grad by 90 deg -> (-fy, fx)
+    tx, ty = -fy5 / g5, fx5 / g5
+    tang_half = 0.70
+    _coated_line(
+        ax0,
+        [px5 - tang_half * tx, px5 + tang_half * tx],
+        [py5 - tang_half * ty, py5 + tang_half * ty],
+        color='navy', lw=PARTIAL_LW,
+        label=r'contour tangent at $p$  ($\perp\nabla f$)', zorder=5,
+    )
+    # Red x-axis / green y-axis cues through p (same palette as 3D floors)
+    axis_half5 = 0.55
+    _coated_line(
+        ax0, [px5 - axis_half5, px5 + axis_half5], [py5, py5],
+        color=C_DX, lw=PARTIAL_LW, zorder=4, label=r'$x$-axis',
+    )
+    _coated_line(
+        ax0, [px5, px5], [py5 - axis_half5, py5 + axis_half5],
+        color=C_DY, lw=PARTIAL_LW, zorder=4, label=r'$y$-axis',
+    )
+    ax0.scatter([px5], [py5], c='k', s=70, zorder=7, label=r'$p=(1.0,\ 0.5)$')
+    ax0.set_aspect('equal')
+    ax0.set_xlabel('x', fontsize=FS_AXIS)
+    ax0.set_ylabel('y', fontsize=FS_AXIS)
+    ax0.set_title(r'$\nabla f \perp$ contour through $p$', fontsize=FS_AX_TITLE)
+    ax0.tick_params(axis='both', labelsize=FS_TICK)
+    ax0.legend(loc='upper right', fontsize=FS_LEGEND - 1, framealpha=0.92)
+    fig5.colorbar(cs, ax=ax0, fraction=0.046, pad=0.04)
 
-ax1 = fig5.add_subplot(1, 2, 2, projection='3d')
-z_floor5 = float(np.min(ZZ)) - 0.28
-ax1.plot_surface(XX, YY, ZZ, cmap=SURF_CMAP, alpha=SURF_ALPHA, linewidth=0)
-ax1.contourf(
-    XX, YY, ZZ, zdir='z', offset=z_floor5,
-    levels=20, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA,
-)
-_plot_floor_contour_polylines(
-    ax1, XX, YY, ZZ, z_floor5 + 0.02, levels=20, color='0.35', lw=0.9,
-)
-_plot_floor_contour_polylines(
-    ax1, XX, YY, ZZ, z_floor5 + 0.02, levels=[pz5], color='#111111', lw=2.0,
-)
-z_ax5 = _draw_floor_xy_axes(ax1, px5, py5, z_floor5, half=0.70)
-# Compact tangent plane + same red/green partial lines (+ floor mirrors)
-u5 = np.linspace(-0.55, 0.55, 12)
-v5 = np.linspace(-0.55, 0.55, 12)
-U5, V5 = np.meshgrid(u5, v5)
-ax1.plot_surface(
-    px5 + U5, py5 + V5, pz5 + fx5 * U5 + fy5 * V5,
-    color='orange', alpha=0.40,
-)
-_draw_partial_lines_on_tangent(
-    ax1, px5, py5, pz5, fx5, fy5, half=0.55, z_floor=z_ax5,
-)
-ax1.scatter([px5], [py5], [pz5], c='k', s=50)
-ax1.scatter([px5], [py5], [z_ax5], c='k', s=40)
-# Same point p as the left panel; view chosen so the uphill arrow reads clearly.
-ax1.view_init(elev=22, azim=-35)
-# uphill arrow in 3D (horizontal gradient direction, rising with slope)
-scale = 0.55
-gx, gy = fx5, fy5
-gz = fx5 * gx + fy5 * gy  # directional rise for that horizontal move
-# normalize horizontal part for display length
-norm_h = np.hypot(gx, gy) + 1e-8
-climb5 = np.array([
-    scale * gx / norm_h, scale * gy / norm_h, scale * (gz / norm_h),
-])
-_coated_arrow3d(
-    ax1, (px5, py5, pz5), climb5,
-    color=C_CLIMB, lw=PARTIAL_LW, arrow_length_ratio=0.25,
-)
-# Contour-tangent on the surface (white-coated) + matching floor copy
-tx5, ty5 = -fy5 / g5, fx5 / g5
-_coated_line(
-    ax1,
-    [px5 - tang_half * tx5, px5 + tang_half * tx5],
-    [py5 - tang_half * ty5, py5 + tang_half * ty5],
-    [pz5, pz5],
-    color='navy', lw=PARTIAL_LW,
-)
-_mirror_on_floor(
-    ax1,
-    [px5, px5 + climb5[0]], [py5, py5 + climb5[1]], z_ax5,
-    color=C_CLIMB,
-)
-_mirror_on_floor(
-    ax1,
-    [px5 - tang_half * tx5, px5 + tang_half * tx5],
-    [py5 - tang_half * ty5, py5 + tang_half * ty5],
-    z_ax5, color='navy',
-)
-ax1.set_xlabel('x', fontsize=FS_AXIS)
-ax1.set_ylabel('y', fontsize=FS_AXIS)
-ax1.set_zlabel('f', fontsize=FS_AXIS)
-ax1.set_zlim(z_floor5 - 0.05, float(np.max(ZZ)) + 0.1)
-ax1.set_title('Uphill direction on the surface', fontsize=FS_AX_TITLE)
-ax1.tick_params(labelsize=FS_ANNOT)
-ax1.text2D(
-    0.02, 0.02,
-    r'Same $p=(1.0,\ 0.5)$ as the left panel.' + '\n'
-    'Red / green / orange lines on the tangent plane\n'
-    'have matching white-coated copies on the floor.',
-    transform=ax1.transAxes, fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
+    ax1 = fig5.add_subplot(1, 2, 2, projection='3d')
+    z_floor5 = float(np.min(ZZ)) - 0.28
+    ax1.plot_surface(XX, YY, ZZ, cmap=SURF_CMAP, alpha=SURF_ALPHA, linewidth=0)
+    ax1.contourf(
+        XX, YY, ZZ, zdir='z', offset=z_floor5,
+        levels=20, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA,
+    )
+    _plot_floor_contour_polylines(
+        ax1, XX, YY, ZZ, z_floor5 + 0.02, levels=20, color='0.35', lw=0.9,
+    )
+    _plot_floor_contour_polylines(
+        ax1, XX, YY, ZZ, z_floor5 + 0.02, levels=[pz5], color='#111111', lw=2.0,
+    )
+    z_ax5 = _draw_floor_xy_axes(ax1, px5, py5, z_floor5, half=0.70)
+    # Compact tangent plane + same red/green partial lines (+ floor mirrors)
+    u5 = np.linspace(-0.55, 0.55, 12)
+    v5 = np.linspace(-0.55, 0.55, 12)
+    U5, V5 = np.meshgrid(u5, v5)
+    ax1.plot_surface(
+        px5 + U5, py5 + V5, pz5 + fx5 * U5 + fy5 * V5,
+        color='orange', alpha=0.40,
+    )
+    _draw_partial_lines_on_tangent(
+        ax1, px5, py5, pz5, fx5, fy5, half=0.55, z_floor=z_ax5,
+    )
+    ax1.scatter([px5], [py5], [pz5], c='k', s=50)
+    ax1.scatter([px5], [py5], [z_ax5], c='k', s=40)
+    # Same point p as the left panel; view chosen so the uphill arrow reads clearly.
+    ax1.view_init(elev=22, azim=-35)
+    # uphill arrow in 3D (horizontal gradient direction, rising with slope)
+    scale = 0.55
+    gx, gy = fx5, fy5
+    gz = fx5 * gx + fy5 * gy  # directional rise for that horizontal move
+    # normalize horizontal part for display length
+    norm_h = np.hypot(gx, gy) + 1e-8
+    climb5 = np.array([
+        scale * gx / norm_h, scale * gy / norm_h, scale * (gz / norm_h),
+    ])
+    _coated_arrow3d(
+        ax1, (px5, py5, pz5), climb5,
+        color=C_CLIMB, lw=PARTIAL_LW, arrow_length_ratio=0.25,
+    )
+    # Contour-tangent on the surface (white-coated) + matching floor copy
+    tx5, ty5 = -fy5 / g5, fx5 / g5
+    _coated_line(
+        ax1,
+        [px5 - tang_half * tx5, px5 + tang_half * tx5],
+        [py5 - tang_half * ty5, py5 + tang_half * ty5],
+        [pz5, pz5],
+        color='navy', lw=PARTIAL_LW,
+    )
+    _mirror_on_floor(
+        ax1,
+        [px5, px5 + climb5[0]], [py5, py5 + climb5[1]], z_ax5,
+        color=C_CLIMB,
+    )
+    _mirror_on_floor(
+        ax1,
+        [px5 - tang_half * tx5, px5 + tang_half * tx5],
+        [py5 - tang_half * ty5, py5 + tang_half * ty5],
+        z_ax5, color='navy',
+    )
+    ax1.set_xlabel('x', fontsize=FS_AXIS)
+    ax1.set_ylabel('y', fontsize=FS_AXIS)
+    ax1.set_zlabel('f', fontsize=FS_AXIS)
+    ax1.set_zlim(z_floor5 - 0.05, float(np.max(ZZ)) + 0.1)
+    ax1.set_title('Uphill direction on the surface', fontsize=FS_AX_TITLE)
+    ax1.tick_params(labelsize=FS_ANNOT)
+    ax1.text2D(
+        0.02, 0.02,
+        r'Same $p=(1.0,\ 0.5)$ as the left panel.' + '\n'
+        'Red / green / orange lines on the tangent plane\n'
+        'have matching white-coated copies on the floor.',
+        transform=ax1.transAxes, fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
 
-fig5.tight_layout(rect=[0, 0, 1, 0.94])
-show_maximized(fig5)
+    fig5.tight_layout(rect=[0, 0, 1, 0.94])
+    return fig5
+
 
 
 # -------------------------------------------------------
 # FIGURE 6: Contour map painted on the floor of the 3D graph
 # -------------------------------------------------------
-fig6 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
-fig6.suptitle(
-    r'Step 6: Contours live on the domain -- shown on the floor of the 3D graph',
-    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
-)
-ax = fig6.add_subplot(111, projection='3d')
-z_floor6 = float(np.min(ZZ)) - 0.28
-z_lines6 = z_floor6 + 0.02  # slightly above the fill to avoid z-fighting
+def build_step_6():
+    fig6 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
+    fig6.suptitle(
+        r'Step 6: Contours live on the domain -- shown on the floor of the 3D graph',
+        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    )
+    ax = fig6.add_subplot(111, projection='3d')
+    z_floor6 = float(np.min(ZZ)) - 0.28
+    z_lines6 = z_floor6 + 0.02  # slightly above the fill to avoid z-fighting
 
-# Surface above (thick tones); floor contours stay thin
-ax.plot_surface(
-    XX, YY, ZZ, cmap=SURF_CMAP, linewidth=0, antialiased=True, alpha=SURF_ALPHA,
-)
-# Contour fill on the floor
-ax.contourf(
-    XX, YY, ZZ, zdir='z', offset=z_floor6,
-    levels=20, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA,
-)
-# Contour polylines as real 3D plots (visible, unlike ax.contour in 3D)
-_plot_floor_contour_polylines(
-    ax, XX, YY, ZZ, z_lines6, levels=20, color='0.15', lw=1.2,
-)
-# Same lecture point as Step 5: p = (1.0, 0.5)
-_plot_floor_contour_polylines(
-    ax, XX, YY, ZZ, z_lines6, levels=[pz5], color='#000000', lw=PARTIAL_LW + 0.4,
-    label=r'contour through $p$',
-)
-z_ax6 = _draw_floor_xy_axes(ax, px5, py5, z_floor6, half=0.90)
+    # Surface above (thick tones); floor contours stay thin
+    ax.plot_surface(
+        XX, YY, ZZ, cmap=SURF_CMAP, linewidth=0, antialiased=True, alpha=SURF_ALPHA,
+    )
+    # Contour fill on the floor
+    ax.contourf(
+        XX, YY, ZZ, zdir='z', offset=z_floor6,
+        levels=20, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA,
+    )
+    # Contour polylines as real 3D plots (visible, unlike ax.contour in 3D)
+    _plot_floor_contour_polylines(
+        ax, XX, YY, ZZ, z_lines6, levels=20, color='0.15', lw=1.2,
+    )
+    # Same lecture point as Step 5: p = (1.0, 0.5)
+    _plot_floor_contour_polylines(
+        ax, XX, YY, ZZ, z_lines6, levels=[pz5], color='#000000', lw=PARTIAL_LW + 0.4,
+        label=r'contour through $p$',
+    )
+    z_ax6 = _draw_floor_xy_axes(ax, px5, py5, z_floor6, half=0.90)
 
-g6 = np.hypot(fx5, fy5) + 1e-12
-grad_disp = 0.70
-ux6, uy6 = fx5 / g6, fy5 / g6
-tx, ty = -uy6, ux6
-tang_half = 0.75
-# Surface: contour tangent + climb (white-coated)
-_coated_line(
-    ax,
-    [px5 - tang_half * tx, px5 + tang_half * tx],
-    [py5 - tang_half * ty, py5 + tang_half * ty],
-    [pz5, pz5],
-    color='navy', lw=PARTIAL_LW,
-    label=r'contour tangent on surface',
-)
-climb6 = np.array([grad_disp * ux6, grad_disp * uy6, grad_disp * g6])
-_coated_arrow3d(
-    ax, (px5, py5, pz5), climb6,
-    color=C_CLIMB, lw=PARTIAL_LW,
-    label=r'$\nabla f$ on surface', arrow_length_ratio=0.22,
-)
-# Matching white-coated lines on the 3D floor
-_mirror_on_floor(
-    ax,
-    [px5 - tang_half * tx, px5 + tang_half * tx],
-    [py5 - tang_half * ty, py5 + tang_half * ty],
-    z_ax6, color='navy', label=r'contour tangent on floor',
-)
-_coated_arrow3d(
-    ax, (px5, py5, z_ax6), (grad_disp * ux6, grad_disp * uy6, 0.0),
-    color=C_CLIMB, lw=PARTIAL_LW,
-    label=r'$\nabla f$ on the floor', arrow_length_ratio=0.22,
-)
-ax.scatter([px5], [py5], [pz5], s=90, c='k', depthshade=False, zorder=5,
-           label=r'$p=(1.0,\ 0.5)$ on surface')
-ax.scatter([px5], [py5], [z_ax6], s=80, c='k', depthshade=False, zorder=5,
-           label=r'$p$ on floor')
+    g6 = np.hypot(fx5, fy5) + 1e-12
+    grad_disp = 0.70
+    ux6, uy6 = fx5 / g6, fy5 / g6
+    tx, ty = -uy6, ux6
+    tang_half = 0.75
+    # Surface: contour tangent + climb (white-coated)
+    _coated_line(
+        ax,
+        [px5 - tang_half * tx, px5 + tang_half * tx],
+        [py5 - tang_half * ty, py5 + tang_half * ty],
+        [pz5, pz5],
+        color='navy', lw=PARTIAL_LW,
+        label=r'contour tangent on surface',
+    )
+    climb6 = np.array([grad_disp * ux6, grad_disp * uy6, grad_disp * g6])
+    _coated_arrow3d(
+        ax, (px5, py5, pz5), climb6,
+        color=C_CLIMB, lw=PARTIAL_LW,
+        label=r'$\nabla f$ on surface', arrow_length_ratio=0.22,
+    )
+    # Matching white-coated lines on the 3D floor
+    _mirror_on_floor(
+        ax,
+        [px5 - tang_half * tx, px5 + tang_half * tx],
+        [py5 - tang_half * ty, py5 + tang_half * ty],
+        z_ax6, color='navy', label=r'contour tangent on floor',
+    )
+    _coated_arrow3d(
+        ax, (px5, py5, z_ax6), (grad_disp * ux6, grad_disp * uy6, 0.0),
+        color=C_CLIMB, lw=PARTIAL_LW,
+        label=r'$\nabla f$ on the floor', arrow_length_ratio=0.22,
+    )
+    ax.scatter([px5], [py5], [pz5], s=90, c='k', depthshade=False, zorder=5,
+               label=r'$p=(1.0,\ 0.5)$ on surface')
+    ax.scatter([px5], [py5], [z_ax6], s=80, c='k', depthshade=False, zorder=5,
+               label=r'$p$ on floor')
 
-ax.view_init(elev=32, azim=-45)
-ax.set_xlabel('x', fontsize=FS_AXIS)
-ax.set_ylabel('y', fontsize=FS_AXIS)
-ax.set_zlabel('f', fontsize=FS_AXIS)
-ax.set_zlim(z_floor6 - 0.05, float(np.max(ZZ)) + 0.1)
-ax.tick_params(labelsize=FS_ANNOT)
-ax.legend(loc='upper left', fontsize=FS_LEGEND - 1, framealpha=0.92)
-ax.text2D(
-    0.02, 0.02,
-    r'Point $p=(1.0,\ 0.5)$ (same as Step 5).' + '\n'
-    'Red = $x$-axis, green = $y$-axis (through $p$).\n'
-    r'$\nabla f$ on the floor is $\perp$ to the contour through $p$.',
-    transform=ax.transAxes, fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
-fig6.tight_layout(rect=[0, 0, 1, 0.94])
-show_maximized(fig6)
+    ax.view_init(elev=32, azim=-45)
+    ax.set_xlabel('x', fontsize=FS_AXIS)
+    ax.set_ylabel('y', fontsize=FS_AXIS)
+    ax.set_zlabel('f', fontsize=FS_AXIS)
+    ax.set_zlim(z_floor6 - 0.05, float(np.max(ZZ)) + 0.1)
+    ax.tick_params(labelsize=FS_ANNOT)
+    ax.legend(loc='upper left', fontsize=FS_LEGEND - 1, framealpha=0.92)
+    ax.text2D(
+        0.02, 0.02,
+        r'Point $p=(1.0,\ 0.5)$ (same as Step 5).' + '\n'
+        'Red = $x$-axis, green = $y$-axis (through $p$).\n'
+        r'$\nabla f$ on the floor is $\perp$ to the contour through $p$.',
+        transform=ax.transAxes, fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
+    fig6.tight_layout(rect=[0, 0, 1, 0.94])
+    return fig6
+
 
 
 # -------------------------------------------------------
 # FIGURE 7: Original f together with its partial-derivative fields
 # -------------------------------------------------------
-fig7_fields = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
-fig7_fields.suptitle(
-    r'Step 7: The surface $f$ and the fields $\partial f/\partial x_1$, $\partial f/\partial x_2$',
-    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
-)
+def build_step_7():
+    fig7_fields = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
+    fig7_fields.suptitle(
+        r'Step 7: The surface $f$ and the fields $\partial f/\partial x_1$, $\partial f/\partial x_2$',
+        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    )
 
-Za = f2d_dx(XX, YY)
-Zb = f2d_dy(XX, YY)
+    Za = f2d_dx(XX, YY)
+    Zb = f2d_dy(XX, YY)
 
-z_floor7 = float(np.min(ZZ)) - 0.28
-ax0 = fig7_fields.add_subplot(1, 3, 1, projection='3d')
-s0 = ax0.plot_surface(XX, YY, ZZ, cmap=SURF_CMAP, linewidth=0, alpha=SURF_ALPHA)
-ax0.contourf(XX, YY, ZZ, zdir='z', offset=z_floor7, levels=16, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA)
-z_ax7 = _draw_floor_xy_axes(ax0, px, py, z_floor7, half=0.7, labels=False)
-ax0.scatter([px], [py], [pz], s=55, c='k', depthshade=False)
-ax0.scatter([px], [py], [z_ax7], s=35, c='k', depthshade=False)
-ax0.set_title(r'$f(x_1,x_2)$  (original)', fontsize=FS_AX_TITLE - 2)
-ax0.set_xlabel(r'$x_1$', fontsize=FS_AXIS, color=C_DX)
-ax0.set_ylabel(r'$x_2$', fontsize=FS_AXIS, color=C_DY)
-ax0.set_zlabel(r'$f$', fontsize=FS_AXIS)
-ax0.set_zlim(z_floor7 - 0.05, float(np.max(ZZ)) + 0.1)
-ax0.tick_params(labelsize=FS_ANNOT)
-fig7_fields.colorbar(s0, ax=ax0, shrink=0.45, pad=0.08)
+    z_floor7 = float(np.min(ZZ)) - 0.28
+    ax0 = fig7_fields.add_subplot(1, 3, 1, projection='3d')
+    s0 = ax0.plot_surface(XX, YY, ZZ, cmap=SURF_CMAP, linewidth=0, alpha=SURF_ALPHA)
+    ax0.contourf(XX, YY, ZZ, zdir='z', offset=z_floor7, levels=16, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA)
+    z_ax7 = _draw_floor_xy_axes(ax0, px, py, z_floor7, half=0.7, labels=False)
+    ax0.scatter([px], [py], [pz], s=55, c='k', depthshade=False)
+    ax0.scatter([px], [py], [z_ax7], s=35, c='k', depthshade=False)
+    ax0.set_title(r'$f(x_1,x_2)$  (original)', fontsize=FS_AX_TITLE - 2)
+    ax0.set_xlabel(r'$x_1$', fontsize=FS_AXIS, color=C_DX)
+    ax0.set_ylabel(r'$x_2$', fontsize=FS_AXIS, color=C_DY)
+    ax0.set_zlabel(r'$f$', fontsize=FS_AXIS)
+    ax0.set_zlim(z_floor7 - 0.05, float(np.max(ZZ)) + 0.1)
+    ax0.tick_params(labelsize=FS_ANNOT)
+    fig7_fields.colorbar(s0, ax=ax0, shrink=0.45, pad=0.08)
 
-z_floor7a = float(np.min(Za)) - 0.15 * (float(np.max(Za)) - float(np.min(Za)) + 1e-9)
-ax1 = fig7_fields.add_subplot(1, 3, 2, projection='3d')
-s1 = ax1.plot_surface(XX, YY, Za, cmap=SURF_CMAP, linewidth=0, alpha=SURF_ALPHA)
-ax1.contourf(XX, YY, Za, zdir='z', offset=z_floor7a, levels=16, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA)
-_draw_floor_xy_axes(ax1, px, py, z_floor7a, half=0.7, labels=False)
-ax1.scatter([px], [py], [fx], s=55, c='k', depthshade=False)
-ax1.set_title(r'$\partial f/\partial x_1$  (from $f$)', fontsize=FS_AX_TITLE - 2, color=C_DX)
-ax1.set_xlabel(r'$x_1$', fontsize=FS_AXIS, color=C_DX)
-ax1.set_ylabel(r'$x_2$', fontsize=FS_AXIS, color=C_DY)
-ax1.set_zlabel(r'$\partial f/\partial x_1$', fontsize=FS_AXIS)
-ax1.set_zlim(z_floor7a - 0.05, float(np.max(Za)) + 0.05)
-ax1.tick_params(labelsize=FS_ANNOT)
-fig7_fields.colorbar(s1, ax=ax1, shrink=0.45, pad=0.08)
+    z_floor7a = float(np.min(Za)) - 0.15 * (float(np.max(Za)) - float(np.min(Za)) + 1e-9)
+    ax1 = fig7_fields.add_subplot(1, 3, 2, projection='3d')
+    s1 = ax1.plot_surface(XX, YY, Za, cmap=SURF_CMAP, linewidth=0, alpha=SURF_ALPHA)
+    ax1.contourf(XX, YY, Za, zdir='z', offset=z_floor7a, levels=16, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA)
+    _draw_floor_xy_axes(ax1, px, py, z_floor7a, half=0.7, labels=False)
+    ax1.scatter([px], [py], [fx], s=55, c='k', depthshade=False)
+    ax1.set_title(r'$\partial f/\partial x_1$  (from $f$)', fontsize=FS_AX_TITLE - 2, color=C_DX)
+    ax1.set_xlabel(r'$x_1$', fontsize=FS_AXIS, color=C_DX)
+    ax1.set_ylabel(r'$x_2$', fontsize=FS_AXIS, color=C_DY)
+    ax1.set_zlabel(r'$\partial f/\partial x_1$', fontsize=FS_AXIS)
+    ax1.set_zlim(z_floor7a - 0.05, float(np.max(Za)) + 0.05)
+    ax1.tick_params(labelsize=FS_ANNOT)
+    fig7_fields.colorbar(s1, ax=ax1, shrink=0.45, pad=0.08)
 
-z_floor7b = float(np.min(Zb)) - 0.15 * (float(np.max(Zb)) - float(np.min(Zb)) + 1e-9)
-ax2 = fig7_fields.add_subplot(1, 3, 3, projection='3d')
-s2 = ax2.plot_surface(XX, YY, Zb, cmap=SURF_CMAP, linewidth=0, alpha=SURF_ALPHA)
-ax2.contourf(XX, YY, Zb, zdir='z', offset=z_floor7b, levels=16, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA)
-_draw_floor_xy_axes(ax2, px, py, z_floor7b, half=0.7, labels=False)
-ax2.scatter([px], [py], [fy], s=55, c='k', depthshade=False)
-ax2.set_title(r'$\partial f/\partial x_2$  (from $f$)', fontsize=FS_AX_TITLE - 2, color=C_DY)
-ax2.set_xlabel(r'$x_1$', fontsize=FS_AXIS, color=C_DX)
-ax2.set_ylabel(r'$x_2$', fontsize=FS_AXIS, color=C_DY)
-ax2.set_zlabel(r'$\partial f/\partial x_2$', fontsize=FS_AXIS)
-ax2.set_zlim(z_floor7b - 0.05, float(np.max(Zb)) + 0.05)
-ax2.tick_params(labelsize=FS_ANNOT)
-fig7_fields.colorbar(s2, ax=ax2, shrink=0.45, pad=0.08)
+    z_floor7b = float(np.min(Zb)) - 0.15 * (float(np.max(Zb)) - float(np.min(Zb)) + 1e-9)
+    ax2 = fig7_fields.add_subplot(1, 3, 3, projection='3d')
+    s2 = ax2.plot_surface(XX, YY, Zb, cmap=SURF_CMAP, linewidth=0, alpha=SURF_ALPHA)
+    ax2.contourf(XX, YY, Zb, zdir='z', offset=z_floor7b, levels=16, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA)
+    _draw_floor_xy_axes(ax2, px, py, z_floor7b, half=0.7, labels=False)
+    ax2.scatter([px], [py], [fy], s=55, c='k', depthshade=False)
+    ax2.set_title(r'$\partial f/\partial x_2$  (from $f$)', fontsize=FS_AX_TITLE - 2, color=C_DY)
+    ax2.set_xlabel(r'$x_1$', fontsize=FS_AXIS, color=C_DX)
+    ax2.set_ylabel(r'$x_2$', fontsize=FS_AXIS, color=C_DY)
+    ax2.set_zlabel(r'$\partial f/\partial x_2$', fontsize=FS_AXIS)
+    ax2.set_zlim(z_floor7b - 0.05, float(np.max(Zb)) + 0.05)
+    ax2.tick_params(labelsize=FS_ANNOT)
+    fig7_fields.colorbar(s2, ax=ax2, shrink=0.45, pad=0.08)
 
-fig7_fields.text(
-    0.5, 0.02,
-    'Left: the function whose slopes we take.  Middle/right: those slopes as surfaces.\n'
-    'Floor: red $x_1$-axis, green $x_2$-axis through the same domain point.',
-    ha='center', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
-fig7_fields.tight_layout(rect=[0, 0.07, 1, 0.93])
-show_maximized(fig7_fields)
+    fig7_fields.text(
+        0.5, 0.02,
+        'Left: the function whose slopes we take.  Middle/right: those slopes as surfaces.\n'
+        'Floor: red $x_1$-axis, green $x_2$-axis through the same domain point.',
+        ha='center', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
+    fig7_fields.tight_layout(rect=[0, 0.07, 1, 0.93])
+    return fig7_fields
+
 
 
 # -------------------------------------------------------
@@ -934,94 +949,96 @@ vv = np.linspace(-0.55, 0.55, 16)
 UU, VV = np.meshgrid(u, vv)
 ZZ_plane = pz8 + fx8 * UU + fy8 * VV
 
-fig8 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
-fig8.suptitle(
-    r'Step 8: One tangent hyperplane -- bases $\{v_1,v_2\}$ and $\{w_1,w_2\}$ '
-    r'(and both coordinate frames on the domain)',
-    fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
-)
-ax = fig8.add_subplot(111, projection='3d')
-
-# Surface f + single tangent plane
-ax.plot_surface(XX, YY, ZZ, cmap=SURF_CMAP, linewidth=0, alpha=SURF_ALPHA)
-ax.plot_surface(
-    px8 + UU, py8 + VV, ZZ_plane,
-    color=C_PLANE, alpha=0.55, shade=True,
-)
-ax.scatter([px8], [py8], [pz8], s=80, c='k', depthshade=False,
-           label=r'$p=(1.0,\ 0.5)$')
-
-# Domain plane sheet + visible red/green x1/x2 axes + blue z-frame
-floor_r = 1.6
-xf = np.linspace(px8 - floor_r, px8 + floor_r, 2)
-yf = np.linspace(py8 - floor_r, py8 + floor_r, 2)
-XF, YF = np.meshgrid(xf, yf)
-ax.plot_surface(XF, YF, np.full_like(XF, z_floor), color=C_FLOOR, alpha=0.22)
-z_ax8 = _draw_floor_xy_axes(ax, px8, py8, z_floor, half=axis_len, labels=True)
-
-def _domain_arrow(direction_xy, color, label=None, lw=AXIS_LW):
-    d = direction_xy * axis_len
-    _coated_arrow3d(
-        ax, (px8, py8, z_ax8), (d[0], d[1], 0.0),
-        color=color, lw=lw, label=label, arrow_length_ratio=0.12,
+def build_step_8():
+    fig8 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
+    fig8.suptitle(
+        r'Step 8: One tangent hyperplane -- bases $\{v_1,v_2\}$ and $\{w_1,w_2\}$ '
+        r'(and both coordinate frames on the domain)',
+        fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
     )
+    ax = fig8.add_subplot(111, projection='3d')
 
-# z-frame arrows only (x1/x2 already drawn as floor axes)
-_domain_arrow(ez1, C_Z, r'domain $z$-axes')
-_domain_arrow(ez2, C_Z, None)
-ax.scatter([px8], [py8], [z_ax8], s=55, c='k', depthshade=False)
-
-# Same red/green partial lines on the tangent hyperplane + floor mirrors
-_draw_partial_lines_on_tangent(
-    ax, px8, py8, pz8, fx8, fy8, half=0.55,
-    label_x=r'$v_1$ / $\partial f/\partial x_1$ (red)',
-    label_y=r'$v_2$ / $\partial f/\partial x_2$ (green)',
-    z_floor=z_ax8,
-)
-# Tangent vectors ON the hyperplane (ambient R^3) -- white-coated shafts + heads
-# Each has a matching white-coated domain arrow already on the floor (x or z).
-for vec, color, lab in (
-    (v1, C_X1, None),
-    (v2, C_X2, None),
-    (w1, C_Z, r'$w_1,w_2$ (z-partials)'),
-    (w2, C_Z, None),
-):
-    _coated_arrow3d(
-        ax, (px8, py8, pz8), arrow_scale * vec,
-        color=color, lw=TANGENT_LW, label=lab, arrow_length_ratio=0.15,
+    # Surface f + single tangent plane
+    ax.plot_surface(XX, YY, ZZ, cmap=SURF_CMAP, linewidth=0, alpha=SURF_ALPHA)
+    ax.plot_surface(
+        px8 + UU, py8 + VV, ZZ_plane,
+        color=C_PLANE, alpha=0.55, shade=True,
     )
-    # Horizontal projection of each tangent arrow onto the floor
-    _mirror_on_floor(
-        ax,
-        [px8, px8 + arrow_scale * vec[0]],
-        [py8, py8 + arrow_scale * vec[1]],
-        z_ax8, color=color, lw=TANGENT_LW,
-    )
+    ax.scatter([px8], [py8], [pz8], s=80, c='k', depthshade=False,
+               label=r'$p=(1.0,\ 0.5)$')
 
-ax.set_xlabel(r'$x_1$', fontsize=FS_AXIS)
-ax.set_ylabel(r'$x_2$', fontsize=FS_AXIS)
-ax.set_zlabel(r'$f$', fontsize=FS_AXIS)
-ax.tick_params(labelsize=FS_ANNOT)
-ax.legend(loc='upper left', fontsize=FS_LEGEND - 2, framealpha=0.92)
-ax.text2D(
-    0.98, 0.02,
-    r'Point $p=(1.0,\ 0.5)$ (same as Steps 5-6).' + '\n'
-    'Gold sheet = THE tangent hyperplane (one object).\n'
-    'Red = $x_1$ / $v_1$; green = $x_2$ / $v_2$.\n'
-    'Blue = $z$ axes / $w_1,w_2$ (z-partials).',
-    transform=ax.transAxes, fontsize=FS_ANNOT, ha='right', va='bottom',
-    bbox=dict(boxstyle='round', facecolor='white', alpha=0.94),
-)
-fig8.text(
-    0.5, 0.01,
-    rf'$z=Ax$,  $[w_1\,w_2]=[v_1\,v_2]B$'
-    rf'  |  recon err={recon_err:.2e}'
-    rf'  |  $|n\cdot w|$={np.round(orth_w, 12).tolist()}',
-    ha='center', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.96),
-)
-fig8.tight_layout(rect=[0, 0.04, 1, 0.94])
-show_maximized(fig8)
+    # Domain plane sheet + visible red/green x1/x2 axes + blue z-frame
+    floor_r = 1.6
+    xf = np.linspace(px8 - floor_r, px8 + floor_r, 2)
+    yf = np.linspace(py8 - floor_r, py8 + floor_r, 2)
+    XF, YF = np.meshgrid(xf, yf)
+    ax.plot_surface(XF, YF, np.full_like(XF, z_floor), color=C_FLOOR, alpha=0.22)
+    z_ax8 = _draw_floor_xy_axes(ax, px8, py8, z_floor, half=axis_len, labels=True)
+
+    def _domain_arrow(direction_xy, color, label=None, lw=AXIS_LW):
+        d = direction_xy * axis_len
+        _coated_arrow3d(
+            ax, (px8, py8, z_ax8), (d[0], d[1], 0.0),
+            color=color, lw=lw, label=label, arrow_length_ratio=0.12,
+        )
+
+    # z-frame arrows only (x1/x2 already drawn as floor axes)
+    _domain_arrow(ez1, C_Z, r'domain $z$-axes')
+    _domain_arrow(ez2, C_Z, None)
+    ax.scatter([px8], [py8], [z_ax8], s=55, c='k', depthshade=False)
+
+    # Same red/green partial lines on the tangent hyperplane + floor mirrors
+    _draw_partial_lines_on_tangent(
+        ax, px8, py8, pz8, fx8, fy8, half=0.55,
+        label_x=r'$v_1$ / $\partial f/\partial x_1$ (red)',
+        label_y=r'$v_2$ / $\partial f/\partial x_2$ (green)',
+        z_floor=z_ax8,
+    )
+    # Tangent vectors ON the hyperplane (ambient R^3) -- white-coated shafts + heads
+    # Each has a matching white-coated domain arrow already on the floor (x or z).
+    for vec, color, lab in (
+        (v1, C_X1, None),
+        (v2, C_X2, None),
+        (w1, C_Z, r'$w_1,w_2$ (z-partials)'),
+        (w2, C_Z, None),
+    ):
+        _coated_arrow3d(
+            ax, (px8, py8, pz8), arrow_scale * vec,
+            color=color, lw=TANGENT_LW, label=lab, arrow_length_ratio=0.15,
+        )
+        # Horizontal projection of each tangent arrow onto the floor
+        _mirror_on_floor(
+            ax,
+            [px8, px8 + arrow_scale * vec[0]],
+            [py8, py8 + arrow_scale * vec[1]],
+            z_ax8, color=color, lw=TANGENT_LW,
+        )
+
+    ax.set_xlabel(r'$x_1$', fontsize=FS_AXIS)
+    ax.set_ylabel(r'$x_2$', fontsize=FS_AXIS)
+    ax.set_zlabel(r'$f$', fontsize=FS_AXIS)
+    ax.tick_params(labelsize=FS_ANNOT)
+    ax.legend(loc='upper left', fontsize=FS_LEGEND - 2, framealpha=0.92)
+    ax.text2D(
+        0.98, 0.02,
+        r'Point $p=(1.0,\ 0.5)$ (same as Steps 5-6).' + '\n'
+        'Gold sheet = THE tangent hyperplane (one object).\n'
+        'Red = $x_1$ / $v_1$; green = $x_2$ / $v_2$.\n'
+        'Blue = $z$ axes / $w_1,w_2$ (z-partials).',
+        transform=ax.transAxes, fontsize=FS_ANNOT, ha='right', va='bottom',
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.94),
+    )
+    fig8.text(
+        0.5, 0.01,
+        rf'$z=Ax$,  $[w_1\,w_2]=[v_1\,v_2]B$'
+        rf'  |  recon err={recon_err:.2e}'
+        rf'  |  $|n\cdot w|$={np.round(orth_w, 12).tolist()}',
+        ha='center', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.96),
+    )
+    fig8.tight_layout(rect=[0, 0.04, 1, 0.94])
+    return fig8
+
 
 
 # -------------------------------------------------------
@@ -1392,48 +1409,63 @@ def rugged_f(x, y, n_features=140, seed=11):
     return z
 
 
-fig11 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
-fig11.suptitle(
-    r'Step 11: Practical reality -- a jungle of local peaks and canyons',
-    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
-)
-ax = fig11.add_subplot(111, projection='3d')
+def build_step_9():
+    fig11 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
+    fig11.suptitle(
+        r'Step 11: Practical reality -- a jungle of local peaks and canyons',
+        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    )
+    ax = fig11.add_subplot(111, projection='3d')
 
-xs11 = np.linspace(-2.0, 2.0, 220)
-ys11 = np.linspace(-2.0, 2.0, 220)
-XX11, YY11 = np.meshgrid(xs11, ys11)
-ZZ11 = rugged_f(XX11, YY11)
-z_floor11 = float(np.min(ZZ11)) - 0.40
+    xs11 = np.linspace(-2.0, 2.0, 220)
+    ys11 = np.linspace(-2.0, 2.0, 220)
+    XX11, YY11 = np.meshgrid(xs11, ys11)
+    ZZ11 = rugged_f(XX11, YY11)
+    z_floor11 = float(np.min(ZZ11)) - 0.40
 
-ax.plot_surface(
-    XX11, YY11, ZZ11, cmap=SURF_CMAP, linewidth=0, antialiased=True,
-    alpha=0.92, shade=True,
-)
-ax.contourf(
-    XX11, YY11, ZZ11, zdir='z', offset=z_floor11,
-    levels=40, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA,
-)
-_plot_floor_contour_polylines(
-    ax, XX11, YY11, ZZ11, z_floor11 + 0.02, levels=36, color='0.25', lw=0.55,
-)
-ax.view_init(elev=30, azim=-52)
-ax.set_xlabel('x', fontsize=FS_AXIS)
-ax.set_ylabel('y', fontsize=FS_AXIS)
-ax.set_zlabel('f', fontsize=FS_AXIS)
-ax.set_zlim(z_floor11 - 0.05, float(np.max(ZZ11)) + 0.15)
-ax.tick_params(labelsize=FS_ANNOT)
-ax.text2D(
-    0.02, 0.02,
-    'Like a real training loss: peaks and canyons everywhere.\n'
-    'A local gradient only sees its neighborhood --\n'
-    'so steepest ascent / descent can stop far from the global best.\n'
-    'This is the everyday reality of optimizing practical models.',
-    transform=ax.transAxes, fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
-fig11.tight_layout(rect=[0, 0, 1, 0.94])
-show_maximized(fig11)
+    ax.plot_surface(
+        XX11, YY11, ZZ11, cmap=SURF_CMAP, linewidth=0, antialiased=True,
+        alpha=0.92, shade=True,
+    )
+    ax.contourf(
+        XX11, YY11, ZZ11, zdir='z', offset=z_floor11,
+        levels=40, cmap=FLOOR_CMAP, alpha=FLOOR_ALPHA,
+    )
+    _plot_floor_contour_polylines(
+        ax, XX11, YY11, ZZ11, z_floor11 + 0.02, levels=36, color='0.25', lw=0.55,
+    )
+    ax.view_init(elev=30, azim=-52)
+    ax.set_xlabel('x', fontsize=FS_AXIS)
+    ax.set_ylabel('y', fontsize=FS_AXIS)
+    ax.set_zlabel('f', fontsize=FS_AXIS)
+    ax.set_zlim(z_floor11 - 0.05, float(np.max(ZZ11)) + 0.15)
+    ax.tick_params(labelsize=FS_ANNOT)
+    ax.text2D(
+        0.02, 0.02,
+        'Like a real training loss: peaks and canyons everywhere.\n'
+        'A local gradient only sees its neighborhood --\n'
+        'so steepest ascent / descent can stop far from the global best.\n'
+        'This is the everyday reality of optimizing practical models.',
+        transform=ax.transAxes, fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
+    fig11.tight_layout(rect=[0, 0, 1, 0.94])
+    return fig11
 
+
+
+
+run_slide_deck([
+    build_step_1,
+    build_step_2,
+    build_step_3,
+    build_step_4,
+    build_step_5,
+    build_step_6,
+    build_step_7,
+    build_step_8,
+    build_step_9,
+])
 
 # -------------------------------------------------------
 # KEY INSIGHTS

@@ -39,7 +39,7 @@ from _config import (
     FIGURE_DPI,
     SCREEN_FRACTION,
     apply_rcparams,
-    add_step_footer,
+    run_slide_deck,
 )
 apply_rcparams(plt)
 import numpy as np
@@ -79,24 +79,8 @@ def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
         return (16 * fraction / 0.95, 9 * fraction / 0.95)
 
 
-def show_maximized(fig):
-    fig.set_dpi(FIGURE_DPI)
-    fig.set_size_inches(screen_figsize(), forward=True)
-    fig.canvas.draw_idle()
-    manager = getattr(fig.canvas, "manager", None)
-    if manager is not None:
-        try:
-            manager.window.state("zoomed")
-        except Exception:
-            try:
-                manager.window.showMaximized()
-            except Exception:
-                try:
-                    manager.frame.Maximize(True)
-                except Exception:
-                    pass
-    add_step_footer(fig)
-    plt.show()
+# Attention slides are registered here, then shown via run_slide_deck at end of main.
+_ATTN_SLIDES: list = []
 
 
 # ---------------------------------------------------------------------------
@@ -265,63 +249,71 @@ def plot_cross_attention(
     tgt_tokens: list[str],
     title: str,
 ):
-    """Heatmap(s) of decoder cross-attention for one translation pair."""
+    """Register heatmap slide(s) of decoder cross-attention for one pair."""
+    weights = weights.detach().cpu().clone()
+    src_tokens = list(src_tokens)
+    tgt_tokens = list(tgt_tokens)
+
     if weights.ndim == 2:
-        # Single matrix (T, S)
-        fig, ax = plt.subplots(figsize=screen_figsize(), dpi=FIGURE_DPI)
-        # Multiline titles + slightly smaller type so they stay inside the figure.
-        fig.suptitle(title, fontsize=FS_FIGURE_TITLE - 4, fontweight="bold")
-        im = ax.imshow(weights.numpy(), cmap="viridis", aspect="auto", vmin=0, vmax=1)
-        ax.set_xticks(range(len(src_tokens)))
-        ax.set_yticks(range(len(tgt_tokens)))
-        ax.set_xticklabels(src_tokens, rotation=45, ha="right")
-        ax.set_yticklabels(tgt_tokens)
-        ax.set_xlabel("source (EN) keys", fontsize=FS_AXIS)
-        ax.set_ylabel("target (FR) queries", fontsize=FS_AXIS)
-        ax.set_title("cross-attention  (T x S)", fontsize=FS_AX_TITLE)
-        for i in range(weights.size(0)):
-            for j in range(weights.size(1)):
-                ax.text(
-                    j, i, f"{weights[i, j]:.2f}", ha="center", va="center",
-                    color="white" if weights[i, j] > 0.4 else "black",
-                    fontsize=9,
-                )
-        fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
-        fig.text(
-            0.5, 0.02,
-            "Each row is a French query token; columns are English keys from encoder memory.\n"
-            "Bright cell => that EN token strongly informs this FR token.",
-            ha="center", fontsize=FS_ANNOT,
-            bbox=dict(boxstyle="round", facecolor="lightyellow", alpha=0.95),
-        )
-        fig.tight_layout(rect=[0, 0.08, 1, 0.90])
-        show_maximized(fig)
+        def build(weights=weights, src_tokens=src_tokens, tgt_tokens=tgt_tokens, title=title):
+            fig, ax = plt.subplots(figsize=screen_figsize(), dpi=FIGURE_DPI)
+            fig.suptitle(title, fontsize=FS_FIGURE_TITLE - 4, fontweight="bold")
+            im = ax.imshow(weights.numpy(), cmap="viridis", aspect="auto", vmin=0, vmax=1)
+            ax.set_xticks(range(len(src_tokens)))
+            ax.set_yticks(range(len(tgt_tokens)))
+            ax.set_xticklabels(src_tokens, rotation=45, ha="right")
+            ax.set_yticklabels(tgt_tokens)
+            ax.set_xlabel("source (EN) keys", fontsize=FS_AXIS)
+            ax.set_ylabel("target (FR) queries", fontsize=FS_AXIS)
+            ax.set_title("cross-attention  (T x S)", fontsize=FS_AX_TITLE)
+            for i in range(weights.size(0)):
+                for j in range(weights.size(1)):
+                    ax.text(
+                        j, i, f"{weights[i, j]:.2f}", ha="center", va="center",
+                        color="white" if weights[i, j] > 0.4 else "black",
+                        fontsize=9,
+                    )
+            fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+            fig.text(
+                0.5, 0.12,
+                "Each row is a French query token; columns are English keys from encoder memory.\n"
+                "Bright cell => that EN token strongly informs this FR token.",
+                ha="center", fontsize=FS_ANNOT,
+                bbox=dict(boxstyle="round", facecolor="lightyellow", alpha=0.95),
+            )
+            fig.tight_layout(rect=[0, 0.14, 1, 0.90])
+            return fig
+
+        _ATTN_SLIDES.append(build)
         return
 
-    # Per-head panels: weights (H, T, S)
-    H = weights.size(0)
-    ncols = min(4, H)
-    nrows = int(np.ceil(H / ncols))
-    fig, axes = plt.subplots(nrows, ncols, figsize=screen_figsize(), dpi=FIGURE_DPI)
-    fig.suptitle(title, fontsize=FS_FIGURE_TITLE - 4, fontweight="bold")
-    axes = np.array(axes).reshape(-1)
-    for h in range(H):
-        ax = axes[h]
-        im = ax.imshow(weights[h].numpy(), cmap="viridis", aspect="auto", vmin=0, vmax=1)
-        ax.set_xticks(range(len(src_tokens)))
-        ax.set_yticks(range(len(tgt_tokens)))
-        ax.set_xticklabels(src_tokens, rotation=45, ha="right", fontsize=FS_ANNOT)
-        ax.set_yticklabels(tgt_tokens, fontsize=FS_ANNOT)
-        ax.set_title(f"head {h}", fontsize=FS_AX_TITLE - 4)
-        if h % ncols == 0:
-            ax.set_ylabel("FR query", fontsize=FS_ANNOT)
-        if h >= H - ncols:
-            ax.set_xlabel("EN key", fontsize=FS_ANNOT)
-    for h in range(H, len(axes)):
-        axes[h].axis("off")
-    fig.colorbar(im, ax=axes[:H].tolist(), fraction=0.02, pad=0.02)
-    fig.subplots_adjust(top=0.86, bottom=0.12, wspace=0.35, hspace=0.45)
-    show_maximized(fig)
+    def build_heads(weights=weights, src_tokens=src_tokens, tgt_tokens=tgt_tokens, title=title):
+        H = weights.size(0)
+        ncols = min(4, H)
+        nrows = int(np.ceil(H / ncols))
+        fig, axes = plt.subplots(nrows, ncols, figsize=screen_figsize(), dpi=FIGURE_DPI)
+        fig.suptitle(title, fontsize=FS_FIGURE_TITLE - 4, fontweight="bold")
+        axes = np.array(axes).reshape(-1)
+        im = None
+        for h in range(H):
+            ax = axes[h]
+            im = ax.imshow(weights[h].numpy(), cmap="viridis", aspect="auto", vmin=0, vmax=1)
+            ax.set_xticks(range(len(src_tokens)))
+            ax.set_yticks(range(len(tgt_tokens)))
+            ax.set_xticklabels(src_tokens, rotation=45, ha="right", fontsize=FS_ANNOT)
+            ax.set_yticklabels(tgt_tokens, fontsize=FS_ANNOT)
+            ax.set_title(f"head {h}", fontsize=FS_AX_TITLE - 4)
+            if h % ncols == 0:
+                ax.set_ylabel("FR query", fontsize=FS_ANNOT)
+            if h >= H - ncols:
+                ax.set_xlabel("EN key", fontsize=FS_ANNOT)
+        for h in range(H, len(axes)):
+            axes[h].axis("off")
+        fig.colorbar(im, ax=axes[:H].tolist(), fraction=0.02, pad=0.02)
+        fig.subplots_adjust(top=0.86, bottom=0.14, wspace=0.35, hspace=0.45)
+        return fig
+
+    _ATTN_SLIDES.append(build_heads)
 
 
 # ---------------------------------------------------------------------------
@@ -455,6 +447,10 @@ def main() -> None:
         "  Bright diagonals / peaks near translations of the same word are typical\n"
         "  after the model memorizes a tiny aligned corpus."
     )
+
+    if _ATTN_SLIDES:
+        run_slide_deck(list(_ATTN_SLIDES))
+        _ATTN_SLIDES.clear()
 
 
 if __name__ == "__main__":

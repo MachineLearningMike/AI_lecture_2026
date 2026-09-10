@@ -44,6 +44,7 @@ from _config import (
     SCREEN_FRACTION,
     apply_rcparams,
     add_step_footer,
+    run_slide_deck,
 )
 apply_rcparams(plt)
 
@@ -250,292 +251,308 @@ L_floor = float(np.mean((X1 @ w_star - y_np) ** 2))
 # -------------------------------------------------------
 # FIGURE 1: Same algorithm family -- only batch size changes
 # -------------------------------------------------------
-fig1, axes1 = new_figure(1, 2)
-fig1.suptitle(
-    "Step 1: Full-batch GD vs mini-batch GD -- same SGD-step rule, different batch size",
-    fontsize=FS_FIGURE_TITLE, fontweight="bold",
-)
+def build_step_1():
+    fig1, axes1 = new_figure(1, 2)
+    fig1.suptitle(
+        "Step 1: Full-batch GD vs mini-batch GD -- same SGD-step rule, different batch size",
+        fontsize=FS_FIGURE_TITLE, fontweight="bold",
+    )
 
-ax = axes1[0]
-ax.set_xlim(0, 10)
-ax.set_ylim(0, 10)
-ax.axis("off")
-ax.set_title("One SGD step: how much data enters the gradient?", fontsize=FS_AX_TITLE)
+    ax = axes1[0]
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 10)
+    ax.axis("off")
+    ax.set_title("One SGD step: how much data enters the gradient?", fontsize=FS_AX_TITLE)
 
-boxes = [
-    (0.4, 6.2, 4.4, 3.0, "#dceaff",
-     f"{LABEL_FULL}\n"
-     f"batch size = N = {N}\n"
-     "exact gradient of\n"
-     "full-batch loss L(... ; w)"),
-    (5.2, 6.2, 4.4, 3.0, "#f8d7da",
-     f"{LABEL_MINI}\n"
-     f"batch size = b = {B}\n"
-     "noisy estimate of\n"
-     "the same gradient"),
-    (0.4, 1.2, 9.2, 4.2, "#d4edda",
-     "Both minimize the SAME full-batch loss:\n"
-     r"$L(\ldots; w)=\frac{1}{N}\sum_i \ell(f_w(x_i), y_i)$" + "\n"
-     "where w = model parameters (weights + bias).\n\n"
-     "Mini-batch GD does not change the objective --\n"
-     "only how we estimate its gradient each SGD step."),
-]
-for x0, y0, w, h, color, text in boxes:
-    ax.add_patch(plt.Rectangle((x0, y0), w, h, facecolor=color, edgecolor="k", lw=2))
-    ax.text(x0 + w / 2, y0 + h / 2, text, ha="center", va="center",
-            fontsize=FS_ANNOT, fontweight="bold")
+    boxes = [
+        (0.4, 6.2, 4.4, 3.0, "#dceaff",
+         f"{LABEL_FULL}\n"
+         f"batch size = N = {N}\n"
+         "exact gradient of\n"
+         "full-batch loss L(... ; w)"),
+        (5.2, 6.2, 4.4, 3.0, "#f8d7da",
+         f"{LABEL_MINI}\n"
+         f"batch size = b = {B}\n"
+         "noisy estimate of\n"
+         "the same gradient"),
+        (0.4, 1.2, 9.2, 4.2, "#d4edda",
+         "Both minimize the SAME full-batch loss:\n"
+         r"$L(\ldots; w)=\frac{1}{N}\sum_i \ell(f_w(x_i), y_i)$" + "\n"
+         "where w = model parameters (weights + bias).\n\n"
+         "Mini-batch GD does not change the objective --\n"
+         "only how we estimate its gradient each SGD step."),
+    ]
+    for x0, y0, w, h, color, text in boxes:
+        ax.add_patch(plt.Rectangle((x0, y0), w, h, facecolor=color, edgecolor="k", lw=2))
+        ax.text(x0 + w / 2, y0 + h / 2, text, ha="center", va="center",
+                fontsize=FS_ANNOT, fontweight="bold")
 
-ax = axes1[1]
-modes = [LABEL_FULL, LABEL_MINI]
-cost = [N, B]
-sgd_steps_per_pass = [1, N // B]
-x = np.arange(len(modes))
-width = 0.35
-# One color per METRIC (not per method) -- only two series in the legend.
-C_EXAMPLES = "#c0392b"   # examples / SGD step
-C_STEPS = "#2471a3"      # SGD steps / pass over data
-ax.bar(x - width / 2, cost, width, color=C_EXAMPLES, edgecolor="k", lw=0.8)
-ax2 = ax.twinx()
-ax2.bar(x + width / 2, sgd_steps_per_pass, width, color=C_STEPS, edgecolor="k", lw=0.8)
-ax.set_xticks(x)
-ax.set_xticklabels([f"full-batch\nGD", f"mini-batch\nGD (b={B})"], fontsize=FS_TICK)
-ax.set_ylabel("examples touched per SGD step", fontsize=FS_AXIS, color=C_EXAMPLES)
-ax2.set_ylabel("SGD steps per pass over the dataset", fontsize=FS_AXIS, color=C_STEPS)
-ax.tick_params(axis="y", labelsize=FS_TICK, colors=C_EXAMPLES)
-ax2.tick_params(axis="y", labelsize=FS_TICK, colors=C_STEPS)
-ax.set_title("Why mini-batch GD is cheaper per SGD step", fontsize=FS_AX_TITLE)
-ax.set_ylim(0, max(cost) * 1.35)
-ax2.set_ylim(0, max(sgd_steps_per_pass) * 1.45)
-ax.legend(
-    handles=[
-        Patch(facecolor=C_EXAMPLES, edgecolor="k", label="examples / SGD step"),
-        Patch(facecolor=C_STEPS, edgecolor="k", label="SGD steps / pass over data"),
-    ],
-    loc="upper left", fontsize=FS_LEGEND,
-)
-add_note(
-    ax,
-    "Economy:\n"
-    f"1 full-batch SGD step\n"
-    f"touches {N} examples.\n"
-    f"Same cost buys\n"
-    f"{N // B} mini-batch SGD steps.",
-    x=0.98, y=0.98, ha="right", va="top",
-)
+    ax = axes1[1]
+    modes = [LABEL_FULL, LABEL_MINI]
+    cost = [N, B]
+    sgd_steps_per_pass = [1, N // B]
+    x = np.arange(len(modes))
+    width = 0.35
+    # One color per METRIC (not per method) -- only two series in the legend.
+    C_EXAMPLES = "#c0392b"   # examples / SGD step
+    C_STEPS = "#2471a3"      # SGD steps / pass over data
+    ax.bar(x - width / 2, cost, width, color=C_EXAMPLES, edgecolor="k", lw=0.8)
+    ax2 = ax.twinx()
+    ax2.bar(x + width / 2, sgd_steps_per_pass, width, color=C_STEPS, edgecolor="k", lw=0.8)
+    ax.set_xticks(x)
+    ax.set_xticklabels([f"full-batch\nGD", f"mini-batch\nGD (b={B})"], fontsize=FS_TICK)
+    ax.set_ylabel("examples touched per SGD step", fontsize=FS_AXIS, color=C_EXAMPLES)
+    ax2.set_ylabel("SGD steps per pass over the dataset", fontsize=FS_AXIS, color=C_STEPS)
+    ax.tick_params(axis="y", labelsize=FS_TICK, colors=C_EXAMPLES)
+    ax2.tick_params(axis="y", labelsize=FS_TICK, colors=C_STEPS)
+    ax.set_title("Why mini-batch GD is cheaper per SGD step", fontsize=FS_AX_TITLE)
+    ax.set_ylim(0, max(cost) * 1.35)
+    ax2.set_ylim(0, max(sgd_steps_per_pass) * 1.45)
+    ax.legend(
+        handles=[
+            Patch(facecolor=C_EXAMPLES, edgecolor="k", label="examples / SGD step"),
+            Patch(facecolor=C_STEPS, edgecolor="k", label="SGD steps / pass over data"),
+        ],
+        loc="upper left", fontsize=FS_LEGEND,
+    )
+    add_note(
+        ax,
+        "Economy:\n"
+        f"1 full-batch SGD step\n"
+        f"touches {N} examples.\n"
+        f"Same cost buys\n"
+        f"{N // B} mini-batch SGD steps.",
+        x=0.98, y=0.98, ha="right", va="top",
+    )
 
-fig1.tight_layout(rect=[0, 0, 1, 0.94])
-show_maximized(fig1)
+    fig1.tight_layout(rect=[0, 0, 1, 0.94])
+    return fig1
+
 
 
 # -------------------------------------------------------
 # FIGURE 2: Same number of SGD steps -- same limit, unstable path
 # -------------------------------------------------------
-fig2, axes2 = new_figure(1, 2)
-fig2.suptitle(
-    "Step 2: Same number of SGD steps\n"
-    "Mini-batch GD reaches the same limit, but jitters",
-    fontsize=FS_FIGURE_TITLE, fontweight="bold",
-)
+def build_step_2():
+    fig2, axes2 = new_figure(1, 2)
+    fig2.suptitle(
+        "Step 2: Same number of SGD steps\n"
+        "Mini-batch GD reaches the same limit, but jitters",
+        fontsize=FS_FIGURE_TITLE, fontweight="bold",
+    )
 
-ax = axes2[0]
-steps = np.arange(len(L_full))
-# BOTH curves are full-batch loss L(... ; w) of each method's current weights.
-# The crimson line is NOT the mini-batch loss (see right panel).
-ax.plot(steps, L_full, color="k", lw=2.6,
-        label=rf"{LABEL_FULL}:  $L(\ldots; w)$ of its weights")
-ax.plot(steps, L_mini, color="crimson", lw=1.8, alpha=0.85,
-        label=rf"{LABEL_MINI}:  $L(\ldots; w)$ of its weights")
-ax.axhline(L_floor, color="0.4", ls="--", lw=1.6,
-           label=fr"theoretical floor of $L(\ldots; w)$  ({L_floor:.3f})")
-ax.set_xlabel(f"SGD step  (same count = {N_SGD_STEPS} for both)", fontsize=FS_AXIS)
-ax.set_ylabel(r"full-batch loss $L(\ldots; w)$  (whole dataset)", fontsize=FS_AXIS)
-ax.set_title(
-    r"Both curves are $L(\ldots; w)$ -- not mini-batch loss",
-    fontsize=FS_AX_TITLE - 2,
-)
-ax.set_yscale("log")
-ax.tick_params(axis="both", labelsize=FS_TICK)
-ax.legend(fontsize=FS_LEGEND - 1, loc="upper right")
-ax.grid(True, alpha=0.3, which="both")
-add_note(
-    ax,
-    "Same x: both methods take\n"
-    f"exactly {N_SGD_STEPS} SGD steps.\n\n"
-    "Same y: L(... ; w) = mean loss on\n"
-    "ALL N examples, where w =\n"
-    "model parameters. The red\n"
-    "line is ALSO L(... ; w), just for\n"
-    "parameters from mini-batch GD.\n"
-    "It is NOT the mini-batch loss\n"
-    "used inside the gradient update.\n\n"
-    "Why compute L(... ; w) at all?\n"
-    "Not to take the SGD step -- only\n"
-    "to see if mini-batch GD is\n"
-    "really lowering the objective.\n"
-    "Similar final L(... ; w) is the\n"
-    "result we discover by scoring\n"
-    "both on the same L(... ; w).",
-    x=0.98, y=0.50, ha="right", va="center",
-)
+    ax = axes2[0]
+    steps = np.arange(len(L_full))
+    # BOTH curves are full-batch loss L(... ; w) of each method's current weights.
+    # The crimson line is NOT the mini-batch loss (see right panel).
+    ax.plot(steps, L_full, color="k", lw=2.6,
+            label=rf"{LABEL_FULL}:  $L(\ldots; w)$ of its weights")
+    ax.plot(steps, L_mini, color="crimson", lw=1.8, alpha=0.85,
+            label=rf"{LABEL_MINI}:  $L(\ldots; w)$ of its weights")
+    ax.axhline(L_floor, color="0.4", ls="--", lw=1.6,
+               label=fr"theoretical floor of $L(\ldots; w)$  ({L_floor:.3f})")
+    ax.set_xlabel(f"SGD step  (same count = {N_SGD_STEPS} for both)", fontsize=FS_AXIS)
+    ax.set_ylabel(r"full-batch loss $L(\ldots; w)$  (whole dataset)", fontsize=FS_AXIS)
+    ax.set_title(
+        r"Both curves are $L(\ldots; w)$ -- not mini-batch loss",
+        fontsize=FS_AX_TITLE - 2,
+    )
+    ax.set_yscale("log")
+    ax.tick_params(axis="both", labelsize=FS_TICK)
+    ax.legend(fontsize=FS_LEGEND - 1, loc="upper right")
+    ax.grid(True, alpha=0.3, which="both")
+    add_note(
+        ax,
+        "Same x: both methods take\n"
+        f"exactly {N_SGD_STEPS} SGD steps.\n\n"
+        "Same y: L(... ; w) = mean loss on\n"
+        "ALL N examples, where w =\n"
+        "model parameters. The red\n"
+        "line is ALSO L(... ; w), just for\n"
+        "parameters from mini-batch GD.\n"
+        "It is NOT the mini-batch loss\n"
+        "used inside the gradient update.\n\n"
+        "Why compute L(... ; w) at all?\n"
+        "Not to take the SGD step -- only\n"
+        "to see if mini-batch GD is\n"
+        "really lowering the objective.\n"
+        "Similar final L(... ; w) is the\n"
+        "result we discover by scoring\n"
+        "both on the same L(... ; w).",
+        x=0.98, y=0.50, ha="right", va="center",
+    )
 
-ax = axes2[1]
-ax.plot(steps, mini_L_mini, color="darkorange", lw=1.2, alpha=0.75,
-        label="mini-batch loss (current batch only)")
-ax.plot(steps, L_mini, color="crimson", lw=2.2, label=r"full-batch loss $L(\ldots; w)$")
-ax.axhline(L_floor, color="0.4", ls="--", lw=1.6, label=r"theoretical floor of $L(\ldots; w)$")
-ax.set_xlabel("SGD step", fontsize=FS_AXIS)
-ax.set_ylabel("loss", fontsize=FS_AXIS)
-ax.set_title("Mini-batch loss drives the SGD step; L(... ; w) scores the result", fontsize=FS_AX_TITLE - 2)
-ax.set_yscale("log")
-ax.tick_params(axis="both", labelsize=FS_TICK)
-ax.legend(fontsize=FS_LEGEND, loc="upper right")
-ax.grid(True, alpha=0.3, which="both")
-add_note(
-    ax,
-    "Mini-batch loss: noisy look\n"
-    "at b rows -- used to BUILD\n"
-    "the gradient for this SGD step.\n\n"
-    "Full-batch loss L(... ; w): score\n"
-    "of the CURRENT w on all data.\n"
-    "Needed for fair comparison,\n"
-    "not for taking the SGD step.",
-    x=0.98, y=0.50, ha="right", va="center",
-)
+    ax = axes2[1]
+    ax.plot(steps, mini_L_mini, color="darkorange", lw=1.2, alpha=0.75,
+            label="mini-batch loss (current batch only)")
+    ax.plot(steps, L_mini, color="crimson", lw=2.2, label=r"full-batch loss $L(\ldots; w)$")
+    ax.axhline(L_floor, color="0.4", ls="--", lw=1.6, label=r"theoretical floor of $L(\ldots; w)$")
+    ax.set_xlabel("SGD step", fontsize=FS_AXIS)
+    ax.set_ylabel("loss", fontsize=FS_AXIS)
+    ax.set_title("Mini-batch loss drives the SGD step; L(... ; w) scores the result", fontsize=FS_AX_TITLE - 2)
+    ax.set_yscale("log")
+    ax.tick_params(axis="both", labelsize=FS_TICK)
+    ax.legend(fontsize=FS_LEGEND, loc="upper right")
+    ax.grid(True, alpha=0.3, which="both")
+    add_note(
+        ax,
+        "Mini-batch loss: noisy look\n"
+        "at b rows -- used to BUILD\n"
+        "the gradient for this SGD step.\n\n"
+        "Full-batch loss L(... ; w): score\n"
+        "of the CURRENT w on all data.\n"
+        "Needed for fair comparison,\n"
+        "not for taking the SGD step.",
+        x=0.98, y=0.50, ha="right", va="center",
+    )
 
-fig2.tight_layout(rect=[0, 0, 1, 0.90])
-show_maximized(fig2)
+    fig2.tight_layout(rect=[0, 0, 1, 0.90])
+    return fig2
+
 
 
 # -------------------------------------------------------
 # FIGURE 3: Same data budget -- why mini-batch GD is economic
 # -------------------------------------------------------
-fig3, axes3 = new_figure(1, 2)
-fig3.suptitle(
-    "Step 3: Same data budget -- mini-batch GD buys many cheap SGD steps",
-    fontsize=FS_FIGURE_TITLE, fontweight="bold",
-)
+def build_step_3():
+    fig3, axes3 = new_figure(1, 2)
+    fig3.suptitle(
+        "Step 3: Same data budget -- mini-batch GD buys many cheap SGD steps",
+        fontsize=FS_FIGURE_TITLE, fontweight="bold",
+    )
 
-ax = axes3[0]
-ax.plot(ex_full_budget, L_full_budget, color="k", lw=2.6,
-        label=f"{LABEL_FULL}  ({sgd_steps_full_budget} SGD steps)")
-ax.plot(ex_mini_budget, L_mini_budget, color="crimson", lw=1.9, alpha=0.9,
-        label=f"{LABEL_MINI}  ({sgd_steps_mini_budget} SGD steps)")
-ax.axhline(L_floor, color="0.4", ls="--", lw=1.6, label=r"theoretical floor of $L(\ldots; w)$")
-ax.set_xlabel("examples touched (compute proxy)", fontsize=FS_AXIS)
-ax.set_ylabel(r"full-batch loss $L(\ldots; w)$", fontsize=FS_AXIS)
-ax.set_title(f"Fixed budget = {DATA_BUDGET} examples touched", fontsize=FS_AX_TITLE)
-ax.set_yscale("log")
-ax.tick_params(axis="both", labelsize=FS_TICK)
-ax.legend(fontsize=FS_LEGEND, loc="upper right", framealpha=0.95)
-ax.grid(True, alpha=0.3, which="both")
-add_note(
-    ax,
-    "x-axis = how much data\n"
-    "you paid to touch.\n\n"
-    "Mini-batch GD spends that\n"
-    "budget on MANY more\n"
-    "SGD steps, so it\n"
-    "usually reaches the\n"
-    "floor of L(... ; w) sooner.",
-    x=0.98, y=0.68, ha="right", va="top",
-)
+    ax = axes3[0]
+    ax.plot(ex_full_budget, L_full_budget, color="k", lw=2.6,
+            label=f"{LABEL_FULL}  ({sgd_steps_full_budget} SGD steps)")
+    ax.plot(ex_mini_budget, L_mini_budget, color="crimson", lw=1.9, alpha=0.9,
+            label=f"{LABEL_MINI}  ({sgd_steps_mini_budget} SGD steps)")
+    ax.axhline(L_floor, color="0.4", ls="--", lw=1.6, label=r"theoretical floor of $L(\ldots; w)$")
+    ax.set_xlabel("examples touched (compute proxy)", fontsize=FS_AXIS)
+    ax.set_ylabel(r"full-batch loss $L(\ldots; w)$", fontsize=FS_AXIS)
+    ax.set_title(f"Fixed budget = {DATA_BUDGET} examples touched", fontsize=FS_AX_TITLE)
+    ax.set_yscale("log")
+    ax.tick_params(axis="both", labelsize=FS_TICK)
+    ax.legend(fontsize=FS_LEGEND, loc="upper right", framealpha=0.95)
+    ax.grid(True, alpha=0.3, which="both")
+    add_note(
+        ax,
+        "x-axis = how much data\n"
+        "you paid to touch.\n\n"
+        "Mini-batch GD spends that\n"
+        "budget on MANY more\n"
+        "SGD steps, so it\n"
+        "usually reaches the\n"
+        "floor of L(... ; w) sooner.",
+        x=0.98, y=0.68, ha="right", va="top",
+    )
 
-ax = axes3[1]
-labels = ["after equal\n# SGD steps", "after equal\n# examples touched"]
-full_vals = [L_full[-1], L_full_budget[-1]]
-mini_vals = [L_mini[-1], L_mini_budget[-1]]
-x = np.arange(len(labels))
-width = 0.35
-ax.bar(x - width / 2, full_vals, width, color="0.25", label=LABEL_FULL)
-ax.bar(x + width / 2, mini_vals, width, color="crimson", label=LABEL_MINI)
-ax.axhline(L_floor, color="0.4", ls="--", lw=1.6, label=r"theoretical floor of $L(\ldots; w)$")
-ax.set_xticks(x)
-ax.set_xticklabels(labels, fontsize=FS_TICK)
-ax.set_ylabel(r"final full-batch loss $L(\ldots; w)$", fontsize=FS_AXIS)
-ax.set_title("Fairness depends on what you hold fixed", fontsize=FS_AX_TITLE)
-ax.set_yscale("log")
-ax.tick_params(axis="both", labelsize=FS_TICK)
-ax.legend(fontsize=FS_LEGEND, loc="upper left", framealpha=0.95)
-ax.grid(True, alpha=0.3, axis="y", which="both")
-add_note(
-    ax,
-    "Equal # SGD steps\n"
-    "favors full-batch GD\n"
-    "(each SGD step sees all data).\n\n"
-    "Equal # examples touched\n"
-    "favors mini-batch GD\n"
-    "(many cheap SGD steps).\n"
-    "Practice budgets by data,\n"
-    "not by SGD-step count.",
-    x=0.02, y=0.68, ha="left", va="top",
-)
+    ax = axes3[1]
+    labels = ["after equal\n# SGD steps", "after equal\n# examples touched"]
+    full_vals = [L_full[-1], L_full_budget[-1]]
+    mini_vals = [L_mini[-1], L_mini_budget[-1]]
+    x = np.arange(len(labels))
+    width = 0.35
+    ax.bar(x - width / 2, full_vals, width, color="0.25", label=LABEL_FULL)
+    ax.bar(x + width / 2, mini_vals, width, color="crimson", label=LABEL_MINI)
+    ax.axhline(L_floor, color="0.4", ls="--", lw=1.6, label=r"theoretical floor of $L(\ldots; w)$")
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, fontsize=FS_TICK)
+    ax.set_ylabel(r"final full-batch loss $L(\ldots; w)$", fontsize=FS_AXIS)
+    ax.set_title("Fairness depends on what you hold fixed", fontsize=FS_AX_TITLE)
+    ax.set_yscale("log")
+    ax.tick_params(axis="both", labelsize=FS_TICK)
+    ax.legend(fontsize=FS_LEGEND, loc="upper left", framealpha=0.95)
+    ax.grid(True, alpha=0.3, axis="y", which="both")
+    add_note(
+        ax,
+        "Equal # SGD steps\n"
+        "favors full-batch GD\n"
+        "(each SGD step sees all data).\n\n"
+        "Equal # examples touched\n"
+        "favors mini-batch GD\n"
+        "(many cheap SGD steps).\n"
+        "Practice budgets by data,\n"
+        "not by SGD-step count.",
+        x=0.02, y=0.68, ha="left", va="top",
+    )
 
-fig3.tight_layout(rect=[0, 0, 1, 0.94])
-show_maximized(fig3)
+    fig3.tight_layout(rect=[0, 0, 1, 0.94])
+    return fig3
+
 
 
 # -------------------------------------------------------
 # FIGURE 4: Late training -- same neighborhood, different stability
 # -------------------------------------------------------
-fig4, axes4 = new_figure(1, 2)
-fig4.suptitle(
-    "Step 4: Same limit neighborhood -- full-batch settles; mini-batch wanders",
-    fontsize=FS_FIGURE_TITLE, fontweight="bold",
-)
+def build_step_4():
+    fig4, axes4 = new_figure(1, 2)
+    fig4.suptitle(
+        "Step 4: Same limit neighborhood -- full-batch settles; mini-batch wanders",
+        fontsize=FS_FIGURE_TITLE, fontweight="bold",
+    )
 
-ax = axes4[0]
-ax.plot(params_full[:, 0], params_full[:, 1], "-", color="k", lw=2.4, label=LABEL_FULL)
-ax.plot(params_mini[:, 0], params_mini[:, 1], "-", color="crimson", lw=1.6, alpha=0.85,
-        label=LABEL_MINI)
-ax.scatter([params_full[0, 0]], [params_full[0, 1]], c="orange", s=80, zorder=5, label="start")
-ax.scatter([w_star[0]], [w_star[1]], c="k", s=140, marker="*", zorder=5,
-           label=r"minimizer $w^\star=\arg\min_w L(\ldots; w)$")
-ax.set_xlabel(r"parameter $w_0$", fontsize=FS_AXIS)
-ax.set_ylabel(r"parameter $w_1$", fontsize=FS_AXIS)
-ax.set_title(r"Path of parameters $w$ (two coordinates)", fontsize=FS_AX_TITLE)
-ax.tick_params(axis="both", labelsize=FS_TICK)
-ax.legend(fontsize=FS_LEGEND, loc="best")
-ax.set_aspect("equal", adjustable="datalim")
-ax.grid(True, alpha=0.3)
-add_note(
-    ax,
-    "w = model parameters\n"
-    "(weights + bias).\n\n"
-    "Both walk toward the\n"
-    r"same $w^\star$." + "\n"
-    "Mini-batch path is wiggly.",
-    x=0.02, y=0.02, ha="left", va="bottom",
-)
+    ax = axes4[0]
+    ax.plot(params_full[:, 0], params_full[:, 1], "-", color="k", lw=2.4, label=LABEL_FULL)
+    ax.plot(params_mini[:, 0], params_mini[:, 1], "-", color="crimson", lw=1.6, alpha=0.85,
+            label=LABEL_MINI)
+    ax.scatter([params_full[0, 0]], [params_full[0, 1]], c="orange", s=80, zorder=5, label="start")
+    ax.scatter([w_star[0]], [w_star[1]], c="k", s=140, marker="*", zorder=5,
+               label=r"minimizer $w^\star=\arg\min_w L(\ldots; w)$")
+    ax.set_xlabel(r"parameter $w_0$", fontsize=FS_AXIS)
+    ax.set_ylabel(r"parameter $w_1$", fontsize=FS_AXIS)
+    ax.set_title(r"Path of parameters $w$ (two coordinates)", fontsize=FS_AX_TITLE)
+    ax.tick_params(axis="both", labelsize=FS_TICK)
+    ax.legend(fontsize=FS_LEGEND, loc="best")
+    ax.set_aspect("equal", adjustable="datalim")
+    ax.grid(True, alpha=0.3)
+    add_note(
+        ax,
+        "w = model parameters\n"
+        "(weights + bias).\n\n"
+        "Both walk toward the\n"
+        r"same $w^\star$." + "\n"
+        "Mini-batch path is wiggly.",
+        x=0.02, y=0.02, ha="left", va="bottom",
+    )
 
-ax = axes4[1]
-late = slice(-(N_SGD_STEPS // 3), None)
-t_late = np.arange(len(L_full))[late]
-ax.plot(t_late, L_full[late], color="k", lw=2.6, label=LABEL_FULL)
-ax.plot(t_late, L_mini[late], color="crimson", lw=2.0, label=LABEL_MINI)
-ax.axhline(L_floor, color="0.4", ls="--", lw=1.6, label=r"theoretical floor of $L(\ldots; w)$")
-ax.set_xlabel("SGD step", fontsize=FS_AXIS)
-ax.set_ylabel(r"full-batch loss $L(\ldots; w)$", fontsize=FS_AXIS)
-ax.set_title("Late training: stability vs noise floor", fontsize=FS_AX_TITLE)
-ax.tick_params(axis="both", labelsize=FS_TICK)
-ax.legend(fontsize=FS_LEGEND, loc="upper right")
-ax.grid(True, alpha=0.3)
-add_note(
-    ax,
-    "Full-batch GD settles\n"
-    "near the floor of L(... ; w).\n\n"
-    "Mini-batch GD oscillates\n"
-    "in a ball around it\n"
-    "(noise floor).\n\n"
-    "That ball is usually close\n"
-    "enough -- and each\n"
-    "SGD step was much\n"
-    "cheaper.",
-    x=0.02, y=0.98, ha="left", va="top",
-)
+    ax = axes4[1]
+    late = slice(-(N_SGD_STEPS // 3), None)
+    t_late = np.arange(len(L_full))[late]
+    ax.plot(t_late, L_full[late], color="k", lw=2.6, label=LABEL_FULL)
+    ax.plot(t_late, L_mini[late], color="crimson", lw=2.0, label=LABEL_MINI)
+    ax.axhline(L_floor, color="0.4", ls="--", lw=1.6, label=r"theoretical floor of $L(\ldots; w)$")
+    ax.set_xlabel("SGD step", fontsize=FS_AXIS)
+    ax.set_ylabel(r"full-batch loss $L(\ldots; w)$", fontsize=FS_AXIS)
+    ax.set_title("Late training: stability vs noise floor", fontsize=FS_AX_TITLE)
+    ax.tick_params(axis="both", labelsize=FS_TICK)
+    ax.legend(fontsize=FS_LEGEND, loc="upper right")
+    ax.grid(True, alpha=0.3)
+    add_note(
+        ax,
+        "Full-batch GD settles\n"
+        "near the floor of L(... ; w).\n\n"
+        "Mini-batch GD oscillates\n"
+        "in a ball around it\n"
+        "(noise floor).\n\n"
+        "That ball is usually close\n"
+        "enough -- and each\n"
+        "SGD step was much\n"
+        "cheaper.",
+        x=0.02, y=0.98, ha="left", va="top",
+    )
 
-fig4.tight_layout(rect=[0, 0, 1, 0.94])
-show_maximized(fig4)
+    fig4.tight_layout(rect=[0, 0, 1, 0.94])
+    return fig4
 
+
+
+
+run_slide_deck([
+    build_step_1,
+    build_step_2,
+    build_step_3,
+    build_step_4,
+])
 
 # -------------------------------------------------------
 # KEY INSIGHTS

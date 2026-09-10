@@ -24,6 +24,7 @@ from _config import (
     SCREEN_FRACTION,
     apply_rcparams,
     add_step_footer,
+    run_slide_deck,
 )
 apply_rcparams(plt)
 import numpy as np
@@ -144,233 +145,249 @@ mu_median = float(np.median(data_np))
 # -------------------------------------------------------
 # FIGURE 1: What is likelihood?
 # -------------------------------------------------------
-fig1, axes1 = new_figure(1, 2)
-fig1.suptitle(
-    r'Step 1: Likelihood = how well a candidate $\mu$ explains the data',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_1():
+    fig1, axes1 = new_figure(1, 2)
+    fig1.suptitle(
+        r'Step 1: Likelihood = how well a candidate $\mu$ explains the data',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-# Left: data + three candidate Gaussians
-ax = axes1[0]
-ax.scatter(data_np, np.zeros_like(data_np), s=40, color='k', zorder=5,
-           label='observed data', clip_on=False)
-xs = np.linspace(MU_TRUE - 4, MU_TRUE + 4, 400)
-for mu_c, color, ls in [
-    (0.0, 'steelblue', '--'),
-    (MU_TRUE, 'seagreen', '-'),
-    (4.0, 'darkorange', '--'),
-]:
-    ax.plot(xs, norm.pdf(xs, mu_c, SIGMA), color=color, linestyle=ls, linewidth=2.5,
-            label=rf'candidate $N(\mu={mu_c:g},1)$')
-ax.set_title('Same data, different candidate means', fontsize=FS_AX_TITLE)
-ax.set_xlabel('x', fontsize=FS_AXIS)
-ax.set_ylabel('Density', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-ax.set_ylim(bottom=-0.02)
-add_vcenter_legend_and_note(
-    ax,
-    r'Likelihood of a $\mu$:' + '\n'
-    r'$L(\mu)=\prod_i\,f(x_i\mid\mu)$' + '\n'
-    'Taller density at each\n'
-    'point means higher L',
-)
-ax.grid(True, alpha=0.3)
+    # Left: data + three candidate Gaussians
+    ax = axes1[0]
+    ax.scatter(data_np, np.zeros_like(data_np), s=40, color='k', zorder=5,
+               label='observed data', clip_on=False)
+    xs = np.linspace(MU_TRUE - 4, MU_TRUE + 4, 400)
+    for mu_c, color, ls in [
+        (0.0, 'steelblue', '--'),
+        (MU_TRUE, 'seagreen', '-'),
+        (4.0, 'darkorange', '--'),
+    ]:
+        ax.plot(xs, norm.pdf(xs, mu_c, SIGMA), color=color, linestyle=ls, linewidth=2.5,
+                label=rf'candidate $N(\mu={mu_c:g},1)$')
+    ax.set_title('Same data, different candidate means', fontsize=FS_AX_TITLE)
+    ax.set_xlabel('x', fontsize=FS_AXIS)
+    ax.set_ylabel('Density', fontsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    ax.set_ylim(bottom=-0.02)
+    add_vcenter_legend_and_note(
+        ax,
+        r'Likelihood of a $\mu$:' + '\n'
+        r'$L(\mu)=\prod_i\,f(x_i\mid\mu)$' + '\n'
+        'Taller density at each\n'
+        'point means higher L',
+    )
+    ax.grid(True, alpha=0.3)
 
-# Right: L(mu) and log L(mu)
-ax = axes1[1]
-# Use likelihood relative to max for readable scale
-lik = np.exp(loglik - loglik.max())
-ax.plot(mu_grid, lik, color='seagreen', linewidth=2.5, label=r'$L(\mu)/L_{\max}$')
-ax.axvline(mu_mle, color='red', linestyle='--', linewidth=2, label=rf'MLE $\hat\mu={mu_mle:.2f}$')
-ax.axvline(MU_TRUE, color='k', linestyle=':', linewidth=1.5, alpha=0.7,
-           label=rf'true $\mu={MU_TRUE:g}$')
-ax.set_title(r'Likelihood as a function of $\mu$', fontsize=FS_AX_TITLE)
-ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
-ax.set_ylabel('relative likelihood', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-add_vcenter_legend_and_note(
-    ax,
-    f'n = {N} Gaussian samples\n'
-    f'sample mean = {mu_mean:.2f}\n'
-    'MLE peaks at the\n'
-    'sample mean',
-)
-ax.grid(True, alpha=0.3)
+    # Right: L(mu) and log L(mu)
+    ax = axes1[1]
+    # Use likelihood relative to max for readable scale
+    lik = np.exp(loglik - loglik.max())
+    ax.plot(mu_grid, lik, color='seagreen', linewidth=2.5, label=r'$L(\mu)/L_{\max}$')
+    ax.axvline(mu_mle, color='red', linestyle='--', linewidth=2, label=rf'MLE $\hat\mu={mu_mle:.2f}$')
+    ax.axvline(MU_TRUE, color='k', linestyle=':', linewidth=1.5, alpha=0.7,
+               label=rf'true $\mu={MU_TRUE:g}$')
+    ax.set_title(r'Likelihood as a function of $\mu$', fontsize=FS_AX_TITLE)
+    ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
+    ax.set_ylabel('relative likelihood', fontsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    add_vcenter_legend_and_note(
+        ax,
+        f'n = {N} Gaussian samples\n'
+        f'sample mean = {mu_mean:.2f}\n'
+        'MLE peaks at the\n'
+        'sample mean',
+    )
+    ax.grid(True, alpha=0.3)
 
-plt.tight_layout()
-show_maximized(fig1)
+    plt.tight_layout()
+    return fig1
+
 
 
 # -------------------------------------------------------
 # FIGURE 2: Gaussian log-likelihood <-> MSE
 # -------------------------------------------------------
-fig2, axes2 = new_figure(1, 2)
-fig2.suptitle(
-    r'Step 2: For Gaussians, maximizing $\log L$ is exactly minimizing MSE',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_2():
+    fig2, axes2 = new_figure(1, 2)
+    fig2.suptitle(
+        r'Step 2: For Gaussians, maximizing $\log L$ is exactly minimizing MSE',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-ax = axes2[0]
-ax.plot(mu_grid, loglik, color='seagreen', linewidth=2.5, label=r'$\log L(\mu)$')
-ax.axvline(mu_mle, color='red', linestyle='--', linewidth=2, label='argmax')
-ax.set_title(r'Maximize $\log L(\mu)$', fontsize=FS_AX_TITLE)
-ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
-ax.set_ylabel(r'$\log L(\mu)$', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-add_vcenter_legend_and_note(
-    ax,
-    r'$\log L(\mu)=$' + '\n'
-    r'const $-\frac{1}{2\sigma^2}\sum(x_i-\mu)^2$' + '\n\n'
-    'Only the squared term\n'
-    r'depends on $\mu$',
-)
-ax.grid(True, alpha=0.3)
+    ax = axes2[0]
+    ax.plot(mu_grid, loglik, color='seagreen', linewidth=2.5, label=r'$\log L(\mu)$')
+    ax.axvline(mu_mle, color='red', linestyle='--', linewidth=2, label='argmax')
+    ax.set_title(r'Maximize $\log L(\mu)$', fontsize=FS_AX_TITLE)
+    ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
+    ax.set_ylabel(r'$\log L(\mu)$', fontsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    add_vcenter_legend_and_note(
+        ax,
+        r'$\log L(\mu)=$' + '\n'
+        r'const $-\frac{1}{2\sigma^2}\sum(x_i-\mu)^2$' + '\n\n'
+        'Only the squared term\n'
+        r'depends on $\mu$',
+    )
+    ax.grid(True, alpha=0.3)
 
-ax = axes2[1]
-ax.plot(mu_grid, mse, color='darkorange', linewidth=2.5, label=r'MSE$(\mu)$')
-ax.axvline(mu_mse, color='red', linestyle='--', linewidth=2, label='argmin')
-ax.set_title(r'Minimize MSE$(\mu)=\frac{1}{n}\sum(x_i-\mu)^2$', fontsize=FS_AX_TITLE)
-ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
-ax.set_ylabel('MSE', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-add_vcenter_legend_and_note(
-    ax,
-    f'argmin MSE = {mu_mse:.2f}\n'
-    f'argmax log L = {mu_mle:.2f}\n'
-    'Same location.\n\n'
-    'So training with MSE\n'
-    'is Gaussian MLE.',
-)
-ax.grid(True, alpha=0.3)
+    ax = axes2[1]
+    ax.plot(mu_grid, mse, color='darkorange', linewidth=2.5, label=r'MSE$(\mu)$')
+    ax.axvline(mu_mse, color='red', linestyle='--', linewidth=2, label='argmin')
+    ax.set_title(r'Minimize MSE$(\mu)=\frac{1}{n}\sum(x_i-\mu)^2$', fontsize=FS_AX_TITLE)
+    ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
+    ax.set_ylabel('MSE', fontsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    add_vcenter_legend_and_note(
+        ax,
+        f'argmin MSE = {mu_mse:.2f}\n'
+        f'argmax log L = {mu_mle:.2f}\n'
+        'Same location.\n\n'
+        'So training with MSE\n'
+        'is Gaussian MLE.',
+    )
+    ax.grid(True, alpha=0.3)
 
-plt.tight_layout()
-show_maximized(fig2)
+    plt.tight_layout()
+    return fig2
+
 
 
 # -------------------------------------------------------
 # FIGURE 3: Why NOT MAE for Gaussians?
 # -------------------------------------------------------
-fig3, axes3 = new_figure(1, 2)
-fig3.suptitle(
-    r'Step 3: MAE minimizes a different objective -- the Laplace MLE',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_3():
+    fig3, axes3 = new_figure(1, 2)
+    fig3.suptitle(
+        r'Step 3: MAE minimizes a different objective -- the Laplace MLE',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-ax = axes3[0]
-mse_n = (mse - mse.min()) / (mse.max() - mse.min() + 1e-12)
-mae_n = (mae - mae.min()) / (mae.max() - mae.min() + 1e-12)
-ax.plot(mu_grid, mse_n, color='darkorange', linewidth=2.5, label='MSE (scaled)')
-ax.plot(mu_grid, mae_n, color='purple', linewidth=2.5, label='MAE (scaled)')
-ax.axvline(mu_mse, color='darkorange', linestyle='--', linewidth=2,
-           label=rf'MSE min $\rightarrow$ mean={mu_mean:.2f}')
-ax.axvline(mu_mae, color='purple', linestyle='--', linewidth=2,
-           label=rf'MAE min $\rightarrow$ median={mu_median:.2f}')
-ax.set_title('MSE vs MAE objectives (normalized shapes)', fontsize=FS_AX_TITLE)
-ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
-ax.set_ylabel('scaled objective', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-add_vcenter_legend_and_note(
-    ax,
-    'Gaussian MLE -> mean\n'
-    'Laplace MLE -> median\n\n'
-    'MAE is not the\n'
-    'Gaussian likelihood',
-)
-ax.grid(True, alpha=0.3)
+    ax = axes3[0]
+    mse_n = (mse - mse.min()) / (mse.max() - mse.min() + 1e-12)
+    mae_n = (mae - mae.min()) / (mae.max() - mae.min() + 1e-12)
+    ax.plot(mu_grid, mse_n, color='darkorange', linewidth=2.5, label='MSE (scaled)')
+    ax.plot(mu_grid, mae_n, color='purple', linewidth=2.5, label='MAE (scaled)')
+    ax.axvline(mu_mse, color='darkorange', linestyle='--', linewidth=2,
+               label=rf'MSE min $\rightarrow$ mean={mu_mean:.2f}')
+    ax.axvline(mu_mae, color='purple', linestyle='--', linewidth=2,
+               label=rf'MAE min $\rightarrow$ median={mu_median:.2f}')
+    ax.set_title('MSE vs MAE objectives (normalized shapes)', fontsize=FS_AX_TITLE)
+    ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
+    ax.set_ylabel('scaled objective', fontsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    add_vcenter_legend_and_note(
+        ax,
+        'Gaussian MLE -> mean\n'
+        'Laplace MLE -> median\n\n'
+        'MAE is not the\n'
+        'Gaussian likelihood',
+    )
+    ax.grid(True, alpha=0.3)
 
-# Right: which noise model matches which loss
-ax = axes3[1]
-z = np.linspace(-4, 4, 400)
-ax.plot(z, norm.pdf(z, 0, 1), color='darkorange', linewidth=2.5,
-        label=r'Gaussian $\propto e^{-z^2/2}$  -> MSE')
-ax.plot(z, laplace.pdf(z, 0, 1 / np.sqrt(2)), color='purple', linewidth=2.5,
-        label=r'Laplace $\propto e^{-\sqrt{2}|z|}$  -> MAE')
-# Match variance of Laplace for fair visual: scale b = 1/sqrt(2) gives var=1
-ax.set_title('Noise PDF decides the loss', fontsize=FS_AX_TITLE)
-ax.set_xlabel(r'residual $z = x - \mu$', fontsize=FS_AXIS)
-ax.set_ylabel('Density', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-add_vcenter_legend_and_note(
-    ax,
-    'Neg. log-density:\n'
-    'Gaussian -> z^2  (MSE)\n'
-    'Laplace  -> |z|  (MAE)\n\n'
-    'Pick the loss that\n'
-    'matches the noise.',
-)
-ax.grid(True, alpha=0.3)
+    # Right: which noise model matches which loss
+    ax = axes3[1]
+    z = np.linspace(-4, 4, 400)
+    ax.plot(z, norm.pdf(z, 0, 1), color='darkorange', linewidth=2.5,
+            label=r'Gaussian $\propto e^{-z^2/2}$  -> MSE')
+    ax.plot(z, laplace.pdf(z, 0, 1 / np.sqrt(2)), color='purple', linewidth=2.5,
+            label=r'Laplace $\propto e^{-\sqrt{2}|z|}$  -> MAE')
+    # Match variance of Laplace for fair visual: scale b = 1/sqrt(2) gives var=1
+    ax.set_title('Noise PDF decides the loss', fontsize=FS_AX_TITLE)
+    ax.set_xlabel(r'residual $z = x - \mu$', fontsize=FS_AXIS)
+    ax.set_ylabel('Density', fontsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    add_vcenter_legend_and_note(
+        ax,
+        'Neg. log-density:\n'
+        'Gaussian -> z^2  (MSE)\n'
+        'Laplace  -> |z|  (MAE)\n\n'
+        'Pick the loss that\n'
+        'matches the noise.',
+    )
+    ax.grid(True, alpha=0.3)
 
-plt.tight_layout()
-show_maximized(fig3)
+    plt.tight_layout()
+    return fig3
+
 
 
 # -------------------------------------------------------
 # FIGURE 4: Outlier stress test -- MSE vs MAE estimates
 # -------------------------------------------------------
-fig4, axes4 = new_figure(1, 2)
-fig4.suptitle(
-    r'Step 4: One outlier -- MSE (mean) moves more than MAE (median)',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_4():
+    fig4, axes4 = new_figure(1, 2)
+    fig4.suptitle(
+        r'Step 4: One outlier -- MSE (mean) moves more than MAE (median)',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-data_out = data_np.copy()
-data_out[0] = MU_TRUE + 8.0  # plant a large outlier
+    data_out = data_np.copy()
+    data_out[0] = MU_TRUE + 8.0  # plant a large outlier
 
-mse_out = mse_objective(mu_grid, data_out)
-mae_out = mae_objective(mu_grid, data_out)
-mu_mse_out = mu_grid[np.argmin(mse_out)]
-mu_mae_out = mu_grid[np.argmin(mae_out)]
+    mse_out = mse_objective(mu_grid, data_out)
+    mae_out = mae_objective(mu_grid, data_out)
+    mu_mse_out = mu_grid[np.argmin(mse_out)]
+    mu_mae_out = mu_grid[np.argmin(mae_out)]
 
-ax = axes4[0]
-ax.scatter(data_out[1:], np.zeros(N - 1), s=40, color='k', zorder=5, label='inliers')
-ax.scatter([data_out[0]], [0.0], s=80, color='red', zorder=6, label='outlier')
-ax.axvline(mu_mse_out, color='darkorange', linestyle='--', linewidth=2,
-           label=rf'MSE fit (mean)={mu_mse_out:.2f}')
-ax.axvline(mu_mae_out, color='purple', linestyle='--', linewidth=2,
-           label=rf'MAE fit (median)={mu_mae_out:.2f}')
-ax.axvline(MU_TRUE, color='k', linestyle=':', linewidth=1.5, alpha=0.7,
-           label=rf'true $\mu={MU_TRUE:g}$')
-ax.set_title('Fits after adding one outlier', fontsize=FS_AX_TITLE)
-ax.set_xlabel('x', fontsize=FS_AXIS)
-ax.set_ylabel('')
-ax.set_yticks([])
-ax.tick_params(axis='both', labelsize=FS_TICK)
-add_vcenter_legend_and_note(
-    ax,
-    f'clean mean  = {mu_mean:.2f}\n'
-    f'outlier mean= {data_out.mean():.2f}\n'
-    f'outlier med.= {np.median(data_out):.2f}\n\n'
-    'MSE chases outliers;\n'
-    'MAE is more robust.',
-)
-ax.grid(True, alpha=0.3)
-ax.set_xlim(MU_TRUE - 3.5, MU_TRUE + 9.0)
+    ax = axes4[0]
+    ax.scatter(data_out[1:], np.zeros(N - 1), s=40, color='k', zorder=5, label='inliers')
+    ax.scatter([data_out[0]], [0.0], s=80, color='red', zorder=6, label='outlier')
+    ax.axvline(mu_mse_out, color='darkorange', linestyle='--', linewidth=2,
+               label=rf'MSE fit (mean)={mu_mse_out:.2f}')
+    ax.axvline(mu_mae_out, color='purple', linestyle='--', linewidth=2,
+               label=rf'MAE fit (median)={mu_mae_out:.2f}')
+    ax.axvline(MU_TRUE, color='k', linestyle=':', linewidth=1.5, alpha=0.7,
+               label=rf'true $\mu={MU_TRUE:g}$')
+    ax.set_title('Fits after adding one outlier', fontsize=FS_AX_TITLE)
+    ax.set_xlabel('x', fontsize=FS_AXIS)
+    ax.set_ylabel('')
+    ax.set_yticks([])
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    add_vcenter_legend_and_note(
+        ax,
+        f'clean mean  = {mu_mean:.2f}\n'
+        f'outlier mean= {data_out.mean():.2f}\n'
+        f'outlier med.= {np.median(data_out):.2f}\n\n'
+        'MSE chases outliers;\n'
+        'MAE is more robust.',
+    )
+    ax.grid(True, alpha=0.3)
+    ax.set_xlim(MU_TRUE - 3.5, MU_TRUE + 9.0)
 
-ax = axes4[1]
-mse_out_n = (mse_out - mse_out.min()) / (mse_out.max() - mse_out.min() + 1e-12)
-mae_out_n = (mae_out - mae_out.min()) / (mae_out.max() - mae_out.min() + 1e-12)
-ax.plot(mu_grid, mse_out_n, color='darkorange', linewidth=2.5, label='MSE (scaled)')
-ax.plot(mu_grid, mae_out_n, color='purple', linewidth=2.5, label='MAE (scaled)')
-ax.axvline(mu_mse_out, color='darkorange', linestyle='--', linewidth=2)
-ax.axvline(mu_mae_out, color='purple', linestyle='--', linewidth=2)
-ax.set_title('Objectives with the outlier present', fontsize=FS_AX_TITLE)
-ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
-ax.set_ylabel('scaled objective', fontsize=FS_AXIS)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-add_vcenter_legend_and_note(
-    ax,
-    'Still:\n'
-    'MSE argmin = mean\n'
-    'MAE argmin = median\n\n'
-    'Gaussian MLE still\n'
-    'means MSE -- even\n'
-    'when that is brittle.',
-)
-ax.grid(True, alpha=0.3)
+    ax = axes4[1]
+    mse_out_n = (mse_out - mse_out.min()) / (mse_out.max() - mse_out.min() + 1e-12)
+    mae_out_n = (mae_out - mae_out.min()) / (mae_out.max() - mae_out.min() + 1e-12)
+    ax.plot(mu_grid, mse_out_n, color='darkorange', linewidth=2.5, label='MSE (scaled)')
+    ax.plot(mu_grid, mae_out_n, color='purple', linewidth=2.5, label='MAE (scaled)')
+    ax.axvline(mu_mse_out, color='darkorange', linestyle='--', linewidth=2)
+    ax.axvline(mu_mae_out, color='purple', linestyle='--', linewidth=2)
+    ax.set_title('Objectives with the outlier present', fontsize=FS_AX_TITLE)
+    ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
+    ax.set_ylabel('scaled objective', fontsize=FS_AXIS)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    add_vcenter_legend_and_note(
+        ax,
+        'Still:\n'
+        'MSE argmin = mean\n'
+        'MAE argmin = median\n\n'
+        'Gaussian MLE still\n'
+        'means MSE -- even\n'
+        'when that is brittle.',
+    )
+    ax.grid(True, alpha=0.3)
 
-plt.tight_layout()
-show_maximized(fig4)
+    plt.tight_layout()
+    return fig4
 
+
+
+
+run_slide_deck([
+    build_step_1,
+    build_step_2,
+    build_step_3,
+    build_step_4,
+])
 
 # -------------------------------------------------------
 # KEY INSIGHTS

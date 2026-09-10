@@ -51,6 +51,9 @@ Map: [_curriculum.py](_curriculum.py).
 | Core | `0210_exploit_stage4_systems.py` | Stage IV: RAG, state, agents, batch pipelines |
 | Core | `0220_exploit_eval_production.py` | Evaluation, observability, production architecture |
 | Core | `0230_exploit_deep_progression.py` | Deep progression + engineering principle |
+| Core | `0232_Vision_Language_Model.py` | VLMs -- vision tokens, projectors, CLIP to LLaVA to agents |
+| Core | `0235_agentic_AI.py` | What an AI agent is -- tools, ReAct, memory, planning, RL |
+| Core | `0236_agentic_AI_example.py` | Build a data-analyst agent with an existing LLM -- no training |
 
 ### Ch04: First training delivery -- see a model train
 
@@ -252,6 +255,9 @@ Map: [_curriculum.py](_curriculum.py).
 - 0210_exploit_stage4_systems.py
 - 0220_exploit_eval_production.py
 - 0230_exploit_deep_progression.py
+- 0232_Vision_Language_Model.py
+- 0235_agentic_AI.py
+- 0236_agentic_AI_example.py
 - 0240_Ch04_First_Delivery.py
 - 0250_AI_fun.py
 - 0260_numpy_torch.py

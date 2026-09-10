@@ -33,6 +33,7 @@ from _config import (
     SCREEN_FRACTION,
     apply_rcparams,
     add_step_footer,
+    run_slide_deck,
 )
 apply_rcparams(plt)
 import matplotlib.patches as patches
@@ -188,135 +189,141 @@ path_mom, vel_mom, grads_mom = run_momentum(X0, LR, BETA, batches)
 # -------------------------------------------------------
 # FIGURE 1: Contour + stochastic trajectories
 # -------------------------------------------------------
-fig1, ax1 = new_figure()
-fig1.suptitle(
-    'Step 1: Minibatch noise makes SGD jitter; momentum keeps rolling',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_1():
+    fig1, ax1 = new_figure()
+    fig1.suptitle(
+        'Step 1: Minibatch noise makes SGD jitter; momentum keeps rolling',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-gx = np.linspace(-1.3, 1.3, 200)
-gy = np.linspace(-1.3, 1.3, 200)
-GX, GY = np.meshgrid(gx, gy)
-GZ = np.mean(a_i) * GX ** 2 + np.mean(b_i) * GY ** 2
-cs = ax1.contour(GX, GY, GZ, levels=20, cmap='terrain', linewidths=1.0)
-ax1.clabel(cs, inline=True, fontsize=8, fmt='%.1f')
+    gx = np.linspace(-1.3, 1.3, 200)
+    gy = np.linspace(-1.3, 1.3, 200)
+    GX, GY = np.meshgrid(gx, gy)
+    GZ = np.mean(a_i) * GX ** 2 + np.mean(b_i) * GY ** 2
+    cs = ax1.contour(GX, GY, GZ, levels=20, cmap='terrain', linewidths=1.0)
+    ax1.clabel(cs, inline=True, fontsize=8, fmt='%.1f')
 
-ax1.plot(path_sgd[:, 0], path_sgd[:, 1], '-', color='crimson',
-         linewidth=1.6, alpha=0.9, label='Minibatch SGD')
-ax1.plot(path_mom[:, 0], path_mom[:, 1], '-', color='royalblue',
-         linewidth=1.8, alpha=0.9, label=rf'Momentum ($\beta={BETA}$)')
-ax1.scatter(path_sgd[::4, 0], path_sgd[::4, 1], c='crimson', s=18, zorder=4)
-ax1.scatter(path_mom[::4, 0], path_mom[::4, 1], c='royalblue', s=18, zorder=4)
-ax1.scatter([0], [0], c='k', s=80, marker='*', zorder=5, label='minimum')
-ax1.scatter([X0[0]], [X0[1]], c='orange', s=60, zorder=5, label='start')
+    ax1.plot(path_sgd[:, 0], path_sgd[:, 1], '-', color='crimson',
+             linewidth=1.6, alpha=0.9, label='Minibatch SGD')
+    ax1.plot(path_mom[:, 0], path_mom[:, 1], '-', color='royalblue',
+             linewidth=1.8, alpha=0.9, label=rf'Momentum ($\beta={BETA}$)')
+    ax1.scatter(path_sgd[::4, 0], path_sgd[::4, 1], c='crimson', s=18, zorder=4)
+    ax1.scatter(path_mom[::4, 0], path_mom[::4, 1], c='royalblue', s=18, zorder=4)
+    ax1.scatter([0], [0], c='k', s=80, marker='*', zorder=5, label='minimum')
+    ax1.scatter([X0[0]], [X0[1]], c='orange', s=60, zorder=5, label='start')
 
-ax1.set_xlabel('x (steep / noisy direction)', fontsize=FS_AXIS)
-ax1.set_ylabel('y (shallow direction)', fontsize=FS_AXIS)
-ax1.set_aspect('equal')
-ax1.tick_params(axis='both', labelsize=FS_TICK)
-add_vcenter_legend_and_note(
-    ax1,
-    f'Each step: batch of {BATCH_SIZE}/{N_DATA}\n'
-    'examples -> noisy gradient.\n\n'
-    'SGD: ball shakes with noise.\n'
-    'Momentum: velocity remembers\n'
-    'the consistent downhill push.',
-)
-ax1.grid(True, alpha=0.3)
+    ax1.set_xlabel('x (steep / noisy direction)', fontsize=FS_AXIS)
+    ax1.set_ylabel('y (shallow direction)', fontsize=FS_AXIS)
+    ax1.set_aspect('equal')
+    ax1.tick_params(axis='both', labelsize=FS_TICK)
+    add_vcenter_legend_and_note(
+        ax1,
+        f'Each step: batch of {BATCH_SIZE}/{N_DATA}\n'
+        'examples -> noisy gradient.\n\n'
+        'SGD: ball shakes with noise.\n'
+        'Momentum: velocity remembers\n'
+        'the consistent downhill push.',
+    )
+    ax1.grid(True, alpha=0.3)
 
-plt.tight_layout()
-show_maximized(fig1)
+    plt.tight_layout()
+    return fig1
+
 
 
 # -------------------------------------------------------
 # FIGURE 2: Loss curves + noisy g vs smoothed v
 # -------------------------------------------------------
-fig2, axes2 = new_figure(1, 2)
-fig2.suptitle(
-    'Step 2: Same minibatches -- momentum filters the jitter',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_2():
+    fig2, axes2 = new_figure(1, 2)
+    fig2.suptitle(
+        'Step 2: Same minibatches -- momentum filters the jitter',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-ax = axes2[0]
-ax.plot(loss_path(path_sgd), color='crimson', linewidth=2.5, label='SGD loss')
-ax.plot(loss_path(path_mom), color='royalblue', linewidth=2.5, label='Momentum loss')
-ax.set_xlabel('SGD step', fontsize=FS_AXIS)
-ax.set_ylabel(r'$L(x,y)$ (full batch)', fontsize=FS_AXIS)
-ax.set_title('Full-batch loss along the path', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-add_vcenter_legend_and_note(
-    ax,
-    'Both see identical\n'
-    'minibatch schedules.\n'
-    'Momentum still descends\n'
-    'more steadily.',
-)
-ax.grid(True, alpha=0.3)
+    ax = axes2[0]
+    ax.plot(loss_path(path_sgd), color='crimson', linewidth=2.5, label='SGD loss')
+    ax.plot(loss_path(path_mom), color='royalblue', linewidth=2.5, label='Momentum loss')
+    ax.set_xlabel('SGD step', fontsize=FS_AXIS)
+    ax.set_ylabel(r'$L(x,y)$ (full batch)', fontsize=FS_AXIS)
+    ax.set_title('Full-batch loss along the path', fontsize=FS_AX_TITLE)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    add_vcenter_legend_and_note(
+        ax,
+        'Both see identical\n'
+        'minibatch schedules.\n'
+        'Momentum still descends\n'
+        'more steadily.',
+    )
+    ax.grid(True, alpha=0.3)
 
-ax = axes2[1]
-ax.plot(grads_sgd[:, 0], color='crimson', alpha=0.45, linewidth=1.2,
-        label=r'SGD noisy $g_x$')
-ax.plot(vel_mom[1:, 0], color='royalblue', linewidth=2.2,
-        label=r'Momentum $v_x$')
-ax.plot(vel_mom[1:, 1], color='seagreen', linewidth=2.2,
-        label=r'Momentum $v_y$')
-ax.axhline(0, color='k', linewidth=0.8, alpha=0.4)
-ax.set_xlabel('SGD step', fontsize=FS_AXIS)
-ax.set_ylabel('component', fontsize=FS_AXIS)
-ax.set_title('Noisy gradient vs momentum velocity', fontsize=FS_AX_TITLE)
-ax.tick_params(axis='both', labelsize=FS_TICK)
-add_vcenter_legend_and_note(
-    ax,
-    r'$v \leftarrow \beta v + g_{batch}$' + '\n\n'
-    'g_x chatters every SGD step.\n'
-    'v_x is a low-pass filter\n'
-    'of that chatter.',
-)
-ax.grid(True, alpha=0.3)
+    ax = axes2[1]
+    ax.plot(grads_sgd[:, 0], color='crimson', alpha=0.45, linewidth=1.2,
+            label=r'SGD noisy $g_x$')
+    ax.plot(vel_mom[1:, 0], color='royalblue', linewidth=2.2,
+            label=r'Momentum $v_x$')
+    ax.plot(vel_mom[1:, 1], color='seagreen', linewidth=2.2,
+            label=r'Momentum $v_y$')
+    ax.axhline(0, color='k', linewidth=0.8, alpha=0.4)
+    ax.set_xlabel('SGD step', fontsize=FS_AXIS)
+    ax.set_ylabel('component', fontsize=FS_AXIS)
+    ax.set_title('Noisy gradient vs momentum velocity', fontsize=FS_AX_TITLE)
+    ax.tick_params(axis='both', labelsize=FS_TICK)
+    add_vcenter_legend_and_note(
+        ax,
+        r'$v \leftarrow \beta v + g_{batch}$' + '\n\n'
+        'g_x chatters every SGD step.\n'
+        'v_x is a low-pass filter\n'
+        'of that chatter.',
+    )
+    ax.grid(True, alpha=0.3)
 
-plt.tight_layout()
-show_maximized(fig2)
+    plt.tight_layout()
+    return fig2
+
 
 
 # -------------------------------------------------------
 # FIGURE 3: Update rules
 # -------------------------------------------------------
-fig3, axes3 = new_figure(1, 2)
-fig3.suptitle(
-    'Step 3: Minibatch SGD vs momentum gradient update',
-    fontsize=FS_FIGURE_TITLE, fontweight='bold',
-)
+def build_step_3():
+    fig3, axes3 = new_figure(1, 2)
+    fig3.suptitle(
+        'Step 3: Minibatch SGD vs momentum gradient update',
+        fontsize=FS_FIGURE_TITLE, fontweight='bold',
+    )
 
-ax = axes3[0]
-ax.axis('off')
-ax.set_title('Minibatch SGD', fontsize=FS_AX_TITLE, color='crimson')
-ax.text(
-    0.5, 0.55,
-    r'$g_t = \nabla L_{\mathcal{B}_t}(x_t)$' + '\n'
-    r'(random minibatch $\mathcal{B}_t$)' + '\n\n'
-    r'$x_{t+1} = x_t - \eta\, g_t$' + '\n\n'
-    'Noisy push every SGD step.\n'
-    'The ball oscillates.',
-    transform=ax.transAxes, ha='center', va='center', fontsize=FS_AXIS,
-    bbox=dict(boxstyle='round', facecolor='#ffe8e8', alpha=0.95),
-)
+    ax = axes3[0]
+    ax.axis('off')
+    ax.set_title('Minibatch SGD', fontsize=FS_AX_TITLE, color='crimson')
+    ax.text(
+        0.5, 0.55,
+        r'$g_t = \nabla L_{\mathcal{B}_t}(x_t)$' + '\n'
+        r'(random minibatch $\mathcal{B}_t$)' + '\n\n'
+        r'$x_{t+1} = x_t - \eta\, g_t$' + '\n\n'
+        'Noisy push every SGD step.\n'
+        'The ball oscillates.',
+        transform=ax.transAxes, ha='center', va='center', fontsize=FS_AXIS,
+        bbox=dict(boxstyle='round', facecolor='#ffe8e8', alpha=0.95),
+    )
 
-ax = axes3[1]
-ax.axis('off')
-ax.set_title(rf'Momentum  ($\beta={BETA}$)', fontsize=FS_AX_TITLE, color='royalblue')
-ax.text(
-    0.5, 0.55,
-    r'$g_t = \nabla L_{\mathcal{B}_t}(x_t)$' + '\n\n'
-    r'$v_{t+1} = \beta\, v_t + g_t$' + '\n\n'
-    r'$x_{t+1} = x_t - \eta\, v_{t+1}$' + '\n\n'
-    'Velocity keeps inertia\n'
-    'through the batch noise.',
-    transform=ax.transAxes, ha='center', va='center', fontsize=FS_AXIS,
-    bbox=dict(boxstyle='round', facecolor='#e8efff', alpha=0.95),
-)
+    ax = axes3[1]
+    ax.axis('off')
+    ax.set_title(rf'Momentum  ($\beta={BETA}$)', fontsize=FS_AX_TITLE, color='royalblue')
+    ax.text(
+        0.5, 0.55,
+        r'$g_t = \nabla L_{\mathcal{B}_t}(x_t)$' + '\n\n'
+        r'$v_{t+1} = \beta\, v_t + g_t$' + '\n\n'
+        r'$x_{t+1} = x_t - \eta\, v_{t+1}$' + '\n\n'
+        'Velocity keeps inertia\n'
+        'through the batch noise.',
+        transform=ax.transAxes, ha='center', va='center', fontsize=FS_AXIS,
+        bbox=dict(boxstyle='round', facecolor='#e8efff', alpha=0.95),
+    )
 
-plt.tight_layout()
-show_maximized(fig3)
+    plt.tight_layout()
+    return fig3
+
 
 
 # -------------------------------------------------------
@@ -440,6 +447,13 @@ except Exception:
     plt.close(fig_a)
 
 
+
+
+run_slide_deck([
+    build_step_1,
+    build_step_2,
+    build_step_3,
+])
 
 # -------------------------------------------------------
 # KEY INSIGHTS

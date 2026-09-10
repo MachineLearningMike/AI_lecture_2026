@@ -24,9 +24,9 @@ from _config import (
     FS_ANNOT,
     FS_LEGEND,
     FIGURE_DPI,
-    SCREEN_FRACTION,
     apply_rcparams,
-    add_step_footer,
+    screen_figsize,
+    run_slide_deck,
 )
 apply_rcparams(plt)
 import matplotlib.patches as patches
@@ -35,43 +35,10 @@ import numpy as np
 np.random.seed(42)
 
 
-def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
-    try:
-        import tkinter as tk
-        root = tk.Tk()
-        root.withdraw()
-        w = root.winfo_screenwidth()
-        h = root.winfo_screenheight()
-        root.destroy()
-        return (w / dpi * fraction, h / dpi * fraction)
-    except Exception:
-        return (16 * fraction / 0.95, 9 * fraction / 0.95)
-
-
 def new_figure(*args, **kwargs):
     kwargs.setdefault('figsize', screen_figsize())
     kwargs.setdefault('dpi', FIGURE_DPI)
     return plt.subplots(*args, **kwargs)
-
-
-def show_maximized(fig):
-    fig.set_dpi(FIGURE_DPI)
-    fig.set_size_inches(screen_figsize(), forward=True)
-    fig.canvas.draw_idle()
-    manager = getattr(fig.canvas, 'manager', None)
-    if manager is not None:
-        try:
-            manager.window.state('zoomed')
-        except Exception:
-            try:
-                manager.window.showMaximized()
-            except Exception:
-                try:
-                    manager.frame.Maximize(True)
-                except Exception:
-                    pass
-    add_step_footer(fig)
-    plt.show()
 
 
 def blank_slide(ax):
@@ -114,56 +81,58 @@ CM_Y = 0.673
 # -------------------------------------------------------
 # FIGURE 1: Two readings of a distribution
 # -------------------------------------------------------
-fig1, ax1 = new_figure()
-fig1.suptitle(
-    'Step 1: Discriminative vs generative understanding of a distribution',
-    fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
-)
-blank_slide(ax1)
+def build_step_1():
+    fig1, ax1 = new_figure()
+    fig1.suptitle(
+        'Step 1: Discriminative vs generative understanding of a distribution',
+        fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
+    )
+    blank_slide(ax1)
 
-round_box(ax1, 0.6, 5.4, 10.8, 1.9, C_DARK, C_DARK, lw=0)
-ax1.text(
-    6.0, 6.35,
-    'Same word "cat" -- two different questions',
-    ha='center', va='center', fontsize=FS_AX_TITLE,
-    fontweight='bold', color='white',
-)
+    round_box(ax1, 0.6, 5.4, 10.8, 1.9, C_DARK, C_DARK, lw=0)
+    ax1.text(
+        6.0, 6.35,
+        'Same word "cat" -- two different questions',
+        ha='center', va='center', fontsize=FS_AX_TITLE,
+        fontweight='bold', color='white',
+    )
 
-round_box(ax1, 0.5, 1.0, 5.3, 3.9, C_OLD, '#e67e22', lw=2.5)
-ax1.text(
-    3.15, 4.4, 'Discriminative',
-    ha='center', va='center', fontsize=FS_AX_TITLE,
-    fontweight='bold', color='#a04000',
-)
-ax1.text(
-    3.15, 2.7,
-    (
-        r'$P(\mathrm{cat}\mid\mathrm{cat\ or\ dog\ image})$' + '\n\n'
-        'Given that the image is a cat or a dog,\n'
-        'which one is it?\n\n'
-        'A forced choice between two labels.'
-    ),
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-)
+    round_box(ax1, 0.5, 1.0, 5.3, 3.9, C_OLD, '#e67e22', lw=2.5)
+    ax1.text(
+        3.15, 4.4, 'Discriminative',
+        ha='center', va='center', fontsize=FS_AX_TITLE,
+        fontweight='bold', color='#a04000',
+    )
+    ax1.text(
+        3.15, 2.7,
+        (
+            r'$P(\mathrm{cat}\mid\mathrm{cat\ or\ dog\ image})$' + '\n\n'
+            'Given that the image is a cat or a dog,\n'
+            'which one is it?\n\n'
+            'A forced choice between two labels.'
+        ),
+        ha='center', va='center', fontsize=FS_ANNOT + 1,
+    )
 
-round_box(ax1, 6.2, 1.0, 5.3, 3.9, C_NEW, '#2874a6', lw=2.5)
-ax1.text(
-    8.85, 4.4, 'Generative',
-    ha='center', va='center', fontsize=FS_AX_TITLE,
-    fontweight='bold', color=C_DARK,
-)
-ax1.text(
-    8.85, 2.7,
-    (
-        r'$P(\mathrm{cat}\mid\mathrm{image})$' + '\n\n'
-        'Given any image,\n'
-        'how likely is it a cat?\n\n'
-        'Else is allowed -- kitchen, street, ...'
-    ),
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-)
+    round_box(ax1, 6.2, 1.0, 5.3, 3.9, C_NEW, '#2874a6', lw=2.5)
+    ax1.text(
+        8.85, 4.4, 'Generative',
+        ha='center', va='center', fontsize=FS_AX_TITLE,
+        fontweight='bold', color=C_DARK,
+    )
+    ax1.text(
+        8.85, 2.7,
+        (
+            r'$P(\mathrm{cat}\mid\mathrm{image})$' + '\n\n'
+            'Given any image,\n'
+            'how likely is it a cat?\n\n'
+            'Else is allowed -- kitchen, street, ...'
+        ),
+        ha='center', va='center', fontsize=FS_ANNOT + 1,
+    )
 
-show_maximized(fig1)
+    return fig1
+
 
 
 def sample_complex_branches(rng, polylines, n_per_seg=48, width_lo=0.035, width_hi=0.16):
@@ -254,545 +223,573 @@ def draw_complex_cat_dog(ax, rng, with_kitchen=True):
 # -------------------------------------------------------
 # FIGURE 2: Kitchen vs cat + complex cat/dog distribution
 # -------------------------------------------------------
-fig2, (ax_cases, ax_complex) = new_figure(
-    1, 2, gridspec_kw={'width_ratios': [6.4, 2.1]},
-)
-fig2.suptitle(
-    'Step 2: D vs G: Do NOT leave this slide for 10 hours',
-    fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
-)
-
-# Left: cross table + captions (wide columns; top-aligned without shrinking x)
-x0 = 0.2
-label_w, head_w, cell_w = 5.6 * 1.2, 5.2 * 1.2, 5.2 * 1.2
-head_h, row_h = 1.3, 3.0
-table_w = label_w + 2 * cell_w
-table_h = head_h + 2 * row_h
-gap_table_to_box = 0.85
-gap_between_boxes = 0.70
-caption_block_h = 2.6  # room for both caption boxes + gaps
-y_top = table_h + gap_table_to_box + caption_block_h + 0.4
-y0 = y_top - table_h  # table flush to the top of the data window
-
-ax_cases.set_xlim(0, x0 + table_w + 0.25)
-ax_cases.set_ylim(0, y_top + 0.15)
-ax_cases.axis('off')
-
-# Corner (empty)
-round_box(ax_cases, x0, y0 + 2 * row_h, label_w, head_h, C_MUTE, '0.55', lw=1.4)
-
-# Head row: Kitchen | Cat
-for i, (name, face) in enumerate([
-    ('Kitchen image', C_MUTE),
-    ('Cat image', C_GOAL),
-]):
-    x = x0 + label_w + i * head_w
-    round_box(ax_cases, x, y0 + 2 * row_h, head_w, head_h, face, '0.45', lw=1.6)
-    ax_cases.text(
-        x + head_w / 2, y0 + 2 * row_h + head_h / 2, name,
-        ha='center', va='center', fontsize=FS_ANNOT + 2,
-        fontweight='bold', color=C_DARK,
+def build_step_2():
+    fig2, (ax_cases, ax_complex) = new_figure(
+        1, 2, gridspec_kw={'width_ratios': [6.4, 2.1]},
+    )
+    fig2.suptitle(
+        'Step 2: D vs G: Do NOT leave this slide for 10 hours',
+        fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
     )
 
-# Row labels + answer cells
-# extension lines use a second color so the complement identity stands out
-rows = [
-    (
-        r'$P(\mathrm{cat}\mid\mathrm{cat\ or\ dog\ image})$',
-        r'$=1-P(\mathrm{dog}\mid\mathrm{cat\ or\ dog\ image})$',
-        '#fce4d6', '#e67e22', '#a04000', '#c0392b',
-        '"cat 85%, so dog 15%."',
-        '"cat 98%, so dog 2%."',
-    ),
-    (
-        r'$P(\mathrm{cat}\mid\mathrm{image})$',
-        r'$=1-P(\mathrm{allElse}\mid\mathrm{image})$',
-        '#d6eaf8', '#2874a6', C_DARK, '#1e8449',
-        '"cat 2%, so allElse 98%"',
-        '"cat 98%, so allElse 2%"',
-    ),
-]
-for r, (row_main, row_ext, face, edge, title_c, ext_c, ans_k, ans_c) in enumerate(rows):
-    y = y0 + (1 - r) * row_h
-    # First column: probability query + complement identity
-    round_box(ax_cases, x0, y, label_w, row_h, face, edge, lw=1.6)
-    ax_cases.text(
-        x0 + label_w / 2, y + row_h / 2 + 0.45, row_main,
-        ha='center', va='center', fontsize=FS_ANNOT,
-        fontweight='bold', color=title_c,
-    )
-    ax_cases.text(
-        x0 + label_w / 2, y + row_h / 2 - 0.55, row_ext,
-        ha='center', va='center', fontsize=FS_ANNOT,
-        fontweight='bold', color=ext_c,
-    )
-    # Cross cells: answers only
-    for c, ans in enumerate([ans_k, ans_c]):
-        x = x0 + label_w + c * cell_w
-        round_box(ax_cases, x, y, cell_w, row_h, 'white', edge, lw=1.6)
+    # Left: cross table + captions (wide columns; top-aligned without shrinking x)
+    x0 = 0.2
+    label_w, head_w, cell_w = 5.6 * 1.2, 5.2 * 1.2, 5.2 * 1.2
+    head_h, row_h = 1.3, 3.0
+    table_w = label_w + 2 * cell_w
+    table_h = head_h + 2 * row_h
+    gap_table_to_box = 0.85
+    gap_between_boxes = 0.70
+    caption_block_h = 2.6  # room for both caption boxes + gaps
+    y_top = table_h + gap_table_to_box + caption_block_h + 0.4
+    y0 = y_top - table_h  # table flush to the top of the data window
+
+    ax_cases.set_xlim(0, x0 + table_w + 0.25)
+    ax_cases.set_ylim(0, y_top + 0.15)
+    ax_cases.axis('off')
+
+    # Corner (empty)
+    round_box(ax_cases, x0, y0 + 2 * row_h, label_w, head_h, C_MUTE, '0.55', lw=1.4)
+
+    # Head row: Kitchen | Cat
+    for i, (name, face) in enumerate([
+        ('Kitchen image', C_MUTE),
+        ('Cat image', C_GOAL),
+    ]):
+        x = x0 + label_w + i * head_w
+        round_box(ax_cases, x, y0 + 2 * row_h, head_w, head_h, face, '0.45', lw=1.6)
         ax_cases.text(
-            x + cell_w / 2, y + row_h / 2, ans,
-            ha='center', va='center', fontsize=FS_ANNOT + 1,
+            x + head_w / 2, y0 + 2 * row_h + head_h / 2, name,
+            ha='center', va='center', fontsize=FS_ANNOT + 2,
             fontweight='bold', color=C_DARK,
         )
 
-# Captions sit under the table, still in the left column (with clear gaps)
-ax_cases.text(
-    x0 + table_w / 2, y0 - gap_table_to_box,
-    'P(cat|image) model knows every possible cat image;\n'
-    'P(cat|cat or dog image) model knows only the boundary between cats and dogs.\n'
-    'You can ask P(cat|image) model for a new cat image.',
-    ha='center', va='top', fontsize=FS_ANNOT + 1, fontweight='bold',
-    bbox=dict(boxstyle='round,pad=0.4', facecolor='lightyellow',
-              edgecolor='0.55', alpha=0.97),
-)
-ax_cases.text(
-    x0 + table_w / 2, y0 - gap_table_to_box - 1.55 - gap_between_boxes,
-    'Think of the allElse points.\n'
-    'They are learned by learning all the cat points.',
-    ha='center', va='top', fontsize=FS_ANNOT + 2, fontweight='bold',
-    color=C_DARK,
-    bbox=dict(boxstyle='round,pad=0.4', facecolor=C_GOAL,
-              edgecolor=C_OK, linewidth=1.6, alpha=0.97),
-)
+    # Row labels + answer cells
+    # extension lines use a second color so the complement identity stands out
+    rows = [
+        (
+            r'$P(\mathrm{cat}\mid\mathrm{cat\ or\ dog\ image})$',
+            r'$=1-P(\mathrm{dog}\mid\mathrm{cat\ or\ dog\ image})$',
+            '#fce4d6', '#e67e22', '#a04000', '#c0392b',
+            '"cat 85%, so dog 15%."',
+            '"cat 98%, so dog 2%."',
+        ),
+        (
+            r'$P(\mathrm{cat}\mid\mathrm{image})$',
+            r'$=1-P(\mathrm{allElse}\mid\mathrm{image})$',
+            '#d6eaf8', '#2874a6', C_DARK, '#1e8449',
+            '"cat 2%, so allElse 98%"',
+            '"cat 98%, so allElse 2%"',
+        ),
+    ]
+    for r, (row_main, row_ext, face, edge, title_c, ext_c, ans_k, ans_c) in enumerate(rows):
+        y = y0 + (1 - r) * row_h
+        # First column: probability query + complement identity
+        round_box(ax_cases, x0, y, label_w, row_h, face, edge, lw=1.6)
+        ax_cases.text(
+            x0 + label_w / 2, y + row_h / 2 + 0.45, row_main,
+            ha='center', va='center', fontsize=FS_ANNOT,
+            fontweight='bold', color=title_c,
+        )
+        ax_cases.text(
+            x0 + label_w / 2, y + row_h / 2 - 0.55, row_ext,
+            ha='center', va='center', fontsize=FS_ANNOT,
+            fontweight='bold', color=ext_c,
+        )
+        # Cross cells: answers only
+        for c, ans in enumerate([ans_k, ans_c]):
+            x = x0 + label_w + c * cell_w
+            round_box(ax_cases, x, y, cell_w, row_h, 'white', edge, lw=1.6)
+            ax_cases.text(
+                x + cell_w / 2, y + row_h / 2, ans,
+                ha='center', va='center', fontsize=FS_ANNOT + 1,
+                fontweight='bold', color=C_DARK,
+            )
 
-# Right: complex cat / dog distribution
-rng2 = np.random.default_rng(11)
-draw_complex_cat_dog(ax_complex, rng2, with_kitchen=True)
-ax_complex.set_title(
-    'Complex Cat / Dog distribution',
-    fontsize=FS_AX_TITLE - 2,
-)
+    # Captions sit under the table, still in the left column (with clear gaps)
+    ax_cases.text(
+        x0 + table_w / 2, y0 - gap_table_to_box,
+        'P(cat|image) model knows every possible cat image;\n'
+        'P(cat|cat or dog image) model knows only the boundary between cats and dogs.\n'
+        'You can ask P(cat|image) model for a new cat image.',
+        ha='center', va='top', fontsize=FS_ANNOT + 1, fontweight='bold',
+        bbox=dict(boxstyle='round,pad=0.4', facecolor='lightyellow',
+                  edgecolor='0.55', alpha=0.97),
+    )
+    ax_cases.text(
+        x0 + table_w / 2, y0 - gap_table_to_box - 1.55 - gap_between_boxes,
+        'Think of the allElse points.\n'
+        'They are learned by learning all the cat points.',
+        ha='center', va='top', fontsize=FS_ANNOT + 2, fontweight='bold',
+        color=C_DARK,
+        bbox=dict(boxstyle='round,pad=0.4', facecolor=C_GOAL,
+                  edgecolor=C_OK, linewidth=1.6, alpha=0.97),
+    )
 
-fig2.tight_layout(rect=[0.0, 0.02, 0.995, 0.94])
-fig2.subplots_adjust(left=0.02, right=0.99, wspace=0.12)
-show_maximized(fig2)
+    # Right: complex cat / dog distribution
+    rng2 = np.random.default_rng(11)
+    draw_complex_cat_dog(ax_complex, rng2, with_kitchen=True)
+    ax_complex.set_title(
+        'Complex Cat / Dog distribution',
+        fontsize=FS_AX_TITLE - 2,
+    )
+
+    fig2.tight_layout(rect=[0.0, 0.02, 0.995, 0.94])
+    fig2.subplots_adjust(left=0.02, right=0.99, wspace=0.12)
+    return fig2
+
 
 
 # -------------------------------------------------------
 # FIGURE 3: Complex cat/dog distribution (left) vs hidden Gaussian cats (right)
 # -------------------------------------------------------
-fig3, (ax_complex3, ax_latent3) = new_figure(
-    1, 2, gridspec_kw={'width_ratios': [1.0, 1.0]},
-)
-fig3.suptitle(
-    'Step 3: From tangled image space to a simpler latent space',
-    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
-)
+def build_step_3():
+    fig3, (ax_complex3, ax_latent3) = new_figure(
+        1, 2, gridspec_kw={'width_ratios': [1.0, 1.0]},
+    )
+    fig3.suptitle(
+        'Step 3: From tangled image space to a simpler latent space',
+        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    )
 
-rng3 = np.random.default_rng(11)
-draw_complex_cat_dog(ax_complex3, rng3, with_kitchen=True)
-ax_complex3.set_title('Complex Cat / Dog distribution', fontsize=FS_AX_TITLE - 2)
+    rng3 = np.random.default_rng(11)
+    draw_complex_cat_dog(ax_complex3, rng3, with_kitchen=True)
+    ax_complex3.set_title('Complex Cat / Dog distribution', fontsize=FS_AX_TITLE - 2)
 
-# Right panel: cats ~ Gaussian ball; dogs uneven around it; kitchen elsewhere
-cats_h = rng3.normal(loc=[0.0, 0.0], scale=[0.55, 0.55], size=(160, 2))
-# Dogs: uneven clumps around the Gaussian ball (not a ring, not another Gaussian)
-dog_clumps = [
-    ([1.8, 1.4], [0.35, 0.55], 40),
-    ([-1.6, 1.7], [0.55, 0.28], 35),
-    ([2.0, -1.1], [0.45, 0.40], 45),
-    ([-1.9, -1.5], [0.30, 0.60], 30),
-    ([0.2, 2.2], [0.70, 0.25], 25),
-]
-dogs_h = []
-for loc, scale, n in dog_clumps:
-    dogs_h.append(rng3.normal(loc=loc, scale=scale, size=(n, 2)))
-dogs_h = np.vstack(dogs_h)
-kitchen_h = rng3.uniform(low=[-2.6, -2.4], high=[2.6, 2.4], size=2)
+    # Right panel: cats ~ Gaussian ball; dogs uneven around it; kitchen elsewhere
+    cats_h = rng3.normal(loc=[0.0, 0.0], scale=[0.55, 0.55], size=(160, 2))
+    # Dogs: uneven clumps around the Gaussian ball (not a ring, not another Gaussian)
+    dog_clumps = [
+        ([1.8, 1.4], [0.35, 0.55], 40),
+        ([-1.6, 1.7], [0.55, 0.28], 35),
+        ([2.0, -1.1], [0.45, 0.40], 45),
+        ([-1.9, -1.5], [0.30, 0.60], 30),
+        ([0.2, 2.2], [0.70, 0.25], 25),
+    ]
+    dogs_h = []
+    for loc, scale, n in dog_clumps:
+        dogs_h.append(rng3.normal(loc=loc, scale=scale, size=(n, 2)))
+    dogs_h = np.vstack(dogs_h)
+    kitchen_h = rng3.uniform(low=[-2.6, -2.4], high=[2.6, 2.4], size=2)
 
-ax_latent3.scatter(
-    dogs_h[:, 0], dogs_h[:, 1], s=18, c='#1f77b4', alpha=0.75,
-    edgecolors='none', zorder=3, label='Dog',
-)
-ax_latent3.scatter(
-    cats_h[:, 0], cats_h[:, 1], s=18, c='#2ca02c', alpha=0.80,
-    edgecolors='none', zorder=4, label='Cat',
-)
-ax_latent3.scatter(
-    [kitchen_h[0]], [kitchen_h[1]], s=160, c='red', zorder=6,
-    edgecolors='white', linewidths=1.6, label='Kitchen',
-)
-ax_latent3.annotate(
-    'Kitchen', xy=kitchen_h,
-    xytext=(kitchen_h[0], kitchen_h[1] - 0.85),
-    fontsize=FS_ANNOT + 1, fontweight='bold', color='red', ha='center',
-    arrowprops=dict(arrowstyle='->', color='red', lw=1.4),
-    bbox=dict(boxstyle='round,pad=0.18', facecolor='white',
-              edgecolor='red', alpha=0.95),
-)
-ax_latent3.set_title(
-    'A latent space where cats have a gaussian distribution',
-    fontsize=FS_AX_TITLE - 3,
-)
-ax_latent3.set_xlabel('latent 1', fontsize=FS_AXIS)
-ax_latent3.set_ylabel('latent 2', fontsize=FS_AXIS)
-ax_latent3.tick_params(labelsize=FS_TICK)
-ax_latent3.grid(True, alpha=0.25)
-ax_latent3.set_aspect('equal', adjustable='datalim')
-ax_latent3.legend(loc='upper right', fontsize=FS_LEGEND, framealpha=0.92)
+    ax_latent3.scatter(
+        dogs_h[:, 0], dogs_h[:, 1], s=18, c='#1f77b4', alpha=0.75,
+        edgecolors='none', zorder=3, label='Dog',
+    )
+    ax_latent3.scatter(
+        cats_h[:, 0], cats_h[:, 1], s=18, c='#2ca02c', alpha=0.80,
+        edgecolors='none', zorder=4, label='Cat',
+    )
+    ax_latent3.scatter(
+        [kitchen_h[0]], [kitchen_h[1]], s=160, c='red', zorder=6,
+        edgecolors='white', linewidths=1.6, label='Kitchen',
+    )
+    ax_latent3.annotate(
+        'Kitchen', xy=kitchen_h,
+        xytext=(kitchen_h[0], kitchen_h[1] - 0.85),
+        fontsize=FS_ANNOT + 1, fontweight='bold', color='red', ha='center',
+        arrowprops=dict(arrowstyle='->', color='red', lw=1.4),
+        bbox=dict(boxstyle='round,pad=0.18', facecolor='white',
+                  edgecolor='red', alpha=0.95),
+    )
+    ax_latent3.set_title(
+        'A latent space where cats have a gaussian distribution',
+        fontsize=FS_AX_TITLE - 3,
+    )
+    ax_latent3.set_xlabel('latent 1', fontsize=FS_AXIS)
+    ax_latent3.set_ylabel('latent 2', fontsize=FS_AXIS)
+    ax_latent3.tick_params(labelsize=FS_TICK)
+    ax_latent3.grid(True, alpha=0.25)
+    ax_latent3.set_aspect('equal', adjustable='datalim')
+    ax_latent3.legend(loc='upper right', fontsize=FS_LEGEND, framealpha=0.92)
 
-fig3.tight_layout(rect=[0, 0.02, 1, 0.94])
-show_maximized(fig3)
+    fig3.tight_layout(rect=[0, 0.02, 1, 0.94])
+    return fig3
+
 
 
 # -------------------------------------------------------
 # FIGURE 4: A model that can say "I don't know"
 # -------------------------------------------------------
-fig4, ax4 = new_figure()
-fig4.suptitle(
-    'Step 4: Create a model that knows to tell "I don\'t know"',
-    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
-)
-blank_slide(ax4)
+def build_step_4():
+    fig4, ax4 = new_figure()
+    fig4.suptitle(
+        'Step 4: Create a model that knows to tell "I don\'t know"',
+        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    )
+    blank_slide(ax4)
 
-round_box(ax4, 0.5, 5.5, 11.0, 1.9, C_DARK, C_DARK, lw=0)
-ax4.text(
-    6.0, 6.45,
-    'A forced choice is not knowledge.\n'
-    'Real knowledge includes the right to refuse.',
-    ha='center', va='center', fontsize=FS_AX_TITLE - 1,
-    fontweight='bold', color='white',
-)
+    round_box(ax4, 0.5, 5.5, 11.0, 1.9, C_DARK, C_DARK, lw=0)
+    ax4.text(
+        6.0, 6.45,
+        'A forced choice is not knowledge.\n'
+        'Real knowledge includes the right to refuse.',
+        ha='center', va='center', fontsize=FS_AX_TITLE - 1,
+        fontweight='bold', color='white',
+    )
 
-# Left: cannot refuse
-round_box(ax4, 0.5, 0.7, 5.3, 4.4, C_OLD, '#e67e22', lw=2.4)
-ax4.text(
-    3.15, 4.55, 'Boundary-only model',
-    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
-    fontweight='bold', color='#a04000',
-)
-ax4.text(
-    3.15, 3.55,
-    r'$P(\mathrm{cat}\mid\mathrm{cat\ or\ dog})$',
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-    fontweight='bold', color='#a04000',
-)
-ax4.text(
-    3.15, 2.35,
-    'Kitchen arrives.\n'
-    'The model must still answer\n'
-    '"cat" or "dog."\n\n'
-    'It has no word for\n'
-    '"I don\'t know."',
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-)
+    # Left: cannot refuse
+    round_box(ax4, 0.5, 0.7, 5.3, 4.4, C_OLD, '#e67e22', lw=2.4)
+    ax4.text(
+        3.15, 4.55, 'Boundary-only model',
+        ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+        fontweight='bold', color='#a04000',
+    )
+    ax4.text(
+        3.15, 3.55,
+        r'$P(\mathrm{cat}\mid\mathrm{cat\ or\ dog})$',
+        ha='center', va='center', fontsize=FS_ANNOT + 1,
+        fontweight='bold', color='#a04000',
+    )
+    ax4.text(
+        3.15, 2.35,
+        'Kitchen arrives.\n'
+        'The model must still answer\n'
+        '"cat" or "dog."\n\n'
+        'It has no word for\n'
+        '"I don\'t know."',
+        ha='center', va='center', fontsize=FS_ANNOT + 1,
+    )
 
-# Right: can refuse
-round_box(ax4, 6.2, 0.7, 5.3, 4.4, C_GOAL, C_OK, lw=2.4)
-ax4.text(
-    8.85, 4.55, 'World model',
-    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
-    fontweight='bold', color=C_OK,
-)
-ax4.text(
-    8.85, 3.55,
-    r'$P(\mathrm{cat}\mid\mathrm{image})$',
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-    fontweight='bold', color=C_DARK,
-)
-ax4.text(
-    8.85, 2.35,
-    'Kitchen arrives.\n'
-    'Far from every cat point,\n'
-    'so allElse dominates.\n\n'
-    'The model can say:\n'
-    '"I don\'t know."',
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-)
+    # Right: can refuse
+    round_box(ax4, 6.2, 0.7, 5.3, 4.4, C_GOAL, C_OK, lw=2.4)
+    ax4.text(
+        8.85, 4.55, 'World model',
+        ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+        fontweight='bold', color=C_OK,
+    )
+    ax4.text(
+        8.85, 3.55,
+        r'$P(\mathrm{cat}\mid\mathrm{image})$',
+        ha='center', va='center', fontsize=FS_ANNOT + 1,
+        fontweight='bold', color=C_DARK,
+    )
+    ax4.text(
+        8.85, 2.35,
+        'Kitchen arrives.\n'
+        'Far from every cat point,\n'
+        'so allElse dominates.\n\n'
+        'The model can say:\n'
+        '"I don\'t know."',
+        ha='center', va='center', fontsize=FS_ANNOT + 1,
+    )
 
-show_maximized(fig4)
+    return fig4
+
 
 
 # -------------------------------------------------------
 # FIGURE 5: A model that can create a new cat image
 # -------------------------------------------------------
-fig5, (ax5a, ax5b) = new_figure(1, 2, gridspec_kw={'width_ratios': [1.0, 1.0]})
-fig5.suptitle(
-    'Step 5: Create a model that can create a new cat image',
-    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
-)
+def build_step_5():
+    fig5, (ax5a, ax5b) = new_figure(1, 2, gridspec_kw={'width_ratios': [1.0, 1.0]})
+    fig5.suptitle(
+        'Step 5: Create a model that can create a new cat image',
+        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    )
 
-rng5 = np.random.default_rng(21)
+    rng5 = np.random.default_rng(21)
 
-# Left: boundary-only knowledge -- a separator, no generator
-cats_b = rng5.normal(loc=[-1.1, 0.2], scale=[0.45, 0.50], size=(80, 2))
-dogs_b = rng5.normal(loc=[1.1, -0.1], scale=[0.48, 0.45], size=(80, 2))
-ax5a.scatter(dogs_b[:, 0], dogs_b[:, 1], s=22, c='#1f77b4', alpha=0.75,
-             edgecolors='none', label='Dog')
-ax5a.scatter(cats_b[:, 0], cats_b[:, 1], s=22, c='#2ca02c', alpha=0.75,
-             edgecolors='none', label='Cat')
-ax5a.plot([-0.2, 0.2], [-2.2, 2.2], color='#c0392b', lw=2.8, label='boundary')
-ax5a.set_title('Boundary model: separates, does not invent', fontsize=FS_AX_TITLE - 2)
-ax5a.set_xlabel('feature 1', fontsize=FS_AXIS)
-ax5a.set_ylabel('feature 2', fontsize=FS_AXIS)
-ax5a.tick_params(labelsize=FS_TICK)
-ax5a.grid(True, alpha=0.25)
-ax5a.set_aspect('equal', adjustable='datalim')
-ax5a.legend(loc='upper left', fontsize=FS_LEGEND, framealpha=0.92)
-ax5a.text(
-    0.98, 0.05,
-    'A line between classes\n'
-    'cannot mint a new cat.',
-    transform=ax5a.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor=C_OLD, edgecolor='#e67e22', alpha=0.95),
-)
+    # Left: boundary-only knowledge -- a separator, no generator
+    cats_b = rng5.normal(loc=[-1.1, 0.2], scale=[0.45, 0.50], size=(80, 2))
+    dogs_b = rng5.normal(loc=[1.1, -0.1], scale=[0.48, 0.45], size=(80, 2))
+    ax5a.scatter(dogs_b[:, 0], dogs_b[:, 1], s=22, c='#1f77b4', alpha=0.75,
+                 edgecolors='none', label='Dog')
+    ax5a.scatter(cats_b[:, 0], cats_b[:, 1], s=22, c='#2ca02c', alpha=0.75,
+                 edgecolors='none', label='Cat')
+    ax5a.plot([-0.2, 0.2], [-2.2, 2.2], color='#c0392b', lw=2.8, label='boundary')
+    ax5a.set_title('Boundary model: separates, does not invent', fontsize=FS_AX_TITLE - 2)
+    ax5a.set_xlabel('feature 1', fontsize=FS_AXIS)
+    ax5a.set_ylabel('feature 2', fontsize=FS_AXIS)
+    ax5a.tick_params(labelsize=FS_TICK)
+    ax5a.grid(True, alpha=0.25)
+    ax5a.set_aspect('equal', adjustable='datalim')
+    ax5a.legend(loc='upper left', fontsize=FS_LEGEND, framealpha=0.92)
+    ax5a.text(
+        0.98, 0.05,
+        'A line between classes\n'
+        'cannot mint a new cat.',
+        transform=ax5a.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor=C_OLD, edgecolor='#e67e22', alpha=0.95),
+    )
 
-# Right: same latent-space panel as Step 3, plus one new sampled cat
-cats_h5 = rng5.normal(loc=[0.0, 0.0], scale=[0.55, 0.55], size=(160, 2))
-dog_clumps5 = [
-    ([1.8, 1.4], [0.35, 0.55], 40),
-    ([-1.6, 1.7], [0.55, 0.28], 35),
-    ([2.0, -1.1], [0.45, 0.40], 45),
-    ([-1.9, -1.5], [0.30, 0.60], 30),
-    ([0.2, 2.2], [0.70, 0.25], 25),
-]
-dogs_h5 = np.vstack([
-    rng5.normal(loc=loc, scale=scale, size=(n, 2))
-    for loc, scale, n in dog_clumps5
-])
-kitchen_h5 = rng5.uniform(low=[-2.6, -2.4], high=[2.6, 2.4], size=2)
-new_cat = rng5.normal(loc=[0.0, 0.0], scale=[0.55, 0.55], size=2)
+    # Right: same latent-space panel as Step 3, plus one new sampled cat
+    cats_h5 = rng5.normal(loc=[0.0, 0.0], scale=[0.55, 0.55], size=(160, 2))
+    dog_clumps5 = [
+        ([1.8, 1.4], [0.35, 0.55], 40),
+        ([-1.6, 1.7], [0.55, 0.28], 35),
+        ([2.0, -1.1], [0.45, 0.40], 45),
+        ([-1.9, -1.5], [0.30, 0.60], 30),
+        ([0.2, 2.2], [0.70, 0.25], 25),
+    ]
+    dogs_h5 = np.vstack([
+        rng5.normal(loc=loc, scale=scale, size=(n, 2))
+        for loc, scale, n in dog_clumps5
+    ])
+    kitchen_h5 = rng5.uniform(low=[-2.6, -2.4], high=[2.6, 2.4], size=2)
+    new_cat = rng5.normal(loc=[0.0, 0.0], scale=[0.55, 0.55], size=2)
 
-ax5b.scatter(
-    dogs_h5[:, 0], dogs_h5[:, 1], s=18, c='#1f77b4', alpha=0.75,
-    edgecolors='none', zorder=3, label='Dog',
-)
-ax5b.scatter(
-    cats_h5[:, 0], cats_h5[:, 1], s=18, c='#2ca02c', alpha=0.80,
-    edgecolors='none', zorder=4, label='Cat',
-)
-ax5b.scatter(
-    [kitchen_h5[0]], [kitchen_h5[1]], s=160, c='red', zorder=6,
-    edgecolors='white', linewidths=1.6, label='Kitchen',
-)
-ax5b.scatter(
-    [new_cat[0]], [new_cat[1]], s=220, c='#145a32', marker='*',
-    edgecolors='white', linewidths=1.2, zorder=7, label='new cat',
-)
-ax5b.annotate(
-    'Kitchen', xy=kitchen_h5,
-    xytext=(kitchen_h5[0], kitchen_h5[1] - 0.85),
-    fontsize=FS_ANNOT + 1, fontweight='bold', color='red', ha='center',
-    arrowprops=dict(arrowstyle='->', color='red', lw=1.4),
-    bbox=dict(boxstyle='round,pad=0.18', facecolor='white',
-              edgecolor='red', alpha=0.95),
-)
-ax5b.annotate(
-    'new cat image', xy=new_cat,
-    xytext=(new_cat[0] + 1.05, new_cat[1] + 0.95),
-    fontsize=FS_ANNOT + 1, fontweight='bold', color='#145a32', ha='left',
-    arrowprops=dict(arrowstyle='->', color='#145a32', lw=1.5),
-    bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
-              edgecolor='#145a32', alpha=0.95),
-)
-ax5b.set_title(
-    'A latent space where cats have a gaussian distribution',
-    fontsize=FS_AX_TITLE - 3,
-)
-ax5b.set_xlabel('latent 1', fontsize=FS_AXIS)
-ax5b.set_ylabel('latent 2', fontsize=FS_AXIS)
-ax5b.tick_params(labelsize=FS_TICK)
-ax5b.grid(True, alpha=0.25)
-ax5b.set_aspect('equal', adjustable='datalim')
-ax5b.legend(loc='upper right', fontsize=FS_LEGEND, framealpha=0.92)
-ax5b.text(
-    0.02, 0.05,
-    'Sample inside the cat Gaussian\n'
-    '=> create a new cat image.',
-    transform=ax5b.transAxes, ha='left', va='bottom', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor=C_GOAL, edgecolor=C_OK, alpha=0.95),
-)
+    ax5b.scatter(
+        dogs_h5[:, 0], dogs_h5[:, 1], s=18, c='#1f77b4', alpha=0.75,
+        edgecolors='none', zorder=3, label='Dog',
+    )
+    ax5b.scatter(
+        cats_h5[:, 0], cats_h5[:, 1], s=18, c='#2ca02c', alpha=0.80,
+        edgecolors='none', zorder=4, label='Cat',
+    )
+    ax5b.scatter(
+        [kitchen_h5[0]], [kitchen_h5[1]], s=160, c='red', zorder=6,
+        edgecolors='white', linewidths=1.6, label='Kitchen',
+    )
+    ax5b.scatter(
+        [new_cat[0]], [new_cat[1]], s=220, c='#145a32', marker='*',
+        edgecolors='white', linewidths=1.2, zorder=7, label='new cat',
+    )
+    ax5b.annotate(
+        'Kitchen', xy=kitchen_h5,
+        xytext=(kitchen_h5[0], kitchen_h5[1] - 0.85),
+        fontsize=FS_ANNOT + 1, fontweight='bold', color='red', ha='center',
+        arrowprops=dict(arrowstyle='->', color='red', lw=1.4),
+        bbox=dict(boxstyle='round,pad=0.18', facecolor='white',
+                  edgecolor='red', alpha=0.95),
+    )
+    ax5b.annotate(
+        'new cat image', xy=new_cat,
+        xytext=(new_cat[0] + 1.05, new_cat[1] + 0.95),
+        fontsize=FS_ANNOT + 1, fontweight='bold', color='#145a32', ha='left',
+        arrowprops=dict(arrowstyle='->', color='#145a32', lw=1.5),
+        bbox=dict(boxstyle='round,pad=0.2', facecolor='white',
+                  edgecolor='#145a32', alpha=0.95),
+    )
+    ax5b.set_title(
+        'A latent space where cats have a gaussian distribution',
+        fontsize=FS_AX_TITLE - 3,
+    )
+    ax5b.set_xlabel('latent 1', fontsize=FS_AXIS)
+    ax5b.set_ylabel('latent 2', fontsize=FS_AXIS)
+    ax5b.tick_params(labelsize=FS_TICK)
+    ax5b.grid(True, alpha=0.25)
+    ax5b.set_aspect('equal', adjustable='datalim')
+    ax5b.legend(loc='upper right', fontsize=FS_LEGEND, framealpha=0.92)
+    ax5b.text(
+        0.02, 0.05,
+        'Sample inside the cat Gaussian\n'
+        '=> create a new cat image.',
+        transform=ax5b.transAxes, ha='left', va='bottom', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor=C_GOAL, edgecolor=C_OK, alpha=0.95),
+    )
 
-fig5.tight_layout(rect=[0, 0.02, 1, 0.94])
-show_maximized(fig5)
+    fig5.tight_layout(rect=[0, 0.02, 1, 0.94])
+    return fig5
+
 
 
 # -------------------------------------------------------
 # FIGURE 6: When D fails -- let G decide whether to trust D
 # -------------------------------------------------------
-fig6, ax6 = new_figure()
-fig6.suptitle(
-    'Step 6: What if a discriminative model D often fails?',
-    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
-)
-blank_slide(ax6)
+def build_step_6():
+    fig6, ax6 = new_figure()
+    fig6.suptitle(
+        'Step 6: What if a discriminative model D often fails?',
+        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    )
+    blank_slide(ax6)
 
-round_box(ax6, 0.5, 6.45, 11.0, 1.25, C_DARK, C_DARK, lw=0)
-ax6.text(
-    6.0, 7.05,
-    'Train a generative model G on the situations where D works well.\n'
-    'If G says "I don\'t know this situation," do not trust D there.',
-    ha='center', va='center', fontsize=FS_AX_TITLE - 2,
-    fontweight='bold', color='white',
-)
+    round_box(ax6, 0.5, 6.45, 11.0, 1.25, C_DARK, C_DARK, lw=0)
+    ax6.text(
+        6.0, 7.05,
+        'Train a generative model G on the situations where D works well.\n'
+        'If G says "I don\'t know this situation," do not trust D there.',
+        ha='center', va='center', fontsize=FS_AX_TITLE - 2,
+        fontweight='bold', color='white',
+    )
 
-# Pipeline: Input -> G gate -> trust D or refuse D
-round_box(ax6, 0.5, 4.55, 2.2, 1.45, C_MUTE, '0.45', lw=2.0)
-ax6.text(1.6, 5.25, 'Input\nimage', ha='center', va='center',
-         fontsize=FS_ANNOT + 1, fontweight='bold', color=C_DARK)
+    # Pipeline: Input -> G gate -> trust D or refuse D
+    round_box(ax6, 0.5, 4.55, 2.2, 1.45, C_MUTE, '0.45', lw=2.0)
+    ax6.text(1.6, 5.25, 'Input\nimage', ha='center', va='center',
+             fontsize=FS_ANNOT + 1, fontweight='bold', color=C_DARK)
 
-round_box(ax6, 3.5, 4.55, 2.6, 1.45, C_NEW, '#2874a6', lw=2.0)
-ax6.text(4.8, 5.25, 'G: known\nsituation?', ha='center', va='center',
-         fontsize=FS_ANNOT + 1, fontweight='bold', color=C_DARK)
+    round_box(ax6, 3.5, 4.55, 2.6, 1.45, C_NEW, '#2874a6', lw=2.0)
+    ax6.text(4.8, 5.25, 'G: known\nsituation?', ha='center', va='center',
+             fontsize=FS_ANNOT + 1, fontweight='bold', color=C_DARK)
 
-arrow(ax6, 2.75, 5.25, 3.45, 5.25, C_DARK, lw=2.2)
+    arrow(ax6, 2.75, 5.25, 3.45, 5.25, C_DARK, lw=2.2)
 
-round_box(ax6, 7.0, 5.35, 4.5, 0.95, C_GOAL, C_OK, lw=2.0)
-ax6.text(9.25, 5.8, 'Yes  =>  trust D\'s answer', ha='center', va='center',
-         fontsize=FS_ANNOT + 1, fontweight='bold', color=C_OK)
+    round_box(ax6, 7.0, 5.35, 4.5, 0.95, C_GOAL, C_OK, lw=2.0)
+    ax6.text(9.25, 5.8, 'Yes  =>  trust D\'s answer', ha='center', va='center',
+             fontsize=FS_ANNOT + 1, fontweight='bold', color=C_OK)
 
-round_box(ax6, 7.0, 4.15, 4.5, 0.95, C_OLD, '#e67e22', lw=2.0)
-ax6.text(9.25, 4.6, 'No  =>  do not trust D', ha='center', va='center',
-         fontsize=FS_ANNOT + 1, fontweight='bold', color='#a04000')
+    round_box(ax6, 7.0, 4.15, 4.5, 0.95, C_OLD, '#e67e22', lw=2.0)
+    ax6.text(9.25, 4.6, 'No  =>  do not trust D', ha='center', va='center',
+             fontsize=FS_ANNOT + 1, fontweight='bold', color='#a04000')
 
-arrow(ax6, 6.15, 5.45, 6.95, 5.8, C_OK, lw=2.0)
-arrow(ax6, 6.15, 4.95, 6.95, 4.6, '#e67e22', lw=2.0)
+    arrow(ax6, 6.15, 5.45, 6.95, 5.8, C_OK, lw=2.0)
+    arrow(ax6, 6.15, 4.95, 6.95, 4.6, '#e67e22', lw=2.0)
 
-# Two outcome cards
-round_box(ax6, 0.5, 2.05, 5.3, 1.65, C_GOAL, C_OK, lw=2.0)
-ax6.text(
-    3.15, 3.2, 'Inside G\'s world',
-    ha='center', va='center', fontsize=FS_ANNOT + 2,
-    fontweight='bold', color=C_OK,
-)
-ax6.text(
-    3.15, 2.5,
-    'G recognizes the situation.\n'
-    'D\'s cat/dog call is allowed to speak.',
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-)
+    # Two outcome cards
+    round_box(ax6, 0.5, 2.05, 5.3, 1.65, C_GOAL, C_OK, lw=2.0)
+    ax6.text(
+        3.15, 3.2, 'Inside G\'s world',
+        ha='center', va='center', fontsize=FS_ANNOT + 2,
+        fontweight='bold', color=C_OK,
+    )
+    ax6.text(
+        3.15, 2.5,
+        'G recognizes the situation.\n'
+        'D\'s cat/dog call is allowed to speak.',
+        ha='center', va='center', fontsize=FS_ANNOT + 1,
+    )
 
-round_box(ax6, 6.2, 2.05, 5.3, 1.65, C_OLD, '#e67e22', lw=2.0)
-ax6.text(
-    8.85, 3.2, 'Outside G\'s world',
-    ha='center', va='center', fontsize=FS_ANNOT + 2,
-    fontweight='bold', color='#a04000',
-)
-ax6.text(
-    8.85, 2.5,
-    'G says "I don\'t know."\n'
-    'D may still shout an answer -- we ignore it.',
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-)
+    round_box(ax6, 6.2, 2.05, 5.3, 1.65, C_OLD, '#e67e22', lw=2.0)
+    ax6.text(
+        8.85, 3.2, 'Outside G\'s world',
+        ha='center', va='center', fontsize=FS_ANNOT + 2,
+        fontweight='bold', color='#a04000',
+    )
+    ax6.text(
+        8.85, 2.5,
+        'G says "I don\'t know."\n'
+        'D may still shout an answer -- we ignore it.',
+        ha='center', va='center', fontsize=FS_ANNOT + 1,
+    )
 
-round_box(ax6, 0.5, 0.25, 11.0, 1.35, 'lightyellow', '0.55', lw=1.6)
-ax6.text(
-    6.0, 0.9,
-    'Discussion: If the dataset is hard to model discriminatively,\n'
-    'will it be easy to model it generatively?',
-    ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
-    color=C_DARK,
-)
+    round_box(ax6, 0.5, 0.25, 11.0, 1.35, 'lightyellow', '0.55', lw=1.6)
+    ax6.text(
+        6.0, 0.9,
+        'Discussion: If the dataset is hard to model discriminatively,\n'
+        'will it be easy to model it generatively?',
+        ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
+        color=C_DARK,
+    )
 
-show_maximized(fig6)
+    return fig6
+
 
 
 # -------------------------------------------------------
 # FIGURE 7: Zoom-in -- pigs vs ants
 # -------------------------------------------------------
-fig7, ax7 = new_figure()
-fig7.suptitle(
-    'Step 7: Zoom-in on discriminative vs generative',
-    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
-)
-blank_slide(ax7)
+def build_step_7():
+    fig7, ax7 = new_figure()
+    fig7.suptitle(
+        'Step 7: Zoom-in on discriminative vs generative',
+        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    )
+    blank_slide(ax7)
 
-# Row layout tweaks: row1 up 1cm; row2 taller by 1.5cm; bottom two rows down 1.5cm.
-_s7_row1_up = 1.0 * CM_Y
-_s7_row2_dh = 1.5 * CM_Y
-_s7_bot_down = 1.5 * CM_Y
+    # Row layout tweaks: row1 up 1cm; row2 taller by 1.5cm; bottom two rows down 1.5cm.
+    _s7_row1_up = 1.0 * CM_Y
+    _s7_row2_dh = 1.5 * CM_Y
+    _s7_bot_down = 1.5 * CM_Y
 
-_s7_y1 = 6.55 + _s7_row1_up
-_s7_h1 = 1.15
-_s7_y2 = 3.85 - _s7_row2_dh          # grow row 2 downward; keep top
-_s7_h2 = 2.45 + _s7_row2_dh
-_s7_y3 = 1.85 - _s7_bot_down
-_s7_h3 = 1.75
-_s7_y4 = 0.25 - _s7_bot_down
-_s7_h4 = 1.4
+    _s7_y1 = 6.55 + _s7_row1_up
+    _s7_h1 = 1.15
+    _s7_y2 = 3.85 - _s7_row2_dh          # grow row 2 downward; keep top
+    _s7_h2 = 2.45 + _s7_row2_dh
+    # Fit bottom two rows inside the axes, above the Prev/Next strip.
+    _s7_gap = 0.10
+    _s7_floor = 0.15
+    _s7_avail = max(0.5, _s7_y2 - _s7_floor - _s7_gap)
+    _s7_h3 = min(1.75, _s7_avail * 0.56)
+    _s7_h4 = min(1.40, _s7_avail - _s7_h3 - _s7_gap)
+    _s7_y4 = _s7_floor
+    _s7_y3 = _s7_y4 + _s7_h4 + _s7_gap
 
-# Headline/body spacing: left baseline; denser right card gets more air under title.
-_s7_title_from_top = 0.45
-_s7_title_to_body_left = 1.10
-_s7_title_to_body_right = 1.60
-_s7_title_y = _s7_y2 + _s7_h2 - _s7_title_from_top
-_s7_body_y_left = _s7_title_y - _s7_title_to_body_left
-_s7_body_y_right = _s7_title_y - _s7_title_to_body_right
+    # Headline/body spacing: left baseline; denser right card gets more air under title.
+    _s7_title_from_top = 0.45
+    _s7_title_to_body_left = 1.10
+    _s7_title_to_body_right = 1.60
+    _s7_title_y = _s7_y2 + _s7_h2 - _s7_title_from_top
+    _s7_body_y_left = _s7_title_y - _s7_title_to_body_left
+    _s7_body_y_right = _s7_title_y - _s7_title_to_body_right
 
-round_box(ax7, 0.4, _s7_y1, 11.2, _s7_h1, C_DARK, C_DARK, lw=0)
-ax7.text(
-    6.0, _s7_y1 + 0.55,
-    'Features: appearance, place, color, weight.  Task: tell pigs from ants.',
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-    fontweight='bold', color='#f9e79f', clip_on=False,
-)
+    round_box(ax7, 0.4, _s7_y1, 11.2, _s7_h1, C_DARK, C_DARK, lw=0)
+    ax7.text(
+        6.0, _s7_y1 + 0.55,
+        'Features: appearance, place, color, weight.  Task: tell pigs from ants.',
+        ha='center', va='center', fontsize=FS_ANNOT + 1,
+        fontweight='bold', color='#f9e79f', clip_on=False,
+    )
 
-# Discriminative shortcut
-round_box(ax7, 0.4, _s7_y2, 5.5, _s7_h2, C_OLD, '#e67e22', lw=2.2)
-ax7.text(3.15, _s7_title_y, 'Discriminative shortcut', ha='center',
-         fontsize=FS_ANNOT, fontweight='bold', color='#a04000')
-ax7.text(
-    3.15, _s7_body_y_left,
-    'A thin rule may suffice:\n'
-    'weight > 1 kg  =>  "pig"\n'
-    'otherwise       =>  "ant"\n\n'
-    'Appearance, place, and color\n'
-    'can be ignored for this task.',
-    ha='center', va='center', fontsize=FS_TICK + 1,
-)
+    # Discriminative shortcut
+    round_box(ax7, 0.4, _s7_y2, 5.5, _s7_h2, C_OLD, '#e67e22', lw=2.2)
+    ax7.text(3.15, _s7_title_y, 'Discriminative shortcut', ha='center',
+             fontsize=FS_ANNOT, fontweight='bold', color='#a04000')
+    ax7.text(
+        3.15, _s7_body_y_left,
+        'A thin rule may suffice:\n'
+        'weight > 1 kg  =>  "pig"\n'
+        'otherwise       =>  "ant"\n\n'
+        'Appearance, place, and color\n'
+        'can be ignored for this task.',
+        ha='center', va='center', fontsize=FS_TICK + 1,
+    )
 
-# Contaminated sets -- extra space between headline and body
-round_box(ax7, 6.1, _s7_y2, 5.5, _s7_h2, C_MUTE, '0.45', lw=1.8)
-ax7.text(8.85, _s7_title_y, 'What the labels secretly mean', ha='center',
-         fontsize=FS_ANNOT, fontweight='bold', color=C_DARK)
-ax7.text(
-    8.85, _s7_body_y_right,
-    'Hidden "set of pigs": every heavy thing --\n'
-    'true pigs, plus rocks, laptops, ...\n\n'
-    'Hidden "set of ants": the remainder --\n'
-    'true ants, plus leaves, crumbs, ...\n\n'
-    'The world was split by a boundary,\n'
-    'not by two true animal worlds.',
-    ha='center', va='center', fontsize=FS_TICK + 1,
-)
+    # Contaminated sets -- extra space between headline and body
+    round_box(ax7, 6.1, _s7_y2, 5.5, _s7_h2, C_MUTE, '0.45', lw=1.8)
+    ax7.text(8.85, _s7_title_y, 'What the labels secretly mean', ha='center',
+             fontsize=FS_ANNOT, fontweight='bold', color=C_DARK)
+    ax7.text(
+        8.85, _s7_body_y_right,
+        'Hidden "set of pigs": every heavy thing --\n'
+        'true pigs, plus rocks, laptops, ...\n\n'
+        'Hidden "set of ants": the remainder --\n'
+        'true ants, plus leaves, crumbs, ...\n\n'
+        'The world was split by a boundary,\n'
+        'not by two true animal worlds.',
+        ha='center', va='center', fontsize=FS_TICK + 1,
+    )
 
-# Generate from D fails
-patch3l = round_box(ax7, 0.4, _s7_y3, 5.5, _s7_h3, '#f8d7da', C_ACCENT, lw=2.0)
-patch3l.set_clip_on(False)
-ax7.text(3.15, _s7_y3 + 1.35, 'Ask D to "make a pig"', ha='center',
-         fontsize=FS_TICK + 1, fontweight='bold', color=C_ACCENT, clip_on=False)
-ax7.text(
-    3.15, _s7_y3 + 0.55,
-    'It samples its pig-labeled set.\n'
-    'A brick that weighs 2 kg qualifies.\n'
-    'Discrimination succeeded; creation failed.',
-    ha='center', va='center', fontsize=FS_TICK + 1, clip_on=False,
-)
+    # Generate from D fails
+    round_box(ax7, 0.4, _s7_y3, 5.5, _s7_h3, '#f8d7da', C_ACCENT, lw=2.0)
+    ax7.text(3.15, _s7_y3 + _s7_h3 - 0.40, 'Ask D to "make a pig"', ha='center',
+             fontsize=FS_TICK + 1, fontweight='bold', color=C_ACCENT)
+    ax7.text(
+        3.15, _s7_y3 + _s7_h3 * 0.38,
+        'It samples its pig-labeled set.\n'
+        'A brick that weighs 2 kg qualifies.\n'
+        'Discrimination succeeded; creation failed.',
+        ha='center', va='center', fontsize=FS_TICK + 1,
+    )
 
-# True generative
-patch3r = round_box(ax7, 6.1, _s7_y3, 5.5, _s7_h3, C_GOAL, C_OK, lw=2.2)
-patch3r.set_clip_on(False)
-ax7.text(8.85, _s7_y3 + 1.35, 'Train G on the true pig world', ha='center',
-         fontsize=FS_TICK + 1, fontweight='bold', color=C_OK, clip_on=False)
-ax7.text(
-    8.85, _s7_y3 + 0.55,
-    'G models the joint of features that\n'
-    'real pigs actually take. Non-pigs are\n'
-    'the remainder -- learned for free.',
-    ha='center', va='center', fontsize=FS_TICK + 1, clip_on=False,
-)
+    # True generative
+    round_box(ax7, 6.1, _s7_y3, 5.5, _s7_h3, C_GOAL, C_OK, lw=2.2)
+    ax7.text(8.85, _s7_y3 + _s7_h3 - 0.40, 'Train G on the true pig world',
+             ha='center', fontsize=FS_TICK + 1, fontweight='bold', color=C_OK)
+    ax7.text(
+        8.85, _s7_y3 + _s7_h3 * 0.38,
+        'G models the joint of features that\n'
+        'real pigs actually take. Non-pigs are\n'
+        'the remainder -- learned for free.',
+        ha='center', va='center', fontsize=FS_TICK + 1,
+    )
 
-patch4 = round_box(ax7, 0.4, _s7_y4, 11.2, _s7_h4, C_NEW, '#2874a6', lw=2.0)
-patch4.set_clip_on(False)
-ax7.text(
-    6.0, _s7_y4 + 0.70,
-    'Generate what?  Some realistic feature values --\n'
-    'a plausible (appearance, place, color, weight), not merely a label or a weight threshold.\n'
-    'Even a model that invents only a believable pig weight (let alone look and color) is generative.',
-    ha='center', va='center', fontsize=FS_TICK + 1, fontweight='bold',
-    color=C_DARK, clip_on=False,
-)
-show_maximized(fig7)
+    round_box(ax7, 0.4, _s7_y4, 11.2, _s7_h4, C_NEW, '#2874a6', lw=2.0)
+    ax7.text(
+        6.0, _s7_y4 + _s7_h4 * 0.50,
+        'Generate what?  Some realistic feature values --\n'
+        'a plausible (appearance, place, color, weight), not merely a label or a weight threshold.\n'
+        'Even a model that invents only a believable pig weight (let alone look and color) is generative.',
+        ha='center', va='center', fontsize=FS_TICK + 1, fontweight='bold',
+        color=C_DARK,
+    )
+    return fig7
+
+
+
+
+# -------------------------------------------------------
+# Slide deck navigation (Previous / Next)
+# -------------------------------------------------------
+run_slide_deck([
+    build_step_1,
+    build_step_2,
+    build_step_3,
+    build_step_4,
+    build_step_5,
+    build_step_6,
+    build_step_7,
+])
 
 
 # -------------------------------------------------------
