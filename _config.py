@@ -25,23 +25,26 @@ FS_LEGEND = 14
 # Footer on every Step figure (shown via show_maximized / prepare_slide)
 FS_FOOTER = 9
 FOOTER_COLOR = "0.45"
-FOOTER_TEMPLATE = "DL/RL Basics. CCH. {date}."
+FOOTER_TEMPLATE = "AI Agents. CCH. {date}."
 # Placement: "bottom" (horizontal, centered) or "left" (vertical along left edge)
 FOOTER_PLACEMENT = "left"
 
 SCREEN_FRACTION = 0.95
 FIGURE_DPI = 150
 
-# Deck navigation strip (figure coordinates). Footer stays on the left,
-# so bottom corners remain free for Prev / Next.
+# Deck navigation (figure coordinates). Minimal ← / → buttons, pinned to the
+# ultimate bottom-left / bottom-right corners (barely larger than the glyph).
 SLIDE_NAV_BOTTOM = 0.10
-SLIDE_NAV_PREV = (0.02, 0.018, 0.13, 0.055)
-SLIDE_NAV_NEXT = (0.85, 0.018, 0.13, 0.055)
+SLIDE_NAV_PREV = (0.001, 0.001, 0.020, 0.024)
+SLIDE_NAV_NEXT = (0.979, 0.001, 0.020, 0.024)
+SLIDE_NAV_PREV_LABEL = "\u2190"  # ←
+SLIDE_NAV_NEXT_LABEL = "\u2192"  # →
 SLIDE_NAV_FACE = "#f4f6f7"
 SLIDE_NAV_HOVER_PREV = "#d6eaf8"
 SLIDE_NAV_HOVER_NEXT = "#d4edda"
 SLIDE_NAV_DISABLED = "#eeeeee"
 SLIDE_NAV_EDGE = "#566573"
+SLIDE_NAV_LABEL_SIZE = 8
 
 
 def apply_rcparams(plt_module) -> None:
@@ -99,18 +102,27 @@ def add_step_footer(
         pass
 
     if side == "bottom":
+        # Keep clear of corner nav buttons (fig.text paints above axes).
         fig.text(
-            0.5, 0.012, text,
+            0.5, 0.028, text,
             ha="center", va="bottom",
             fontsize=FS_FOOTER, color=FOOTER_COLOR,
         )
     else:
-        # Vertical along the left-most side (reads upward).
-        fig.text(
-            0.012, 0.5, text,
+        # Vertical footer as its own axes so corner nav buttons (higher
+        # zorder) stay visible and clickable in the true bottom-left.
+        ax_foot = fig.add_axes([0.0, 0.04, 0.022, 0.92])
+        ax_foot.set_axis_off()
+        ax_foot.set_zorder(1)
+        ax_foot.patch.set_visible(False)
+        ax_foot.set_navigate(False)
+        ax_foot.text(
+            0.5, 0.5, text,
             ha="center", va="center", rotation=90,
             fontsize=FS_FOOTER, color=FOOTER_COLOR,
+            transform=ax_foot.transAxes,
         )
+        fig._step_footer_ax = ax_foot
 
 
 def maximize_window(fig) -> None:
@@ -149,7 +161,7 @@ def prepare_slide(fig, *, after_footer: Callable | None = None) -> None:
 
 
 def add_prev_next_buttons(fig, index: int, n_slides: int, on_prev, on_next):
-    """Bottom-left Prev and bottom-right Next on every slide. Keep refs on fig."""
+    """Tiny bottom-left ← and bottom-right → on every slide. Keep refs on fig."""
     from matplotlib.widgets import Button
 
     # Re-assert margin so tight_layout inside builders cannot steal the strip.
@@ -158,37 +170,77 @@ def add_prev_next_buttons(fig, index: int, n_slides: int, on_prev, on_next):
     except Exception:
         pass
 
+    # Sliders/Buttons both call canvas.grab_mouse. If a Slider already owns
+    # the grab (mid-drag) and a nav Button also tries to grab, matplotlib
+    # raises RuntimeError. Releasing the prior grabber keeps both usable.
+    if not getattr(fig.canvas, "_safe_mouse_grab_patched", False):
+        _orig_grab = fig.canvas.grab_mouse
+
+        def _grab_mouse_safe(ax, _orig=_orig_grab, _canvas=fig.canvas):
+            grabber = _canvas.mouse_grabber
+            if grabber is not None and grabber is not ax:
+                try:
+                    _canvas.release_mouse(grabber)
+                except Exception:
+                    pass
+            return _orig(ax)
+
+        fig.canvas.grab_mouse = _grab_mouse_safe
+        fig.canvas._safe_mouse_grab_patched = True
+
     ax_prev = fig.add_axes(list(SLIDE_NAV_PREV))
     ax_next = fig.add_axes(list(SLIDE_NAV_NEXT))
     for _ax in (ax_prev, ax_next):
         _ax.set_navigate(False)
+        _ax.set_zorder(1000)
         for spine in _ax.spines.values():
             spine.set_color(SLIDE_NAV_EDGE)
-            spine.set_linewidth(1.2)
+            spine.set_linewidth(0.8)
 
     btn_prev = Button(
-        ax_prev, "Prev",
+        ax_prev, SLIDE_NAV_PREV_LABEL,
         color=SLIDE_NAV_FACE, hovercolor=SLIDE_NAV_HOVER_PREV,
     )
     btn_next = Button(
-        ax_next, "Next",
+        ax_next, SLIDE_NAV_NEXT_LABEL,
         color=SLIDE_NAV_FACE, hovercolor=SLIDE_NAV_HOVER_NEXT,
     )
-    btn_prev.label.set_fontweight("bold")
-    btn_next.label.set_fontweight("bold")
+    for btn in (btn_prev, btn_next):
+        btn.label.set_fontfamily("DejaVu Sans")
+        btn.label.set_fontweight("bold")
+        btn.label.set_fontsize(SLIDE_NAV_LABEL_SIZE)
+        # Tighten padding so the box barely wraps the arrow.
+        btn.label.set_horizontalalignment("center")
+        btn.label.set_verticalalignment("center")
 
-    if index <= 0:
-        btn_prev.label.set_color("0.7")
-        btn_prev.color = SLIDE_NAV_DISABLED
-        btn_prev.hovercolor = SLIDE_NAV_DISABLED
-    else:
-        btn_prev.on_clicked(on_prev)
-    if index >= n_slides - 1:
-        btn_next.label.set_color("0.7")
-        btn_next.color = SLIDE_NAV_DISABLED
-        btn_next.hovercolor = SLIDE_NAV_DISABLED
-    else:
-        btn_next.on_clicked(on_next)
+    def _wire_nav_button(btn, callback, enabled: bool):
+        """Click without grab_mouse so Sliders and nav do not deadlock."""
+        btn.disconnect_events()
+        if not enabled:
+            btn.label.set_color("0.7")
+            btn.color = SLIDE_NAV_DISABLED
+            btn.hovercolor = SLIDE_NAV_DISABLED
+            btn.ax.set_facecolor(SLIDE_NAV_DISABLED)
+            return
+
+        def _on_release(event, _btn=btn, _cb=callback):
+            if _btn.ignore(event):
+                return
+            if event.inaxes != _btn.ax or event.button != 1:
+                return
+            # Ensure a stuck Slider grab cannot block navigation.
+            grabber = event.canvas.mouse_grabber
+            if grabber is not None:
+                try:
+                    event.canvas.release_mouse(grabber)
+                except Exception:
+                    pass
+            _cb(event)
+
+        btn.connect_event("button_release_event", _on_release)
+
+    _wire_nav_button(btn_prev, on_prev, enabled=(index > 0))
+    _wire_nav_button(btn_next, on_next, enabled=(index < n_slides - 1))
 
     # Optional index cue centered in the nav strip.
     fig._nav_index = fig.text(

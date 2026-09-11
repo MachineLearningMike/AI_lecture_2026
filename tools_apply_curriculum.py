@@ -2,11 +2,10 @@
 tools_apply_curriculum.py
 
 Apply _curriculum.py:
-  1) write chapter opener .py files
-  2) two-phase rename of lecture files
-  3) rewrite companion filename strings
-  4) write README.md
-  5) stamp comment.txt header
+  1) two-phase rename of lecture files
+  2) rewrite companion filename strings
+  3) write README.md
+  4) stamp comment.txt header
 
 Run from repo root:
   python tools_apply_curriculum.py
@@ -26,32 +25,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
-from _curriculum import CHAPTERS, CORE_PATH, RENAMES  # noqa: E402
-
-
-def write_chapter_openers() -> None:
-    for meta in CHAPTERS:
-        opener = meta["opener"]
-        path = ROOT / opener
-        code = meta["code"]
-        content = f'''"""
-{opener}
-
-Chapter opener: {code} -- {meta["title"]}
-
-Roadmap and student attempt for this chapter.
-Generated from _curriculum.py -- edit the map, re-run tools_apply_curriculum.py
-to refresh openers (or edit this file by hand after freezing the map).
-"""
-
-from _chapter import run_chapter
-from _curriculum import CHAPTERS
-
-_META = next(c for c in CHAPTERS if c["opener"] == "{opener}")
-run_chapter(_META)
-'''
-        path.write_text(content, encoding="utf-8")
-        print("wrote", opener)
+from _curriculum import CORE_PATH, RENAMES  # noqa: E402
 
 
 def _git_mv(src: Path, dst: Path) -> None:
@@ -109,7 +83,6 @@ def rewrite_references() -> None:
     skip_names = {
         "tools_apply_curriculum.py",
         "_curriculum.py",
-        # openers regenerated separately
     }
 
     for path in sorted(ROOT.rglob("*")):
@@ -157,6 +130,7 @@ def patch_docstring_filenames() -> None:
                 print("docstring name ->", path.name)
 
 
+
 def write_readme() -> None:
     lines = [
         "# AI Lecture 2026",
@@ -169,50 +143,31 @@ def write_readme() -> None:
         "",
         "Habit per module: **see it run → touch it → name it → own it**.",
         "",
-        "Teach by **chapter order** below. Do not teach by leftover historical numbers.",
+        "Teach by **CORE_PATH order** in [`_curriculum.py`](_curriculum.py).",
+        "Chapter-opener preface scripts were removed.",
         "",
         "Longer critique of gaps/redundancy: [`comment.txt`](comment.txt).",
-        "Machine-readable map: [`_curriculum.py`](_curriculum.py).",
         "",
-        "## Chapters",
-        "",
-    ]
-    for meta in CHAPTERS:
-        lines.append(f"### {meta['code']}: {meta['title']}")
-        lines.append("")
-        lines.append(f"- Opener: `{meta['opener']}`")
-        lines.append(f"- Attempt: {meta['attempt']}")
-        lines.append("")
-        lines.append("| Tag | File | Note |")
-        lines.append("|-----|------|------|")
-        for tag, fname, note in meta["rows"]:
-            f = fname if fname else "*(TODO)*"
-            lines.append(f"| {tag} | `{f}` | {note} |")
-        lines.append("")
-
-    lines.extend([
-        "## Minimal core path (time-short)",
+        "## Teaching spine (CORE_PATH)",
         "",
         "Run these in order:",
         "",
-    ])
+    ]
     for f in CORE_PATH:
         lines.append(f"- `{f}`")
     lines.extend([
         "",
         "## Shared helpers",
         "",
-        "- `_config.py` -- fonts, footer, screen size",
-        "- `_chapter.py` -- chapter opener helpers",
-        "- `_curriculum.py` -- rename map + chapter metadata",
+        "- `_config.py` -- fonts, footer, screen size, slide Prev/Next",
+        "- `_curriculum.py` -- rename map + CORE_PATH",
+        "- `_exploit_slides.py` -- Ch03 exploit lecture helpers",
         "",
         "## Notes",
         "",
-        "- `142_normalize_data.py` scales **features/data**.",
-        "- `194_normalize_activations.py` is BatchNorm / LayerNorm.",
-        "- Transformer notebooks: `228_transformer_code_scratch.ipynb`, "
-        "`228_transformer_code_alt.ipynb` (enrichment; prefer `228_transformer_code.py`).",
-        "- Parallel speaking track: `900_ChParallel_Speaking.py`, `901_Asian_interview.py`.",
+        "- Normalize data vs normalize activations are different modules.",
+        "- Prefer `0910_transformer_code.py` over enrichment notebooks.",
+        "- Parallel speaking track: `1010_Asian_interview.py`.",
         "",
     ])
     (ROOT / "README.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -225,8 +180,8 @@ def stamp_comment() -> None:
         return
     text = path.read_text(encoding="utf-8")
     banner = (
-        "NOTE (applied): File renames and chapter openers are live.\n"
-        "Use README.md and _curriculum.py as the current map.\n"
+        "NOTE (applied): File renames are live; chapter openers removed.\n"
+        "Use README.md and _curriculum.py CORE_PATH as the current map.\n"
         "Names inside this critique may still mention pre-rename IDs.\n"
         "========================================================================\n\n"
     )
@@ -239,15 +194,6 @@ def stamp_comment() -> None:
 def dump_json_map() -> None:
     payload = {
         "renames": RENAMES,
-        "chapters": [
-            {
-                "opener": c["opener"],
-                "code": c["code"],
-                "title": c["title"],
-                "rows": c["rows"],
-            }
-            for c in CHAPTERS
-        ],
         "core_path": CORE_PATH,
     }
     (ROOT / "_curriculum_map.json").write_text(
@@ -256,25 +202,30 @@ def dump_json_map() -> None:
     print("wrote _curriculum_map.json")
 
 
-def smoke_openers() -> None:
+def smoke_core_path() -> None:
     ok = 0
-    for meta in CHAPTERS:
-        p = ROOT / meta["opener"]
+    missing = []
+    for f in CORE_PATH:
+        p = ROOT / f
+        if not p.exists():
+            missing.append(f)
+            continue
         ast.parse(p.read_text(encoding="utf-8"))
         ok += 1
-    print("ast-ok openers:", ok)
+    print("ast-ok core_path:", ok)
+    if missing:
+        print("MISSING core_path entries:", missing)
 
 
 def main() -> None:
     os.chdir(ROOT)
-    write_chapter_openers()
     two_phase_rename()
     rewrite_references()
     patch_docstring_filenames()
     write_readme()
     stamp_comment()
     dump_json_map()
-    smoke_openers()
+    smoke_core_path()
     print("DONE")
 
 
