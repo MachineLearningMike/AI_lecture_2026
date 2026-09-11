@@ -435,7 +435,7 @@ def build_step_7():
         6.0, 6.85,
         r"Model the residual:   $Y = f_\theta(X) + \varepsilon$"
         "\n"
-        r"with  $\varepsilon_i \stackrel{iid}{\sim} \mathcal{N}(0,\sigma^2)$",
+        r"with  $\varepsilon_i \;\overset{\mathrm{iid}}{\sim}\; \mathcal{N}(0,\sigma^2)$",
         ha="center", va="center", fontsize=FS_ANNOT + 1,
         fontweight="bold", color=C_DARK,
     )
@@ -454,14 +454,15 @@ def build_step_7():
     ax7.text(
         6.0, 3.35,
         r"$L(\theta)=\prod_i (2\pi\sigma^2)^{-1/2}"
-        r"\exp\!\big(-(y_i-f_\theta(x_i))^2/(2\sigma^2)\big)$"
-        "\n\n"
+        r"\exp\!\left(-(y_i-f_\theta(x_i))^2/(2\sigma^2)\right)$"
+        "\n"
         r"$\log L(\theta) = \mathrm{const}"
         r" - \frac{1}{2\sigma^2}\sum_i (y_i-f_\theta(x_i))^2$"
-        "\n\n"
+        "\n"
         r"Maximizing $\log L$  $\Longleftrightarrow$  minimizing"
         r"  $\sum_i (y_i-f_\theta(x_i))^2$  (MSE).",
         ha="center", va="center", fontsize=FS_TICK + 1, color="#1c2833",
+        linespacing=1.63,  # +0.2 cm vs prior 1.25
     )
 
     round_box(ax7, 0.4, 0.35, 11.2, 1.7, C_GOAL, C_OK, lw=2.0)

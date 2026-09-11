@@ -406,7 +406,8 @@ def build_step_6():
 
     # Keep clear of corner nav buttons.
     ax_s = fig6.add_axes([0.12, 0.09, 0.32, 0.04])
-    ax_f = fig6.add_axes([0.52, 0.09, 0.32, 0.04])
+    # Right slider moved ~3 cm right (≈0.109 figure fraction).
+    ax_f = fig6.add_axes([0.629, 0.09, 0.32, 0.04])
     for _ax in (ax_s, ax_f):
         _ax.set_navigate(False)
         _ax.set_zorder(20)

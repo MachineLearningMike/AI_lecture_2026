@@ -652,7 +652,7 @@ def build_step_9():
     )
     ax.text(
         6.0, 3.4,
-        r'$\hat P(\mathrm{``free"}\mid\mathrm{spam})=\dfrac{80}{100}=0.8$',
+        r'$\hat P(\mathrm{free}\mid\mathrm{spam})=\frac{80}{100}=0.8$',
         ha='center', va='center', fontsize=FS_AX_TITLE - 3,
         fontweight='bold', color='#1c2833',
     )

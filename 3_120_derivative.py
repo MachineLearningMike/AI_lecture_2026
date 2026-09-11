@@ -1027,15 +1027,16 @@ def build_step_8():
         transform=ax.transAxes, fontsize=FS_ANNOT, ha='right', va='bottom',
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.94),
     )
+    # Bottom textbox moved up ~1 cm (≈0.065 figure fraction).
     fig8.text(
-        0.5, 0.01,
+        0.5, 0.075,
         rf'$z=Ax$,  $[w_1\,w_2]=[v_1\,v_2]B$'
         rf'  |  recon err={recon_err:.2e}'
         rf'  |  $|n\cdot w|$={np.round(orth_w, 12).tolist()}',
         ha='center', fontsize=FS_ANNOT,
         bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.96),
     )
-    fig8.tight_layout(rect=[0, 0.04, 1, 0.94])
+    fig8.tight_layout(rect=[0, 0.08, 1, 0.94])
     return fig8
 
 
@@ -1345,37 +1346,43 @@ def _show_bump_step(step_no, show_x, show_z, grid_note_x, grid_note_z, banner_ta
         bbox=dict(boxstyle='round', facecolor='#eef5ff', alpha=0.96),
     )
     fig.subplots_adjust(left=0.03, right=0.99, bottom=0.10, top=0.92, wspace=0.08)
-    show_maximized(fig)
+    return fig
 
 
 # -------------------------------------------------------
 # FIGURE 9: red x-grid only
 # -------------------------------------------------------
-_show_bump_step(
-    step_no=9,
-    show_x=True,
-    show_z=False,
-    grid_note_x=r'Red $3\times 3$: $x$-grid on the floor, lifted to the tangent plane.',
-    grid_note_z=r'Red $3\times 3$: same $x$-grid via $z=Bx$, floor + tangent lift.',
-    banner_tag=r'red $x$-grid only: domain floor $\to$ tangent plane',
-)
+def build_step_9():
+    return _show_bump_step(
+        step_no=9,
+        show_x=True,
+        show_z=False,
+        grid_note_x=r'Red $3\times 3$: $x$-grid on the floor, lifted to the tangent plane.',
+        grid_note_z=r'Red $3\times 3$: same $x$-grid via $z=Bx$, floor + tangent lift.',
+        banner_tag=r'red $x$-grid only: domain floor $\to$ tangent plane',
+    )
+
 
 # -------------------------------------------------------
 # FIGURE 10: red z-grid only (no white coat; all overlay lines red)
 # -------------------------------------------------------
-C_Z_DOMAIN = C_DX          # red z-grid on the domain floor
-C_Z_TANGENT = '#e74c3c'    # red z-grid lifted to the tangent plane
-_C_DY_SAVE = C_DY
-C_DY = C_DX                 # partial / mirror lines red too for this step
-_show_bump_step(
-    step_no=10,
-    show_x=False,
-    show_z=True,
-    grid_note_x=r'Red $3\times 3$: $z$-grid via $x=B^{{-1}}z$, floor + tangent lift.',
-    grid_note_z=r'Red $3\times 3$: $z$-grid on the floor, lifted to the tangent plane.',
-    banner_tag=r'red $z$-grid only: domain floor $\to$ tangent plane',
-)
-C_DY = _C_DY_SAVE
+def build_step_10():
+    global C_DY, C_Z_DOMAIN, C_Z_TANGENT
+    C_Z_DOMAIN = C_DX          # red z-grid on the domain floor
+    C_Z_TANGENT = '#e74c3c'    # red z-grid lifted to the tangent plane
+    _c_dy_save = C_DY
+    C_DY = C_DX                 # partial / mirror lines red too for this step
+    try:
+        return _show_bump_step(
+            step_no=10,
+            show_x=False,
+            show_z=True,
+            grid_note_x=r'Red $3\times 3$: $z$-grid via $x=B^{{-1}}z$, floor + tangent lift.',
+            grid_note_z=r'Red $3\times 3$: $z$-grid on the floor, lifted to the tangent plane.',
+            banner_tag=r'red $z$-grid only: domain floor $\to$ tangent plane',
+        )
+    finally:
+        C_DY = _c_dy_save
 
 
 # -------------------------------------------------------
@@ -1408,7 +1415,7 @@ def rugged_f(x, y, n_features=140, seed=11):
     return z
 
 
-def build_step_9():
+def build_step_11():
     fig11 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
     fig11.suptitle(
         r'Step 11: Practical reality -- a jungle of local peaks and canyons',
@@ -1464,6 +1471,8 @@ run_slide_deck([
     build_step_7,
     build_step_8,
     build_step_9,
+    build_step_10,
+    build_step_11,
 ])
 
 # -------------------------------------------------------

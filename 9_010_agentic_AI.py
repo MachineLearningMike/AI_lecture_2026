@@ -672,7 +672,7 @@ def build_step_12():
     ax.text(
         6.0, 6.05,
         r"Objective:  $J(\theta)=\mathbb{E}_{\tau\sim\pi_\theta}"
-        r"\big[\sum_t \gamma^t r_t\big]$",
+        r"[\sum_t \gamma^t r_t]$",
         ha="center", va="center", fontsize=FS_ANNOT, color="#333333",
     )
 
@@ -686,7 +686,7 @@ def build_step_12():
     ax.text(
         6.0, 3.9,
         r"$\nabla_\theta J ="
-        r"\mathbb{E}\Big[R(\tau)\sum_t \nabla_\theta\log\pi_\theta(a_t\mid s_t)\Big]$",
+        r"\mathbb{E}[R(\tau)\sum_t \nabla_\theta\log\pi_\theta(a_t\mid s_t)]$",
         ha="center", va="center", fontsize=FS_ANNOT, color="#1c2833",
     )
 

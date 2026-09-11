@@ -169,12 +169,13 @@ def build_step_1():
         ax1.text(x + w / 2, y + 1.85, body,
                  ha='center', va='center', fontsize=FS_ANNOT)
 
+    round_box(ax1, 0.5, 0.25, 11.0, 0.75, 'lightyellow', '0.55', lw=1.6)
     ax1.text(
-        6.0, 0.55,
-        'Same math toolbox (gradients, probability). Different supervision contract.',
+        6.0, 0.62,
+        'SL/UL for one-step optimization for independent steps. '
+        'RL for optimizing multiple steps.',
         ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
-        bbox=dict(boxstyle='round,pad=0.3', facecolor='lightyellow',
-                  edgecolor='0.55', alpha=0.95),
+        color='#333333',
     )
     return fig1
 

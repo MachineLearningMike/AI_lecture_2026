@@ -293,8 +293,12 @@ def build_step_3():
         ("SubBackward0", 8.2, 3.8, C_NEW),
         ("PowBackward0\n(L)", 8.2, 1.5, C_ACTIVE),
     ]
+    # ~0.5 cm wider node boxes on this panel (data width 0-10).
+    _dw = 0.26
+    _bw = 2.0 + _dw
+    _bh = 1.1
     for name, x, y, face in g_nodes:
-        round_box(axes3[1], x - 1.0, y - 0.55, 2.0, 1.1, face, C_DARK, lw=1.5)
+        round_box(axes3[1], x - _bw / 2, y - _bh / 2, _bw, _bh, face, C_DARK, lw=1.5)
         axes3[1].text(x, y, name, ha="center", va="center", fontsize=FS_TICK, fontweight="bold")
     for a, b in [(0, 2), (1, 2), (2, 4), (3, 4), (4, 5), (5, 6)]:
         x1, y1 = g_nodes[a][1], g_nodes[a][2]

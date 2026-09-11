@@ -1,13 +1,14 @@
 """
-0400_loss_functions.py
+3_050_loss_functions.py
 
 What a loss function is, and Mean Squared Error as a browsable 3D shape.
 
 Sketch:
-  1. Loss functions -- what they are; why they matter for objective and performance
-  2. Mean Squared Error -- formula + browsable 3D surface over one sample (y, y_hat)
+  1. Practical reality -- a jungle of local peaks and canyons (same as 3_120 Step 11)
+  2. Loss functions -- what they are; why they matter for objective and performance
+  3. Mean Squared Error -- formula + browsable 3D surface over one sample (y, y_hat)
 
-Companion to 190_loss_functions.py, 0470_maximum_likelihood.py, 0280_model.py.
+Companion to 3_120_derivative.py, 3_060_Loss_Mean_Squared_Error.py.
 """
 
 from __future__ import annotations
@@ -99,13 +100,84 @@ C_GOAL = '#d4edda'
 C_OLD = '#fce4d6'
 
 
+def rugged_f(x, y, n_features=140, seed=11):
+    """Dense mix of peaks/canyons + multi-scale ripples (practical loss-like terrain)."""
+    rng = np.random.default_rng(seed)
+    z = np.zeros_like(np.asarray(x, dtype=float))
+    z = z + 0.22 * np.sin(2.4 * x) * np.cos(2.1 * y)
+    z = z + 0.14 * np.sin(4.2 * x + 0.6) * np.sin(3.8 * y - 0.4)
+    z = z + 0.10 * np.cos(5.5 * x) * np.cos(4.9 * y)
+    for _ in range(n_features):
+        cx = rng.uniform(-1.85, 1.85)
+        cy = rng.uniform(-1.85, 1.85)
+        amp = rng.uniform(0.18, 0.85) * rng.choice([-1.0, -1.0, 1.0, 1.0, 1.0])
+        width = rng.uniform(0.12, 0.42)
+        z = z + amp * np.exp(-((x - cx) ** 2 + (y - cy) ** 2) / (2.0 * width ** 2))
+    for _ in range(12):
+        fx_ = rng.uniform(6.0, 16.0)
+        fy_ = rng.uniform(6.0, 16.0)
+        amp = rng.uniform(0.02, 0.07)
+        phx = rng.uniform(0, 2 * np.pi)
+        phy = rng.uniform(0, 2 * np.pi)
+        z = z + amp * np.sin(fx_ * x + phx) * np.cos(fy_ * y + phy)
+    return z
+
+
 # -------------------------------------------------------
-# FIGURE 1: What is a loss function?
+# FIGURE 1: Practical rugged loss landscape (from 3_120 Step 11)
 # -------------------------------------------------------
 def build_step_1():
+    fig11 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
+    fig11.suptitle(
+        r'Step 1: Practical reality -- a jungle of local peaks and canyons',
+        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    )
+    ax = fig11.add_subplot(111, projection='3d')
+
+    xs11 = np.linspace(-2.0, 2.0, 220)
+    ys11 = np.linspace(-2.0, 2.0, 220)
+    XX11, YY11 = np.meshgrid(xs11, ys11)
+    ZZ11 = rugged_f(XX11, YY11)
+    z_floor11 = float(np.min(ZZ11)) - 0.40
+
+    ax.plot_surface(
+        XX11, YY11, ZZ11, cmap='terrain', linewidth=0, antialiased=True,
+        alpha=0.92, shade=True,
+    )
+    ax.contourf(
+        XX11, YY11, ZZ11, zdir='z', offset=z_floor11,
+        levels=40, cmap='terrain', alpha=0.62,
+    )
+    ax.contour(
+        XX11, YY11, ZZ11, zdir='z', offset=z_floor11 + 0.02,
+        levels=36, colors='0.25', linewidths=0.55, alpha=0.85,
+    )
+    ax.view_init(elev=30, azim=-52)
+    ax.set_xlabel('x', fontsize=FS_AXIS)
+    ax.set_ylabel('y', fontsize=FS_AXIS)
+    ax.set_zlabel('f', fontsize=FS_AXIS)
+    ax.set_zlim(z_floor11 - 0.05, float(np.max(ZZ11)) + 0.15)
+    ax.tick_params(labelsize=FS_ANNOT)
+    ax.text2D(
+        0.02, 0.02,
+        'Like a real training loss: peaks and canyons everywhere.\n'
+        'A local gradient only sees its neighborhood --\n'
+        'so steepest ascent / descent can stop far from the global best.\n'
+        'This is the everyday reality of optimizing practical models.',
+        transform=ax.transAxes, fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
+    fig11.tight_layout(rect=[0, 0, 1, 0.94])
+    return fig11
+
+
+# -------------------------------------------------------
+# FIGURE 2: What is a loss function?
+# -------------------------------------------------------
+def build_step_2():
     fig1, ax1 = new_figure()
     fig1.suptitle(
-        'Step 1: Loss functions',
+        'Step 2: Loss functions',
         fontsize=FS_FIGURE_TITLE, fontweight='bold',
     )
     blank_slide(ax1)
@@ -161,12 +233,12 @@ def build_step_1():
 
 
 # -------------------------------------------------------
-# FIGURE 2: MSE formula + browsable 3D surface over (y, y_hat)
+# FIGURE 3: MSE formula + browsable 3D surface over (y, y_hat)
 # -------------------------------------------------------
-def build_step_2():
+def build_step_3():
     fig2 = plt.figure(figsize=screen_figsize(), dpi=FIGURE_DPI)
     fig2.suptitle(
-        'Step 2: Mean Squared Error',
+        'Step 3: Mean Squared Error',
         fontsize=FS_FIGURE_TITLE, fontweight='bold',
     )
 
@@ -249,6 +321,7 @@ def build_step_2():
 run_slide_deck([
     build_step_1,
     build_step_2,
+    build_step_3,
 ])
 
 # -------------------------------------------------------
@@ -258,15 +331,16 @@ print("\n" + "=" * 60)
 print("185 LOSS FUNCTIONS")
 print("=" * 60)
 print("""
-Step 1 -- Loss functions:
+Step 1 -- Practical rugged loss landscape (same idea as 3_120 Step 11):
+  Real training losses are jungles of local peaks and canyons.
+
+Step 2 -- Loss functions:
   A loss maps (prediction, target) -> a non-negative score of wrongness.
   Training objective: minimize average loss.
-  Training performance: loss shape controls gradients, stability, and the solution.
 
-Step 2 -- Mean Squared Error (one sample):
+Step 3 -- Mean Squared Error (one sample):
   ell(y_hat, y) = (y_hat - y)^2
   3D surface over (y, y_hat): parabolic bowl; zero on the diagonal y_hat = y.
-  Browse by rotating the figure with the mouse.
 
-See also: 190_loss_functions.py, 191_Mean_Squared_Error.py
+See also: 3_120_derivative.py, 3_060_Loss_Mean_Squared_Error.py
 """)

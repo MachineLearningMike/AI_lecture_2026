@@ -176,91 +176,80 @@ def build_step_1():
 
 # -------------------------------------------------------
 # FIGURE 2: Regression intuition + picture
-# -------------------------------------------------------
-# Left panel +1 inch broader WITHOUT shrinking the right panel:
-# keep right absolute width; grow whole figure by 1 inch.
-_fw2, _fh2 = screen_figsize()
-_usable2 = _fw2 * 0.92
-_right_in2 = _usable2 * 0.5
-_left_in2 = _usable2 * 0.5 + 1.0
-_fw2_wide = (_left_in2 + _right_in2) / 0.92
-fig2, (ax2a, ax2b) = plt.subplots(
-    1, 2,
-    figsize=(_fw2_wide, _fh2),
-    dpi=FIGURE_DPI,
-    gridspec_kw={'width_ratios': [_left_in2, _right_in2]},
-)
-fig2.suptitle(
-    'Step 2: Regression -- predict a continuous amount',
-    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
-)
+def build_step_reg_picture():
+    """Former module-level slide, now in the deck."""
+    # -------------------------------------------------------
+    # Left panel +1 inch broader WITHOUT shrinking the right panel:
+    # keep right absolute width; grow whole figure by 1 inch.
+    _fw2, _fh2 = screen_figsize()
+    _usable2 = _fw2 * 0.92
+    _right_in2 = _usable2 * 0.5
+    _left_in2 = _usable2 * 0.5 + 1.0
+    _fw2_wide = (_left_in2 + _right_in2) / 0.92
+    fig2, (ax2a, ax2b) = plt.subplots(
+        1, 2,
+        figsize=(_fw2_wide, _fh2),
+        dpi=FIGURE_DPI,
+        gridspec_kw={'width_ratios': [_left_in2, _right_in2]},
+    )
+    fig2.suptitle(
+        'Step 2: Regression -- predict a continuous amount',
+        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    )
 
-ax2a.set_xlim(0, 10)
-ax2a.set_ylim(0, 10)
-ax2a.axis('off')
-ax2a.set_title('Intuition', fontsize=FS_AX_TITLE - 1)
-round_box(ax2a, 0.4, 5.5, 9.2, 4.0, C_NEW, '#2874a6', lw=2.0)
-ax2a.text(
-    5.0, 7.5,
-    'The model outputs a real number y_hat.\n'
-    'The target y is also a real number.\n\n'
-    'A miss of 0.1 is small; a miss of 10 is large.\n'
-    'We need a loss that grades distance on a continuum.',
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-)
-round_box(ax2a, 0.4, 0.5, 9.2, 4.6, C_GOAL, C_OK, lw=2.0)
-ax2a.text(
-    5.0, 2.8,
-    'So regression embraces Mean Squared Error:\n\n'
-    r'$\ell=(\hat y-y)^{2}$'
-    '\n\n'
-    'Why? Continuous output + continuous distribution story.\n'
-    'Squared distance is a natural "how far off" score,\n'
-    'smooth for gradient descent.',
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-)
+    ax2a.set_xlim(0, 10)
+    ax2a.set_ylim(0, 10)
+    ax2a.axis('off')
+    ax2a.set_title('Intuition', fontsize=FS_AX_TITLE - 1)
+    round_box(ax2a, 0.4, 5.5, 9.2, 4.0, C_NEW, '#2874a6', lw=2.0)
+    ax2a.text(
+        5.0, 7.5,
+        'The model outputs a real number y_hat.\n'
+        'The target y is also a real number.\n\n'
+        'A miss of 0.1 is small; a miss of 10 is large.\n'
+        'We need a loss that grades distance on a continuum.',
+        ha='center', va='center', fontsize=FS_ANNOT + 1,
+    )
+    round_box(ax2a, 0.4, 0.5, 9.2, 4.6, C_GOAL, C_OK, lw=2.0)
+    ax2a.text(
+        5.0, 2.8,
+        'So regression embraces Mean Squared Error:\n\n'
+        r'$\ell=(\hat y-y)^{2}$'
+        '\n\n'
+        'Why? Continuous output + continuous distribution story.\n'
+        'Squared distance is a natural "how far off" score,\n'
+        'smooth for gradient descent.',
+        ha='center', va='center', fontsize=FS_ANNOT + 1,
+    )
 
-# Right: scatter + fitted line
-x = np.linspace(-2.2, 2.2, 24)
-y = 1.1 * x + 0.35 + 1.6 * RNG.normal(size=x.size)
-X = np.column_stack([x, np.ones_like(x)])
-w, *_ = np.linalg.lstsq(X, y, rcond=None)
-xg = np.linspace(-2.5, 2.5, 100)
-ax2b.scatter(x, y, s=55, c='#2874a6', alpha=0.9, edgecolors='white',
-             linewidths=0.5, zorder=3, label='data (continuous y)')
-ax2b.plot(xg, w[0] * xg + w[1], color=C_ACCENT, lw=2.8, label='regression fit')
-ax2b.set_xlabel('x', fontsize=FS_AXIS)
-ax2b.set_ylabel('y (continuous)', fontsize=FS_AXIS)
-ax2b.set_title('Picture: cloud of numbers, one smooth curve', fontsize=FS_AX_TITLE - 2)
-ax2b.tick_params(labelsize=FS_TICK)
-ax2b.legend(fontsize=FS_LEGEND, loc='upper left')
-ax2b.grid(True, alpha=0.3)
-ax2b.text(
-    0.98, 0.02,
-    'No labels like "class A/B".\n'
-    'Only how close y_hat is to y.',
-    transform=ax2b.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
-fig2.tight_layout(rect=[0, 0, 1, 0.94])
-# Keep the wider figsize (do not reset to default screen width).
-fig2.set_dpi(FIGURE_DPI)
-fig2.set_size_inches(_fw2_wide, _fh2, forward=True)
-fig2.canvas.draw_idle()
-_manager2 = getattr(fig2.canvas, 'manager', None)
-if _manager2 is not None:
-    try:
-        _manager2.window.state('zoomed')
-    except Exception:
-        try:
-            _manager2.window.showMaximized()
-        except Exception:
-            try:
-                _manager2.frame.Maximize(True)
-            except Exception:
-                pass
-add_step_footer(fig2)
-plt.show()
+    # Right: scatter + fitted line
+    x = np.linspace(-2.2, 2.2, 24)
+    y = 1.1 * x + 0.35 + 1.6 * RNG.normal(size=x.size)
+    X = np.column_stack([x, np.ones_like(x)])
+    w, *_ = np.linalg.lstsq(X, y, rcond=None)
+    xg = np.linspace(-2.5, 2.5, 100)
+    ax2b.scatter(x, y, s=55, c='#2874a6', alpha=0.9, edgecolors='white',
+                 linewidths=0.5, zorder=3, label='data (continuous y)')
+    ax2b.plot(xg, w[0] * xg + w[1], color=C_ACCENT, lw=2.8, label='regression fit')
+    ax2b.set_xlabel('x', fontsize=FS_AXIS)
+    ax2b.set_ylabel('y (continuous)', fontsize=FS_AXIS)
+    ax2b.set_title('Picture: cloud of numbers, one smooth curve', fontsize=FS_AX_TITLE - 2)
+    ax2b.tick_params(labelsize=FS_TICK)
+    ax2b.legend(fontsize=FS_LEGEND, loc='upper left')
+    ax2b.grid(True, alpha=0.3)
+    ax2b.text(
+        0.98, 0.02,
+        'No labels like "class A/B".\n'
+        'Only how close y_hat is to y.',
+        transform=ax2b.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
+    fig2.tight_layout(rect=[0, 0, 1, 0.94])
+    # Keep the wider figsize (do not reset to default screen width).
+    fig2.set_dpi(FIGURE_DPI)
+    fig2.set_size_inches(_fw2_wide, _fh2, forward=True)
+    fig2.canvas.draw_idle()
+    return fig2
 
 
 # -------------------------------------------------------
@@ -546,6 +535,7 @@ def build_step_5():
 
 run_slide_deck([
     build_step_1,
+    build_step_reg_picture,
     build_step_2,
     build_step_3,
     build_step_4,

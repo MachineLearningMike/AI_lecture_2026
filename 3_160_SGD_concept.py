@@ -176,11 +176,17 @@ def build_step_1():
     ax.axis("off")
     ax.set_title("Compute budget intuition", fontsize=FS_AX_TITLE)
 
+    # One vertical column of 3 textboxes (shared left edge and width).
     boxes = [
-        (0.25, 5.2, 4.65, 2.0, "#f8d7da", "Full-batch GD\n1 SGD step = touch all N examples\nexact direction, slow cadence"),
-        (5.10, 5.2, 4.65, 2.0, "#d4edda", "Minibatch SGD\n1 SGD step = touch b << N examples\nnoisy direction, fast cadence"),
-        # Align with the combined left/right of the two top boxes: [0.25, 9.75]
-        (0.25, 1.2, 9.50, 3.2, "#fff3cd",
+        (0.25, 5.55, 9.50, 2.05, "#f8d7da",
+         "Full-batch GD\n"
+         "1 SGD step = touch all N examples\n"
+         "exact direction, slow cadence"),
+        (0.25, 3.30, 9.50, 2.05, "#d4edda",
+         "Minibatch SGD\n"
+         "1 SGD step = touch b << N examples\n"
+         "noisy direction, fast cadence"),
+        (0.25, 0.55, 9.50, 2.55, "#fff3cd",
          "Same wall-clock / data-touch budget:\n"
          "many cheap SGD steps often make MORE progress\n"
          "than a few exact full-batch steps --\n"
@@ -249,27 +255,22 @@ def build_step_2():
     ax.set_ylim(0, 10)
     ax.axis("off")
     ax.set_title("Finite-sum is fair -- and SGD-ready", fontsize=FS_AX_TITLE)
-    boxes_ok = [
-        (0.35, 7.05, 9.3, 2.6, "#d4edda",
-         "Empirical risk / finite-sum loss\n"
+    notes_ok = [
+        (8.2, "Empirical risk / finite-sum loss\n"
          r"$L(w)=\frac{1}{N}\sum_{i=1}^{N} \ell_i(w)$" + "\n"
          r"each $\ell_i$ uses ONE example $(x_i,y_i)$"),
-        (0.35, 4.55, 9.3, 2.3, "#dceaff",
-         "Why this is FAIR\n"
+        (5.7, "Why this is FAIR\n"
          "Repeated / similar cases appear more often in the sum,\n"
          "so they weigh more in $L$ -- matching how often they occur.\n"
          "A random mini-batch inherits the same frequencies."),
-        (0.35, 2.15, 9.3, 2.2, "#cfe2ff",
-         "Why SGD works here\n"
+        (3.2, "Why SGD works here\n"
          r"$\nabla L=\frac{1}{N}\sum_i\nabla\ell_i$"
          "  =>  batch avg is an unbiased estimate of "
          r"$\nabla L$"),
-        (0.35, 0.25, 9.3, 1.7, "#fff3cd",
-         r"SGD step:  $w\leftarrow w-\eta\cdot\frac{1}{|B|}\sum_{i\in B}\nabla\ell_i(w)$"),
+        (1.0, r"SGD step:  $w\leftarrow w-\eta\cdot\frac{1}{|B|}\sum_{i\in B}\nabla\ell_i(w)$"),
     ]
-    for x0, y0, ww, hh, color, text in boxes_ok:
-        ax.add_patch(plt.Rectangle((x0, y0), ww, hh, facecolor=color, edgecolor="k", lw=2))
-        ax.text(x0 + ww / 2, y0 + hh / 2, text, ha="center", va="center",
+    for y, text in notes_ok:
+        ax.text(5.0, y, text, ha="center", va="center",
                 fontsize=FS_ANNOT - 1, fontweight="bold")
 
     ax = axes2[1]
@@ -277,30 +278,25 @@ def build_step_2():
     ax.set_ylim(0, 10)
     ax.axis("off")
     ax.set_title("Counterexample: L is NOT a sum of per-example losses", fontsize=FS_AX_TITLE - 2)
-    boxes_bad = [
-        (0.35, 7.15, 9.3, 2.5, "#f8d7da",
-         "Joint / coupled objective (toy)\n"
+    notes_bad = [
+        (8.2, "Joint / coupled objective (toy)\n"
          r"$L(w)=\left(\sum_{i=1}^{N} f_w(x_i)\right)^2$" + "\n\n"
          "Cross terms $f_i f_j$ couple EVERY pair of examples.\n"
          r"$L$ cannot be written as $\sum_i \ell_i(w)$."),
-        (0.35, 4.35, 9.3, 2.5, "#f8d7da",
-         "Full gradient needs the GLOBAL sum\n"
+        (5.5, "Full gradient needs the GLOBAL sum\n"
          r"$\nabla L = 2\left(\sum_k f_w(x_k)\right)"
          r"\sum_i \nabla f_w(x_i)$" + "\n\n"
          "A mini-batch replaces both sums by subset sums\n"
          "-- that is NOT an unbiased estimate of "
          r"$\nabla L$."),
-        (0.35, 1.85, 9.3, 2.2, "#f5c6cb",
-         "So classic mini-batch SGD does not apply:\n"
+        (2.85, "So classic mini-batch SGD does not apply:\n"
          "sampling a few $i$'s does not target this $L$.\n"
          "(Same issue for many global ranking / assignment losses.)"),
-        (0.35, 0.25, 9.3, 1.4, "#e2e3e5",
-         r"Still OK: mean vs sum, $\lambda\|w\|^2$, streaming "
+        (0.85, r"Still OK: mean vs sum, $\lambda\|w\|^2$, streaming "
          r"$L=\mathbb{E}_z[\ell(w;z)]$"),
     ]
-    for x0, y0, ww, hh, color, text in boxes_bad:
-        ax.add_patch(plt.Rectangle((x0, y0), ww, hh, facecolor=color, edgecolor="k", lw=2))
-        ax.text(x0 + ww / 2, y0 + hh / 2, text, ha="center", va="center",
+    for y, text in notes_bad:
+        ax.text(5.0, y, text, ha="center", va="center",
                 fontsize=FS_ANNOT - 1, fontweight="bold")
 
     fig2.tight_layout(rect=[0, 0, 1, 0.94])
@@ -325,13 +321,21 @@ def build_step_3():
 
     ax = axes3[0]
     colors = plt.cm.viridis(np.linspace(0.15, 0.85, len(batch_sizes)))
+    # Larger batch size => thicker / more opaque markers.
+    b_max = float(max(batch_sizes))
     for b, c in zip(batch_sizes, colors):
         gs = []
         for _ in range(n_samples):
             idx = RNG.choice(N_DATA, size=b, replace=False)
             gs.append(grad_batch(w_probe, idx))
         gs = np.stack(gs)
-        ax.scatter(gs[:, 0], gs[:, 1], s=18, alpha=0.35, color=c, label=f"b={b}")
+        weight = np.sqrt(b / b_max)  # 0..1, grows with b
+        ms = 10 + 36 * weight
+        alpha = 0.20 + 0.70 * weight
+        ax.scatter(
+            gs[:, 0], gs[:, 1], s=ms, alpha=alpha, color=c,
+            linewidths=0.6 + 1.4 * weight, edgecolors=c, label=f"b={b}",
+        )
     ax.scatter([g_true[0]], [g_true[1]], s=160, c="crimson", marker="*",
                zorder=5, edgecolor="k", label="true full grad")
     ax.axhline(0, color="0.5", lw=0.8)
@@ -421,7 +425,7 @@ def build_step_4():
         "bad valleys in deep nets.\n"
         "Here the bowl is convex --\n"
         "noise mostly just jitters.",
-        x=0.02, y=0.02, ha="left", va="bottom",
+        x=0.98, y=0.50, ha="right", va="center",
     )
 
     ax = axes4[1]
@@ -577,24 +581,24 @@ def build_step_6():
         x=0.02, y=0.98, ha="left",
     )
 
-    # Right: curvature / sharpness cartoon
+    # Right: curvature / sharpness notes (no boxes)
     ax = axes6[1]
     ax.set_xlim(0, 10)
     ax.set_ylim(0, 8)
     ax.axis("off")
     ax.set_title("What else affects stability?", fontsize=FS_AX_TITLE)
     rows = [
-        (5.8, "#dceaff", "Sharp curvature (large Hessian)\n"
+        (6.2, "Sharp curvature (large Hessian)\n"
          "Same lr overshoots more -- like a stiff spring."),
-        (3.5, "#f8d7da", "Gradient noise (small batch)\n"
+        (4.0, "Gradient noise (small batch)\n"
          "Pushes you sideways each SGD step; large lr amplifies that."),
-        (1.2, "#d4edda", "Practical knobs\n"
+        (1.7, "Practical knobs\n"
          "decrease lr, increase batch, add momentum (0530_momentum.py),\n"
          "or normalize/scale features (0720_normalize_activations.py)."),
     ]
-    for y, color, text in rows:
-        ax.add_patch(plt.Rectangle((0.5, y), 9.0, 1.9, facecolor=color, edgecolor="k", lw=2))
-        ax.text(5.0, y + 0.95, text, ha="center", va="center", fontsize=FS_ANNOT, fontweight="bold")
+    for y, text in rows:
+        ax.text(5.0, y, text, ha="center", va="center",
+                fontsize=FS_ANNOT, fontweight="bold")
 
     fig6.tight_layout(rect=[0, 0, 1, 0.94])
     return fig6

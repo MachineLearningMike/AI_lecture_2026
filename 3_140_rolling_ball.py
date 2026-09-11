@@ -1,15 +1,19 @@
 """
-0510_rolling_ball.py
+3_140_rolling_ball.py
 
 A ball rolling down a hill -- physics animation as intuition for
-gradient descent: the landscape is a loss surface, gravity pulls
-toward lower values, friction damps oscillations.
+optimization with momentum.
+
+Dictionary (careful -- not slogans):
+  height h(x)              ~  loss L(theta)
+  gravity -> force -g h'   ~  force along -grad L  (downhill)
+  friction / viscous drag  ~  velocity damping (momentum decay)
+  learning rate            ~  discrete step size along -grad L
+                              (NOT friction)
 
 Shows the animation live. Also saves a GIF next to this script
 (GIF export is skipped if the file already exists):
     rolling_ball.gif
-
-Companion metaphor for training loops in 0280_model.py.
 """
 
 from pathlib import Path
@@ -25,12 +29,40 @@ from _config import (
     FIGURE_DPI,
     SCREEN_FRACTION,
     apply_rcparams,
-    add_step_footer,
+    run_slide_deck,
 )
 apply_rcparams(plt)
 import matplotlib.patches as patches
+from matplotlib.patches import FancyBboxPatch
 from matplotlib import animation
 import numpy as np
+
+
+def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
+    try:
+        import tkinter as tk
+        root = tk.Tk()
+        root.withdraw()
+        w = root.winfo_screenwidth()
+        h = root.winfo_screenheight()
+        root.destroy()
+        return (w / dpi * fraction, h / dpi * fraction)
+    except Exception:
+        return (16 * fraction / 0.95, 9 * fraction / 0.95)
+
+
+def blank_slide(ax):
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 8)
+    ax.axis("off")
+
+
+def round_box(ax, x, y, w, h, facecolor, edgecolor="0.2", lw=2.0):
+    return ax.add_patch(FancyBboxPatch(
+        (x, y), w, h,
+        boxstyle="round,pad=0.02,rounding_size=0.14",
+        facecolor=facecolor, edgecolor=edgecolor, linewidth=lw,
+    ))
 
 np.random.seed(42)
 
@@ -119,18 +151,18 @@ def simulate(n_frames=N_FRAMES, fps=FPS):
 
 
 # -------------------------------------------------------
-# Build animation, optionally save GIF, then show
+# Step 1: animation (optionally also write GIF)
 # -------------------------------------------------------
-def render_rolling_ball_gif(out_path: Path = OUT_PATH) -> None:
+def build_step_1(out_path: Path = OUT_PATH):
     xs_sim, vs_sim = simulate()
 
     x_hill = np.linspace(-3.6, 3.6, 600)
     y_hill = h(x_hill)
 
-    fig, ax = plt.subplots(figsize=(10, 5.5), dpi=FIGURE_DPI)
+    fig, ax = plt.subplots(figsize=screen_figsize(), dpi=FIGURE_DPI)
     fig.suptitle(
-        'Ball rolling down a hill\n(gravity + friction  ~  gradient descent)',
-        fontsize=FS_FIGURE_TITLE, fontweight='bold', y=0.98,
+        'Step 1: Ball rolling down a hill',
+        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
     )
 
     ax.fill_between(x_hill, y_hill, -0.2, color='#c4a574', alpha=0.85, zorder=1)
@@ -169,10 +201,11 @@ def render_rolling_ball_gif(out_path: Path = OUT_PATH) -> None:
 
     ax.text(
         0.98, 0.05,
-        'Potential energy ~ loss\n'
-        'Gravity ~ negative gradient\n'
-        'Friction ~ damping / small step size',
-        transform=ax.transAxes, fontsize=FS_ANNOT,
+        'See Step 2 for the careful map\n'
+        'physics  <->  optimization.\n'
+        '(Slogans like "gravity = -grad"\n'
+        'are wrong.)',
+        transform=ax.transAxes, fontsize=FS_ANNOT - 1,
         va='bottom', ha='right',
         bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
     )
@@ -232,26 +265,188 @@ def render_rolling_ball_gif(out_path: Path = OUT_PATH) -> None:
             print(f'Skipping GIF export ({out_path.name}): {exc}')
             print('Install pillow to enable animation export: pip install pillow')
 
-    add_step_footer(fig)
-    try:
-        if plt.get_backend().lower() != 'agg':
-            plt.show()
-        else:
-            plt.close(fig)
-    except Exception:
-        plt.close(fig)
+    fig._ball_anim = anim  # keep alive for the deck
+    return fig
 
 
-render_rolling_ball_gif(OUT_PATH)
+# -------------------------------------------------------
+# Step 2: careful physics <-> optimization map
+# -------------------------------------------------------
+def build_step_2():
+    fig, ax = plt.subplots(figsize=screen_figsize(), dpi=FIGURE_DPI)
+    fig.suptitle(
+        r'Step 2: Gravity is not $-\nabla L$ -- mass + friction is momentum',
+        fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
+    )
+    blank_slide(ax)
+    # 1 cm in data units on this blank slide.
+    dy = 0.664
+    top_y = 6.35 + dy
+    mid_y, mid_h = 3.55, 2.55 + dy
+    bot_y, bot_h = 0.35 - dy, 2.95 + dy
+    ax.set_ylim(bot_y - 0.2, top_y + 1.35 + 0.2)
+
+    round_box(ax, 0.35, top_y, 11.3, 1.35, '#1a5276', '#1a5276', lw=0)
+    ax.text(
+        6.0, top_y + 1.35 / 2,
+        'The rolling ball is intuition for momentum methods -- not a derivation of GD.',
+        ha='center', va='center', fontsize=FS_ANNOT,
+        fontweight='bold', color='#f9e79f',
+    )
+
+    round_box(ax, 0.35, mid_y, 5.5, mid_h, '#f8d7da', '#c0392b', lw=2.0)
+    ax.text(
+        3.1, mid_y + mid_h - 0.45, 'Why gravity ≠ -∇L',
+        ha='center', fontsize=FS_ANNOT, fontweight='bold', color='#c0392b',
+    )
+    ax.text(
+        3.1, mid_y + mid_h / 2 - 0.25,
+        'Gravity pulls straight down in space.\n'
+        'The ball is constrained to the hill.\n'
+        'Only the tangential part of that force\n'
+        'accelerates it along the track -- with\n'
+        'extra geometric factors from the curve.\n\n'
+        'Plain GD is a modeling choice:\n'
+        r'$\theta\leftarrow\theta-\eta\nabla L(\theta)$'
+        '\nin Euclidean parameter space.',
+        ha='center', va='center', fontsize=FS_TICK - 2, color='#641e16',
+        linespacing=1.25,
+    )
+
+    round_box(ax, 6.15, mid_y, 5.5, mid_h, '#d4edda', '#1e8449', lw=2.0)
+    ax.text(
+        8.9, mid_y + mid_h - 0.45, 'What still maps cleanly',
+        ha='center', fontsize=FS_ANNOT, fontweight='bold', color='#1e8449',
+    )
+    ax.text(
+        8.9, mid_y + mid_h / 2 - 0.25,
+        'Height h(x)  ~  loss L  (a potential\n'
+        'we want low).\n\n'
+        'Steep slope  ~  large |∇L|\n'
+        '(stronger local push).\n\n'
+        'Learning rate η  ~  discrete jump size\n'
+        'along -∇L  (not friction).',
+        ha='center', va='center', fontsize=FS_TICK - 2, color='#145a32',
+        linespacing=1.25,
+    )
+
+    round_box(ax, 0.35, bot_y, 11.3, bot_h, '#d6eaf8', '#2874a6', lw=2.0)
+    ax.text(
+        6.0, bot_y + bot_h - 0.45, 'Mass + friction  ↔  momentum methods',
+        ha='center', fontsize=FS_ANNOT, fontweight='bold', color='#1a5276',
+    )
+    ax.text(
+        6.0, bot_y + bot_h / 2 - 0.2,
+        r"Physics:  $m\ddot{x}=-V'(x)-\gamma\dot{x}$"
+        "\n"
+        r"Discrete:  $v\leftarrow\beta v-\eta\nabla L$,   $\theta\leftarrow\theta+v$"
+        '\n\n'
+        'mass m  →  inertia / velocity buffer (momentum)\n'
+        'friction γ  →  velocity damping (momentum decay β)\n'
+        'Δt/m  →  scale of the gradient kick (~ step size)\n\n'
+        'Plain GD ≈ no mass: each step is a fresh jump -η∇L from rest.\n'
+        'Heavy-ball / momentum ≈ this rolling ball (mass + friction).',
+        ha='center', va='center', fontsize=FS_TICK - 1, color='#1c2833',
+        linespacing=1.3,
+    )
+    return fig
+
+
+# -------------------------------------------------------
+# Step 3: side-by-side similarity of the update equations
+# -------------------------------------------------------
+def build_step_3():
+    fig, ax = plt.subplots(figsize=screen_figsize(), dpi=FIGURE_DPI)
+    fig.suptitle(
+        'Step 3: Same skeleton -- physics ODE vs momentum / GD updates',
+        fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
+    )
+    blank_slide(ax)
+
+    round_box(ax, 0.35, 6.45, 11.3, 1.2, '#1a5276', '#1a5276', lw=0)
+    ax.text(
+        6.0, 7.05,
+        'Discretize the damped Newtonian ODE -- the algebra looks like heavy-ball GD.',
+        ha='center', va='center', fontsize=FS_ANNOT - 1,
+        fontweight='bold', color='#f9e79f',
+    )
+
+    # Left: physics
+    round_box(ax, 0.35, 3.35, 5.5, 2.9, '#f8d7da', '#c0392b', lw=2.0)
+    ax.text(
+        3.1, 5.85, 'Physics (continuous)',
+        ha='center', fontsize=FS_ANNOT - 1, fontweight='bold', color='#c0392b',
+    )
+    ax.text(
+        3.1, 4.55,
+        r"$m\,\ddot{x}=-V'(x)-\gamma\,\dot{x}$"
+        "\n\n"
+        r"With $v=\dot{x}$ and step $\Delta t$:"
+        "\n"
+        r"$v\leftarrow\left(1-\frac{\gamma\Delta t}{m}\right)v"
+        r"-\frac{\Delta t}{m}V'(x)$"
+        "\n"
+        r"$x\leftarrow x+\Delta t\,v$",
+        ha='center', va='center', fontsize=FS_TICK - 1, color='#641e16',
+        linespacing=1.35,
+    )
+
+    # Right: optimizer
+    round_box(ax, 6.15, 3.35, 5.5, 2.9, '#d4edda', '#1e8449', lw=2.0)
+    ax.text(
+        8.9, 5.85, 'Optimizer (discrete)',
+        ha='center', fontsize=FS_ANNOT - 1, fontweight='bold', color='#1e8449',
+    )
+    ax.text(
+        8.9, 4.55,
+        'Heavy-ball / momentum:'
+        "\n"
+        r"$v\leftarrow\beta\,v-\eta\,\nabla L(\theta)$"
+        "\n"
+        r"$\theta\leftarrow\theta+v$"
+        "\n\n"
+        'Plain GD (no mass / no memory):'
+        "\n"
+        r"$\theta\leftarrow\theta-\eta\,\nabla L(\theta)$",
+        ha='center', va='center', fontsize=FS_TICK - 1, color='#145a32',
+        linespacing=1.35,
+    )
+
+    # Bottom: term-by-term match
+    round_box(ax, 0.35, 0.35, 11.3, 2.75, '#d6eaf8', '#2874a6', lw=2.0)
+    ax.text(
+        6.0, 2.7, 'Term-by-term similarity',
+        ha='center', fontsize=FS_ANNOT - 1, fontweight='bold', color='#1a5276',
+    )
+    ax.text(
+        6.0, 1.35,
+        r"$\beta\ \leftrightarrow\ 1-\gamma\Delta t/m$"
+        "     (friction damps velocity = momentum decay)"
+        "\n"
+        r"$\eta\ \leftrightarrow\ \Delta t/m$"
+        "     (gradient kick scale = step size)"
+        "\n"
+        r"$V'(x)\ \leftrightarrow\ \nabla L(\theta)$"
+        "     (force from potential ≈ gradient of loss)"
+        "\n\n"
+        "Same update shape: keep some old velocity, add a downhill kick, move.\n"
+        "Caveat from Step 2: on a real hill the force is only approximately -∇h;\n"
+        "GD uses Euclidean -∇L by definition. The similarity is structural, not identity.",
+        ha='center', va='center', fontsize=FS_TICK - 2, color='#1c2833',
+        linespacing=1.3,
+    )
+    return fig
+
+
+run_slide_deck([
+    build_step_1,
+    build_step_2,
+    build_step_3,
+])
 
 
 print("""
-Intuition:
-  - Height of the hill  ~  loss / potential energy
-  - Steep slope         ~  large gradient  (fast acceleration)
-  - Friction            ~  keeps the ball from oscillating forever
-                          (like a small learning rate / momentum damping)
-
-Gradient descent is the discrete cousin of this motion:
-  x <- x - lr * dL/dx
+Step 1: live rolling-ball animation (optional GIF export).
+Step 2: careful map -- gravity is not -grad L; mass+friction is momentum.
+Step 3: side-by-side ODE discretization vs heavy-ball / plain GD.
 """)

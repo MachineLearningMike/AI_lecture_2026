@@ -202,7 +202,7 @@ def build_step_1():
     )
 
     cs = ax1.contour(GX, GY, GZ, levels=20, cmap='terrain', linewidths=1.0)
-    ax1.clabel(cs, inline=True, fontsize=8, fmt='%.1f')
+    ax1.clabel(cs, inline=True, fontsize=FS_TICK - 4, fmt='%.1f')
 
     ax1.plot(path_sgd[:, 0], path_sgd[:, 1], '-', color='crimson',
              linewidth=1.6, alpha=0.9, label='Minibatch SGD')
@@ -304,7 +304,7 @@ def build_step_3():
         r'$x_{t+1} = x_t - \eta\, g_t$' + '\n\n'
         'Noisy push every SGD step.\n'
         'The ball oscillates.',
-        transform=ax.transAxes, ha='center', va='center', fontsize=FS_AXIS,
+        transform=ax.transAxes, ha='center', va='center', fontsize=FS_ANNOT,
         bbox=dict(boxstyle='round', facecolor='#ffe8e8', alpha=0.95),
     )
 
@@ -318,7 +318,7 @@ def build_step_3():
         r'$x_{t+1} = x_t - \eta\, v_{t+1}$' + '\n\n'
         'Velocity keeps inertia\n'
         'through the batch noise.',
-        transform=ax.transAxes, ha='center', va='center', fontsize=FS_AXIS,
+        transform=ax.transAxes, ha='center', va='center', fontsize=FS_ANNOT,
         bbox=dict(boxstyle='round', facecolor='#e8efff', alpha=0.95),
     )
 
@@ -333,10 +333,12 @@ def build_step_3():
 print(f'\nRendering animation to {OUT_GIF} ...')
 
 fig_a, ax_a = plt.subplots(figsize=(9, 7), dpi=ANIM_DPI)
+# Smaller canvas than full-screen slides -- use reduced type so it matches
+# the visual weight of other lecture figures.
 fig_a.suptitle(
     'Stochastic minibatches shake the SGD ball;\n'
     'momentum keeps the other ball rolling',
-    fontsize=FS_AX_TITLE, fontweight='bold', y=0.98,
+    fontsize=FS_AX_TITLE - 4, fontweight='bold', y=0.98,
 )
 
 ax_a.contour(GX, GY, GZ, levels=20, cmap='terrain', linewidths=1.0)
@@ -368,23 +370,23 @@ arr_v = ax_a.annotate(
 
 hud = ax_a.text(
     0.02, 0.98, '', transform=ax_a.transAxes, va='top', ha='left',
-    fontsize=FS_ANNOT,
+    fontsize=FS_ANNOT - 3,
     bbox=dict(boxstyle='round', facecolor='white', alpha=0.92),
 )
 ax_a.text(
     0.98, 0.02,
     'red arrow: minibatch gradient (noisy)\n'
     'blue arrow: momentum velocity (smoothed)',
-    transform=ax_a.transAxes, va='bottom', ha='right', fontsize=FS_ANNOT,
+    transform=ax_a.transAxes, va='bottom', ha='right', fontsize=FS_ANNOT - 3,
     bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
 )
 
 ax_a.set_xlim(-1.3, 1.3)
 ax_a.set_ylim(-1.3, 1.3)
 ax_a.set_aspect('equal')
-ax_a.set_xlabel('x', fontsize=FS_AXIS)
-ax_a.set_ylabel('y', fontsize=FS_AXIS)
-ax_a.legend(loc='upper right', fontsize=FS_LEGEND)
+ax_a.set_xlabel('x', fontsize=FS_AXIS - 2)
+ax_a.set_ylabel('y', fontsize=FS_AXIS - 2)
+ax_a.legend(loc='upper right', fontsize=FS_LEGEND - 2)
 ax_a.grid(True, alpha=0.3)
 fig_a.subplots_adjust(left=0.12, right=0.98, bottom=0.10, top=0.86)
 
@@ -439,13 +441,8 @@ else:
     except Exception as exc:
         print(f'Skipping GIF export ({OUT_GIF.name}): {exc}')
         print('Install pillow to enable animation export: pip install pillow')
-try:
-    if plt.get_backend().lower() != 'agg':
-        plt.show()
-    else:
-        plt.close(fig_a)
-except Exception:
-    plt.close(fig_a)
+# Do not plt.show() here -- that would display before the slide deck.
+plt.close(fig_a)
 
 
 

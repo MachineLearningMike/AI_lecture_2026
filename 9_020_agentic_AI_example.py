@@ -717,7 +717,7 @@ def build_step_15():
     ax.text(
         6.0, 4.05,
         r"$\nabla_\theta J ="
-        r"\mathbb{E}\Big[R\sum_t \nabla_\theta\log\pi_\theta(a_t\mid s_t)\Big]$",
+        r"\mathbb{E}[R\sum_t \nabla_\theta\log\pi_\theta(a_t\mid s_t)]$",
         ha="center", va="center", fontsize=FS_ANNOT + 1, fontweight="bold", color=C_DARK,
     )
 

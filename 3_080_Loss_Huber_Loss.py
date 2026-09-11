@@ -7,7 +7,7 @@ Sketch:
   1. Definition -- quadratic near zero, linear in the tails
   2. Why Huber -- fix MSE's outlier panic without MAE's kink drama
   3. Browse the three curves: MSE, MAE, Huber
-  4. Drag residual: watch which regime you are in
+  4. Drag residual r=yhat-y: ball rides Huber; curves are losses vs r
   5. Same outlier data: who owns the average?
   6. Fit duel: Huber sits between MSE and MAE
   7. Takeaway -- when to choose Huber
@@ -276,57 +276,94 @@ def build_step_3():
 def build_step_4():
     fig3, (ax3a, ax3b) = new_figure(1, 2)
     fig3.suptitle(
-        'Step 4: Drag the residual -- which regime are you in?',
-        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+        r'Step 4: Drag residual $r=\hat y-y$ -- ride the Huber curve',
+        fontsize=FS_FIGURE_TITLE - 4, fontweight='bold',
     )
-    fig3.subplots_adjust(bottom=0.20, wspace=0.28)
+    fig3.subplots_adjust(bottom=0.22, left=0.08, right=0.98, wspace=0.28)
 
     r0 = 0.4
-    ax3a.plot(r, 0.5 * r ** 2, color=C_ACCENT, lw=1.8, alpha=0.55, label='MSE')
-    ax3a.plot(r, np.abs(r), color=C_MAE, lw=1.8, alpha=0.55, label='MAE')
-    ax3a.plot(r, huber(r, DELTA), color=C_HUB, lw=2.8, label='Huber')
-    ax3a.axvline(-DELTA, color='0.5', ls='--', lw=1.0)
-    ax3a.axvline(DELTA, color='0.5', ls='--', lw=1.0)
-    mk, = ax3a.plot([r0], [huber(r0)], 'o', ms=12, color=C_HUB)
+    # Dense residual grid for smooth loss curves (do NOT reuse Torch demo `r`).
+    r_grid = np.linspace(-4.0, 4.0, 500)
+    # These are LOSS CURVES vs residual -- not training trajectories over time.
+    ax3a.plot(r_grid, 0.5 * r_grid ** 2, color=C_ACCENT, lw=1.8, alpha=0.55,
+              label=r'MSE: $\frac{1}{2}r^2$')
+    ax3a.plot(r_grid, np.abs(r_grid), color=C_MAE, lw=1.8, alpha=0.55,
+              label=r'MAE: $|r|$')
+    ax3a.plot(r_grid, huber(r_grid, DELTA), color=C_HUB, lw=2.8,
+              label=rf'Huber $\ell_\delta(r)$')
+    ax3a.axvline(-DELTA, color='0.5', ls='--', lw=1.2)
+    ax3a.axvline(DELTA, color='0.5', ls='--', lw=1.2)
+    ax3a.text(
+        DELTA + 0.08, 9.2, rf'$+\delta={DELTA:g}$',
+        color='0.35', fontsize=FS_TICK, va='top',
+    )
+    ax3a.text(
+        -DELTA - 0.08, 9.2, rf'$-\delta$',
+        color='0.35', fontsize=FS_TICK, va='top', ha='right',
+    )
+    mk, = ax3a.plot([r0], [huber(r0)], 'o', ms=14, color=C_HUB, zorder=5,
+                    label='ball = current $(r,\\ell_\\delta(r))$')
     ax3a.set_xlim(-4, 4)
     ax3a.set_ylim(-0.2, 10)
-    ax3a.set_xlabel('r', fontsize=FS_AXIS)
-    ax3a.set_ylabel('penalty', fontsize=FS_AXIS)
-    ax3a.set_title('Live point on Huber', fontsize=FS_AX_TITLE - 1)
-    ax3a.legend(fontsize=FS_LEGEND - 1, loc='upper center')
+    ax3a.set_xlabel(r'residual $r=\hat y-y$  (prediction minus target)', fontsize=FS_AXIS)
+    ax3a.set_ylabel(r'penalty $\ell(r)$  (how hard we punish this residual)', fontsize=FS_AXIS - 1)
+    ax3a.set_title(
+        'Three loss functions of the same residual r',
+        fontsize=FS_AX_TITLE - 2,
+    )
+    ax3a.legend(fontsize=FS_LEGEND - 2, loc='upper center')
     ax3a.grid(True, alpha=0.3)
+    # Middle-left callout.
+    ax3a.text(
+        0.02, 0.50,
+        'Penalty = the loss number for one residual r.\n'
+        'Bigger penalty => that error hurts training more.\n\n'
+        'Curves plot penalty vs r (not vs epoch).\n'
+        'The ball rides the green Huber curve\n'
+        'as you drag r.',
+        transform=ax3a.transAxes, ha='left', va='center', fontsize=FS_TICK,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
 
     ax3b.set_xlim(0, 10)
     ax3b.set_ylim(0, 10)
     ax3b.axis('off')
-    ax3b.set_title('Status card', fontsize=FS_AX_TITLE - 1)
-    status_box = round_box(ax3b, 0.6, 1.5, 8.8, 7.0, C_GOAL, C_OK, lw=2.2)
-    hud = ax3b.text(5.0, 5.0, '', ha='center', va='center', fontsize=FS_ANNOT + 1)
+    ax3b.set_title('What am I looking at?', fontsize=FS_AX_TITLE - 1)
+    round_box(ax3b, 0.6, 1.2, 8.8, 7.4, C_GOAL, C_OK, lw=2.2)
+    hud = ax3b.text(5.0, 5.0, '', ha='center', va='center', fontsize=FS_ANNOT)
 
     ax_sl = fig3.add_axes([0.20, 0.07, 0.60, 0.04])
-    slider_r = Slider(ax_sl, 'r', -3.5, 3.5, valinit=r0, valstep=0.05)
-
+    ax_sl.set_navigate(False)
+    ax_sl.set_zorder(20)
+    slider_r = Slider(ax_sl, r'residual $r$', -3.5, 3.5, valinit=r0, valstep=0.05)
 
     def _update(_=None):
         rr = float(slider_r.val)
         hh = float(huber(rr))
         mk.set_data([rr], [hh])
-        regime = 'MSE-like (quadratic)' if abs(rr) <= DELTA else 'MAE-like (linear)'
+        if abs(rr) <= DELTA:
+            regime = 'INSIDE +/- delta: quadratic (MSE-like)'
+            tip = 'Small error -> Huber matches MSE bowl.'
+        else:
+            regime = 'OUTSIDE +/- delta: linear (MAE-like)'
+            tip = 'Large error -> Huber grows like MAE, not r^2.'
         hud.set_text(
-            f'r = {rr:.2f}\n'
-            f'|r| = {abs(rr):.2f}\n'
-            f'delta = {DELTA:g}\n\n'
-            f'regime: {regime}\n\n'
-            f'Huber = {hh:.2f}\n'
-            f'MSE/2 = {0.5 * rr ** 2:.2f}\n'
-            f'MAE   = {abs(rr):.2f}'
+            f'r = prediction - target = {rr:.2f}\n'
+            f'|r| = {abs(rr):.2f}    delta = {DELTA:g}\n\n'
+            f'{regime}\n'
+            f'{tip}\n\n'
+            f'Ball sits on Huber at  ({rr:.2f}, {hh:.2f})\n\n'
+            f'Compare penalties at this r:\n'
+            f'  Huber     = {hh:.2f}\n'
+            f'  MSE (1/2 r^2) = {0.5 * rr ** 2:.2f}\n'
+            f'  MAE (|r|) = {abs(rr):.2f}'
         )
         fig3.canvas.draw_idle()
 
-
     slider_r.on_changed(_update)
+    fig3._sliders = (slider_r,)
     _update()
-    print('Step 4: drag r across +/- delta; watch the regime switch.')
+    print('Step 4: drag residual r; ball rides the Huber curve.')
     return fig3
 
 
@@ -482,11 +519,11 @@ torch.manual_seed(193)
 y_t = torch.tensor([1.0, 2.0, 0.0, 4.0])
 yhat_t = torch.tensor([1.5, 1.0, 0.5, 7.0])  # last residual is large
 delta_t = float(DELTA)
-r = yhat_t - y_t
-abs_r = r.abs()
+r_t = yhat_t - y_t
+abs_r = r_t.abs()
 huber_scratch = torch.where(
     abs_r <= delta_t,
-    0.5 * r ** 2,
+    0.5 * r_t ** 2,
     delta_t * (abs_r - 0.5 * delta_t),
 ).mean()
 huber_api = nn.HuberLoss(delta=delta_t)(yhat_t, y_t)

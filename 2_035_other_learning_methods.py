@@ -362,15 +362,16 @@ def build_step_7():
         6.0, 4.1,
         r"$s_t \rightarrow a_t \rightarrow r_t \rightarrow s_{t+1}$"
         "      objective      "
-        r"$\max_\theta\,\mathbb{E}_\pi\big[\sum_t\gamma^t r_t\big]$",
+        r"$\max_\theta\,\mathbb{E}_\pi[\sum_t\gamma^t r_t]$",
         ha="center", va="center", fontsize=FS_ANNOT, fontweight="bold", color=C_DARK,
     )
 
     round_box(ax, 0.5, 0.4, 11.0, 2.4, C_MUTE, "0.45", lw=1.6)
+    # Leading + body text moved down ~1 cm (~0.66 data units).
     ax.text(
-        6.0, 2.15,
+        6.0, 1.49,
         r"REINFORCE:  $\nabla_\theta J="
-        r"\mathbb{E}\Big[R\sum_t\nabla_\theta\log\pi_\theta(a_t\mid s_t)\Big]$"
+        r"\mathbb{E}[R\sum_t\nabla_\theta\log\pi_\theta(a_t\mid s_t)]$"
         "\n\n"
         "Learn a policy for high-reward behavior --\n"
         "not parameters that make a fixed dataset maximally likely.",

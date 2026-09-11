@@ -868,8 +868,9 @@ def build_step_6():
                      fontsize=FS_ANNOT - 1, fontweight="bold")
         for i in range(len(metric_names))
     ]
+    # ~5 cm left of panel center (≈0.45 in axes x on this metrics panel).
     ax4_met.text(
-        0.5, -0.22,
+        0.05, -0.22,
         "I, Grok, spent five hours wrestling with this slide layout—completely in vain.",
         transform=ax4_met.transAxes, ha="center", va="top", fontsize=FS_ANNOT,
         bbox=dict(boxstyle="round,pad=0.35", facecolor="#fdebd0",

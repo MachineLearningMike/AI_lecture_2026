@@ -153,10 +153,11 @@ def build_step_1():
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
 
-    # Bottom two textboxes moved down 1cm; keep inside axes for nav strip.
-    _s1_bot_dy = 1.0 * CM_Y
-    _s1_y_yellow = max(0.95, 1.0 - _s1_bot_dy)
-    _s1_y_warn = max(0.15, 0.15 - _s1_bot_dy)
+    # Bottom two textboxes moved down 1.5 cm.
+    _s1_bot_dy = 1.5 * CM_Y
+    _s1_y_yellow = 1.0 - _s1_bot_dy
+    _s1_y_warn = 0.15 - _s1_bot_dy
+    ax1.set_ylim(min(_s1_y_warn, 0.0) - 0.2, 8)
     round_box(ax1, 0.5, _s1_y_yellow, 11.0, 0.9, 'lightyellow', '0.55', lw=1.6)
     ax1.text(
         6.0, _s1_y_yellow + 0.45,

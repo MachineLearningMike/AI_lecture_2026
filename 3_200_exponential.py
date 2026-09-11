@@ -97,6 +97,23 @@ def add_vcenter_legend_and_note(ax, note, facecolor='white'):
     )
 
 
+def add_topright_legend_and_note(ax, note, facecolor='white'):
+    ax.legend(
+        loc='upper right',
+        bbox_to_anchor=(0.98, 0.98),
+        fontsize=FS_LEGEND,
+        framealpha=0.95,
+        borderaxespad=0.0,
+    )
+    ax.text(
+        0.98, 0.72, note,
+        transform=ax.transAxes,
+        fontsize=FS_ANNOT,
+        va='top', ha='right',
+        bbox=dict(boxstyle='round', facecolor=facecolor, alpha=0.95),
+    )
+
+
 # -------------------------------------------------------
 # FIGURE 1: exp and log are mirrors (inverses)
 # -------------------------------------------------------
@@ -243,7 +260,7 @@ def build_step_3():
     ax.set_xlabel('x', fontsize=FS_AXIS)
     ax.set_ylabel('value', fontsize=FS_AXIS)
     ax.tick_params(axis='both', labelsize=FS_TICK)
-    add_vcenter_legend_and_note(
+    add_topright_legend_and_note(
         ax,
         'f must stay > 0\n'
         'for log(f) to exist.\n\n'
@@ -262,7 +279,7 @@ def build_step_3():
     ax.set_xlabel('x', fontsize=FS_AXIS)
     ax.set_ylabel(r"$(log f)'$", fontsize=FS_AXIS)
     ax.tick_params(axis='both', labelsize=FS_TICK)
-    add_vcenter_legend_and_note(
+    add_topright_legend_and_note(
         ax,
         r"$\frac{d}{dx}\log f = \frac{f'}{f}$" + '\n\n'
         'Relative rate of change:\n'
@@ -305,7 +322,7 @@ def build_step_4():
     ax.set_xlabel('x', fontsize=FS_AXIS)
     ax.set_ylabel('f(x)', fontsize=FS_AXIS)
     ax.tick_params(axis='both', labelsize=FS_TICK)
-    add_vcenter_legend_and_note(
+    add_topright_legend_and_note(
         ax,
         rf"At x={x0:g}:" + '\n'
         rf"f' = {fp0:.3f}" + '\n'
@@ -335,7 +352,7 @@ def build_step_4():
     ax.set_xlabel(r'candidate $\mu$', fontsize=FS_AXIS)
     ax.set_ylabel('scaled objective', fontsize=FS_AXIS)
     ax.tick_params(axis='both', labelsize=FS_TICK)
-    add_vcenter_legend_and_note(
+    add_topright_legend_and_note(
         ax,
         r'$\nabla \log L = \frac{\nabla L}{L}$' + '\n\n'
         'The gradient of log L is\n'

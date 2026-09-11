@@ -231,114 +231,105 @@ def show_code_slide(step_no, title, code):
         family='monospace',
         linespacing=1.45,
     )
-    show_maximized(fig)
+    return fig
 
 
 # -------------------------------------------------------
 # FIGURE 1: Notebook code block 1
 # -------------------------------------------------------
-show_code_slide(
-    1,
-    'Step 1: 015 code block 1 -- setup',
-    NB_CODE_1,
-)
+def build_step_code_1():
+    return show_code_slide(
+        1,
+        'Step 1: 015 code block 1 -- setup',
+        NB_CODE_1,
+    )
 
 
 # -------------------------------------------------------
 # FIGURE 2: Notebook code block 2
 # -------------------------------------------------------
-show_code_slide(
-    2,
-    'Step 2: 015 code block 2 -- training loop (full batch)',
-    NB_CODE_2,
-)
+def build_step_code_2():
+    return show_code_slide(
+        2,
+        'Step 2: 015 code block 2 -- training loop (full batch)',
+        NB_CODE_2,
+    )
 
 
 # -------------------------------------------------------
 # FIGURE 3: Model -- one weight
-# -------------------------------------------------------
-# Left panel +2.5 inches broader WITHOUT shrinking the right panel:
-# keep right absolute width; grow whole figure by 2.5 inches.
-_fw3, _fh3 = screen_figsize()
-_usable3 = _fw3 * 0.92
-_right_in3 = _usable3 * 0.5
-_left_in3 = _usable3 * 0.5 + 2.5
-_fw3_wide = (_left_in3 + _right_in3) / 0.92
-fig3m, (ax2a, ax2b) = plt.subplots(
-    1, 2,
-    figsize=(_fw3_wide, _fh3),
-    dpi=FIGURE_DPI,
-    gridspec_kw={'width_ratios': [_left_in3, _right_in3]},
-)
-fig3m.suptitle(
-    'Step 3: The model is deliberately tiny -- one free number w',
-    fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
-)
+def build_step_tiny_model():
+    """Former module-level slide, now in the deck."""
+    # -------------------------------------------------------
+    # Left panel +2.5 inches broader WITHOUT shrinking the right panel:
+    # keep right absolute width; grow whole figure by 2.5 inches.
+    _fw3, _fh3 = screen_figsize()
+    _usable3 = _fw3 * 0.92
+    _right_in3 = _usable3 * 0.5
+    _left_in3 = _usable3 * 0.5 + 2.5
+    _fw3_wide = (_left_in3 + _right_in3) / 0.92
+    fig3m, (ax2a, ax2b) = plt.subplots(
+        1, 2,
+        figsize=(_fw3_wide, _fh3),
+        dpi=FIGURE_DPI,
+        gridspec_kw={'width_ratios': [_left_in3, _right_in3]},
+    )
+    fig3m.suptitle(
+        'Step 3: The model is deliberately tiny -- one free number w',
+        fontsize=FS_FIGURE_TITLE - 2, fontweight='bold',
+    )
 
-ax2a.set_xlim(0, 10)
-ax2a.set_ylim(0, 10)
-ax2a.axis('off')
-ax2a.set_title('Code meaning', fontsize=FS_AX_TITLE - 1)
-round_box(ax2a, 0.4, 5.5, 9.2, 3.8, C_MUTE, '0.45', lw=1.6)
-ax2a.text(
-    5.0, 7.4,
-    'model = nn.Linear(1, 1, bias=False)\n\n'
-    '-> input dim 1, output dim 1\n'
-    '-> no bias parameter\n'
-    '-> only weight w\n\n'
-    r'forward:   $\hat y = w\, x$',
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-    family='monospace',
-)
-round_box(ax2a, 0.4, 0.6, 9.2, 4.4, C_OLD, '#e67e22', lw=2.0)
-ax2a.text(
-    5.0, 2.8,
-    'Intuition:\n'
-    'All learning in this notebook is the motion of a single scalar w.\n'
-    'If you understand how w moves, you understand the loop.\n\n'
-    'Richer nets = many such numbers updated by the same pattern.',
-    ha='center', va='center', fontsize=FS_ANNOT + 1,
-)
+    ax2a.set_xlim(0, 10)
+    ax2a.set_ylim(0, 10)
+    ax2a.axis('off')
+    ax2a.set_title('Code meaning', fontsize=FS_AX_TITLE - 1)
+    round_box(ax2a, 0.4, 5.5, 9.2, 3.8, C_MUTE, '0.45', lw=1.6)
+    ax2a.text(
+        5.0, 7.4,
+        'model = nn.Linear(1, 1, bias=False)\n\n'
+        '-> input dim 1, output dim 1\n'
+        '-> no bias parameter\n'
+        '-> only weight w\n\n'
+        r'forward:   $\hat y = w\, x$',
+        ha='center', va='center', fontsize=FS_ANNOT + 1,
+        family='monospace',
+    )
+    round_box(ax2a, 0.4, 0.6, 9.2, 4.4, C_OLD, '#e67e22', lw=2.0)
+    ax2a.text(
+        5.0, 2.8,
+        'Intuition:\n'
+        'All learning in this notebook is the motion of a single scalar w.\n'
+        'If you understand how w moves, you understand the loop.\n\n'
+        'Richer nets = many such numbers updated by the same pattern.',
+        ha='center', va='center', fontsize=FS_ANNOT + 1,
+    )
 
-# Right: geometry of y = w x family
-xs = np.linspace(0, 5.5, 50)
-for w_demo, col, lw in [(0.5, '0.7', 1.5), (1.0, '0.55', 1.8),
-                          (2.0, C_OK, 3.0), (3.0, '0.55', 1.8)]:
-    ax2b.plot(xs, w_demo * xs, color=col, lw=lw,
-              label=rf'$w={w_demo:g}$' + ('  (truth)' if w_demo == 2 else ''))
-ax2b.set_title(r'Family of models $\hat y = w x$', fontsize=FS_AX_TITLE - 1)
-ax2b.set_xlabel('x', fontsize=FS_AXIS)
-ax2b.set_ylabel('y', fontsize=FS_AXIS)
-ax2b.tick_params(labelsize=FS_TICK)
-ax2b.grid(True, alpha=0.3)
-ax2b.legend(fontsize=FS_LEGEND, loc='upper left')
-ax2b.text(
-    0.98, 0.02,
-    'Training chooses which\n'
-    'line in this family\n'
-    'best fits the data.',
-    transform=ax2b.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
-fig3m.tight_layout(rect=[0, 0, 1, 0.94])
-# Keep the wider figsize (do not reset to default screen width).
-fig3m.set_dpi(FIGURE_DPI)
-fig3m.set_size_inches(_fw3_wide, _fh3, forward=True)
-fig3m.canvas.draw_idle()
-_manager3 = getattr(fig3m.canvas, 'manager', None)
-if _manager3 is not None:
-    try:
-        _manager3.window.state('zoomed')
-    except Exception:
-        try:
-            _manager3.window.showMaximized()
-        except Exception:
-            try:
-                _manager3.frame.Maximize(True)
-            except Exception:
-                pass
-add_step_footer(fig3m)
-plt.show()
+    # Right: geometry of y = w x family
+    xs = np.linspace(0, 5.5, 50)
+    for w_demo, col, lw in [(0.5, '0.7', 1.5), (1.0, '0.55', 1.8),
+                              (2.0, C_OK, 3.0), (3.0, '0.55', 1.8)]:
+        ax2b.plot(xs, w_demo * xs, color=col, lw=lw,
+                  label=rf'$w={w_demo:g}$' + ('  (truth)' if w_demo == 2 else ''))
+    ax2b.set_title(r'Family of models $\hat y = w x$', fontsize=FS_AX_TITLE - 1)
+    ax2b.set_xlabel('x', fontsize=FS_AXIS)
+    ax2b.set_ylabel('y', fontsize=FS_AXIS)
+    ax2b.tick_params(labelsize=FS_TICK)
+    ax2b.grid(True, alpha=0.3)
+    ax2b.legend(fontsize=FS_LEGEND, loc='upper left')
+    ax2b.text(
+        0.98, 0.02,
+        'Training chooses which\n'
+        'line in this family\n'
+        'best fits the data.',
+        transform=ax2b.transAxes, ha='right', va='bottom', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
+    fig3m.tight_layout(rect=[0, 0, 1, 0.94])
+    # Keep the wider figsize (do not reset to default screen width).
+    fig3m.set_dpi(FIGURE_DPI)
+    fig3m.set_size_inches(_fw3_wide, _fh3, forward=True)
+    fig3m.canvas.draw_idle()
+    return fig3m
 
 
 # -------------------------------------------------------
@@ -830,6 +821,9 @@ def build_step_8():
 
 
 run_slide_deck([
+    build_step_code_1,
+    build_step_code_2,
+    build_step_tiny_model,
     build_step_1,
     build_step_2,
     build_step_3,

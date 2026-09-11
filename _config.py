@@ -257,6 +257,67 @@ def add_prev_next_buttons(fig, index: int, n_slides: int, on_prev, on_next):
     return fig._nav_buttons
 
 
+def _retain_axes_widget(widget) -> None:
+    """Pin a matplotlib widget on its figure so it is not garbage-collected."""
+    try:
+        fig = widget.ax.figure
+    except Exception:
+        return
+    bag = getattr(fig, "_retained_widgets", None)
+    if bag is None:
+        bag = []
+        fig._retained_widgets = bag
+    bag.append(widget)
+
+
+def _install_widget_retention() -> None:
+    """Ensure Slider/Button/RadioButtons stay alive for the figure lifetime."""
+    import matplotlib.widgets as mw
+
+    if getattr(mw, "_lecture_widget_retention", False):
+        return
+
+    def _patch(cls):
+        orig_init = cls.__init__
+
+        def _init(self, *args, **kwargs):
+            orig_init(self, *args, **kwargs)
+            _retain_axes_widget(self)
+            try:
+                self.ax.set_navigate(False)
+                if self.ax.get_zorder() < 20:
+                    self.ax.set_zorder(20)
+            except Exception:
+                pass
+
+        cls.__init__ = _init
+
+    for _name in ("Slider", "Button", "RadioButtons"):
+        if hasattr(mw, _name):
+            _patch(getattr(mw, _name))
+    mw._lecture_widget_retention = True
+
+
+def _harden_interactive_axes(fig) -> None:
+    """Bottom strip axes (sliders) should not fight pan/zoom or sit under plots."""
+    try:
+        axes = list(fig.axes)
+    except Exception:
+        return
+    for ax in axes:
+        try:
+            pos = ax.get_position()
+        except Exception:
+            continue
+        if pos.height <= 0.065 and pos.y0 <= 0.14:
+            try:
+                ax.set_navigate(False)
+                if ax.get_zorder() < 20:
+                    ax.set_zorder(20)
+            except Exception:
+                pass
+
+
 def run_slide_deck(
     builders: Sequence[Callable],
     *,
@@ -268,11 +329,13 @@ def run_slide_deck(
 
     if not builders:
         return
+    _install_widget_retention()
     i = int(max(0, min(start, len(builders) - 1)))
     n = len(builders)
     while 0 <= i < n:
         action = {"go": None}
         fig = builders[i]()
+        _harden_interactive_axes(fig)
         prepare_slide(fig, after_footer=after_footer)
 
         def _prev(event, i=i):
@@ -304,5 +367,7 @@ def show_maximized(fig, *, after_footer: Callable | None = None) -> None:
     """Single-figure path: prepare slide chrome, then block on plt.show()."""
     import matplotlib.pyplot as plt
 
+    _install_widget_retention()
+    _harden_interactive_axes(fig)
     prepare_slide(fig, after_footer=after_footer)
     plt.show()
