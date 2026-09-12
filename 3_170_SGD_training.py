@@ -579,5 +579,5 @@ Takeaways:
   3) Economy: cheap noisy SGD steps buy more progress per unit of data.
   4) Late training: expect a noise floor unless you grow b or decay the lr.
 
-Next: 0530_momentum.py (smoother SGD steps), 0720_normalize_activations.py (better conditioning).
+Next: (smoother SGD steps), (better conditioning).
 """)

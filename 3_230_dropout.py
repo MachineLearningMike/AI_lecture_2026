@@ -454,5 +454,5 @@ Typical keep probabilities:
 
 Related ideas:
   DropConnect, Stochastic Depth, and Mixup are cousins -- all inject
- noise that shapes which solutions SGD prefers (see also ).
+ noise that shapes which solutions SGD prefers.
 """)

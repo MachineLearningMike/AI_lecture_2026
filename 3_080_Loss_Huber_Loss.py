@@ -491,7 +491,7 @@ def build_step_7():
         'you believe most residuals are trustworthy,\n'
         'but a few measurements can be catastrophic,\n'
         'and you still want a smooth local loss for optimization.\n\n'
-        'See MSE in 191, MAE in 192, and the curve zoo in 190_loss_functions.py.',
+        'See MSE in 191, MAE in 192, and the curve zoo in.',
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig6

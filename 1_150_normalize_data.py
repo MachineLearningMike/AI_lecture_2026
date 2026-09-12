@@ -1,5 +1,5 @@
 """
-Normalize a distribution -- continuation after .
+Normalize a distribution.
 
 Sketch:
   9. The same dog/cat clusters, tiny in a corner -- then normalized;

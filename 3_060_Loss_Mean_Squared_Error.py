@@ -458,10 +458,11 @@ def build_step_6():
     round_box(ax5, 0.4, 0.5, 11.2, 3.3, C_MUTE, '0.45', lw=1.8)
     ax5.text(
         6.0, 2.15,
-        'Use MSE when squared deviations are the right notion of wrong,\n'
-        'and when large errors should be taken very seriously.\n\n'
-        'If one wild point should not own the fit, consider MAE / Huber\n'
-        '(see 190_loss_functions.py).',
+        (
+            'Use MSE when squared deviations are the right notion of wrong,\n'
+            'and when large errors should be taken very seriously.\n\n'
+            'If one wild point should not own the fit, consider MAE / Huber\n'
+        ),
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig5

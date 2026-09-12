@@ -508,5 +508,4 @@ One-hot @ E is the same lookup.
 Geometry of rows carries meaning; training moves the rows.
 
 , ,
-          0880_positional_encoding.py, 0950_BERT.py
 """)

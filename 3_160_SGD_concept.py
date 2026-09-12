@@ -583,8 +583,8 @@ def build_step_6():
         (4.0, "Gradient noise (small batch)\n"
          "Pushes you sideways each SGD step; large lr amplifies that."),
         (1.7, "Practical knobs\n"
-         "decrease lr, increase batch, add momentum (0530_momentum.py),\n"
-         "or normalize/scale features (0720_normalize_activations.py)."),
+         "decrease lr, increase batch, add momentum,\n"
+         "or normalize/scale features."),
     ]
     for y, text in rows:
         ax.text(5.0, y, text, ha="center", va="center",
@@ -719,7 +719,7 @@ Finite-sum objective on N={N_DATA} ravine examples:
    - learning rate too large  -> bounce / diverge (worse under noise)
    - batch size too small     -> huge gradient variance
    - sharp curvature          -> same lr overshoots more
-   Momentum (0530_momentum.py) helps average out noisy pushes.
+   Momentum helps average out noisy pushes.
 
 4) Why batch size matters
    Gradient noise scales ~ 1/sqrt(b).

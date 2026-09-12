@@ -1304,7 +1304,6 @@ Absorbing fixed linear preprocessing (Step 14) -- tell customers this:
   preprocessing "breaks" a model that already has learned linear layers
   (it always does). Nonlinear preprocessing is a different story.
 
-Bridge to 0870_Wq_Wk_Wv.py:
   W_Q, W_K, W_V are shared matrices -- linear perspectives on token space --
   learned from the distribution of (X, Y), applied as Q=X W_Q, etc.
   A fixed linear change of X can be absorbed into those W_* the same way.

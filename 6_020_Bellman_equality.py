@@ -212,7 +212,7 @@ def build_step_2():
     )
     ax1.text(
         6.0, 0.55,
-        "Companion: 0300_SL_UL_RL.py (agent / environment / reward loop).",
+        "Companion: (agent / environment / reward loop).",
         ha="center", fontsize=FS_TICK, style="italic", color="0.35",
     )
     return fig1

@@ -7,23 +7,22 @@ Sketch:
   1. What policy iteration is
   2. Reminder: MDP, V^pi, Q^pi
   3. Policy evaluation -- Bellman expectation
-  4. Iterative policy evaluation (sweeps)
-  5. Policy improvement -- greedy w.r.t. Q^pi
-  6. Policy improvement theorem
-  7. The full loop
-  8. Toy gridworld setup
-  9. Demo: values + arrows across iterations
-  10. Slider: scrub PI iterations
-  11. Value iteration -- Bellman optimality backups
-  12. Policy iteration vs value iteration
-  13. Takeaway
+  4. Toy gridworld setup
+  5. Iterative policy evaluation (sweeps)
+  6. Policy improvement -- greedy w.r.t. Q^pi
+  7. Policy improvement theorem
+  8. The full loop
+  9. Policy iteration: algorithm and demonstration
+  10. Value iteration: algorithm and demonstration
+  11. Policy iteration vs value iteration
+  12. Takeaway
 """
 
 from __future__ import annotations
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Rectangle
-from matplotlib.widgets import Slider
+from matplotlib.widgets import Button, Slider
 from _config import (
     FS_FIGURE_TITLE,
     FS_AX_TITLE,
@@ -151,7 +150,12 @@ def policy_improvement(V):
 
 
 def run_policy_iteration(pi0=None, max_iters=20):
-    """Return list of (pi, V) after each PE, including the start policy's V."""
+    """Return list of (pi, V) after each policy-evaluation.
+
+    history[0] = (π₀, V^{π₀}) after evaluating the *initial* policy
+    (always East). It is NOT an arbitrary zero vector -- PE has already run.
+    history[k] = (π_k, V^{π_k}) after the k-th evaluate step of PI.
+    """
     nS = N_ROWS * N_COLS
     if pi0 is None:
         # Start: always try to go East (a bad but simple habit).
@@ -172,16 +176,120 @@ def run_policy_iteration(pi0=None, max_iters=20):
 PI_HISTORY = run_policy_iteration()
 
 
-def draw_grid_policy(ax, V, pi, title=""):
-    """Heatmap of V with policy arrows."""
+def pi_frame_title(k: int) -> str:
+    """Explain what board k shows (especially k=0). Two lines for tight layouts."""
+    if k == 0:
+        # Values are computed by PE from V=0 -- not observed / not given.
+        return "PE #0: computed $V^{\\pi_0}$\nfrom $V$=0 (only terminals known)"
+    return f"PE #{k}: computed $V^{{\\pi_{k}}}$\nimprove $\\rightarrow$ re-evaluate"
+
+
+def build_pi_scrub_frames(max_iters=20):
+    """Fine-grained PI timeline for Step 10: Init -> PE_k -> PI_k -> PE_{k+1} -> ...
+
+    Each frame is a dict: {pi, V, title, note, kind, k}.
+    """
+    nS = N_ROWS * N_COLS
+    pi = np.ones(nS, dtype=int)  # always East
+    V = np.zeros(nS)
+    frames = [{
+        "pi": pi.copy(),
+        "V": V.copy(),
+        "kind": "init",
+        "k": 0,
+        "title": "Init: $\\pi_0$=always East\n$V\\leftarrow 0$ (only terminals known)",
+        "note": r"Start of the algorithm: policy fixed, values not yet evaluated.",
+    }]
+    for k in range(max_iters):
+        V = policy_evaluation(pi)
+        frames.append({
+            "pi": pi.copy(),
+            "V": V.copy(),
+            "kind": "PE",
+            "k": k,
+            "title": (
+                f"Just did PE #{k}\n"
+                f"computed $V^{{\\pi_{k}}}$ (arrows=$\\pi_{k}$)"
+            ),
+            "note": (
+                f"PE #{k}: Bellman backups for fixed $\\pi_{k}$ "
+                "produced these values."
+            ),
+        })
+        pi_new = policy_improvement(V)
+        if np.array_equal(pi_new, pi):
+            frames.append({
+                "pi": pi.copy(),
+                "V": V.copy(),
+                "kind": "stop",
+                "k": k,
+                "title": (
+                    f"Just did PI #{k}: $\\pi$ unchanged\n"
+                    "stop -- optimal policy found"
+                ),
+                "note": (
+                    f"PI #{k} left $\\pi_{k}$ unchanged "
+                    "$\\Rightarrow$ policy iteration stops."
+                ),
+            })
+            break
+        pi = pi_new
+        frames.append({
+            "pi": pi.copy(),
+            "V": V.copy(),  # still V^{π_k}; PE of new π comes next
+            "kind": "PI",
+            "k": k,
+            "title": (
+                f"Just did PI #{k}\n"
+                f"new $\\pi_{{{k+1}}}$ (values still $V^{{\\pi_{k}}}$)"
+            ),
+            "note": (
+                f"PI #{k}: greedy improve w.r.t. $V^{{\\pi_{k}}}$. "
+                "Arrows changed; values wait for the next PE."
+            ),
+        })
+    return frames
+
+
+PI_SCRUB_FRAMES = build_pi_scrub_frames()
+
+
+def _cm_to_data_y(ax, cm: float) -> float:
+    """Convert a vertical length in cm to imshow data units on this axes."""
+    bbox = ax.get_position()
+    fig_h_in = ax.figure.get_size_inches()[1]
+    ax_h_in = max(bbox.height * fig_h_in, 0.1)
+    # imshow shows about N_ROWS data units vertically.
+    return (cm / 2.54) * (N_ROWS / ax_h_in)
+
+
+def _shrink_axes(ax, scale: float = 0.85) -> None:
+    """Shrink an axes box by ``scale`` while keeping its center fixed."""
+    pos = ax.get_position()
+    w, h = pos.width * scale, pos.height * scale
+    ax.set_position([
+        pos.x0 + (pos.width - w) / 2,
+        pos.y0 + (pos.height - h) / 2,
+        w,
+        h,
+    ])
+
+
+def draw_grid_policy(ax, V, pi=None, title="", up_extra_down_cm: float = 0.0,
+                     show_policy: bool = True):
+    """Heatmap of V; optional policy arrows (off during VI sweeps)."""
     Vm = V.reshape(N_ROWS, N_COLS)
     im = ax.imshow(Vm, cmap="Blues", vmin=V.min(), vmax=max(V.max(), 1e-6))
+    tile = 1.0  # each cell is 1x1 in data coords
+    # Shift arrows down (imshow origin=upper) so they clear the value text.
+    arrow_down = 0.22 * tile
+    up_extra = _cm_to_data_y(ax, up_extra_down_cm) if up_extra_down_cm else 0.0
     for r in range(N_ROWS):
         for c in range(N_COLS):
             s = state_id(r, c)
             ax.text(
                 c, r, f"{V[s]:.1f}", ha="center", va="center",
-                fontsize=FS_TICK - 1, color="k", fontweight="bold",
+                fontsize=FS_TICK - 1, color="k",
             )
             if is_terminal(s):
                 ax.add_patch(Rectangle(
@@ -189,18 +297,25 @@ def draw_grid_policy(ax, V, pi, title=""):
                     edgecolor="#c0392b", linewidth=2.5,
                 ))
                 continue
+            if not show_policy or pi is None:
+                continue
             a = int(pi[s])
             dr, dc = ACTIONS[a]
+            # Action 0 = North (up on screen); optional extra downward nudge.
+            extra = up_extra if a == 0 else 0.0
             ax.annotate(
-                "", xy=(c + 0.30 * dc, r + 0.30 * dr),
-                xytext=(c - 0.05 * dc, r - 0.05 * dr),
-                arrowprops=dict(arrowstyle="->", color="#1a5276", lw=2.0),
+                "",
+                xy=(c + 0.30 * dc, r + 0.30 * dr + arrow_down + extra),
+                xytext=(c - 0.05 * dc, r - 0.05 * dr + arrow_down + extra),
+                arrowprops=dict(arrowstyle="->", color="#c0392b", lw=2.4),
             )
     ax.set_xticks(range(N_COLS))
     ax.set_yticks(range(N_ROWS))
     ax.set_xticklabels([])
     ax.set_yticklabels([])
-    ax.set_title(title, fontsize=FS_AX_TITLE - 2, fontweight="bold")
+    # Two-line titles need a bit more pad so neighboring boards do not collide.
+    title_pad = 10 if "\n" in (title or "") else 4
+    ax.set_title(title, fontsize=FS_AX_TITLE - 3, fontweight="bold", pad=title_pad)
     ax.set_xticks(np.arange(-0.5, N_COLS, 1), minor=True)
     ax.set_yticks(np.arange(-0.5, N_ROWS, 1), minor=True)
     ax.grid(which="minor", color="0.7", linestyle="-", linewidth=0.8)
@@ -296,18 +411,27 @@ def build_step_2():
         ha="center", va="center", fontsize=FS_TICK + 1, color="#333333",
     )
 
-    round_box(ax, 0.4, 2.55, 11.2, 2.6, C_MUTE, "0.45", lw=1.6)
-    ax.text(
-        6.0, 3.85,
-        r"Bellman expectation (one-step):"
-        "\n"
+    # +0.5 cm between lines; +2 cm box height (from previous Step-2 sizing).
+    _, h_in = fig.get_size_inches()
+    scale = 8.0 / max(h_in * 0.75, 1.0)  # blank y: 0..8
+    dy = 0.42 + (0.5 / 2.54) * scale
+    dh_2cm = (2.0 / 2.54) * scale
+    prev_mid_h = max(2.6 - dh_2cm, 1.5)  # height after the earlier -2 cm change
+    mid_h = prev_mid_h + dh_2cm            # extend +2 cm from that
+    mid_lines = [
+        r"Bellman expectation (one-step):",
         r"$V^\pi(s)=\sum_a\pi(a|s)\sum_{s',r}"
-        r"p(s',r|s,a)\,[r+\gamma V^\pi(s')]$"
-        "\n"
+        r"p(s',r|s,a)\,[r+\gamma V^\pi(s')]$",
         r"$Q^\pi(s,a)=\sum_{s',r}p(s',r|s,a)\,[r+\gamma V^\pi(s')]$",
-        ha="center", va="center", fontsize=FS_TICK + 1, color="#333333",
-        linespacing=1.35,
-    )
+    ]
+    mid_y = 3.85 - mid_h / 2
+    round_box(ax, 0.4, mid_y, 11.2, mid_h, C_MUTE, "0.45", lw=1.6)
+    y_top = 3.85 + dy
+    for k, line in enumerate(mid_lines):
+        ax.text(
+            6.0, y_top - k * dy, line,
+            ha="center", va="center", fontsize=FS_TICK + 1, color="#333333",
+        )
 
     round_box(ax, 0.4, 0.35, 11.2, 1.9, C_WARN, "#d68910", lw=1.8)
     ax.text(
@@ -379,65 +503,120 @@ def build_step_3():
 
 
 # -------------------------------------------------------
-# Step 4: Iterative PE picture
+# Step 5: Iterative PE picture
 # -------------------------------------------------------
 def build_step_4():
-    fig, axes = new_figure(1, 2)
+    # Top: one worked backup with numbers. Bottom: V=0 -> 1 sweep -> converged.
+    w_in, h_in = screen_figsize()
+    fig = plt.figure(figsize=(w_in, h_in), dpi=FIGURE_DPI)
+    gs = fig.add_gridspec(2, 3, height_ratios=[1.05, 1.35], hspace=0.38, wspace=0.28)
     fig.suptitle(
-        "Step 4: Iterative policy evaluation -- Bellman backups until stable",
+        "Step 5: How PE computes the numbers (arrows = fixed $\\pi$, not greedy on $V$)",
         fontsize=FS_FIGURE_TITLE - 4, fontweight="bold",
     )
 
-    # Run a few PE sweeps on the initial East policy and show residual decay.
-    pi0 = np.ones(N_ROWS * N_COLS, dtype=int)
+    pi0 = np.ones(N_ROWS * N_COLS, dtype=int)  # always East
     V = np.zeros(N_ROWS * N_COLS)
-    residuals = []
-    snapshots = [V.copy()]
-    for k in range(40):
+    V0 = V.copy()
+
+    # One concrete cell for a worked example: (1,0) -- East goes to (1,1).
+    ex_r, ex_c = 1, 0
+    ex_s = state_id(ex_r, ex_c)
+    ex_a = int(pi0[ex_s])  # East
+    sp0, r0 = step(ex_s, ex_a)
+    spr, spc = rc_of(sp0)
+
+    def one_sweep(V_in):
+        V_new = V_in.copy()
         delta = 0.0
-        V_new = V.copy()
         for s in range(N_ROWS * N_COLS):
             if is_terminal(s):
                 V_new[s] = 0.0
                 continue
-            v = q_from_v(V, s, int(pi0[s]))
-            delta = max(delta, abs(v - V[s]))
+            v = q_from_v(V_in, s, int(pi0[s]))
+            delta = max(delta, abs(v - V_in[s]))
             V_new[s] = v
-        V = V_new
-        residuals.append(delta)
-        if k in (0, 2, 8, 39):
-            snapshots.append(V.copy())
+        return V_new, delta
 
-    ax = axes[0]
-    ax.semilogy(residuals, color=C_LOOP, lw=2.4)
-    ax.set_xlabel("PE sweep", fontsize=FS_AXIS)
-    ax.set_ylabel(r"max $|V_{k+1}-V_k|$", fontsize=FS_AXIS)
-    ax.set_title("Bellman residual vs sweep", fontsize=FS_AX_TITLE - 1)
-    ax.tick_params(labelsize=FS_TICK)
-    ax.grid(True, alpha=0.3, which="both")
-    ax.text(
-        0.98, 0.95,
-        "Fixed $\\pi$ = always East.\n"
-        "Residual drops to ~0\n"
-        "=> $V$ satisfies Bellman.",
-        transform=ax.transAxes, ha="right", va="top", fontsize=FS_TICK,
-        bbox=dict(boxstyle="round", facecolor="lightyellow", alpha=0.95),
+    V1, _ = one_sweep(V0)
+    # Continue to convergence for the final board
+    V = V1.copy()
+    for _ in range(200):
+        V, delta = one_sweep(V)
+        if delta < THETA:
+            break
+
+    # Worked numeric backup using V after sweep 0 (all zeros)
+    v_before = float(V0[ex_s])
+    v_after_1 = float(V1[ex_s])  # -1 + gamma * V0[sp] = -1
+    v_sp_before = float(V0[sp0])
+    backup_1 = r0 + GAMMA * v_sp_before
+
+    ax_ex = fig.add_subplot(gs[0, :])
+    ax_ex.axis("off")
+    ax_ex.text(
+        0.5, 0.55,
+        "We only know terminal values (= 0). Everything else is computed.\n\n"
+        rf"Fixed policy $\pi_0$: always East (red arrows). "
+        rf"Pick state ({ex_r},{ex_c})."
+        "\n"
+        rf"$\pi_0$ says: go East $\rightarrow$ land in ({spr},{spc}), reward $r={r0:.0f}$."
+        "\n\n"
+        rf"Bellman backup:  $V({ex_r},{ex_c})"
+        rf"\;\leftarrow\; r + \gamma V({spr},{spc})"
+        rf"\;=\; {r0:.0f} + {GAMMA:g}\cdot {v_sp_before:.1f}"
+        rf"\;=\; {backup_1:.1f}$"
+        "\n"
+        rf"(from the all-zero board). After many sweeps this settles to "
+        rf"$V^{{\pi_0}}({ex_r},{ex_c})={V[ex_s]:.1f}$."
+        "\n\n"
+        "Important: arrows show the fixed $\\pi$ being evaluated -- "
+        "they need NOT point toward higher $V$ neighbors yet.\n"
+        "Pointing uphill in $V$ is policy improvement (next steps).",
+        transform=ax_ex.transAxes, ha="center", va="center",
+        fontsize=FS_TICK + 1,
+        bbox=dict(boxstyle="round,pad=0.55", facecolor=C_NEW, edgecolor=C_LOOP),
     )
 
-    ax = axes[1]
-    draw_grid_policy(ax, snapshots[-1], pi0, title=r"$V^\pi$ after PE (arrows = $\pi$)")
-    fig.colorbar(axes[1].images[0], ax=ax, fraction=0.046, pad=0.04)
-    fig.tight_layout(rect=[0, 0.02, 1, 0.90])
+    ax0 = fig.add_subplot(gs[1, 0])
+    draw_grid_policy(ax0, V0, pi0, title=r"Start $V$=0 (only T known)")
+    # Highlight the example cell
+    ax0.add_patch(Rectangle(
+        (ex_c - 0.5, ex_r - 0.5), 1, 1, fill=False,
+        edgecolor="#f1c40f", linewidth=3.0, zorder=5,
+    ))
+
+    ax1 = fig.add_subplot(gs[1, 1])
+    draw_grid_policy(
+        ax1, V1, pi0,
+        title=rf"After 1 sweep: ({ex_r},{ex_c})$\rightarrow${v_after_1:.1f}",
+    )
+    ax1.add_patch(Rectangle(
+        (ex_c - 0.5, ex_r - 0.5), 1, 1, fill=False,
+        edgecolor="#f1c40f", linewidth=3.0, zorder=5,
+    ))
+
+    ax2 = fig.add_subplot(gs[1, 2])
+    draw_grid_policy(
+        ax2, V, pi0,
+        title=rf"After PE: $V^{{\pi_0}}$ (still $\pi$=East)",
+    )
+    ax2.add_patch(Rectangle(
+        (ex_c - 0.5, ex_r - 0.5), 1, 1, fill=False,
+        edgecolor="#f1c40f", linewidth=3.0, zorder=5,
+    ))
+    fig.colorbar(ax2.images[0], ax=ax2, fraction=0.046, pad=0.04)
+    fig.subplots_adjust(left=0.05, right=0.96, top=0.88, bottom=0.06)
     return fig
 
 
 # -------------------------------------------------------
-# Step 5: Policy improvement
+# Step 6: Policy improvement
 # -------------------------------------------------------
 def build_step_5():
     fig, ax = new_figure()
     fig.suptitle(
-        r"Step 5: Policy improvement -- greedy one-step lookahead",
+        r"Step 6: Policy improvement -- greedy one-step lookahead",
         fontsize=FS_FIGURE_TITLE - 2, fontweight="bold",
     )
     blank(ax)
@@ -488,12 +667,12 @@ def build_step_5():
 
 
 # -------------------------------------------------------
-# Step 6: Improvement theorem
+# Step 7: Improvement theorem
 # -------------------------------------------------------
 def build_step_6():
     fig, ax = new_figure()
     fig.suptitle(
-        "Step 6: Policy improvement theorem",
+        "Step 7: Policy improvement theorem",
         fontsize=FS_FIGURE_TITLE - 2, fontweight="bold",
     )
     blank(ax)
@@ -530,12 +709,12 @@ def build_step_6():
 
 
 # -------------------------------------------------------
-# Step 7: Full loop
+# Step 8: Full loop
 # -------------------------------------------------------
 def build_step_7():
     fig, ax = new_figure()
     fig.suptitle(
-        "Step 7: Policy iteration -- the full loop",
+        "Step 8: Policy iteration -- the full loop",
         fontsize=FS_FIGURE_TITLE - 2, fontweight="bold",
     )
     blank(ax)
@@ -555,7 +734,7 @@ def build_step_7():
     for x in (2.95, 5.75, 8.55):
         ax.annotate(
             "", xy=(x + 0.25, 6.6), xytext=(x - 0.25, 6.6),
-            arrowprops=dict(arrowstyle="->", color=C_DARK, lw=2.0),
+            arrowprops=dict(arrowstyle="->", color="#c0392b", lw=2.4),
         )
 
     round_box(ax, 0.5, 2.85, 11.0, 2.35, C_GOAL, C_OK, lw=2.0)
@@ -578,38 +757,42 @@ def build_step_7():
 
 
 # -------------------------------------------------------
-# Step 8: Gridworld setup
+# Step 4: Gridworld setup
 # -------------------------------------------------------
 def build_step_8():
     fig, axes = new_figure(1, 2)
     fig.suptitle(
-        "Step 8: Toy gridworld for the demo",
+        "Step 4: Toy gridworld for the demo",
         fontsize=FS_FIGURE_TITLE - 2, fontweight="bold",
     )
 
     ax = axes[0]
+    # Same Blues board background as value/policy grids in later steps.
     blank = np.zeros((N_ROWS, N_COLS))
-    ax.imshow(blank, cmap="Greys", vmin=-1, vmax=1)
+    ax.imshow(blank, cmap="Blues", vmin=0.0, vmax=1.0)
     for r in range(N_ROWS):
         for c in range(N_COLS):
             s = state_id(r, c)
             if is_terminal(s):
                 ax.add_patch(Rectangle(
                     (c - 0.5, r - 0.5), 1, 1,
-                    facecolor="#f5b7b1", edgecolor="#c0392b", lw=2.0,
+                    facecolor="#f5b7b1", edgecolor="#c0392b", lw=2.5,
                 ))
                 ax.text(c, r, "T", ha="center", va="center",
                         fontsize=FS_ANNOT, fontweight="bold", color="#641e16")
             else:
                 ax.text(c, r, f"({r},{c})", ha="center", va="center",
-                        fontsize=FS_TICK - 1, color="0.35")
+                        fontsize=FS_TICK - 1, color="#1a5276")
     ax.set_xticks(range(N_COLS))
     ax.set_yticks(range(N_ROWS))
     ax.set_xticks(np.arange(-0.5, N_COLS, 1), minor=True)
     ax.set_yticks(np.arange(-0.5, N_ROWS, 1), minor=True)
-    ax.grid(which="minor", color="0.6", lw=0.8)
-    ax.set_xticklabels([])
-    ax.set_yticklabels([])
+    ax.grid(which="minor", color="0.25", linestyle="-", linewidth=1.4)
+    ax.tick_params(which="both", bottom=False, left=False, labelbottom=False, labelleft=False)
+    for spine in ax.spines.values():
+        spine.set_visible(True)
+        spine.set_color("0.2")
+        spine.set_linewidth(1.6)
     ax.set_title("States + terminals", fontsize=FS_AX_TITLE - 1)
 
     ax = axes[1]
@@ -621,71 +804,144 @@ def build_step_8():
         f"Reward: -1 each step (0 on terminal)\n"
         f"Discount: gamma = {GAMMA}\n"
         f"Transitions: deterministic; bump = stay\n\n"
+        "Known a priori: terminal V = 0 only.\n"
+        "Other V(s) are unknown -- PE computes them.\n\n"
         "Start policy: always East\n"
         "(a bad habit -- walks into walls).\n\n"
         "Goal of PI: arrows that lead to a terminal\n"
         "as efficiently as the discounted objective wants.",
         transform=ax.transAxes, ha="center", va="center",
-        fontsize=FS_ANNOT, fontweight="bold",
+        fontsize=FS_ANNOT,
         bbox=dict(boxstyle="round,pad=0.55", facecolor=C_MUTE, edgecolor="0.5"),
     )
     fig.tight_layout(rect=[0, 0.02, 1, 0.90])
     return fig
 
 
-# -------------------------------------------------------
-# Step 9: Demo across iterations
-# -------------------------------------------------------
-def build_step_9():
-    n_show = min(4, len(PI_HISTORY))
-    fig, axes = new_figure(1, n_show)
-    if n_show == 1:
-        axes = [axes]
-    fig.suptitle(
-        f"Step 9: Policy iteration on the grid -- {len(PI_HISTORY)} outer iteration(s)",
-        fontsize=FS_FIGURE_TITLE - 4, fontweight="bold",
-    )
-    for i in range(n_show):
-        # show evenly spaced including last
-        idx = int(round(i * (len(PI_HISTORY) - 1) / max(n_show - 1, 1)))
-        pi, V = PI_HISTORY[idx]
-        draw_grid_policy(axes[i], V, pi, title=f"after PE #{idx}")
-    fig.tight_layout(rect=[0, 0.02, 1, 0.90])
-    return fig
-
 
 # -------------------------------------------------------
-# Step 10: Slider over iterations
+# Step 9: Step through PI
 # -------------------------------------------------------
 def build_step_10():
-    fig, ax = new_figure()
+    fig, axes = new_figure(1, 2)
     fig.suptitle(
-        "Step 10: Scrub policy-iteration iterations",
+        "Step 9: Policy iteration: algorithm and demonstration",
         fontsize=FS_FIGURE_TITLE - 2, fontweight="bold",
     )
-    fig.subplots_adjust(bottom=0.20, left=0.08, right=0.95, top=0.88)
-    ax.set_navigate(False)
+    fig.subplots_adjust(bottom=0.20, left=0.05, right=0.96, top=0.88, wspace=0.28)
 
-    pi0, V0 = PI_HISTORY[0]
-    im = draw_grid_policy(ax, V0, pi0, title="iteration 0")
+    frames = PI_SCRUB_FRAMES
+
+    # Left: algorithm reminder
+    ax_alg = axes[0]
+    ax_alg.axis("off")
+    ax_alg.set_navigate(False)
+    ax_alg.set_title("Policy iteration algorithm", fontsize=FS_AX_TITLE - 1, fontweight="bold")
+    alg = (
+        r"Initialize $\pi_0$ (here: always East)." "\n"
+        r"Initialize $V \leftarrow 0$ (terminals stay 0)." "\n"
+        "\n"
+        r"for $k = 0, 1, 2, \ldots$" "\n"
+        r"    1. Policy evaluation (PE #$k$):" "\n"
+        r"           repeat for fixed $\pi_k$:" "\n"
+        r"               $V(s) \leftarrow \sum_{s',r}"
+        r" p(s',r|s,\pi_k(s))\,[r+\gamma V(s')]$" "\n"
+        r"           until max change $< \theta$" "\n"
+        "\n"
+        r"    2. Policy improvement (PI #$k$):" "\n"
+        r"           $\pi_{k+1}(s) \in \mathrm{arg\,max}_a Q(s,a)$" "\n"
+        r"           using the $V^{\pi_k}$ just computed" "\n"
+        "\n"
+        r"    3. if $\pi_{k+1} = \pi_k$: stop" "\n"
+        "\n"
+        r"Next / Prev / slider:" "\n"
+        r"    frame 0 = Init" "\n"
+        r"    then PE #0, PI #0, PE #1, PI #1, ..."
+    )
+    # Anchor the algorithm box directly under the axes title.
+    ax_alg.text(
+        0.06, 0.97, alg,
+        transform=ax_alg.transAxes, ha="left", va="top",
+        fontsize=FS_TICK,
+        family="monospace", linespacing=1.45,
+        bbox=dict(boxstyle="round,pad=0.55", facecolor=C_NEW, edgecolor=C_LOOP),
+    )
+
+    # Right: interactive board -- start at Init (V=0, π₀)
+    ax = axes[1]
+    ax.set_navigate(False)
+    fr0 = frames[0]
+    im = draw_grid_policy(
+        ax, fr0["V"], fr0["pi"], title=fr0["title"],
+        up_extra_down_cm=0.5,
+    )
     cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
     cbar.ax.tick_params(labelsize=FS_TICK)
+    note = fig.text(
+        0.72, 0.145, fr0["note"],
+        ha="center", va="center", fontsize=FS_TICK,
+        color="#333333",
+    )
 
-    ax_sl = fig.add_axes([0.22, 0.08, 0.55, 0.04])
-    ax_sl.set_navigate(False)
-    ax_sl.set_zorder(20)
-    n_it = len(PI_HISTORY) - 1
-    sl = Slider(ax_sl, "PI iter", 0, max(n_it, 0), valinit=0, valstep=1, color=C_LOOP)
+    # Controls under the right panel
+    ax_prev = fig.add_axes([0.52, 0.07, 0.08, 0.055])
+    ax_sl = fig.add_axes([0.62, 0.08, 0.22, 0.04])
+    ax_next = fig.add_axes([0.86, 0.07, 0.08, 0.055])
+    for a in (ax_prev, ax_sl, ax_next):
+        a.set_navigate(False)
+        a.set_zorder(20)
+
+    n_fr = len(frames) - 1
+    sl = Slider(ax_sl, "step", 0, max(n_fr, 0), valinit=0, valstep=1, color=C_LOOP)
+    btn_prev = Button(ax_prev, "Prev", color="#f5f5f5", hovercolor="#f5b7b1")
+    btn_next = Button(ax_next, "Next", color="#f5f5f5", hovercolor="#f5b7b1")
+    btn_prev.label.set_fontsize(FS_TICK)
+    btn_next.label.set_fontsize(FS_TICK)
 
     def _update(_=None):
-        k = int(sl.val)
-        pi, V = PI_HISTORY[k]
+        i = int(sl.val)
+        fr = frames[i]
         ax.clear()
-        draw_grid_policy(ax, V, pi, title=f"after PE #{k}")
+        draw_grid_policy(
+            ax, fr["V"], fr["pi"], title=fr["title"],
+            up_extra_down_cm=0.5,
+        )
+        note.set_text(fr["note"])
         fig.canvas.draw_idle()
 
+    def _step(delta):
+        i = int(np.clip(sl.val + delta, 0, max(n_fr, 0)))
+        sl.set_val(i)
+
     sl.on_changed(_update)
+    btn_prev.on_clicked(lambda _e: _step(-1))
+    btn_next.on_clicked(lambda _e: _step(+1))
     fig._sliders = (sl,)
+    fig._retained_widgets = [sl, btn_prev, btn_next]
+
+    # Keep left panel top fixed under its title; only grow downward if needed.
+    # Shift right board left; shrink the grid board (smaller cells).
+    w_in, h_in = fig.get_size_inches()
+    dh_left = (2.0 / 2.54) / max(h_in, 0.1)
+    dx_right = (5.5 / 2.54) / max(w_in, 0.1)
+    pos = ax_alg.get_position()
+    ax_alg.set_position([
+        pos.x0,
+        pos.y0 - dh_left,
+        pos.width,
+        pos.height + dh_left,
+    ])
+    for a in (ax, cbar.ax):
+        pos = a.get_position()
+        a.set_position([
+            pos.x0 - dx_right,
+            pos.y0,
+            pos.width,
+            pos.height,
+        ])
+    # Smaller grid cells (~40% smaller board).
+    _shrink_axes(ax, 0.60)
+    _shrink_axes(cbar.ax, 0.60)
     return fig
 
 
@@ -716,56 +972,198 @@ def value_iteration(max_iters=200, theta=THETA):
 VI_HISTORY, VI_PI = value_iteration()
 
 
+def build_vi_scrub_frames():
+    """Fine-grained VI timeline: Init V=0, then each optimality sweep.
+
+    Policy arrows appear ONLY on the final frame -- matching the algorithm
+    (VI updates V only; pi is recovered after convergence).
+    """
+    frames = []
+    for i, V in enumerate(VI_HISTORY):
+        if i == 0:
+            frames.append({
+                "V": V.copy(),
+                "pi": None,
+                "show_policy": False,
+                "title": "Init: $V\\leftarrow 0$\n(no policy yet)",
+                "note": (
+                    "Start of value iteration: only $V$ exists. "
+                    "No policy arrows until the end."
+                ),
+            })
+        else:
+            frames.append({
+                "V": V.copy(),
+                "pi": None,
+                "show_policy": False,
+                "title": (
+                    f"Just did VI sweep #{i}\n"
+                    r"$V(s)\leftarrow\max_a Q(s,a)$  (still no $\pi$)"
+                ),
+                "note": (
+                    f"Sweep #{i}: only values change. "
+                    r"Policy is NOT updated during VI sweeps."
+                ),
+            })
+    frames.append({
+        "V": VI_HISTORY[-1].copy(),
+        "pi": VI_PI.copy(),
+        "show_policy": True,
+        "title": (
+            f"VI done after {len(VI_HISTORY)-1} sweeps\n"
+            r"NOW recover greedy $\pi$ from $V^*$"
+        ),
+        "note": (
+            r"Only now: $\pi(s)\in\mathrm{arg\,max}_a Q(s,a)$ "
+            "from the converged $V$. Red arrows appear."
+        ),
+    })
+    return frames
+
+
+VI_SCRUB_FRAMES = build_vi_scrub_frames()
+
+
 # -------------------------------------------------------
-# Step 11: Value iteration
+# Step 10: Value iteration (algorithm + demonstration)
 # -------------------------------------------------------
 def build_step_11():
     fig, axes = new_figure(1, 2)
     fig.suptitle(
-        r"Step 11: Value iteration -- $V(s)\leftarrow\max_a Q(s,a)$ each sweep",
-        fontsize=FS_FIGURE_TITLE - 4, fontweight="bold",
+        "Step 10: Value iteration: algorithm and demonstration",
+        fontsize=FS_FIGURE_TITLE - 2, fontweight="bold",
     )
+    fig.subplots_adjust(bottom=0.20, left=0.05, right=0.96, top=0.88, wspace=0.28)
 
-    ax = axes[0]
-    ax.axis("off")
-    ax.set_title("Algorithm", fontsize=FS_AX_TITLE - 1, fontweight="bold")
-    ax.text(
-        0.5, 0.55,
-        "Initialize V(s) arbitrarily (0 OK).\n\n"
-        "Repeat sweeps over all states:\n"
-        r"  $V(s)\leftarrow\max_a\sum_{s',r}"
-        r"p(s',r|s,a)[r+\gamma V(s')]$"
+    frames = VI_SCRUB_FRAMES
+
+    # Left: algorithm
+    ax_alg = axes[0]
+    ax_alg.axis("off")
+    ax_alg.set_navigate(False)
+    ax_alg.set_title("Value iteration algorithm", fontsize=FS_AX_TITLE - 1, fontweight="bold")
+    alg = (
+        r"There is NO policy during value iteration." "\n"
+        r"(Unlike policy iteration, we do not store $\pi$.)" "\n"
         "\n"
-        "until the max change $<\\theta$.\n\n"
-        "Then recover a greedy policy:\n"
-        r"  $\pi(s)\in\mathrm{arg\,max}_a Q(s,a)$."
-        "\n\n"
-        "No explicit policy during the backups --\n"
-        "only at the end.",
-        transform=ax.transAxes, ha="center", va="center",
-        fontsize=FS_ANNOT - 1, fontweight="bold",
+        r"Initialize array $V$ arbitrarily (here: 0)." "\n"
+        r"Keep $V(\mathrm{terminal})=0$." "\n"
+        "\n"
+        r"repeat:                         # one sweep" "\n"
+        r"    $\Delta \leftarrow 0$" "\n"
+        r"    for each state $s$:" "\n"
+        r"        $v \leftarrow V(s)$" "\n"
+        r"        $V(s) \leftarrow \max_a \sum_{s',r}"
+        r" p(s',r|s,a)\,[r+\gamma V(s')]$" "\n"
+        r"        $\Delta \leftarrow \max(\Delta, |v-V(s)|)$" "\n"
+        r"until $\Delta < \theta$" "\n"
+        "\n"
+        r"ONLY THEN output a greedy policy:" "\n"
+        r"    $\pi(s) \leftarrow \mathrm{arg\,max}_a"
+        r" \sum_{s',r} p(s',r|s,a)\,[r+\gamma V(s')]$" "\n"
+        "\n"
+        r"What $\max_a$ does: pick the best action" "\n"
+        r"inside the backup -- it does not store $\pi$." "\n"
+        "\n"
+        r"Next / Prev / slider:" "\n"
+        r"    Init / sweeps = $V$ only (no arrows)" "\n"
+        r"    last frame = finally extract $\pi$"
+    )
+    # Anchor the algorithm box directly under the axes title.
+    ax_alg.text(
+        0.06, 0.97, alg,
+        transform=ax_alg.transAxes, ha="left", va="top",
+        fontsize=FS_TICK,
+        family="monospace", linespacing=1.45,
         bbox=dict(boxstyle="round,pad=0.55", facecolor=C_GOAL, edgecolor=C_OK),
     )
 
+    # Right: interactive board
     ax = axes[1]
-    # show late VI value + greedy arrows
-    V = VI_HISTORY[-1]
-    draw_grid_policy(
-        ax, V, VI_PI,
-        title=f"VI result after {len(VI_HISTORY)-1} sweeps",
+    ax.set_navigate(False)
+    fr0 = frames[0]
+    im = draw_grid_policy(
+        ax, fr0["V"], fr0["pi"], title=fr0["title"],
+        up_extra_down_cm=1.5,
+        show_policy=fr0["show_policy"],
     )
-    fig.colorbar(ax.images[0], ax=ax, fraction=0.046, pad=0.04)
-    fig.tight_layout(rect=[0, 0.02, 1, 0.90])
+    cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    cbar.ax.tick_params(labelsize=FS_TICK)
+    note = fig.text(
+        0.72, 0.145, fr0["note"],
+        ha="center", va="center", fontsize=FS_TICK,
+        color="#333333",
+    )
+
+    ax_prev = fig.add_axes([0.52, 0.07, 0.08, 0.055])
+    ax_sl = fig.add_axes([0.62, 0.08, 0.22, 0.04])
+    ax_next = fig.add_axes([0.86, 0.07, 0.08, 0.055])
+    for a in (ax_prev, ax_sl, ax_next):
+        a.set_navigate(False)
+        a.set_zorder(20)
+
+    n_fr = len(frames) - 1
+    sl = Slider(ax_sl, "step", 0, max(n_fr, 0), valinit=0, valstep=1, color=C_OK)
+    btn_prev = Button(ax_prev, "Prev", color="#f5f5f5", hovercolor="#d5f5e3")
+    btn_next = Button(ax_next, "Next", color="#f5f5f5", hovercolor="#d5f5e3")
+    btn_prev.label.set_fontsize(FS_TICK)
+    btn_next.label.set_fontsize(FS_TICK)
+
+    def _update(_=None):
+        i = int(sl.val)
+        fr = frames[i]
+        ax.clear()
+        draw_grid_policy(
+            ax, fr["V"], fr["pi"], title=fr["title"],
+            up_extra_down_cm=1.5,
+            show_policy=fr["show_policy"],
+        )
+        note.set_text(fr["note"])
+        fig.canvas.draw_idle()
+
+    def _step(delta):
+        i = int(np.clip(sl.val + delta, 0, max(n_fr, 0)))
+        sl.set_val(i)
+
+    sl.on_changed(_update)
+    btn_prev.on_clicked(lambda _e: _step(-1))
+    btn_next.on_clicked(lambda _e: _step(+1))
+    fig._sliders = (sl,)
+    fig._retained_widgets = [sl, btn_prev, btn_next]
+
+    # Keep left panel top fixed under its title; only grow downward.
+    # Shift right board left; shrink the grid board (smaller cells).
+    w_in, h_in = fig.get_size_inches()
+    dh_left = (2.0 / 2.54) / max(h_in, 0.1)
+    dx_right = (2.5 / 2.54) / max(w_in, 0.1)
+    pos = ax_alg.get_position()
+    ax_alg.set_position([
+        pos.x0,
+        pos.y0 - dh_left,
+        pos.width,
+        pos.height + dh_left,
+    ])
+    for a in (ax, cbar.ax):
+        pos = a.get_position()
+        a.set_position([
+            pos.x0 - dx_right,
+            pos.y0,
+            pos.width,
+            pos.height,
+        ])
+    # Smaller grid cells (~40% smaller board).
+    _shrink_axes(ax, 0.60)
+    _shrink_axes(cbar.ax, 0.60)
     return fig
 
 
 # -------------------------------------------------------
-# Step 12: vs value iteration
+# Step 11: vs value iteration
 # -------------------------------------------------------
 def build_step_12():
     fig, ax = new_figure()
     fig.suptitle(
-        "Step 12: Policy iteration vs value iteration",
+        "Step 11: Policy iteration vs value iteration",
         fontsize=FS_FIGURE_TITLE - 2, fontweight="bold",
     )
     blank(ax)
@@ -813,12 +1211,12 @@ def build_step_12():
 
 
 # -------------------------------------------------------
-# Step 13: Takeaway
+# Step 12: Takeaway
 # -------------------------------------------------------
 def build_step_13():
     fig, ax = new_figure()
     fig.suptitle(
-        "Step 13: Takeaway",
+        "Step 12: Takeaway",
         fontsize=FS_FIGURE_TITLE, fontweight="bold",
     )
     blank(ax)
@@ -846,13 +1244,12 @@ run_slide_deck([
     build_step_1,
     build_step_2,
     build_step_3,
-    build_step_4,
+    build_step_8,  # define the toy gridworld first
+    build_step_4,  # then run PE on it
     build_step_5,
     build_step_6,
     build_step_7,
-    build_step_8,
-    build_step_9,
-    build_step_10,
+    build_step_10,  # step-through Init / PE / PI (was Step 10, now Step 9)
     build_step_11,
     build_step_12,
     build_step_13,

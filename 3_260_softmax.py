@@ -603,7 +603,6 @@ Simulate deterministic policy:
   Use softmax with small tau (or large logit margins) to approximate argmax
   while keeping a smooth computational graph for training.
 
-See also:
-  0860_QKV_attention.py -- attention weights are a softmax over key scores
-  0850_transformer.py -- softmax(QK^T/sqrt(d))
+  -- attention weights are a softmax over key scores
+  -- softmax(QK^T/sqrt(d))
 """)

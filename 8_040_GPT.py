@@ -148,7 +148,7 @@ def build_step_1():
 
     ax = axes1[1]
     ax.axis('off')
-    ax.set_title('Vs BERT (0950_BERT.py)', fontsize=FS_AX_TITLE - 2)
+    ax.set_title('Vs BERT', fontsize=FS_AX_TITLE - 2)
     ax.text(
         0.5, 0.55,
         'BERT (encoder):\n'
@@ -999,7 +999,7 @@ def build_step_12():
         '6. Chain-of-thought spends tokens to think.\n\n'
         '7. Prompting and tools steer a frozen (or lightly\n'
         '   adapted) model at inference time.\n\n'
-        'Same stack as 0850_transformer.py -- pushed into\n'
+        'Same stack as -- pushed into\n'
         'a full product recipe for generative AI.',
         transform=ax.transAxes, ha='center', va='center', fontsize=FS_ANNOT + 1,
         bbox=dict(boxstyle='round', facecolor='#f7f7ff', alpha=0.96),
@@ -1063,8 +1063,7 @@ Vs BERT:
   BERT: bidirectional encoder + MLM (+ NSP) -> understanding / discriminative tasks
   GPT:  causal decoder + next-token LM (+ SFT/align) -> generation / assistants
 
-See also:
-  0850_transformer.py -- causal vs bidirectional attention
-  0880_positional_encoding.py -- PE / RoPE used in modern GPTs
-  0950_BERT.py -- the encoder / fine-tune fork of the same family
+  -- causal vs bidirectional attention
+  -- PE / RoPE used in modern GPTs
+  -- the encoder / fine-tune fork of the same family
 """)

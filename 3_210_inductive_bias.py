@@ -402,8 +402,8 @@ Where bias comes from in ML:
   1) Hypothesis class   (linear vs deep net vs tree vs kNN)
   2) Architecture       (convolution => locality/translation structure)
   3) Regularization     (ridge/weight decay => prefer small weights)
-  4) Loss function      (MSE vs MAE; see 190_loss_functions.py)
-  5) Optimizer / init   (implicit bias of SGD; see 0530_momentum.py)
+  4) Loss function (MSE vs MAE; see )
+  5) Optimizer / init (implicit bias of SGD; see )
 
 Lesson from the figures:
   - Too little bias (very flexible fit): great train fit, wild extrapolation

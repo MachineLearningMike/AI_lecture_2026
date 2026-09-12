@@ -481,7 +481,7 @@ def build_step_6():
         'MAE is minimized by the median of the targets -- not the mean.\n'
         'That is why MAE feels "majority-first".\n\n'
         'Use MAE when distance matters equally per unit, and wild points should not own the fit.\n'
- 'Compare with MSE in ; see also Huber in .',
+ 'Compare with MSE in ; Huber in.',
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig5

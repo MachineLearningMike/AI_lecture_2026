@@ -705,7 +705,7 @@ def build_step_7():
 
     ax8.text(
         6.0, 0.45,
-        'Next step asks what this loop is for. Then: 0280_model.py.',
+        'Next step asks what this loop is for. Then:.',
         ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
     )
     return fig8
@@ -816,7 +816,7 @@ run_slide_deck([
 # KEY INSIGHTS
 # -------------------------------------------------------
 print("\n" + "=" * 60)
-print("123 -- EXPLAINING 0270_torch_training.ipynb")
+print("123 -- EXPLAINING ")
 print("=" * 60)
 print(f"""
 Notebook essence:

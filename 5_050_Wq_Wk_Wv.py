@@ -678,11 +678,10 @@ Preprocessing note (for customers):
   so training can just learn an equivalent matrix. You need not fear that
   such linear data prep will ruin accuracy for a net that already has
   learned linear layers (it always does). Nonlinear prep is different.
-  Details / picture: 0800_linear_transformation.py Step 14.
+  Details / picture: Step 14.
 
-See also:
-  0860_QKV_attention.py     -- Q/K/V roles without emphasizing W
-  0800_linear_transformation.py -- why matrices, and absorbing preprocess
-  0820_softmax.py           -- weights from scores
-  0890_chain_of_adds.py     -- residual stream as running sum
+  -- Q/K/V roles without emphasizing W
+  -- why matrices, and absorbing preprocess
+  -- weights from scores
+  -- residual stream as running sum
 """)

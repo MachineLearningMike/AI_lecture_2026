@@ -617,5 +617,4 @@ Word2Vec intuition:
   5) Analogies emerge as vector arrows.
 
 , ,
-          0860_QKV_attention.py, 0850_transformer.py
 """)

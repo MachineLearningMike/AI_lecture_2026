@@ -660,6 +660,4 @@ Steps:
   8. Torch -- scratch KL matches nn.KLDivLoss(batchmean)
 
 ,
-          0450_Loss_Categorical_Cross_Entropy.py,
-          190_loss_functions.py
 """)

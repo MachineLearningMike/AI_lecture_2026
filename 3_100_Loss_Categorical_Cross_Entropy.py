@@ -500,10 +500,11 @@ def build_step_7():
     round_box(ax5, 0.4, 0.45, 11.2, 3.4, C_MUTE, '0.45', lw=1.8)
     ax5.text(
         6.0, 2.15,
-        'Binary CE is the K=2 special case (often with sigmoid instead of softmax).\n'
-        'Categorical CE is the general embrace for multi-class labels.\n\n'
-        'Rule from 035: output type -> probability model -> loss.\n'
-        'See 194_Binary_Cross_Entropy.py and 190_loss_functions.py.',
+        (
+            'Binary CE is the K=2 special case (often with sigmoid instead of softmax).\n'
+            'Categorical CE is the general embrace for multi-class labels.\n\n'
+            'Rule of thumb: output type -> probability model -> loss.\n'
+        ),
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig5
@@ -615,5 +616,4 @@ Steps:
   8. Torch -- scratch CE matches nn.CrossEntropyLoss()
 
 , ,
-          190_loss_functions.py, 0820_softmax.py
 """)

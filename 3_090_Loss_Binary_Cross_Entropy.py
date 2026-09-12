@@ -696,5 +696,4 @@ Steps:
   9. Torch -- scratch BCE matches nn.BCELoss()
 
 , ,
-          0450_Loss_Categorical_Cross_Entropy.py
 """)

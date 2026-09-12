@@ -411,7 +411,7 @@ print("""
    - Confidence intervals and p-values lean on the CLT
    - Even messy real-world data often yields well-behaved averages
 
-Note: 0590_gaussian.py Figure 3 used a Gaussian source, so means were
+Note: Figure 3 used a Gaussian source, so means were
 EXACTLY normal for every n (that was Standard Error, not CLT).
 This script is the real CLT demo -- non-Gaussian parents.
 """)

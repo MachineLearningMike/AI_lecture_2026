@@ -900,5 +900,4 @@ Toys: weird worlds, drag-line / ring / XOR,
       supervised training animation.
 
 , ,
-          0310_regression_classification.py, 381_SL_UL_RL.py
 """)

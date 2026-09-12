@@ -516,7 +516,7 @@ Geometry (Step 3):
     |P| large only in the corners (both |X| and |Y| large) -- rare.
     Near an axis, one factor is ~0, so P piles up near 0 -- common.
 
-Contrast with sums (Step 4 / 1_110_sum_of_randomity.py):
+Contrast with sums (Step 4 / ):
     X+Y of Gaussians stays Gaussian (variance adds).
     X*Y of Gaussians does NOT stay Gaussian.
 

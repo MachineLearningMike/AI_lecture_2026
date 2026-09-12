@@ -403,11 +403,12 @@ def build_step_6():
     ax.set_title('Residual bias', fontsize=FS_AX_TITLE)
     ax.text(
         0.5, 0.5,
-        'Layers prefer to ADD\n'
-        'small updates to a\n'
-        'persistent stream\n'
-        'rather than rewrite it.\n\n'
-        '(see 0890_chain_of_adds.py)',
+        (
+            'Layers prefer to ADD\n'
+            'small updates to a\n'
+            'persistent stream\n'
+            'rather than rewrite it.\n'
+        ),
         transform=ax.transAxes, ha='center', va='center', fontsize=FS_ANNOT + 1,
         bbox=dict(boxstyle='round', facecolor='#ffe0b2', alpha=0.95),
     )
@@ -419,11 +420,12 @@ def build_step_6():
     ax.set_title('Positional bias', fontsize=FS_AX_TITLE)
     ax.text(
         0.5, 0.5,
-        'Order/distance structure\n'
-        'enters only through PE\n'
-        '(sinusoidal, RoPE, ...)\n'
-        'or relative biases.\n\n'
-        '(see 0880_positional_encoding.py)',
+        (
+            'Order/distance structure\n'
+            'enters only through PE\n'
+            '(sinusoidal, RoPE, ...)\n'
+            'or relative biases.\n'
+        ),
         transform=ax.transAxes, ha='center', va='center', fontsize=FS_ANNOT + 1,
         bbox=dict(boxstyle='round', facecolor='#e2d5f1', alpha=0.95),
     )
@@ -435,11 +437,12 @@ def build_step_6():
     ax.set_title('Width / capacity bias', fontsize=FS_AX_TITLE)
     ax.text(
         0.5, 0.5,
-        'd_model sets how wide\n'
-        'the shared maps are.\n'
-        'Larger d => more capacity,\n'
-        'more overfit risk.\n\n'
-        '(see 0900_model_dimension.py)',
+        (
+            'd_model sets how wide\n'
+            'the shared maps are.\n'
+            'Larger d => more capacity,\n'
+            'more overfit risk.\n'
+        ),
         transform=ax.transAxes, ha='center', va='center', fontsize=FS_ANNOT + 1,
         bbox=dict(boxstyle='round', facecolor='#d4edda', alpha=0.95),
     )

@@ -398,7 +398,7 @@ print("""
    Reading: the derivative of log f is the RELATIVE rate of
    change of f -- slope divided by height.
 
-4. Why maximize log L instead of L in MLE (see 0470_maximum_likelihood.py):
+4. Why maximize log L instead of L in MLE (see ):
        d/d theta log L = (1/L) * dL/d theta
    Critical points coincide, but log L is numerically stable
    and turns the product-likelihood into a sum.

@@ -550,7 +550,7 @@ def build_step_9():
     )
     ax9.text(
         6.0, 0.55,
-        "Interactive G-vs-D toy: 0760_generative_toys.py Step 8.",
+        "Interactive G-vs-D toy: Step 8.",
         ha="center", fontsize=FS_TICK, style="italic", color="0.35",
     )
     return fig9

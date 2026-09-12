@@ -205,7 +205,7 @@ def build_step_3():
         (4.2, 2.55, "Unbiasedness", r"For every finite $N$,"
          "\n"
          r"$\mathbb{E}[\hat I_N]=I$."),
-        (8.0, 2.55, "See also", "1_030 Law of Large Numbers\n"
+        (8.0, 2.55, "", "1_030 Law of Large Numbers\n"
          "1_040 Central Limit Theorem"),
     ]
     for x, y, title, body in cards:

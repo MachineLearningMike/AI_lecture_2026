@@ -640,8 +640,7 @@ Why this matters:
   4) Interpretability / control: learnable scales expose and
      reshape each layer's residual contribution
 
-See also:
-  0850_transformer.py -- what attention writes
-  0700_neural_non_linearity.py -- what FFN writes
-  0720_normalize_activations.py -- LayerNorm around the writes
+  -- what attention writes
+  -- what FFN writes
+  -- LayerNorm around the writes
 """)

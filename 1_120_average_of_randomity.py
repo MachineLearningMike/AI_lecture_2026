@@ -374,7 +374,6 @@ So: averaging shrinks uncertainty; summing grows it.
 
 This is why n=2 already helps, and why in general
     Std(sample mean) = sigma / sqrt(n)
-(see 0590_gaussian.py and 0610_central_limit_theorem.py).
 
 Demo numbers (Gaussian, sigma={SIGMA:g}):
     std(X1) = {X1.std(unbiased=True).item():.4f}   (theory {SIGMA:.4f})

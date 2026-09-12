@@ -680,7 +680,7 @@ def build_step_11():
     )
     ax11.text(
         6.0, 0.45,
-        "Interactive latent drag toy: 0760_generative_toys.py  |  KL intuition: 0460_Loss_Kullback_Leibler_Divergence.py",
+        "Interactive latent drag toy: | KL intuition: ",
         ha="center", fontsize=FS_TICK, style="italic", color="0.35",
     )
     return fig11
@@ -884,5 +884,4 @@ Generate:
   z ~ N(0,I);  x_hat ~ p_theta(x|z)
 
 , ,
-          0740_discriminative_generative.py
 """)

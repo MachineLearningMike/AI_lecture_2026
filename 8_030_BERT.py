@@ -1173,8 +1173,7 @@ Big picture:
   training recipe. Generative LLMs later scaled a causal fork, but
   still live in the culture BERT popularized.
 
-See also:
-  0850_transformer.py -- encoder vs decoder attention
-  0880_positional_encoding.py -- PE alternatives (BERT used learned PE)
-  0710_dropout.py / 0720_normalize_activations.py -- regularizers inside the stack
+  -- encoder vs decoder attention
+  -- PE alternatives (BERT used learned PE)
+  / -- regularizers inside the stack
 """)

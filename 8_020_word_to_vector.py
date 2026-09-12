@@ -182,7 +182,7 @@ def build_step_1():
     )
     ax1.text(
         6.0, 0.45,
-        "Intuition playground: 0790_word_vector.py   |   embedding table idea: 0780_Embedding.py",
+        "Intuition playground: | embedding table idea: ",
         ha="center", fontsize=FS_TICK, style="italic", color="0.35",
     )
     return fig1

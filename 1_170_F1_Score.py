@@ -1168,7 +1168,7 @@ def build_step_9():
         6.0, 2.15,
         "Start from the confusion matrix. Derive rates. Then Precision / Recall / F1.\n"
         "Pick the metric that matches the cost you fear (misses vs false alarms).\n\n"
-        "See also: 035 (classification), 190 (0-1 error), 194 (BCE trains soft scores\n"
+        "035 (classification), 190 (0-1 error), 194 (BCE trains soft scores\n"
         "that you later threshold into this hard 2x2 table).",
         ha="center", va="center", fontsize=FS_ANNOT + 1,
     )
@@ -1207,5 +1207,4 @@ Steps:
   9. Takeaway
 
 , ,
-          0440_Loss_Binary_Cross_Entropy.py
 """)

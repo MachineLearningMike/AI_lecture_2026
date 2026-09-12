@@ -690,7 +690,6 @@ print(f"""
       speech, images). Non-linear nets can straighten / separate them;
       purely linear models cannot.
 
-See also:
-  0280_model.py  -- linear neuron fails on a cubic
-  0690_inductive_bias.py -- which non-linear family you choose is a bias
+  -- linear neuron fails on a cubic
+  -- which non-linear family you choose is a bias
 """)

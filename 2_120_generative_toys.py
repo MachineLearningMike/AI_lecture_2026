@@ -853,6 +853,4 @@ Typical generative models (shown):
 Idea: model P(x) or P(x|y) -- score and sample, not only label.
 
 ,
-          0740_discriminative_generative.py,
-          0330_distribution.py, 0590_gaussian.py
 """)

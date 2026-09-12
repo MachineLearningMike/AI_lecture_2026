@@ -689,5 +689,4 @@ Poisson(l):       P(X=k)=l^k e^{-l} / k!
 Beta(a,b):        f(x) ~ x^{a-1}(1-x)^{b-1} on (0,1)
 Dirichlet(a):     f(p) ~ prod p_k^{a_k-1} on the simplex
 
-Gaussian: see 1_040_gaussian.py
 """)

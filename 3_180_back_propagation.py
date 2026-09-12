@@ -45,7 +45,7 @@ import numpy as np
 try:
     import torch
 except ImportError as exc:  # pragma: no cover
-    raise SystemExit("0560_back_propagation.py needs PyTorch") from exc
+    raise SystemExit("This lecture needs PyTorch") from exc
 
 np.random.seed(198)
 torch.manual_seed(198)

@@ -724,6 +724,4 @@ Typical discriminative models (shown):
 Idea: model P(y|x) or a decision rule -- not full P(x).
 
 ,
-          0740_discriminative_generative.py,
-          0820_softmax.py, 0700_neural_non_linearity.py
 """)

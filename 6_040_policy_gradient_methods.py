@@ -939,7 +939,6 @@ def build_step_16():
     ax16.text(
         8.85, 4.4,
         "Formulas unpacked in\n"
-        "0173_train_ChatGPT.py\n"
         "(REINFORCE, clip, KL).\n\n"
         "Here: the RL backbone\n"
         "those slides assume.",

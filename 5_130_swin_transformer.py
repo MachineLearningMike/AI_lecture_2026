@@ -654,7 +654,6 @@ Where it is used:
   Classification backbones, COCO detection, ADE20K segmentation, etc.
   The hierarchical map is the key practical advantage over single-scale ViT.
 
-See also:
-  0850_transformer.py -- attention mechanics
-  0980_video_transformer.py -- space-time variants of similar efficiency ideas
+  -- attention mechanics
+  -- space-time variants of similar efficiency ideas
 """)

@@ -543,8 +543,7 @@ In a Transformer layer:
   makes this soft database lookup reduce the loss.
   Multi-head = several such perspectives at once.
 
-See also:
-  0850_transformer.py -- attention heatmaps / block diagram
-  0910_transformer_code.py -- shapes through QKV
-  0810_dot_inner_scalar_product.py -- why dots measure agreement
+  -- attention heatmaps / block diagram
+  -- shapes through QKV
+  -- why dots measure agreement
 """)

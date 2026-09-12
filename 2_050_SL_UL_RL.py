@@ -833,5 +833,4 @@ Step 10 -- cleaner terminology:
   Core question: is the binding externally imposed or internally generated?
 
 , ,
-          0740_discriminative_generative.py, 0150_DL_future.py
 """)

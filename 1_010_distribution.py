@@ -705,8 +705,4 @@ Everyday images (Step 7):
 Zoom-in example (Step 8):
   Dog-photo and cat-photo points in 2D form two modes / clusters
   -- still a distribution, now with two pile-ups.
-
-,
-          0340_normalize_data.py (normalize; why N(0,1); code),
-          0740_discriminative_generative.py
 """)
