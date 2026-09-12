@@ -1,6 +1,4 @@
 """
-0250_AI_fun.py
-
 The fun of learning AI -- visual playgrounds, weird data, interactive toys.
 
 Sketch:
@@ -15,9 +13,6 @@ Sketch:
   9. RL fun -- multi-armed bandit
   10. Watch supervised training: boundary + loss
   11. Visual takeaway collage
-
-Companion to 0120_intelligence.py, 0270_torch_training.py,
-0310_regression_classification.py, 381_SL_UL_RL.py.
 """
 
 from __future__ import annotations
@@ -179,7 +174,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Loop as four visual panels
 # -------------------------------------------------------
@@ -242,7 +236,6 @@ def build_step_2():
         ax.grid(True, alpha=0.2)
     fig2.tight_layout(rect=[0, 0.02, 1, 0.92])
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -313,7 +306,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Interactive blobs -- drag a line
 # -------------------------------------------------------
@@ -366,7 +358,6 @@ def build_step_4():
     sl_b4.on_changed(_update4)
     print("Step 4: drag w1 / b on blobs.")
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -423,7 +414,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Interactive rings -- drag a radius
 # -------------------------------------------------------
@@ -472,7 +462,6 @@ def build_step_6():
     sl_r6.on_changed(_update6)
     print("Step 6: drag ring radius.")
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -544,7 +533,6 @@ def build_step_7():
     sl_thr.on_changed(_update7)
     print("Step 7: XOR twist playground.")
     return fig7
-
 
 
 # -------------------------------------------------------
@@ -692,7 +680,6 @@ def build_step_8():
     return fig8
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: RL fun -- multi-armed bandit
 # -------------------------------------------------------
@@ -796,7 +783,6 @@ def build_step_9():
     return fig9
 
 
-
 # -------------------------------------------------------
 # FIGURE 10: Watch supervised training -- boundary + loss
 # -------------------------------------------------------
@@ -851,7 +837,6 @@ def build_step_10():
     return fig10
 
 
-
 # -------------------------------------------------------
 # FIGURE 11: Visual takeaway collage
 # -------------------------------------------------------
@@ -892,8 +877,6 @@ def build_step_11():
     return fig11
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -916,6 +899,6 @@ Toys: weird worlds, drag-line / ring / XOR,
       RL gridworld treasure hunt, multi-armed bandit,
       supervised training animation.
 
-See also: 0120_intelligence.py, 0270_torch_training.py,
+, ,
           0310_regression_classification.py, 381_SL_UL_RL.py
 """)

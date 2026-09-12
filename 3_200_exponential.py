@@ -1,6 +1,4 @@
 """
-0640_exponential.py
-
 Symmetry between exp and log, and the calculus identity
 
     d/dx  log(f(x))  =  f'(x) / f(x)
@@ -9,9 +7,6 @@ Why it matters in ML / probability:
     - log turns products into sums (likelihood -> log-likelihood)
     - the score / gradient of a log-density is (density)' / density
     - softmax / cross-entropy / Gaussian MLE all lean on this
-
-Companion to 0660_product_of_random.py (log turns products into sums)
-and 0470_maximum_likelihood.py (we maximize log L, not L).
 """
 
 import torch
@@ -180,7 +175,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Products <-> sums under log / exp
 # -------------------------------------------------------
@@ -232,7 +226,6 @@ def build_step_2():
 
     plt.tight_layout()
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -290,7 +283,6 @@ def build_step_3():
 
     plt.tight_layout()
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -364,8 +356,6 @@ def build_step_4():
 
     plt.tight_layout()
     return fig4
-
-
 
 
 run_slide_deck([

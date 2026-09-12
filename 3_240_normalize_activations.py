@@ -1,6 +1,4 @@
 """
-0720_normalize_activations.py
-
 Intuition for Batch Normalization vs Layer Normalization.
 
 Both re-center and re-scale activations to roughly zero-mean / unit-variance,
@@ -16,9 +14,6 @@ The difference is WHICH AXIS the mean/var are computed over:
 
     BatchNorm  -- for each FEATURE, pool over the BATCH  (and spatial dims)
     LayerNorm  -- for each SAMPLE (token), pool over the FEATURES
-
-Companion to 0280_model.py (deeper nets need stable activation scales) and
-0530_momentum.py / 190_loss_functions.py (optimization geometry).
 """
 
 import matplotlib.pyplot as plt
@@ -196,7 +191,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: What axis do we average over?
 # -------------------------------------------------------
@@ -270,7 +264,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: After BN vs after LN
 # -------------------------------------------------------
@@ -325,7 +318,6 @@ def build_step_3():
     fig3.colorbar(im, ax=axes3.ravel().tolist(), fraction=0.02, pad=0.02)
     plt.tight_layout()
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -383,7 +375,6 @@ def build_step_4():
 
     plt.tight_layout()
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -463,7 +454,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Tiny training cartoon -- loss curvature / scales
 # -------------------------------------------------------
@@ -534,8 +524,6 @@ def build_step_6():
 
     plt.tight_layout()
     return fig6
-
-
 
 
 run_slide_deck([

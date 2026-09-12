@@ -1,6 +1,4 @@
 """
-0350_pipeline_feature_engineering.py
-
 Data pipeline, features, and feature engineering -- with an end-to-end demo.
 
 Sketch:
@@ -13,9 +11,6 @@ Sketch:
   7. Tiny model comparison: raw numerics vs engineered features
   8. Fit transforms on train only -- leakage warning
   9. Pipeline as a reusable chain
-
-Companion to 0340_normalize_data.py, 0280_model.py, 0720_normalize_activations.py,
-0260_numpy_torch.py.
 """
 
 from __future__ import annotations
@@ -290,7 +285,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: What is a feature?
 # -------------------------------------------------------
@@ -348,7 +342,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Feature engineering catalog
 # -------------------------------------------------------
@@ -377,7 +370,6 @@ def build_step_3():
         ax3.text(x + 1.3, y + 0.75, body, ha='center', va='center',
                  fontsize=FS_ANNOT)
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -447,7 +439,6 @@ def build_step_4():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Engineering recipe
 # -------------------------------------------------------
@@ -490,7 +481,6 @@ def build_step_5():
                  bbox=dict(boxstyle='round,pad=0.25', facecolor='white',
                            edgecolor=C_OK, alpha=0.95))
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -539,7 +529,6 @@ def build_step_6():
         ha='center', va='bottom', fontsize=FS_ANNOT + 1, fontweight='bold',
     )
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -607,7 +596,6 @@ def build_step_7():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Leakage -- fit transforms on train only
 # -------------------------------------------------------
@@ -670,7 +658,6 @@ def build_step_8():
     return fig8
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: Pipeline as a reusable chain
 # -------------------------------------------------------
@@ -708,8 +695,6 @@ def build_step_9():
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig9
-
-
 
 
 run_slide_deck([
@@ -756,5 +741,5 @@ Step 9 -- ship the pipeline:
   Persist transform parameters with the model.
   Serving a model without its feature recipe is serving a different model.
 
-See also: 0340_normalize_data.py, 0280_model.py, 0720_normalize_activations.py
+, , 
 """)

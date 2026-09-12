@@ -1,6 +1,4 @@
 """
-0330_distribution.py
-
 Why we study distributions -- from the lecture strategy.
 
 Sketch:
@@ -14,9 +12,9 @@ Sketch:
   7. Everyday images as a distribution.
   8. Dog vs cat photo clusters (two modes).
   9. Therefore we study distribution.
-     NumPy / Torch: 041_numpy_torch.py.
-     Normalize arc: 0340_normalize_data.py.
-     (Discriminative vs generative lives in 0740_discriminative_generative.py.)
+ NumPy / Torch: .
+ Normalize arc: .
+ (Discriminative vs generative lives in .)
 """
 
 import matplotlib.pyplot as plt
@@ -152,7 +150,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Use accumulated data, not endless domain study
 # -------------------------------------------------------
@@ -198,7 +195,6 @@ def build_step_2():
     )
 
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -260,7 +256,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Knowledge / capability as a distribution
 # -------------------------------------------------------
@@ -305,7 +300,6 @@ def build_step_4():
     )
 
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -372,7 +366,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Next-sentence distribution after a given context
 # -------------------------------------------------------
@@ -432,7 +425,6 @@ def build_step_6():
     )
     fig6.tight_layout(rect=[0, 0, 1, 0.80])
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -561,7 +553,6 @@ def build_step_7():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Another example -- dog vs cat photo clusters
 # -------------------------------------------------------
@@ -618,7 +609,6 @@ def build_step_8():
     return fig8
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: Bridge to the next technical work
 # -------------------------------------------------------
@@ -657,7 +647,6 @@ def build_step_9():
     )
 
     return fig14
-
 
 
 # -------------------------------------------------------
@@ -717,7 +706,7 @@ Zoom-in example (Step 8):
   Dog-photo and cat-photo points in 2D form two modes / clusters
   -- still a distribution, now with two pile-ups.
 
-See also: 041_numpy_torch.py,
+,
           0340_normalize_data.py (normalize; why N(0,1); code),
           0740_discriminative_generative.py
 """)

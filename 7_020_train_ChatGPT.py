@@ -1,6 +1,4 @@
 """
-0173_train_GPT.py
-
 How ChatGPT-class models are trained -- mechanistically.
 
 OpenAI-style pipeline (conceptual):
@@ -34,7 +32,6 @@ Sketch:
   25. R/pi is reward-equivalent weighting -- not literal r_t
   26. Token-wise responsibility vs token-wise reward
 
-Companion: Ch03 after 0172_Opportunity.py; before Stage I API ladder.
 Note: OpenAI has not published a complete current recipe; we use the
 public InstructGPT / ChatGPT post-training pattern as the teaching model.
 """
@@ -174,7 +171,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Pre-training -- next token
 # -------------------------------------------------------
@@ -224,7 +220,6 @@ def build_step_2():
         bbox=dict(boxstyle="round,pad=0.3", facecolor=C_GOAL, edgecolor=C_OK, alpha=0.95),
     )
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -279,7 +274,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Generation loop
 # -------------------------------------------------------
@@ -328,7 +322,6 @@ def build_step_4():
         ha="center", va="center", fontsize=FS_ANNOT + 1, fontweight="bold",
     )
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -382,7 +375,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Open question
 # -------------------------------------------------------
@@ -417,7 +409,6 @@ def build_step_6():
         ha="center", va="center", fontsize=FS_ANNOT, fontweight="bold", color="#145a32",
     )
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -471,7 +462,6 @@ def build_step_7():
         bbox=dict(boxstyle="round,pad=0.35", facecolor="#f9e79f", edgecolor="#b7950b", alpha=0.95),
     )
     return fig7
-
 
 
 # -------------------------------------------------------
@@ -528,7 +518,6 @@ def build_step_8():
     return fig8
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: SFT reshapes probability
 # -------------------------------------------------------
@@ -576,7 +565,6 @@ def build_step_9():
     return fig9
 
 
-
 # -------------------------------------------------------
 # FIGURE 10: SFT limitation
 # -------------------------------------------------------
@@ -616,7 +604,6 @@ def build_step_10():
         bbox=dict(boxstyle="round,pad=0.35", facecolor="#f9e79f", edgecolor="#b7950b", alpha=0.95),
     )
     return fig10
-
 
 
 # -------------------------------------------------------
@@ -661,7 +648,6 @@ def build_step_11():
     return fig11
 
 
-
 # -------------------------------------------------------
 # FIGURE 12: Reward model
 # -------------------------------------------------------
@@ -702,7 +688,6 @@ def build_step_12():
         bbox=dict(boxstyle="round,pad=0.35", facecolor="#f9e79f", edgecolor="#b7950b", alpha=0.95),
     )
     return fig12
-
 
 
 # -------------------------------------------------------
@@ -775,7 +760,6 @@ def build_step_13():
     return fig13
 
 
-
 # -------------------------------------------------------
 # FIGURE 14: Token action + sequence reward
 # -------------------------------------------------------
@@ -814,7 +798,6 @@ def build_step_14():
         ha="center", va="center", fontsize=FS_ANNOT, fontweight="bold", color="#6e2c00",
     )
     return fig14
-
 
 
 # -------------------------------------------------------
@@ -872,7 +855,6 @@ def build_step_15():
     return fig15
 
 
-
 # -------------------------------------------------------
 # FIGURE 16: KL constraint
 # -------------------------------------------------------
@@ -926,7 +908,6 @@ def build_step_16():
     return fig16
 
 
-
 # -------------------------------------------------------
 # FIGURE 17: Summary table + binding
 # -------------------------------------------------------
@@ -969,7 +950,6 @@ def build_step_17():
     return fig17
 
 
-
 # -------------------------------------------------------
 # FIGURE 18: Key RL question
 # -------------------------------------------------------
@@ -1007,7 +987,6 @@ def build_step_18():
         ha="center", fontsize=FS_ANNOT, fontweight="bold", color=C_DARK,
     )
     return fig18
-
 
 
 # -------------------------------------------------------
@@ -1050,7 +1029,6 @@ def build_step_19():
         ha="center", va="center", fontsize=FS_ANNOT, fontweight="bold", color="#145a32",
     )
     return fig19
-
 
 
 # -------------------------------------------------------
@@ -1106,7 +1084,6 @@ def build_step_20():
     return fig20
 
 
-
 # -------------------------------------------------------
 # FIGURE 21: Advantages
 # -------------------------------------------------------
@@ -1157,7 +1134,6 @@ def build_step_21():
     return fig21
 
 
-
 # -------------------------------------------------------
 # FIGURE 22: LLM concrete view
 # -------------------------------------------------------
@@ -1197,7 +1173,6 @@ def build_step_22():
         ha="center", va="center", fontsize=FS_ANNOT, fontweight="bold",
     )
     return fig22
-
 
 
 # -------------------------------------------------------
@@ -1246,7 +1221,6 @@ def build_step_23():
     return fig23
 
 
-
 # -------------------------------------------------------
 # FIGURE 24: Softmax coupling
 # -------------------------------------------------------
@@ -1284,7 +1258,6 @@ def build_step_24():
         bbox=dict(boxstyle="round,pad=0.35", facecolor="#f9e79f", edgecolor="#b7950b", alpha=0.95),
     )
     return fig24
-
 
 
 # -------------------------------------------------------
@@ -1330,7 +1303,6 @@ def build_step_25():
         ha="center", va="center", fontsize=FS_ANNOT, fontweight="bold", color="#145a32",
     )
     return fig25
-
 
 
 # -------------------------------------------------------
@@ -1392,8 +1364,6 @@ def build_step_26():
         ha="center", va="center", fontsize=FS_TICK + 1, fontweight="bold",
     )
     return fig26
-
-
 
 
 run_slide_deck([

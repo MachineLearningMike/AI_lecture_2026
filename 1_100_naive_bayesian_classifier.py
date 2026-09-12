@@ -17,7 +17,6 @@ Sketch:
   10. Tiny code sketch
   11. Takeaway
 
-Sits after 1_090_Bayes_theorem.py (update beliefs) and before averages /
 product-of-randoms. Ties to discriminative vs generative (2_090).
 """
 

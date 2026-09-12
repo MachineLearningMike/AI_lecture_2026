@@ -18,7 +18,6 @@ Sketch:
   9. Modern training algorithm (pseudocode)
   10. Takeaway
 
-Sits after 3_270_data_pipeline.py (Dataset/DataLoader) -- detectors use the
 same pipeline pattern with a richer sample and a richer loss.
 """
 

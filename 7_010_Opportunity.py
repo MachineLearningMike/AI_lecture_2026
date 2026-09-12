@@ -1,6 +1,4 @@
 """
-0172_Opportunity.py
-
 Why exploit LLMs now: local computers grew slowly; frontier LLMs and
 their datacenters scaled many times over -- and will keep scaling.
 
@@ -10,8 +8,6 @@ Sketch:
   3. Intelligence -- local vs. datacenter (specialized local models vs frontier LLMs)
   4. Local vs. datacenter for special problems -- replace or combine?
   5. Broad, non-deterministic, flexible intelligence for business problems
-
-Companion: Ch03 Exploit LLM (after 0170 opener, before Stage I).
 """
 
 from __future__ import annotations
@@ -177,7 +173,6 @@ def build_step_1():
     return fig0
 
 
-
 # FIGURE 2: Opportunity -- LLMs and their upgrades
 # -------------------------------------------------------
 # Schematic (not a precise FLOPs chart): local PCs barely moved;
@@ -261,7 +256,6 @@ def build_step_2():
 
     fig1.tight_layout(rect=[0, 0.12, 1, 0.94])
     return fig1
-
 
 
 # -------------------------------------------------------
@@ -375,7 +369,6 @@ def build_step_3():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Local vs. datacenter for special problems
 # -------------------------------------------------------
@@ -459,7 +452,6 @@ def build_step_4():
 
 
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -549,8 +541,6 @@ def build_step_5():
     )
 
     return fig4
-
-
 
 
 run_slide_deck([

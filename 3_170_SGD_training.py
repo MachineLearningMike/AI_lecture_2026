@@ -1,6 +1,4 @@
 """
-0550_SGD_training.py
-
 Train a model with Gradient Descent: full-batch vs mini-batch.
 
 Same data, same model, same learning rate. Only the batch size changes:
@@ -19,10 +17,8 @@ What to watch:
   3) Mini-batch GD is economic: each SGD step is cheap, so you buy MORE
      SGD steps per unit of data/compute.
 
-Terminology matches 200_SGD_concept.py:
+Terminology matches :
   full-batch loss L(... ; w), mini-batch loss, SGD step, examples touched.
-
-Companion to 070_torch_training.py and 200_SGD_concept.py.
 """
 
 from __future__ import annotations
@@ -101,7 +97,6 @@ def add_note(ax, text, x=0.98, y=0.98, ha="right", va="top", facecolor="lightyel
 
 
 # -------------------------------------------------------
-# Consistent names (aligned with 200_SGD_concept.py):
 #   full-batch GD         -- batch size = N
 #   mini-batch GD         -- batch size = b  (often called SGD in deep learning)
 #   w                     -- model parameters (weights + bias); a CONDITION for L (...; w), not sole input of L
@@ -329,7 +324,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Same number of SGD steps -- same limit, unstable path
 # -------------------------------------------------------
@@ -410,7 +404,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Same data budget -- why mini-batch GD is economic
 # -------------------------------------------------------
@@ -480,7 +473,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Late training -- same neighborhood, different stability
 # -------------------------------------------------------
@@ -543,8 +535,6 @@ def build_step_4():
 
     fig4.tight_layout(rect=[0, 0, 1, 0.94])
     return fig4
-
-
 
 
 run_slide_deck([

@@ -1,6 +1,4 @@
 """
-0560_back_propagation.py
-
 Backpropagation on the simplest model, then how PyTorch builds a grad graph,
 runs backward(), and applies step() -- with a step-by-step forward/backward seeker.
 
@@ -21,9 +19,6 @@ Sketch:
   6. Why zero_grad matters
   7. One optimizer step closes the loop
   8. Takeaway
-
-Companion to 0270_torch_training.py, 0490_derivative.py, 0540_SGD_concept.py,
-0750_discriminative_toys.py.
 """
 
 from __future__ import annotations
@@ -188,7 +183,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Chain rule by hand
 # -------------------------------------------------------
@@ -239,7 +233,6 @@ def build_step_2():
         ha="center", fontsize=FS_ANNOT + 1, fontweight="bold", color=C_DARK,
     )
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -309,7 +302,6 @@ def build_step_3():
         )
     fig3.tight_layout(rect=[0, 0.02, 1, 0.92])
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -666,7 +658,6 @@ def build_step_4():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: How graph content changes (phase strip)
 # -------------------------------------------------------
@@ -687,7 +678,6 @@ def build_step_5():
         mini_graph(ax, step, title)
     fig5.tight_layout(rect=[0, 0.02, 1, 0.94])
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -731,7 +721,6 @@ def build_step_6():
     ax6b.grid(True, alpha=0.3, axis="y")
     fig6.tight_layout(rect=[0, 0.02, 1, 0.92])
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -785,7 +774,6 @@ def build_step_7():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Takeaway
 # -------------------------------------------------------
@@ -798,8 +786,6 @@ def build_step_8():
     mini_graph(axes8[2], 9, "step updates\nparameters")
     fig8.tight_layout(rect=[0, 0.02, 1, 0.90])
     return fig8
-
-
 
 
 run_slide_deck([
@@ -827,5 +813,5 @@ Manual grads match torch.backward():
 Seeker (Next/Prev, slider, arrow keys/space):
   forward graph growth -> backward grad flow -> step -> free -> zero_grad
 
-See also: 0270_torch_training.py, 0490_derivative.py, 0540_SGD_concept.py
+, , 
 """)

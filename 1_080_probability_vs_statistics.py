@@ -1,6 +1,4 @@
 """
-0620_probability_vs_statistics.py
-
 Probability vs statistics -- two directions of the same relationship.
 
   Probability:  known world  -->  what data look like
@@ -20,10 +18,6 @@ Sketch:
   8. Bayes as the bridge
   9. Where this shows up in modeling (generative vs discriminative; MLE)
   10. Takeaway: difference + relation
-
-Companion to 0600_law_of_large_numbers.py, 0610_central_limit_theorem.py,
-0630_Bayesian_theorem.py, 0470_maximum_likelihood.py,
-0740_discriminative_generative.py.
 """
 
 from __future__ import annotations
@@ -177,7 +171,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: The difference
 # -------------------------------------------------------
@@ -215,7 +208,6 @@ def build_step_2():
         ha="center", va="center", fontsize=FS_ANNOT + 1,
     )
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -267,7 +259,6 @@ def build_step_3():
     return fig2b
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Forward demo
 # -------------------------------------------------------
@@ -304,7 +295,6 @@ def build_step_4():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Inverse demo
 # -------------------------------------------------------
@@ -339,7 +329,6 @@ def build_step_5():
     axes4[1].grid(True, alpha=0.3)
     fig4.tight_layout(rect=[0, 0.02, 1, 0.92])
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -391,7 +380,6 @@ def build_step_6():
     _u5()
     print("Step 6: probability mode -- drag p.")
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -452,7 +440,6 @@ def build_step_7():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Bayes as bridge
 # -------------------------------------------------------
@@ -494,7 +481,6 @@ def build_step_8():
         ha="center", va="center", fontsize=FS_ANNOT + 1,
     )
     return fig7
-
 
 
 # -------------------------------------------------------
@@ -554,7 +540,6 @@ def build_step_9():
     return fig8
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: Takeaway
 # -------------------------------------------------------
@@ -588,8 +573,6 @@ def build_step_10():
                 fontweight="bold", color=edge)
         ax.text(5.0, 4.0, body, ha="center", va="center", fontsize=FS_ANNOT + 1)
     return fig9
-
-
 
 
 run_slide_deck([

@@ -1,6 +1,4 @@
 """
-0670_stress_test.py
-
 Stress-testing a popular misuse of the CLT / averaging intuition.
 
 Setup (i.i.d. draws with mean mu):
@@ -27,9 +25,6 @@ Sketch:
   6. Conditional view -- after many zeros, you are MORE often still far from mu
   7. Where CLT still applies (and where it does not)
   8. Takeaway
-
-Companion to 0600_law_of_large_numbers.py, 0610_central_limit_theorem.py,
-0630_Bayesian_theorem.py, 0620_probability_vs_statistics.py.
 """
 
 from __future__ import annotations
@@ -196,7 +191,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: The catch-up fallacy
 # -------------------------------------------------------
@@ -231,7 +225,6 @@ def build_step_2():
         ax2.text(x0 + 1.35, y0 + 1.2, body, ha="center", va="center",
                  fontsize=FS_TICK + 1)
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -280,7 +273,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Independence
 # -------------------------------------------------------
@@ -316,7 +308,6 @@ def build_step_4():
         ax4.text(x0 + 1.75, y0 + 1.3, body, ha="center", va="center",
                  fontsize=FS_ANNOT)
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -395,7 +386,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Conditional -- after many zeros you are often still far
 # -------------------------------------------------------
@@ -446,7 +436,6 @@ def build_step_6():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Where CLT still applies
 # -------------------------------------------------------
@@ -491,7 +480,6 @@ def build_step_7():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Takeaway
 # -------------------------------------------------------
@@ -514,8 +502,6 @@ def build_step_8():
                 fontweight="bold", color=edge)
         ax.text(5.0, 4.2, body, ha="center", va="center", fontsize=FS_ANNOT + 1)
     return fig8
-
-
 
 
 run_slide_deck([

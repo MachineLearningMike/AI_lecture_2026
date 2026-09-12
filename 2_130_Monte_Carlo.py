@@ -3,7 +3,6 @@
 
 Monte Carlo methods -- estimate expectations (and integrals) by sampling.
 
-Sits late in Chapter 2 as a computational tool used across generative models,
 Bayesian learning, evaluation, and (later) RL returns.
 
 Sketch:

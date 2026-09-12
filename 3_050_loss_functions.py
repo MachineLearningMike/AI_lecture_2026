@@ -7,8 +7,6 @@ Sketch:
   1. Practical reality -- a jungle of local peaks and canyons (same as 3_120 Step 11)
   2. Loss functions -- what they are; why they matter for objective and performance
   3. Mean Squared Error -- formula + browsable 3D surface over one sample (y, y_hat)
-
-Companion to 3_120_derivative.py, 3_060_Loss_Mean_Squared_Error.py.
 """
 
 from __future__ import annotations
@@ -231,7 +229,6 @@ def build_step_2():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: MSE formula + browsable 3D surface over (y, y_hat)
 # -------------------------------------------------------
@@ -316,8 +313,6 @@ def build_step_3():
     return fig2
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -342,5 +337,5 @@ Step 3 -- Mean Squared Error (one sample):
   ell(y_hat, y) = (y_hat - y)^2
   3D surface over (y, y_hat): parabolic bowl; zero on the diagonal y_hat = y.
 
-See also: 3_120_derivative.py, 3_060_Loss_Mean_Squared_Error.py
+, 
 """)

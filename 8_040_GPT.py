@@ -1,6 +1,4 @@
 """
-0960_GPT.py
-
 LLMs and GPT -- decoder-only Transformers that predict the next token.
 
 Pipeline sketched here:
@@ -10,8 +8,6 @@ Pipeline sketched here:
   4) Use: zero-shot / one-shot / few-shot prompting, chain-of-thought, tools
 
 GPT = Generative Pre-trained Transformer (Radford et al.), scaled into
-today's chat LLMs. Companion to 0850_transformer.py (causal mask) and
-0950_BERT.py (encoder / MLM fork of the same family).
 """
 
 import matplotlib.pyplot as plt
@@ -171,7 +167,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Causal LM objective + interactive temperature
 # -------------------------------------------------------
@@ -268,7 +263,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Causal mask
 # -------------------------------------------------------
@@ -339,7 +333,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Scaling -- why "large"
 # -------------------------------------------------------
@@ -395,7 +388,6 @@ def build_step_4():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Pretrain -> SFT -> Align pipeline
 # -------------------------------------------------------
@@ -438,7 +430,6 @@ def build_step_5():
 
     plt.tight_layout()
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -560,7 +551,6 @@ def build_step_6():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Zero / one / few-shot
 # -------------------------------------------------------
@@ -609,7 +599,6 @@ def build_step_7():
     )
     fig7.tight_layout(rect=[0, 0.08, 1, 1])
     return fig7
-
 
 
 # -------------------------------------------------------
@@ -664,7 +653,6 @@ def build_step_8():
 
     plt.tight_layout()
     return fig8
-
 
 
 # -------------------------------------------------------
@@ -829,7 +817,6 @@ def build_step_9():
     return fig9
 
 
-
 # -------------------------------------------------------
 # FIGURE 10: Alignment HHH tradeoffs + DPO
 # -------------------------------------------------------
@@ -939,7 +926,6 @@ def build_step_10():
     return fig10
 
 
-
 # -------------------------------------------------------
 # FIGURE 11: Prompting stack at inference
 # -------------------------------------------------------
@@ -972,7 +958,6 @@ def build_step_11():
 
     plt.tight_layout()
     return fig11
-
 
 
 # -------------------------------------------------------
@@ -1022,8 +1007,6 @@ def build_step_12():
 
     plt.tight_layout()
     return fig12
-
-
 
 
 run_slide_deck([

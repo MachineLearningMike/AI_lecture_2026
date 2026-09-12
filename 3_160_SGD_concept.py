@@ -1,6 +1,4 @@
 """
-200_SGD_concept.py
-
 Stochastic Gradient Descent (SGD) -- why minibatches, what convergence
 we can expect, and how learning rate + batch size control stability.
 
@@ -20,9 +18,6 @@ Intuition this lecture makes visible:
   3) How much "guarantee" we get (noise averages out; lr must be small enough)
   4) What hurts stability (too-large lr, too-small batches, sharp curvature)
   5) Why batch size matters (noise scale ~ 1/sqrt(b); same data budget, different paths)
-
-Companion to 070_torch_training.py, 0530_momentum.py, 190_loss_functions.py,
-0550_SGD_training.py.
 """
 
 from __future__ import annotations
@@ -235,7 +230,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: When SGD applies -- finite-sum / separable losses
 # -------------------------------------------------------
@@ -301,7 +295,6 @@ def build_step_2():
 
     fig2.tight_layout(rect=[0, 0, 1, 0.94])
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -387,7 +380,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Paths -- full GD vs SGD for different batch sizes
 # -------------------------------------------------------
@@ -450,7 +442,6 @@ def build_step_4():
 
     fig4.tight_layout(rect=[0, 0, 1, 0.94])
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -532,7 +523,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Stability depends on lr, batch size, and curvature
 # -------------------------------------------------------
@@ -602,7 +592,6 @@ def build_step_6():
 
     fig6.tight_layout(rect=[0, 0, 1, 0.94])
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -683,8 +672,6 @@ def build_step_7():
 
     fig7.tight_layout(rect=[0, 0, 1, 0.94])
     return fig7
-
-
 
 
 run_slide_deck([

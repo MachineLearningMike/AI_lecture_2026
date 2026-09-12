@@ -1,6 +1,4 @@
 """
-0790_word_vector.py
-
 Word2Vec, explained intuitively.
 
 Big idea:
@@ -19,9 +17,6 @@ Sketch:
   7. Analogy arrows -- king - man + woman ~ queen
   8. Training moves the points
   9. Takeaway collage
-
-Companion to 0560_back_propagation.py, 0820_softmax.py, 0860_QKV_attention.py,
-0850_transformer.py.
 """
 
 from __future__ import annotations
@@ -211,7 +206,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Context window
 # -------------------------------------------------------
@@ -259,7 +253,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Similar company -> similar vectors
 # -------------------------------------------------------
@@ -297,7 +290,6 @@ def build_step_3():
     axes3[1].text(-1.5, 1.95, "similar company", color=C_OK, fontsize=FS_TICK, fontweight="bold")
     fig3.tight_layout(rect=[0, 0.02, 1, 0.92])
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -341,7 +333,6 @@ def build_step_4():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Dot product scores neighbors
 # -------------------------------------------------------
@@ -372,7 +363,6 @@ def build_step_5():
     ax5b.grid(True, alpha=0.3, axis="y")
     fig5.tight_layout(rect=[0, 0.05, 1, 0.92])
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -443,7 +433,6 @@ def build_step_6():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Analogy arrows
 # -------------------------------------------------------
@@ -480,7 +469,6 @@ def build_step_7():
         ax7b.text(5.0, y - i * 1.0 + 0.42, f"{i + 1}. {w}   cos={s:.2f}",
                   ha="center", va="center", fontsize=FS_ANNOT, family="monospace")
     return fig7
-
 
 
 # -------------------------------------------------------
@@ -566,7 +554,6 @@ def build_step_8():
     return fig8
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: Takeaway collage
 # -------------------------------------------------------
@@ -605,8 +592,6 @@ def build_step_9():
     return fig9
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -631,6 +616,6 @@ Word2Vec intuition:
   4) Dot product + softmax = neighbor probabilities.
   5) Analogies emerge as vector arrows.
 
-See also: 0560_back_propagation.py, 0820_softmax.py,
+, ,
           0860_QKV_attention.py, 0850_transformer.py
 """)

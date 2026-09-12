@@ -1,6 +1,4 @@
 """
-0570_AdamW_and_LR_schedules.py
-
 Adam / AdamW and learning-rate schedules -- what students actually meet
 after plain SGD + momentum.
 
@@ -12,9 +10,6 @@ Sketch:
   5. Same optimizer, different schedules -- loss paths
   6. PyTorch-facing recipe + when to use what
   7. Takeaway for Ch08
-
-Companion to 0530_momentum.py, 0540_SGD_concept.py, 0550_SGD_training.py,
-0560_back_propagation.py.
 """
 
 from __future__ import annotations
@@ -215,7 +210,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Adam equations
 # -------------------------------------------------------
@@ -268,7 +262,6 @@ def build_step_2():
         ha="center", va="center", fontsize=FS_ANNOT, color=C_DARK,
     )
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -342,7 +335,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Schedule shapes
 # -------------------------------------------------------
@@ -399,7 +391,6 @@ def build_step_4():
     )
     fig4.tight_layout(rect=[0, 0, 1, 0.94])
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -505,7 +496,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Practical recipe
 # -------------------------------------------------------
@@ -555,7 +545,6 @@ def build_step_6():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Takeaway
 # -------------------------------------------------------
@@ -580,8 +569,6 @@ def build_step_7():
                  fontsize=FS_ANNOT + 1, fontweight="bold", color=C_DARK)
         ax7.text(4.2, y + 0.7, body, ha="left", va="center", fontsize=FS_ANNOT)
     return fig7
-
-
 
 
 run_slide_deck([

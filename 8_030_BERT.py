@@ -1,6 +1,4 @@
 """
-0950_BERT.py
-
 BERT (Bidirectional Encoder Representations from Transformers)
 and its training techniques -- plus the post-BERT survey.
 
@@ -20,9 +18,6 @@ Interactive playgrounds (Steps 12-14):
   - MLM: drag mask position + mask rate; watch prediction bars
   - NSP: drag same-pair <-> random-pair; watch IsNext scores
   - Attention: morph causal <-> bidirectional heatmaps
-
-Companion to 0850_transformer.py (encoder vs decoder) and
-0880_positional_encoding.py (learned absolute PE in original BERT).
 """
 
 import matplotlib.pyplot as plt
@@ -182,7 +177,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Input representation
 # -------------------------------------------------------
@@ -241,7 +235,6 @@ def build_step_2():
 
     plt.tight_layout()
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -303,7 +296,6 @@ def build_step_3():
 
     plt.tight_layout()
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -372,7 +364,6 @@ def build_step_4():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Next Sentence Prediction (NSP)
 # -------------------------------------------------------
@@ -430,7 +421,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Pretrain then fine-tune
 # -------------------------------------------------------
@@ -474,7 +464,6 @@ def build_step_6():
 
     plt.tight_layout()
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -535,7 +524,6 @@ def build_step_7():
 
     plt.tight_layout()
     return fig7
-
 
 
 # -------------------------------------------------------
@@ -602,7 +590,6 @@ def build_step_8():
     return fig8
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: ALBERT -- parameter efficiency
 # -------------------------------------------------------
@@ -654,7 +641,6 @@ def build_step_9():
 
     plt.tight_layout()
     return fig9
-
 
 
 # -------------------------------------------------------
@@ -717,7 +703,6 @@ def build_step_10():
     return fig10
 
 
-
 # -------------------------------------------------------
 # FIGURE 11: Family snapshot
 # -------------------------------------------------------
@@ -762,7 +747,6 @@ def build_step_11():
 
     plt.tight_layout()
     return fig11
-
 
 
 # -------------------------------------------------------
@@ -904,7 +888,6 @@ def build_step_12():
     return fig12
 
 
-
 # -------------------------------------------------------
 # FIGURE 13: Interactive NSP playground
 # -------------------------------------------------------
@@ -1011,7 +994,6 @@ def build_step_13():
     return fig13
 
 
-
 # -------------------------------------------------------
 # FIGURE 14: Interactive bidirectional <-> causal attention
 # -------------------------------------------------------
@@ -1113,8 +1095,6 @@ def build_step_14():
     _update_attn()
     print('Step 14: drag alpha (or click BERT/GPT); watch future keys unlock.')
     return fig14
-
-
 
 
 run_slide_deck([

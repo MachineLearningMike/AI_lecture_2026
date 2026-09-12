@@ -1,9 +1,7 @@
 """
-0301_Bellman_equality.py
-
 The Bellman equality -- intuitively.
 
-After 0300_SL_UL_RL.py: RL cares about return over time.
+After : RL cares about return over time.
 Bellman says: the value of "now" equals reward now plus (discounted) value of "next".
 
 Sketch:
@@ -23,8 +21,6 @@ Sketch:
   14. Policy iteration -- alternate evaluate and improve
   15. Visual intuition -- arrows flip toward better actions
   16. Takeaway
-
-Companion to 0300_SL_UL_RL.py; foreshadows credit assignment in 0173_train_ChatGPT.py.
 """
 
 from __future__ import annotations
@@ -179,7 +175,6 @@ def build_step_1():
     return fig0
 
 
-
 # -------------------------------------------------------
 # FIGURE 1: Return reminder
 # -------------------------------------------------------
@@ -221,7 +216,6 @@ def build_step_2():
         ha="center", fontsize=FS_TICK, style="italic", color="0.35",
     )
     return fig1
-
 
 
 # -------------------------------------------------------
@@ -275,7 +269,6 @@ def build_step_3():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Recursive idea
 # -------------------------------------------------------
@@ -323,7 +316,6 @@ def build_step_4():
         bbox=dict(boxstyle="round,pad=0.3", facecolor=C_MUTE, edgecolor="0.5", alpha=0.95),
     )
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -384,7 +376,6 @@ def build_step_5():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: One-step cartoon
 # -------------------------------------------------------
@@ -422,7 +413,6 @@ def build_step_6():
         ha="center", va="center", fontsize=FS_TICK + 1, fontweight="bold",
     )
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -484,7 +474,6 @@ def build_step_7():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Q values
 # -------------------------------------------------------
@@ -541,7 +530,6 @@ def build_step_8():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Gamma
 # -------------------------------------------------------
@@ -573,7 +561,6 @@ def build_step_9():
     )
     fig8.tight_layout(rect=[0, 0.05, 1, 0.92])
     return fig8
-
 
 
 # -------------------------------------------------------
@@ -627,7 +614,6 @@ def build_step_10():
         bbox=dict(boxstyle="round,pad=0.3", facecolor=C_MUTE, edgecolor="0.5", alpha=0.95),
     )
     return fig9
-
 
 
 # -------------------------------------------------------
@@ -686,7 +672,6 @@ def build_step_11():
     return fig10
 
 
-
 # -------------------------------------------------------
 # FIGURE 12: Policy evaluation
 # -------------------------------------------------------
@@ -740,7 +725,6 @@ def build_step_12():
         bbox=dict(boxstyle="round,pad=0.28", facecolor=C_WARN, edgecolor="#b7950b", alpha=0.95),
     )
     return fig12
-
 
 
 # -------------------------------------------------------
@@ -800,7 +784,6 @@ def build_step_13():
     return fig13
 
 
-
 # -------------------------------------------------------
 # FIGURE 14: Policy iteration
 # -------------------------------------------------------
@@ -841,7 +824,6 @@ def build_step_14():
         ha="center", va="center", fontsize=FS_TICK + 1, fontweight="bold",
     )
     return fig14
-
 
 
 # -------------------------------------------------------
@@ -909,7 +891,6 @@ def build_step_15():
     return fig15
 
 
-
 # -------------------------------------------------------
 # FIGURE 16: Takeaway
 # -------------------------------------------------------
@@ -953,8 +934,6 @@ def build_step_16():
     return fig16
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -995,5 +974,4 @@ Policy improvement:
 Policy iteration:
   evaluate -> improve -> repeat until pi stable (= optimal in finite MDPs).
 
-See also: 0300_SL_UL_RL.py
 """)

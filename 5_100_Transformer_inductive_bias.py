@@ -1,11 +1,9 @@
 """
-0920_Transformer_inductive_bias.py
-
 What inductive biases does a Transformer bring?
 
 Inductive bias = preferences baked into the architecture that guide
 generalization when data alone underdetermine the answer
-(see 0690_inductive_bias.py).
+.
 
 Transformer biases (high level):
   1) Token-in-parallel processing with SHARED weights across positions
@@ -16,9 +14,6 @@ Transformer biases (high level):
   6) Autoregressive bias when causally masked (decoder / GPT)
   7) Residual additive accumulation of layer writes
   8) Weaker locality / translation biases than CNNs (unless added)
-
-Companion to 0850_transformer.py, 0880_positional_encoding.py,
-0890_chain_of_adds.py, 0900_model_dimension.py.
 """
 
 import matplotlib.pyplot as plt
@@ -146,7 +141,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Shared weights / permutation without PE
 # -------------------------------------------------------
@@ -217,7 +211,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Content routing vs CNN locality bias
 # -------------------------------------------------------
@@ -276,7 +269,6 @@ def build_step_3():
 
     plt.tight_layout()
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -343,7 +335,6 @@ def build_step_4():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Causal decoder bias
 # -------------------------------------------------------
@@ -393,7 +384,6 @@ def build_step_5():
 
     plt.tight_layout()
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -458,7 +448,6 @@ def build_step_6():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Comparison table vs CNN / RNN
 # -------------------------------------------------------
@@ -506,8 +495,6 @@ def build_step_7():
     )
 
     return fig7
-
-
 
 
 run_slide_deck([

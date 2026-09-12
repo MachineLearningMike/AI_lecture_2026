@@ -1,15 +1,10 @@
 """
-0610_central_limit_theorem.py
-
 Central Limit Theorem (CLT):
 
   Formal statement first, then an intuitive demo:
 
   No matter how non-Gaussian the data are, the distribution of the
   SAMPLE MEAN becomes approximately Gaussian as the sample size grows.
-
-Companion to 0590_gaussian.py (Gaussian basics / Standard Error for a
-Gaussian source) and 0280_model.py (why non-linear models matter).
 """
 
 import torch

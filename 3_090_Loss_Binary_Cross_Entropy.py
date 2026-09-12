@@ -1,6 +1,4 @@
 """
-194_Binary_Cross_Entropy.py
-
 Binary Cross-Entropy (BCE) -- intuition and simulations for two-class learning.
 
 Sketch:
@@ -13,9 +11,6 @@ Sketch:
   7. Correct class with low confidence still pays
   8. Takeaway -- BCE as a soft coach for a Bernoulli label
   9. Torch -- from-scratch BCE vs nn.BCELoss
-
-Companion to 0310_regression_classification.py, 190_loss_functions.py,
-0820_softmax.py.
 """
 
 from __future__ import annotations
@@ -178,7 +173,6 @@ def build_step_1():
     return fig0
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Browsable 3D BCE(y, p) + p slider
 # -------------------------------------------------------
@@ -306,7 +300,6 @@ def build_step_2():
     return fig_bce3d
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Entropy H(p) = BCE(p, p) -- diagonal slice
 # -------------------------------------------------------
@@ -384,7 +377,6 @@ def build_step_3():
     return fig_ent
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Coin-flip story
 # -------------------------------------------------------
@@ -421,7 +413,6 @@ def build_step_4():
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig1
-
 
 
 # -------------------------------------------------------
@@ -479,7 +470,6 @@ def build_step_5():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: logit -> sigmoid -> BCE
 # -------------------------------------------------------
@@ -527,7 +517,6 @@ def build_step_6():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Confidence tax
 # -------------------------------------------------------
@@ -569,7 +558,6 @@ def build_step_7():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Takeaway
 # -------------------------------------------------------
@@ -603,7 +591,6 @@ def build_step_8():
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -676,8 +663,6 @@ def build_step_9():
     return fig_t
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -710,6 +695,6 @@ Steps:
   8. Takeaway
   9. Torch -- scratch BCE matches nn.BCELoss()
 
-See also: 0310_regression_classification.py, 190_loss_functions.py,
+, ,
           0450_Loss_Categorical_Cross_Entropy.py
 """)

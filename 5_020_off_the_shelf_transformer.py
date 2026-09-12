@@ -1,6 +1,4 @@
 """
-0840_off_the_shelf_transformer.py
-
 Machine translation by CALLING PyTorch's off-the-shelf building blocks --
 not by writing attention / FFN from scratch (that was 151).
 
@@ -13,8 +11,8 @@ Pieces we import and stack:
   nn.TransformerDecoder        -- N copies of that layer
 
 Contrast with the lecture stack:
-  0910_transformer_code.py      -- MultiHeadAttention / FFN written by hand
-  0930_machine_translation.py   -- NMT on that hand-rolled stack
+ -- MultiHeadAttention / FFN written by hand
+ -- NMT on that hand-rolled stack
   153 (this file)              -- same EN->FR task, but assemble from
                                   torch.nn Encoder/Decoder Layer+stack APIs
 
@@ -32,7 +30,7 @@ Shape notation (batch_first=True):
   B = batch, S = source length, T = target length, D = d_model, V = vocab
 
 Run:
-  conda run -n torch27 python 0840_off_the_shelf_transformer.py
+ conda run -n torch27 python
 """
 
 from __future__ import annotations

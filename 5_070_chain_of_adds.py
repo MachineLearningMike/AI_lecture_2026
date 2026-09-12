@@ -1,6 +1,4 @@
 """
-0890_chain_of_adds.py
-
 How Transformer's chained residual additions form a cumulative mix.
 
 In a Transformer block (simplified):
@@ -23,8 +21,6 @@ layer contributes (LayerScale, ReZero, gated residuals):
 
 The learned alphas are a simple readout of which layers write strongly
 into the residual -- and help deep nets start near identity.
-
-Companion to 0850_transformer.py and 0880_positional_encoding.py.
 """
 
 import matplotlib.pyplot as plt
@@ -186,7 +182,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Unrolled equation as stacked blocks
 # -------------------------------------------------------
@@ -243,7 +238,6 @@ def build_step_2():
 
     plt.tight_layout()
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -334,7 +328,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Cumulative mix curves (how much of final is from each layer)
 # -------------------------------------------------------
@@ -385,7 +378,6 @@ def build_step_4():
 
     plt.tight_layout()
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -454,7 +446,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Gradient highway intuition
 # -------------------------------------------------------
@@ -509,7 +500,6 @@ def build_step_6():
 
     plt.tight_layout()
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -592,8 +582,6 @@ def build_step_7():
 
     plt.tight_layout()
     return fig7
-
-
 
 
 run_slide_deck([

@@ -1,6 +1,4 @@
 """
-0980_video_transformer.py
-
 Video Transformer intuition.
 
 A video is a 3D volume: time x height x width (plus channels).
@@ -12,8 +10,6 @@ Central design tension:
     Factorized / divided attention (TimeSformer-style) is much cheaper:
         1) attend over space within each frame
         2) attend over time within each spatial location
-
-Companion to 0850_transformer.py (token attention basics).
 """
 
 import matplotlib.pyplot as plt
@@ -185,7 +181,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Frame patches vs space-time tubelets
 # -------------------------------------------------------
@@ -246,7 +241,6 @@ def build_step_2():
 
     plt.tight_layout()
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -364,7 +358,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Cost comparison + example attention maps
 # -------------------------------------------------------
@@ -423,7 +416,6 @@ def build_step_4():
 
     plt.tight_layout()
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -488,7 +480,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Architecture zoo (mental map)
 # -------------------------------------------------------
@@ -550,8 +541,6 @@ def build_step_6():
     return fig6
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -590,5 +579,5 @@ Intuition to keep:
   Motion is correspondence across time -- temporal attention is how
   tokens find those correspondences.
 
-See also: 0850_transformer.py for plain self-attention mechanics.
+for plain self-attention mechanics.
 """)

@@ -1,9 +1,7 @@
 """
-0302_policy_gradient_methods.py
-
 Policy gradient methods -- REINFORCE, baselines, actor-critic, PPO, and the family map.
 
-After 0301_Bellman_equality.py (values / policy iteration), this lecture
+After (values / policy iteration), this lecture
 optimizes a parameterized policy π_θ directly.
 
 Sketch:
@@ -24,8 +22,6 @@ Sketch:
   15. Family map -- REINFORCE → AC → PPO / SAC / DDPG
   16. Bridge to LLM RLHF
   17. Takeaway
-
-Companion to 0301_Bellman_equality.py, 0173_train_ChatGPT.py (REINFORCE/PPO in LLMs).
 """
 
 from __future__ import annotations
@@ -180,7 +176,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Parameterized policy
 # -------------------------------------------------------
@@ -229,7 +224,6 @@ def build_step_2():
         bbox=dict(boxstyle="round,pad=0.28", facecolor=C_MUTE, edgecolor="0.5", alpha=0.95),
     )
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -282,7 +276,6 @@ def build_step_3():
         bbox=dict(boxstyle="round,pad=0.28", facecolor=C_WARN, edgecolor="#b7950b", alpha=0.95),
     )
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -355,7 +348,6 @@ def build_step_4():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: REINFORCE
 # -------------------------------------------------------
@@ -397,7 +389,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Visual REINFORCE
 # -------------------------------------------------------
@@ -437,7 +428,6 @@ def build_step_6():
     )
     fig6.tight_layout(rect=[0, 0.05, 1, 0.92])
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -499,7 +489,6 @@ def build_step_7():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Advantages
 # -------------------------------------------------------
@@ -543,7 +532,6 @@ def build_step_8():
         bbox=dict(boxstyle="round,pad=0.28", facecolor=C_WARN, edgecolor="#b7950b", alpha=0.95),
     )
     return fig8
-
 
 
 # -------------------------------------------------------
@@ -599,7 +587,6 @@ def build_step_9():
         ha="center", fontsize=FS_TICK, style="italic", color="0.35",
     )
     return fig9
-
 
 
 # -------------------------------------------------------
@@ -668,7 +655,6 @@ def build_step_10():
     return fig10
 
 
-
 # -------------------------------------------------------
 # FIGURE 11: GAE visual -- lambda
 # -------------------------------------------------------
@@ -715,7 +701,6 @@ def build_step_11():
 
     fig11.tight_layout(rect=[0, 0.02, 1, 0.92])
     return fig11
-
 
 
 # -------------------------------------------------------
@@ -771,7 +756,6 @@ def build_step_12():
         bbox=dict(boxstyle="round,pad=0.28", facecolor=C_MUTE, edgecolor="0.5", alpha=0.95),
     )
     return fig12
-
 
 
 # -------------------------------------------------------
@@ -838,7 +822,6 @@ def build_step_13():
     return fig13
 
 
-
 # -------------------------------------------------------
 # FIGURE 14: Continuous / Gaussian
 # -------------------------------------------------------
@@ -885,7 +868,6 @@ def build_step_14():
     return fig14
 
 
-
 # -------------------------------------------------------
 # FIGURE 15: Family map
 # -------------------------------------------------------
@@ -919,7 +901,6 @@ def build_step_15():
         bbox=dict(boxstyle="round,pad=0.25", facecolor=C_WARN, edgecolor="#b7950b", alpha=0.95),
     )
     return fig15
-
 
 
 # -------------------------------------------------------
@@ -974,7 +955,6 @@ def build_step_16():
     return fig16
 
 
-
 # -------------------------------------------------------
 # FIGURE 17: Takeaway
 # -------------------------------------------------------
@@ -1016,8 +996,6 @@ def build_step_17():
         bbox=dict(boxstyle="round,pad=0.22", facecolor=C_GOAL, edgecolor=C_OK, alpha=0.95),
     )
     return fig17
-
-
 
 
 run_slide_deck([
@@ -1063,5 +1041,5 @@ Actor-critic / PPO:
   Critic: fit V (TD / GAE targets)
   L_CLIP = E[ min(rho A, clip(rho, 1-eps, 1+eps) A) ]
 
-See also: 0301_Bellman_equality.py, 0173_train_ChatGPT.py
+, 
 """)

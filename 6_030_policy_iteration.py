@@ -3,9 +3,6 @@
 
 Policy iteration in detail -- evaluate a policy, improve it, repeat.
 
-Sits after 6_020_Bellman_equality.py (Bellman / PE / PI glance) and before
-6_040_policy_gradient_methods.py.
-
 Sketch:
   1. What policy iteration is
   2. Reminder: MDP, V^pi, Q^pi

@@ -1,6 +1,4 @@
 """
-0310_regression_classification.py
-
 Regression vs classification -- intuition, and which loss embraces which.
 
 Sketch:
@@ -10,9 +8,6 @@ Sketch:
   4. Which loss embraces which -- and why
   5. Side-by-side decision guide
   6. Continuous classification = regression?
-
-Companion to 190_loss_functions.py (taxonomy + CE),
-191_Mean_Squared_Error.py (MSE), 0400_loss_functions.py.
 """
 
 from __future__ import annotations
@@ -173,7 +168,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Regression intuition + picture
 def build_step_reg_picture():
@@ -316,7 +310,6 @@ def build_step_2():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Which embraces which -- and why
 # -------------------------------------------------------
@@ -374,7 +367,6 @@ def build_step_3():
                   edgecolor='0.55', alpha=0.95),
     )
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -449,7 +441,6 @@ def build_step_4():
                   edgecolor='0.55', alpha=0.95),
     )
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -531,8 +522,6 @@ def build_step_5():
     return fig6
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_reg_picture,
@@ -563,5 +552,5 @@ Continuous classification = regression?
   Caveat: CE on unordered labels does not know nearby numbers are "almost right";
   MSE does. Real equivalence needs a continuum metric on the labels (or fine bins).
 
-See also: 190_loss_functions.py, 191_Mean_Squared_Error.py, 0400_loss_functions.py
+, , 
 """)

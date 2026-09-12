@@ -1,6 +1,4 @@
 """
-0650_average_of_random.py
-
 Intuition for the mean of TWO identical random variables.
 
 If X1 and X2 are i.i.d. with mean mu and variance sigma^2, then
@@ -14,7 +12,7 @@ satisfies
     Std(M) = sigma / sqrt(2)    (narrower by ~1.41x)
 
 This is the n=2 special case of the Standard Error sigma/sqrt(n),
-and the first step toward the Central Limit Theorem (see 0610_central_limit_theorem.py).
+and the first step toward the Central Limit Theorem.
 """
 
 import torch
@@ -38,8 +36,6 @@ from scipy.stats import norm
 
 torch.manual_seed(42)
 np.random.seed(42)
-
-# Shared style (match 0610_central_limit_theorem.py)
 
 
 def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
@@ -174,7 +170,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Geometric intuition in the (X1, X2) plane
 # -------------------------------------------------------
@@ -241,7 +236,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Algebra — why variance halves
 # -------------------------------------------------------
@@ -279,7 +273,6 @@ def build_step_3():
 
     plt.tight_layout()
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -344,8 +337,6 @@ def build_step_4():
 
     plt.tight_layout()
     return fig4
-
-
 
 
 run_slide_deck([

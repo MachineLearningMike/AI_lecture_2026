@@ -1,6 +1,4 @@
 """
-381_SL_UL_RL.py
-
 Supervised Learning (SL), Unsupervised Learning (UL), and
 Reinforcement Learning (RL) -- three classical ways a model gets a signal.
 
@@ -15,9 +13,6 @@ Sketch:
   8. Contrast table -- what is given, what is learned, when to use which
   9. Learning is binding -- externally vs internally bound
   10. Cleaner terminology -- remap SL / SSL / UL; external ≠ human
-
-Companion to 0280_model.py, 0690_inductive_bias.py,
-0740_discriminative_generative.py, 0150_DL_future.py.
 """
 
 import matplotlib.pyplot as plt
@@ -180,7 +175,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Supervised Learning -- definition
 # -------------------------------------------------------
@@ -239,7 +233,6 @@ def build_step_2():
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -315,7 +308,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Unsupervised Learning -- definition
 # -------------------------------------------------------
@@ -358,7 +350,6 @@ def build_step_4():
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -429,7 +420,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Reinforcement Learning -- definition
 # -------------------------------------------------------
@@ -477,7 +467,6 @@ def build_step_6():
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -554,7 +543,6 @@ def build_step_7():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Contrast table
 # -------------------------------------------------------
@@ -612,7 +600,6 @@ def build_step_8():
                   edgecolor='0.55', alpha=0.96),
     )
     return fig8
-
 
 
 # -------------------------------------------------------
@@ -719,7 +706,6 @@ def build_step_9():
     return fig9
 
 
-
 # -------------------------------------------------------
 # FIGURE 10: Cleaner terminology + remap
 # -------------------------------------------------------
@@ -785,8 +771,6 @@ def build_step_10():
     return fig10
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -848,6 +832,6 @@ Step 10 -- cleaner terminology:
   "External" = external to the learner (RL reward included), not = human.
   Core question: is the binding externally imposed or internally generated?
 
-See also: 0280_model.py, 0690_inductive_bias.py,
+, ,
           0740_discriminative_generative.py, 0150_DL_future.py
 """)

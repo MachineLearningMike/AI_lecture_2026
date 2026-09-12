@@ -17,7 +17,6 @@ Sketch:
   8. Side-by-side comparison
   9. Takeaway
 
-Sits after 4_010_linear_transformation.py (linear maps) -- CNNs are
 structured stacks of local linear maps + nonlinearity + pooling.
 """
 

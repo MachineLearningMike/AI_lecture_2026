@@ -1,6 +1,4 @@
 """
-0963_Diffusion.py
-
 Denoising diffusion models -- how they are trained, with the loss formulas.
 
 Sketch:
@@ -14,8 +12,6 @@ Sketch:
   8. Sampling after training
   9. Score-matching glance + variants
   10. Takeaway
-
-Companion to 0961_VAE.py, 0962_GAN.py, 0760_generative_toys.py.
 """
 
 from __future__ import annotations
@@ -180,7 +176,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Forward process
 # -------------------------------------------------------
@@ -231,7 +226,6 @@ def build_step_2():
         bbox=dict(boxstyle="round,pad=0.3", facecolor=C_WARN, edgecolor="#b7950b", alpha=0.95),
     )
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -297,7 +291,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Why epsilon
 # -------------------------------------------------------
@@ -352,7 +345,6 @@ def build_step_4():
         ha="center", fontsize=FS_TICK, style="italic", color="0.35",
     )
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -416,7 +408,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Visual forward ladder
 # -------------------------------------------------------
@@ -447,7 +438,6 @@ def build_step_6():
     )
     fig6.tight_layout(rect=[0, 0.05, 1, 0.92])
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -486,7 +476,6 @@ def build_step_7():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Sampling algorithm
 # -------------------------------------------------------
@@ -518,7 +507,6 @@ def build_step_8():
         ha="center", va="center", fontsize=FS_ANNOT, fontweight="bold",
     )
     return fig8
-
 
 
 # -------------------------------------------------------
@@ -580,7 +568,6 @@ def build_step_9():
     return fig9
 
 
-
 # -------------------------------------------------------
 # FIGURE 10: Takeaway
 # -------------------------------------------------------
@@ -625,8 +612,6 @@ def build_step_10():
     return fig10
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -654,5 +639,5 @@ Train (simple objective):
 Sample:
   x_T ~ N(0,I); iterate p_theta(x_{t-1}|x_t) down to x_0
 
-See also: 0961_VAE.py, 0962_GAN.py, 0760_generative_toys.py
+, , 
 """)

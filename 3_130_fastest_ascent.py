@@ -1,7 +1,5 @@
 
 """
-0500_fastest_ascent.py
-
 Why the fastest ascending direction is the GRADIENT vector
     grad f = (df/dx, df/dy, ...)
 and NOT "pick the axis whose |partial| is largest".
@@ -18,8 +16,6 @@ Geometry:
     Contour lines are level sets f=const, so moving tangent to a contour
     does not change f. Therefore grad f is perpendicular to the contour:
     that normal direction is exactly the fastest ascent.
-
-Companion to 0490_derivative.py.
 """
 
 import matplotlib.pyplot as plt
@@ -225,7 +221,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Directional derivative vs angle
 # -------------------------------------------------------
@@ -282,7 +277,6 @@ def build_step_2():
 
     fig2.tight_layout(rect=[0, 0, 1, 0.94])
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -354,7 +348,6 @@ def build_step_3():
 
     fig3.tight_layout(rect=[0, 0, 1, 0.94])
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -552,7 +545,6 @@ def build_step_5():
 
     fig5.tight_layout(rect=[0, 0, 1, 0.94])
     return fig5
-
 
 
 run_slide_deck([

@@ -1,6 +1,4 @@
 """
-195_Categorical_Cross_Entropy.py
-
 Categorical Cross-Entropy -- intuition and simulations for K-class learning.
 
 Sketch:
@@ -12,9 +10,6 @@ Sketch:
   6. Confusion of confidence: correct argmax can still be expensive
   7. Takeaway -- CE embraces multi-class because labels are categorical
   8. Torch -- from-scratch CE vs nn.CrossEntropyLoss
-
-Companion to 194_Binary_Cross_Entropy.py, 0310_regression_classification.py,
-190_loss_functions.py, 0820_softmax.py.
 """
 
 from __future__ import annotations
@@ -172,7 +167,6 @@ def build_step_1():
     return fig0
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: One-hot vs p
 # -------------------------------------------------------
@@ -224,7 +218,6 @@ def build_step_2():
         ha='center', va='bottom', fontsize=FS_ANNOT + 1, fontweight='bold',
     )
     return fig1
-
 
 
 # -------------------------------------------------------
@@ -283,7 +276,6 @@ def build_step_3():
     _update_soft()
     print('Step 3: drag s_true; watch softmax and CE.')
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -380,7 +372,6 @@ def build_step_4():
     return fig_tau
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: -log p curve
 # -------------------------------------------------------
@@ -441,7 +432,6 @@ def build_step_5():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Correct argmax, different CE
 # -------------------------------------------------------
@@ -484,7 +474,6 @@ def build_step_6():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Takeaway
 # -------------------------------------------------------
@@ -518,7 +507,6 @@ def build_step_7():
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -597,8 +585,6 @@ def build_step_8():
     return fig_t
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -628,6 +614,6 @@ Steps:
   7. Takeaway
   8. Torch -- scratch CE matches nn.CrossEntropyLoss()
 
-See also: 0440_Loss_Binary_Cross_Entropy.py, 0310_regression_classification.py,
+, ,
           190_loss_functions.py, 0820_softmax.py
 """)

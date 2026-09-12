@@ -1,6 +1,4 @@
 """
-0850_transformer.py
-
 Transformer intuition -- especially self-attention.
 
 Core idea:
@@ -11,9 +9,6 @@ Core idea:
 
 That lets every position directly mix information from every other
 position in one step (global receptive field), without recurrence.
-
-Companion to 0720_normalize_activations.py (LayerNorm in Transformers),
-0710_dropout.py, and 0700_neural_non_linearity.py (FFN non-linearity).
 
 Also sketches recent improvements (efficiency, long context, MoE,
 alignment) and how Transformer usage diversified far beyond MT.
@@ -208,7 +203,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Q, K, V roles
 # -------------------------------------------------------
@@ -249,7 +243,6 @@ def build_step_2():
 
     plt.tight_layout()
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -306,7 +299,6 @@ def build_step_3():
 
     plt.tight_layout()
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -366,7 +358,6 @@ def build_step_4():
 
     plt.tight_layout()
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -448,7 +439,6 @@ def build_step_5():
     return fig4b
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Block diagram of a Transformer layer
 # -------------------------------------------------------
@@ -507,14 +497,12 @@ def build_step_6():
         '0910_transformer_code.py\n'
         '  uses Pre-LN for stability\n'
         '  (LN before Attn/FFN).\n'
-        'See also 0720_normalize_activations.py',
         ha='left', va='center', fontsize=FS_ANNOT,
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.95),
     )
 
     plt.tight_layout()
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -566,7 +554,6 @@ def build_step_7():
 
     plt.tight_layout()
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -627,7 +614,6 @@ def build_step_8():
 
     plt.tight_layout()
     return fig7
-
 
 
 # -------------------------------------------------------
@@ -717,8 +703,6 @@ def build_step_9():
 
     plt.tight_layout()
     return fig8
-
-
 
 
 run_slide_deck([

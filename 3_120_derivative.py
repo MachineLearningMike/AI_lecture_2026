@@ -1,6 +1,4 @@
 """
-0490_derivative.py
-
 Derivatives and partial derivatives, with browsable 3D surfaces.
 
 Rotate / zoom the 3D figures with the mouse (interactive matplotlib backend).
@@ -21,9 +19,6 @@ Coordinate freedom (important):
     linear change of coordinates, the tangent vectors from (df/dx1, df/dx2)
     and from (df/dz1, df/dz2) span the SAME tangent plane in ambient space.
     The hyperplane of tangent vectors is coordinate-independent.
-
-Companion to 0640_exponential.py (log derivative identity) and
-0510_rolling_ball.py (motion follows -grad).
 """
 
 import matplotlib.pyplot as plt
@@ -357,7 +352,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Browsable 3D surface of z = f(x,y)
 # -------------------------------------------------------
@@ -399,7 +393,6 @@ def build_step_2():
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.92),
     )
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -469,7 +462,6 @@ def build_step_3():
         bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
     )
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -558,7 +550,6 @@ def build_step_4():
         bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
     )
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -724,7 +715,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Contour map painted on the floor of the 3D graph
 # -------------------------------------------------------
@@ -814,7 +804,6 @@ def build_step_6():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Original f together with its partial-derivative fields
 # -------------------------------------------------------
@@ -880,7 +869,6 @@ def build_step_7():
     )
     fig7_fields.tight_layout(rect=[0, 0.07, 1, 0.93])
     return fig7_fields
-
 
 
 # -------------------------------------------------------
@@ -1038,7 +1026,6 @@ def build_step_8():
     )
     fig8.tight_layout(rect=[0, 0.08, 1, 0.94])
     return fig8
-
 
 
 # -------------------------------------------------------
@@ -1457,8 +1444,6 @@ def build_step_11():
     )
     fig11.tight_layout(rect=[0, 0, 1, 0.94])
     return fig11
-
-
 
 
 run_slide_deck([

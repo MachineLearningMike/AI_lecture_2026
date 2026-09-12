@@ -22,9 +22,6 @@ Sketch:
   8. Many variables
   9. Bridge to the average M = S / n
   10. Takeaway
-
-Sits after Bayes / density formalisms and before
-1_120_average_of_randomity.py and 1_130_product_of_randomity.py.
 """
 
 from __future__ import annotations

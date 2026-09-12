@@ -17,8 +17,6 @@ Sketch:
   7. Full mini example -- code
   8. Full mini example -- live run (loss curve)
   9. Takeaway
-
-Sits after 3_030_torch_training.py (basic loop) and before richer model pieces.
 """
 
 from __future__ import annotations

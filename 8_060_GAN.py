@@ -1,6 +1,4 @@
 """
-0962_GAN.py
-
 Generative Adversarial Network (GAN) -- how it is trained, with the loss formulas.
 
 Sketch:
@@ -14,9 +12,6 @@ Sketch:
   8. Failure mode: mode collapse (picture)
   9. Practical notes / WGAN glance
   10. Takeaway
-
-Companion to 0961_VAE.py, 0760_generative_toys.py,
-0740_discriminative_generative.py.
 """
 
 from __future__ import annotations
@@ -178,7 +173,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Minimax value
 # -------------------------------------------------------
@@ -230,7 +224,6 @@ def build_step_2():
         ha="center", va="center", fontsize=FS_TICK + 1, fontweight="bold",
     )
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -285,7 +278,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Generator loss
 # -------------------------------------------------------
@@ -338,7 +330,6 @@ def build_step_4():
         ha="center", va="center", fontsize=FS_TICK + 1, fontweight="bold",
     )
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -397,7 +388,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Alternating step
 # -------------------------------------------------------
@@ -431,7 +421,6 @@ def build_step_6():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Visual dynamics cartoon
 # -------------------------------------------------------
@@ -462,7 +451,6 @@ def build_step_7():
 
     fig7.tight_layout(rect=[0, 0.06, 1, 0.92])
     return fig7
-
 
 
 # -------------------------------------------------------
@@ -510,7 +498,6 @@ def build_step_8():
     )
     fig8.tight_layout(rect=[0, 0.05, 1, 0.92])
     return fig8
-
 
 
 # -------------------------------------------------------
@@ -569,7 +556,6 @@ def build_step_9():
     return fig9
 
 
-
 # -------------------------------------------------------
 # FIGURE 10: Takeaway
 # -------------------------------------------------------
@@ -612,8 +598,6 @@ def build_step_10():
     return fig10
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -643,5 +627,5 @@ Generator (common non-saturating, minimize):
 
 Train by alternating updates.  Equilibrium: p_g = p_data, D=1/2.
 
-See also: 0961_VAE.py, 0760_generative_toys.py, 0963_Diffusion.py
+, , 
 """)

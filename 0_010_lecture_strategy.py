@@ -1,6 +1,4 @@
 """
-0110_lecture_strategy.py
-
 Lecture strategy slides.
 
 Vision / Mission / Strategy / Attitude:
@@ -245,7 +243,6 @@ def build_step_3():
     return fig0
 
 
-
 # -------------------------------------------------------
 # FIGURE 1: Baseline -- the real starting point
 # -------------------------------------------------------
@@ -296,7 +293,6 @@ def build_step_4():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Goal -- confidence, intuition, attempts
 # -------------------------------------------------------
@@ -333,7 +329,6 @@ def build_step_5():
                  fontsize=FS_ANNOT + 2)
 
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -394,7 +389,6 @@ def build_step_6():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Strategy slogan -- change the gravity
 # -------------------------------------------------------
@@ -443,7 +437,6 @@ def build_step_7():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: What the lecture does under this gravity
 # -------------------------------------------------------
@@ -487,7 +480,6 @@ def build_step_8():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Contract with students
 # -------------------------------------------------------
@@ -528,7 +520,6 @@ def build_step_9():
                  fontsize=FS_ANNOT + 1)
 
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -599,8 +590,6 @@ def build_step_10():
     )
 
     return fig7
-
-
 
 
 run_slide_deck([

@@ -1,6 +1,4 @@
 """
-0750_discriminative_toys.py
-
 Typical discriminative models -- listed and shown as interactive toys.
 
 Discriminative models learn a direct map from x to y (or P(y|x)),
@@ -17,9 +15,6 @@ Sketch:
   8. Decision stump forest vibe -- axis cuts stack up
   9. Side-by-side: same data, many discriminative skins
   10. Takeaway collage
-
-Companion to 0310_regression_classification.py, 0740_discriminative_generative.py,
-0820_softmax.py, 0700_neural_non_linearity.py.
 """
 
 from __future__ import annotations
@@ -230,7 +225,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Family gallery of typical discriminative models
 # -------------------------------------------------------
@@ -302,7 +296,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Interactive logistic regression
 # -------------------------------------------------------
@@ -357,7 +350,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Interactive softmax territories
 # -------------------------------------------------------
@@ -406,7 +398,6 @@ def build_step_4():
     sl_tau.on_changed(_u4)
     print("Step 4: softmax interactive.")
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -469,7 +460,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Interactive k-NN
 # -------------------------------------------------------
@@ -510,7 +500,6 @@ def build_step_6():
     sl_k.on_changed(_u6)
     print("Step 6: k-NN interactive.")
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -564,7 +553,6 @@ def build_step_7():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Interactive decision stumps (axis-aligned tree vibe)
 # -------------------------------------------------------
@@ -609,7 +597,6 @@ def build_step_8():
     sl_cx.on_changed(_u8); sl_cy.on_changed(_u8)
     print("Step 8: stumps interactive.")
     return fig8
-
 
 
 # -------------------------------------------------------
@@ -657,7 +644,6 @@ def build_step_9():
         ax.grid(True, alpha=0.15)
     fig9.tight_layout(rect=[0, 0.02, 1, 0.94])
     return fig9
-
 
 
 # -------------------------------------------------------
@@ -714,8 +700,6 @@ def build_step_10():
     return fig10
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -739,7 +723,7 @@ Typical discriminative models (shown):
 
 Idea: model P(y|x) or a decision rule -- not full P(x).
 
-See also: 0310_regression_classification.py,
+,
           0740_discriminative_generative.py,
           0820_softmax.py, 0700_neural_non_linearity.py
 """)

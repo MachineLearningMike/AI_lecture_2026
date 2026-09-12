@@ -1,6 +1,4 @@
 """
-0690_inductive_bias.py
-
 Intuition for inductive bias: the assumptions a learner brings so it can
 generalize beyond the finite training set.
 
@@ -15,7 +13,6 @@ Demos:
     3) Regularization strength as a soft bias toward simplicity
     4) Bias--variance cartoon: too little vs too much bias
 
-Companion to 0280_model.py (linear vs deep) and 190_loss_functions.py
 (loss choice is also an inductive bias).
 """
 
@@ -189,7 +186,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Model family = inductive bias
 # -------------------------------------------------------
@@ -236,7 +232,6 @@ def build_step_2():
 
     plt.tight_layout()
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -329,7 +324,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Bias--variance intuition panel
 # -------------------------------------------------------
@@ -380,8 +374,6 @@ def build_step_4():
 
     plt.tight_layout()
     return fig4
-
-
 
 
 run_slide_deck([

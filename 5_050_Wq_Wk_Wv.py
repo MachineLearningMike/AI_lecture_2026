@@ -1,6 +1,4 @@
 """
-0870_Wq_Wk_Wv.py
-
 Learnable W_Q, W_K, W_V are linear "perspective" maps on tokens X:
 
     Q = X W_Q ,   K = X W_K ,   V = X W_V
@@ -23,8 +21,6 @@ Easy logic:
   5) Many perspective pairs can be useful knowledge (different layers / maps).
      "Different" is not "failed learning" -- it is another route the
      distribution made valuable for the loss.
-
-Companion to 0860_QKV_attention.py, 0820_softmax.py, 0890_chain_of_adds.py.
 """
 
 from __future__ import annotations
@@ -216,7 +212,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 1b: Shared W applied to MANY sequences from a distribution
 # -------------------------------------------------------
@@ -287,7 +282,6 @@ def build_step_2():
 
     fig1b.tight_layout(rect=[0, 0, 1, 0.93])
     return fig1b
-
 
 
 # -------------------------------------------------------
@@ -362,7 +356,6 @@ def build_step_3():
 
     fig2.tight_layout(rect=[0, 0, 1, 0.93])
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -443,7 +436,6 @@ def build_step_4():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: One sentence diagram -- perspectives => weights => mix V
 # -------------------------------------------------------
@@ -503,7 +495,6 @@ def build_step_5():
     )
 
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -593,7 +584,6 @@ def build_step_6():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Loss picks the perspectives
 # -------------------------------------------------------
@@ -632,8 +622,6 @@ def build_step_7():
         bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
     )
     return fig6
-
-
 
 
 run_slide_deck([

@@ -18,9 +18,6 @@ Sketch:
   12. Rules a PDF / CDF must obey
   13. Tiny discrete + continuous comparison
   14. Takeaway
-
-Sits after 1_010_distribution.py (why distributions matter) and before
-1_040_gaussian.py / 1_050_more_distributions.py (concrete families).
 """
 
 from __future__ import annotations

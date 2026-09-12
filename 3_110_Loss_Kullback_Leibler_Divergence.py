@@ -1,6 +1,4 @@
 """
-0460_Loss_Kullback_Leibler_Divergence.py
-
 Kullback-Leibler divergence -- the gap between cross-entropy and entropy.
 
 Sketch:
@@ -12,9 +10,6 @@ Sketch:
   6. Soft target -- H(p) is constant; CE and KL move together
   7. Takeaway -- KL is the geometric gap; CE is what we usually optimize
   8. Torch -- from-scratch KL vs nn.KLDivLoss
-
-Companion to 0440_Loss_Binary_Cross_Entropy.py,
-0450_Loss_Categorical_Cross_Entropy.py, 190_loss_functions.py.
 """
 
 from __future__ import annotations
@@ -195,7 +190,6 @@ def build_step_1():
     return fig0
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: CE = H + KL
 # -------------------------------------------------------
@@ -240,7 +234,6 @@ def build_step_2():
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig1
-
 
 
 # -------------------------------------------------------
@@ -292,7 +285,6 @@ def build_step_3():
     )
     fig2.tight_layout(rect=[0, 0, 1, 0.94])
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -362,7 +354,6 @@ def build_step_4():
     _update_asym()
     print('Step 4: drag q; watch KL(p||q) and KL(q||p) disagree.')
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -448,7 +439,6 @@ def build_step_5():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Soft target -- CE and KL share the same slope in q
 # -------------------------------------------------------
@@ -520,7 +510,6 @@ def build_step_6():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Takeaway
 # -------------------------------------------------------
@@ -554,7 +543,6 @@ def build_step_7():
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -640,8 +628,6 @@ def build_step_8():
     return fig_t
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -673,7 +659,7 @@ Steps:
   7. Takeaway
   8. Torch -- scratch KL matches nn.KLDivLoss(batchmean)
 
-See also: 0440_Loss_Binary_Cross_Entropy.py,
+,
           0450_Loss_Categorical_Cross_Entropy.py,
           190_loss_functions.py
 """)

@@ -1,6 +1,4 @@
 """
-0120_intelligence.py
-
 A short opening on what we mean by intelligence in this course.
 
 Sketch (refined):
@@ -147,7 +145,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Working definition
 # -------------------------------------------------------
@@ -185,7 +182,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Assumes a goal
 # -------------------------------------------------------
@@ -221,7 +217,6 @@ def build_step_3():
                  fontsize=FS_ANNOT + 2)
 
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -274,7 +269,6 @@ def build_step_4():
     )
 
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -337,7 +331,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Preview of what comes next
 # -------------------------------------------------------
@@ -373,7 +366,6 @@ def build_step_6():
                  fontsize=FS_ANNOT + 1)
 
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -459,8 +451,6 @@ def build_step_7():
                  fontsize=FS_ANNOT - 2, color='#d6eaf8')
 
     return fig7
-
-
 
 
 run_slide_deck([

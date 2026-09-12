@@ -1,6 +1,4 @@
 """
-013_future_challenges_for_DL.py
-
 Future challenges for deep learning -- a hierarchy built from first principles.
 
 Correction to a naive 1..10 list:
@@ -29,9 +27,6 @@ Sketch:
   8. Where the hard frontier begins
   9. Expressed vs unexpressed knowledge
   10. Takeaway for the course
-
-Companion to 012_historical_achievements_by_DL.py,
-0110_lecture_strategy.py, 0380_train_validate_test_deploy.py.
 """
 
 from __future__ import annotations
@@ -232,7 +227,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Correction -- generalization is vertical
 # -------------------------------------------------------
@@ -273,7 +267,6 @@ def build_step_2():
         ha="center", fontsize=FS_ANNOT + 1, fontweight="bold", color=C_DARK,
     )
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -368,7 +361,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Levels of generalization
 # -------------------------------------------------------
@@ -420,7 +412,6 @@ def build_step_4():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: First principles start
 # -------------------------------------------------------
@@ -461,7 +452,6 @@ def build_step_5():
         ha="center", va="center", fontsize=FS_ANNOT + 1, fontweight="bold",
     )
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -589,7 +579,6 @@ def build_step_6():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Recognition in detail
 # -------------------------------------------------------
@@ -630,7 +619,6 @@ def build_step_7():
         ha="center", va="center", fontsize=FS_ANNOT + 1,
     )
     return fig7
-
 
 
 # -------------------------------------------------------
@@ -678,7 +666,6 @@ def build_step_8():
     return fig8
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: Expressed vs unexpressed
 # -------------------------------------------------------
@@ -721,7 +708,6 @@ def build_step_9():
     return fig9
 
 
-
 # -------------------------------------------------------
 # FIGURE 10: Takeaway
 # -------------------------------------------------------
@@ -751,8 +737,6 @@ def build_step_10():
                 fontweight="bold", color=edge)
         ax.text(5.0, 4.3, body, ha="center", va="center", fontsize=FS_ANNOT)
     return fig10
-
-
 
 
 run_slide_deck([

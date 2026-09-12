@@ -1,6 +1,4 @@
 """
-0961_VAE.py
-
 Variational AutoEncoder (VAE) -- how it is trained, with the loss formulas.
 
 Sketch:
@@ -19,8 +17,6 @@ Sketch:
   13. Visual intuition -- prior samples decode to data
   14. Takeaway
 
-Companion to 0740_discriminative_generative.py, 0760_generative_toys.py,
-0460_Loss_Kullback_Leibler_Divergence.py. Sits after 0960_GPT.py as a
 generative-model bridge before Ch16 variants.
 """
 
@@ -169,7 +165,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: AE vs VAE
 # -------------------------------------------------------
@@ -216,7 +211,6 @@ def build_step_2():
         ha="center", va="center", fontsize=FS_ANNOT, fontweight="bold", color="#145a32",
     )
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -273,7 +267,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Intractable posterior
 # -------------------------------------------------------
@@ -324,7 +317,6 @@ def build_step_4():
         bbox=dict(boxstyle="round,pad=0.28", facecolor="#f5eef8", edgecolor=C_FUN, alpha=0.95),
     )
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -381,7 +373,6 @@ def build_step_5():
         ha="center", va="center", fontsize=FS_TICK + 1, fontweight="bold",
     )
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -451,7 +442,6 @@ def build_step_6():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Closed-form KL
 # -------------------------------------------------------
@@ -509,7 +499,6 @@ def build_step_7():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Reparameterization
 # -------------------------------------------------------
@@ -558,7 +547,6 @@ def build_step_8():
     return fig8
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: One training step
 # -------------------------------------------------------
@@ -589,7 +577,6 @@ def build_step_9():
         ha="center", fontsize=FS_TICK, style="italic", color="0.35",
     )
     return fig9
-
 
 
 # -------------------------------------------------------
@@ -643,7 +630,6 @@ def build_step_10():
 
     fig10.tight_layout(rect=[0, 0.06, 1, 0.92])
     return fig10
-
 
 
 # -------------------------------------------------------
@@ -700,7 +686,6 @@ def build_step_11():
     return fig11
 
 
-
 # -------------------------------------------------------
 # FIGURE 12: Visual intuition -- encode
 # -------------------------------------------------------
@@ -753,7 +738,6 @@ def build_step_12():
     )
     fig12.tight_layout(rect=[0, 0.05, 1, 0.92])
     return fig12
-
 
 
 # -------------------------------------------------------
@@ -812,7 +796,6 @@ def build_step_13():
     return fig13
 
 
-
 # -------------------------------------------------------
 # FIGURE 14: Takeaway
 # -------------------------------------------------------
@@ -853,8 +836,6 @@ def build_step_14():
         bbox=dict(boxstyle="round,pad=0.28", facecolor=C_GOAL, edgecolor=C_OK, alpha=0.95),
     )
     return fig14
-
-
 
 
 run_slide_deck([
@@ -902,6 +883,6 @@ Reparameterization:
 Generate:
   z ~ N(0,I);  x_hat ~ p_theta(x|z)
 
-See also: 0760_generative_toys.py, 0460_Loss_Kullback_Leibler_Divergence.py,
+, ,
           0740_discriminative_generative.py
 """)

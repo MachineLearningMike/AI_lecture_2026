@@ -1,6 +1,4 @@
 """
-0760_generative_toys.py
-
 Typical generative models -- listed and shown as interactive toys.
 
 Generative models learn P(x) or P(x|y) (and often P(y)), so they can
@@ -18,9 +16,6 @@ Sketch:
   9. Diffusion toy -- drag noise level (forward / reverse vibe)
   10. Same world, many generative skins
   11. Takeaway collage
-
-Companion to 0750_discriminative_toys.py, 0740_discriminative_generative.py,
-0330_distribution.py, 0590_gaussian.py.
 """
 
 from __future__ import annotations
@@ -230,7 +225,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Family gallery
 # -------------------------------------------------------
@@ -294,7 +288,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Interactive class-conditional Gaussians
 # -------------------------------------------------------
@@ -344,7 +337,6 @@ def build_step_3():
     sl_prior.on_changed(_u3)
     print("Step 3: GDA interactive.")
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -419,7 +411,6 @@ def build_step_4():
     sl_w0.on_changed(_u4)
     print("Step 4: GMM interactive.")
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -505,7 +496,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Interactive autoregressive
 # -------------------------------------------------------
@@ -571,7 +561,6 @@ def build_step_6():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Interactive VAE toy
 # -------------------------------------------------------
@@ -623,7 +612,6 @@ def build_step_7():
     sl_zx.on_changed(_u7); sl_zy.on_changed(_u7)
     print("Step 7: VAE interactive.")
     return fig7
-
 
 
 # -------------------------------------------------------
@@ -687,7 +675,6 @@ def build_step_8():
     return fig8
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: Interactive diffusion toy
 # -------------------------------------------------------
@@ -741,7 +728,6 @@ def build_step_9():
     sl_t.on_changed(_u9)
     print("Step 9: diffusion interactive.")
     return fig9
-
 
 
 # -------------------------------------------------------
@@ -800,7 +786,6 @@ def build_step_10():
     return fig10
 
 
-
 # -------------------------------------------------------
 # FIGURE 11: Takeaway collage
 # -------------------------------------------------------
@@ -843,8 +828,6 @@ def build_step_11():
     return fig11
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -869,7 +852,7 @@ Typical generative models (shown):
 
 Idea: model P(x) or P(x|y) -- score and sample, not only label.
 
-See also: 0750_discriminative_toys.py,
+,
           0740_discriminative_generative.py,
           0330_distribution.py, 0590_gaussian.py
 """)

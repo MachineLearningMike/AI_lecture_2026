@@ -4,8 +4,6 @@
 The MDP assumption in reinforcement learning -- what it is, why theory needs it,
 and where real problems only approximate it.
 
-Sits before 6_020_Bellman_equality.py.
-
 Sketch:
   1. RL needs a formal stage
   2. The five MDP pieces (S, A, P, R, gamma)

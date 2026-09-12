@@ -1,6 +1,4 @@
 """
-193_Huber_Loss.py
-
 Huber loss -- the compromise between MSE and MAE, and why it exists.
 
 Sketch:
@@ -12,9 +10,6 @@ Sketch:
   6. Fit duel: Huber sits between MSE and MAE
   7. Takeaway -- when to choose Huber
   8. Torch -- from-scratch Huber vs nn.HuberLoss
-
-Companion to 191_Mean_Squared_Error.py, 192_Mean_Absolute_Error.py,
-190_loss_functions.py.
 """
 
 from __future__ import annotations
@@ -184,7 +179,6 @@ def build_step_1():
     return fig0
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Why Huber
 # -------------------------------------------------------
@@ -233,7 +227,6 @@ def build_step_2():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Three curves
 # -------------------------------------------------------
@@ -267,7 +260,6 @@ def build_step_3():
     )
     fig2.tight_layout(rect=[0, 0, 1, 0.94])
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -367,7 +359,6 @@ def build_step_4():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Outlier ownership
 # -------------------------------------------------------
@@ -411,7 +402,6 @@ def build_step_5():
     )
     fig4.tight_layout(rect=[0, 0, 1, 0.94])
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -468,7 +458,6 @@ def build_step_6():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Takeaway
 # -------------------------------------------------------
@@ -506,7 +495,6 @@ def build_step_7():
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -586,8 +574,6 @@ def build_step_8():
     return fig_t
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -611,5 +597,5 @@ Outlier ownership on the demo set:
 
 Step 8: Torch -- scratch Huber matches nn.HuberLoss(delta={DELTA:g}).
 
-See also: 191_Mean_Squared_Error.py, 192_Mean_Absolute_Error.py, 190_loss_functions.py
+, , 
 """)

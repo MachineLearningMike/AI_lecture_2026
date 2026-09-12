@@ -1,6 +1,4 @@
 """
-0232_Vision_Language_Model.py
-
 What is a VLM (Vision-Language Model), and how did the idea evolve?
 
 Sketch:
@@ -19,7 +17,6 @@ Sketch:
   13. Conceptual progression: CV -> VLM -> multimodal agent
   14. Tiny code sketch of the forward path
 
-Sits after 0230_exploit_deep_progression.py and before 0235_agentic_AI.py.
 Teach as: LLM -> VLM -> multimodal LLM -> agent (one continuous evolution).
 """
 

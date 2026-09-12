@@ -1,6 +1,4 @@
 """
-122_F_Score.py
-
 Binary classification metrics from a confusion matrix.
 
 Sketch:
@@ -13,9 +11,6 @@ Sketch:
   7. F-score -- harmonic mean of Precision and Recall
   8. Imbalance demo -- accuracy looks fine; F1 does not
   9. Takeaway
-
-Companion to 0310_regression_classification.py, 190_loss_functions.py,
-0440_Loss_Binary_Cross_Entropy.py.
 """
 
 from __future__ import annotations
@@ -238,7 +233,6 @@ def build_step_1():
     return fig0
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Confusion matrix
 # -------------------------------------------------------
@@ -273,7 +267,6 @@ def build_step_2():
                   fontsize=FS_ANNOT)
     fig1.tight_layout(rect=[0, 0, 1, 0.94])
     return fig1
-
 
 
 # -------------------------------------------------------
@@ -319,7 +312,6 @@ def build_step_3():
                   fontsize=FS_ANNOT)
     fig2.tight_layout(rect=[0, 0, 1, 0.94])
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -764,7 +756,6 @@ def build_step_5():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Threshold slider -- everything live
 # -------------------------------------------------------
@@ -1085,7 +1076,6 @@ def build_step_7():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Imbalance -- accuracy lies, F1 complains
 # -------------------------------------------------------
@@ -1147,7 +1137,6 @@ def build_step_8():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: Takeaway
 # -------------------------------------------------------
@@ -1186,8 +1175,6 @@ def build_step_9():
     return fig7
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -1219,6 +1206,6 @@ Steps:
   8. Imbalance: Accuracy vs F1
   9. Takeaway
 
-See also: 0310_regression_classification.py, 190_loss_functions.py,
+, ,
           0440_Loss_Binary_Cross_Entropy.py
 """)

@@ -1,7 +1,5 @@
 """
-0340_normalize_data.py
-
-Normalize a distribution -- continuation after 0330_distribution.py.
+Normalize a distribution -- continuation after .
 
 Sketch:
   9. The same dog/cat clusters, tiny in a corner -- then normalized;
@@ -9,8 +7,6 @@ Sketch:
   10. Normalize dataset manually with sliders a, b.
   11. Why N(0, 1)? -- activations live near zero-scale numbers.
   12. Normalization with NumPy or Torch.
-
-See also: 0330_distribution.py (why distribution), 0740_discriminative_generative.py.
 """
 
 import matplotlib.pyplot as plt
@@ -106,8 +102,6 @@ C_ACCENT = '#c0392b'
 C_MUTE = '#f4f6f7'
 C_GOAL = '#d4edda'
 C_OLD = '#fce4d6'
-
-
 
 
 # -------------------------------------------------------
@@ -235,7 +229,6 @@ def build_step_1():
     return fig9
 
 
-
 # -------------------------------------------------------
 # FIGURE 10: Normalize dataset manually with sliders
 # -------------------------------------------------------
@@ -359,7 +352,6 @@ def build_step_2():
     return fig10
 
 
-
 # -------------------------------------------------------
 # FIGURE 11: Why N(0, 1)?
 # -------------------------------------------------------
@@ -442,7 +434,6 @@ def build_step_3():
     return fig11
 
 
-
 # -------------------------------------------------------
 # FIGURE 12: Normalization with NumPy or Torch
 # -------------------------------------------------------
@@ -510,7 +501,6 @@ def build_step_4():
     return fig12
 
 
-
 # -------------------------------------------------------
 
 
@@ -546,5 +536,5 @@ Normalization in code (Step 4):
   NumPy:  z = (x - x.mean()) / x.std()
   Torch:  z = (x - x.mean()) / x.std()
 
-See also: 1_010_distribution.py, 2_100_discriminative_generative.py
+, 
 """)

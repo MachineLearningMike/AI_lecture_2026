@@ -3,7 +3,7 @@
 
 Major probability distributions used in ML -- formulas and when to use them.
 
-Gaussian is covered in 1_040_gaussian.py.  This lecture surveys the rest of
+Gaussian is covered in . This lecture surveys the rest of
 the core toolkit:
 
   Discrete:  Bernoulli, Binomial, Categorical, Multinomial, Poisson
@@ -21,8 +21,6 @@ Sketch:
   8. Beta
   9. Dirichlet
   10. Cheat sheet -- which distribution when
-
-Sits after 1_040_gaussian.py and before 1_060_law_of_large_numbers.py.
 """
 
 from __future__ import annotations

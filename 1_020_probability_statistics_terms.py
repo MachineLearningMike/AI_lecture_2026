@@ -15,7 +15,6 @@ Sketch:
   22. Big-picture branches
   23. Takeaway
 
-Sits near early Chapter 1: after why distributions matter (1_010),
 before / beside density formalisms (1_015) and concrete families.
 """
 

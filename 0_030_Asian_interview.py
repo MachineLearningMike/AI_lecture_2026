@@ -1,6 +1,4 @@
 """
-1010_Asian_interview.py
-
 AI/ML interview speaking bank -- one question per slide, TWO answers:
 
   Left  = Native English (clean, natural)
@@ -801,7 +799,6 @@ def build_step_1():
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig0
-
 
 
 # -------------------------------------------------------

@@ -1,6 +1,4 @@
 """
-192_Mean_Absolute_Error.py
-
 Intuitive simulations for Mean Absolute Error (MAE / L1 loss).
 
 Sketch:
@@ -11,9 +9,6 @@ Sketch:
   5. Visible fit: MAE stays with the crowd; MSE chases the outlier
   6. Takeaway: MAE is a fair, outlier-tolerant coach
   7. Torch -- from-scratch MAE vs nn.L1Loss
-
-Companion to 191_Mean_Squared_Error.py, 190_loss_functions.py,
-0400_loss_functions.py, 0310_regression_classification.py.
 """
 
 from __future__ import annotations
@@ -184,7 +179,6 @@ def build_step_1():
     return fig0
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Linear vs quadratic growth
 # -------------------------------------------------------
@@ -239,7 +233,6 @@ def build_step_2():
     )
     fig1.tight_layout(rect=[0, 0, 1, 0.94])
     return fig1
-
 
 
 # -------------------------------------------------------
@@ -324,7 +317,6 @@ def build_step_3():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Outlier -- MAE vs MSE ownership
 # -------------------------------------------------------
@@ -398,7 +390,6 @@ def build_step_4():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Fit comparison MAE vs MSE
 # -------------------------------------------------------
@@ -450,7 +441,6 @@ def build_step_5():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Takeaway + median fact
 # -------------------------------------------------------
@@ -491,11 +481,10 @@ def build_step_6():
         'MAE is minimized by the median of the targets -- not the mean.\n'
         'That is why MAE feels "majority-first".\n\n'
         'Use MAE when distance matters equally per unit, and wild points should not own the fit.\n'
-        'Compare with MSE in 191_Mean_Squared_Error.py; see also Huber in 190_loss_functions.py.',
+ 'Compare with MSE in ; see also Huber in .',
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -561,8 +550,6 @@ def build_step_7():
     return fig_t
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -588,5 +575,5 @@ Step 5: MAE fit stays with the bulk; MSE fit leans toward the outlier.
 Step 6: MAE = fair unit pricing, kinked at 0, median-minded.
 Step 7: Torch -- (yhat-y).abs().mean() matches nn.L1Loss().
 
-See also: 191_Mean_Squared_Error.py, 190_loss_functions.py, 0310_regression_classification.py
+, , 
 """)

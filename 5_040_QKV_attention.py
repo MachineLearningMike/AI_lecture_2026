@@ -1,6 +1,4 @@
 """
-0860_QKV_attention.py
-
 What Q, K, V mean in Transformer attention.
 
 Metaphor (a lookup database):
@@ -21,8 +19,6 @@ In a Transformer, tokens play all three roles after linear maps:
 What training learns:
   Which projections (perspectives) of the same underlying tokens make
   this retrieve-and-mix step reduce the loss best.
-
-Companion to 0850_transformer.py, 0910_transformer_code.py, 310_dot_*.py.
 """
 
 from __future__ import annotations
@@ -173,7 +169,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Query matches keys by similarity
 # -------------------------------------------------------
@@ -242,7 +237,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Softmax -> attention; mix values
 # -------------------------------------------------------
@@ -308,7 +302,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Pipeline diagram Q -> scores -> softmax -> mix V
 # -------------------------------------------------------
@@ -362,7 +355,6 @@ def build_step_4():
         bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
     )
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -459,7 +451,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Roles cheat-sheet
 # -------------------------------------------------------
@@ -505,8 +496,6 @@ def build_step_6():
         bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
     )
     return fig6
-
-
 
 
 run_slide_deck([

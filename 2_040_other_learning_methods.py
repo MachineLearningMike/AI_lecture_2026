@@ -17,8 +17,6 @@ Sketch:
   8. Three deeper kinds of "learning"
   9. Modern AI combines all three
   10. Conceptual map / takeaway
-
-Companion to 2_030_maximum_likelihood_estimation.py and 2_050_SL_UL_RL.py.
 """
 
 from __future__ import annotations

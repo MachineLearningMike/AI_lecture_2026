@@ -1,6 +1,4 @@
 """
-0160_continuous_end_to_end.py
-
 The modern deep-learning breakthrough:
 
     Continuous, language-free representations
@@ -143,7 +141,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Conventional IPO -- language constrains freedom
 # -------------------------------------------------------
@@ -181,7 +178,6 @@ def build_step_2():
     )
 
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -224,7 +220,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Continuous + language-free
 # -------------------------------------------------------
@@ -265,7 +260,6 @@ def build_step_4():
     )
 
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -319,7 +313,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: What gets eliminated
 # -------------------------------------------------------
@@ -352,7 +345,6 @@ def build_step_6():
     )
 
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -389,7 +381,6 @@ def build_step_7():
     )
 
     return fig7
-
 
 
 # -------------------------------------------------------
@@ -433,8 +424,6 @@ def build_step_8():
                  fontsize=FS_ANNOT + 1)
 
     return fig8
-
-
 
 
 run_slide_deck([

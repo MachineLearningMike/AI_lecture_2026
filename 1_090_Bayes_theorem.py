@@ -1,6 +1,4 @@
 """
-0630_Bayesian_theorem.py
-
 Bayes' theorem -- update a belief when new evidence arrives.
 
   P(H | E) = P(E | H) P(H) / P(E)
@@ -18,9 +16,6 @@ Sketch:
   7. Continuous Bayes: prior curve x likelihood -> posterior
   8. Interactive continuous update
   9. Takeaway
-
-Companion intuition for probability updates; pairs with 0590_gaussian.py,
-0610_central_limit_theorem.py, 0470_maximum_likelihood.py.
 """
 
 from __future__ import annotations
@@ -157,7 +152,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Four pieces of the formula
 # -------------------------------------------------------
@@ -192,7 +186,6 @@ def build_step_2():
         ha="center", va="center", fontsize=FS_ANNOT + 1,
     )
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -251,7 +244,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Why the posterior can stay modest
 # -------------------------------------------------------
@@ -300,7 +292,6 @@ def build_step_4():
         ha="center", va="center", fontsize=FS_ANNOT + 1,
     )
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -360,7 +351,6 @@ def build_step_5():
     _u5()
     print("Step 5: drag prior.")
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -426,7 +416,6 @@ def build_step_6():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Continuous Bayes picture
 # -------------------------------------------------------
@@ -465,7 +454,6 @@ def build_step_7():
         ax.set_xlabel(r"$\theta$", fontsize=FS_AXIS)
     fig7.tight_layout(rect=[0, 0.02, 1, 0.90])
     return fig7
-
 
 
 # -------------------------------------------------------
@@ -531,7 +519,6 @@ def build_step_8():
     return fig8
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: Takeaway
 # -------------------------------------------------------
@@ -554,8 +541,6 @@ def build_step_9():
                 fontweight="bold", color=edge)
         ax.text(5.0, 4.2, body, ha="center", va="center", fontsize=FS_ANNOT + 1)
     return fig9
-
-
 
 
 run_slide_deck([

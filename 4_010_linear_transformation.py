@@ -1,6 +1,4 @@
 """
-0800_linear_transformation.py
-
 Linear spaces, R^n, and why a linear map T: R^n -> R^m is a matrix A.
 
 Core dictionary:
@@ -26,8 +24,6 @@ Customer takeaway (Step 14):
   Fixed linear preprocessing can be absorbed into a learned linear layer
   (W (P x) = (W P) x), so it does not reduce training power when the net
   already has learned linear maps -- which it always does.
-
-Companion to 0870_Wq_Wk_Wv.py (W_Q, W_K, W_V are linear maps on token space).
 """
 
 from __future__ import annotations
@@ -247,7 +243,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: What is a linear transformation?
 # -------------------------------------------------------
@@ -317,7 +312,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Why a matrix? Columns are images of basis vectors
 # -------------------------------------------------------
@@ -380,7 +374,6 @@ def build_step_3():
         bbox=dict(boxstyle="round", facecolor="#eef5ff", alpha=0.95),
     )
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -450,7 +443,6 @@ def build_step_4():
         bbox=dict(boxstyle="round", facecolor="lightyellow", alpha=0.95),
     )
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -528,7 +520,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Diversity of linear maps (gallery)
 # -------------------------------------------------------
@@ -581,7 +572,6 @@ def build_step_6():
     )
     fig6.tight_layout(rect=[0, 0.05, 1, 0.94])
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -695,7 +685,6 @@ def build_step_7():
     return fig7c
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Why we still need nonlinear layers (text step)
 # -------------------------------------------------------
@@ -724,7 +713,6 @@ def build_step_8():
         bbox=dict(boxstyle="round", facecolor="#f7f7ff", alpha=0.96),
     )
     return fig7d
-
 
 
 # -------------------------------------------------------
@@ -793,7 +781,6 @@ def build_step_9():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: 2D grid -- each source line shares color with its image
 # -------------------------------------------------------
@@ -853,7 +840,6 @@ def build_step_10():
     )
     fig8b.tight_layout(rect=[0, 0.07, 1, 0.93])
     return fig8b
-
 
 
 # -------------------------------------------------------
@@ -972,7 +958,6 @@ def build_step_11():
     return fig9b
 
 
-
 # -------------------------------------------------------
 # FIGURE 11: 3D browsable grid -- each source line shares color with its image
 # -------------------------------------------------------
@@ -1045,7 +1030,6 @@ def build_step_12():
     )
     fig8.tight_layout(rect=[0, 0.07, 1, 0.93])
     return fig8
-
 
 
 # -------------------------------------------------------
@@ -1173,7 +1157,6 @@ def build_step_13():
     return fig9
 
 
-
 # -------------------------------------------------------
 # FIGURE 13: Absorbing fixed linear preprocessing into a learned map
 # -------------------------------------------------------
@@ -1254,8 +1237,6 @@ def build_step_14():
         bbox=dict(boxstyle="round", facecolor="#f7f7ff", alpha=0.96),
     )
     return fig10
-
-
 
 
 run_slide_deck([

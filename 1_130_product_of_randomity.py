@@ -19,8 +19,6 @@ For i.i.d. factors with mean mu and variance sigma^2 this collapses to
 Unlike sums of Gaussians (which stay Gaussian), a product of Gaussians
 is peaked near 0 with HEAVY tails. For positive variables, taking logs
 turns products into sums -- the bridge to log-normal thinking.
-
-Companion to 1_110_sum_of_randomity.py and 1_120_average_of_randomity.py.
 """
 
 import torch
@@ -366,7 +364,6 @@ def build_step_3():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Product vs sum -- same inputs, different story
 # -------------------------------------------------------
@@ -412,7 +409,6 @@ def build_step_4():
 
     plt.tight_layout()
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -481,8 +477,6 @@ def build_step_5():
 
     plt.tight_layout()
     return fig4
-
-
 
 
 run_slide_deck([

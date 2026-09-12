@@ -1,6 +1,4 @@
 """
-0740_discriminative_generative.py
-
 Discriminative vs generative understanding of a distribution.
 
 Sketch:
@@ -132,7 +130,6 @@ def build_step_1():
     )
 
     return fig1
-
 
 
 def sample_complex_branches(rng, polylines, n_per_seg=48, width_lo=0.035, width_hi=0.16):
@@ -339,7 +336,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Complex cat/dog distribution (left) vs hidden Gaussian cats (right)
 # -------------------------------------------------------
@@ -405,7 +401,6 @@ def build_step_3():
 
     fig3.tight_layout(rect=[0, 0.02, 1, 0.94])
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -475,7 +470,6 @@ def build_step_4():
     )
 
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -583,7 +577,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: When D fails -- let G decide whether to trust D
 # -------------------------------------------------------
@@ -663,7 +656,6 @@ def build_step_6():
     )
 
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -776,8 +768,6 @@ def build_step_7():
     return fig7
 
 
-
-
 # -------------------------------------------------------
 # Slide deck navigation (Previous / Next)
 # -------------------------------------------------------
@@ -836,5 +826,5 @@ Step 7 -- zoom-in (pigs vs ants):
   A generative model learns the true pig feature world; non-pigs are the
   remainder. Generating means producing some realistic feature values.
 
-See also: 0340_normalize_data.py Steps 10-11 (normalize; why N(0,1)).
+Steps 10-11 (normalize; why N(0,1)).
 """)

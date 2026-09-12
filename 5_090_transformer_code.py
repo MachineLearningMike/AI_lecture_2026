@@ -1,10 +1,5 @@
 """
-0910_transformer_code.py
-
 Minimal PyTorch Transformer encoder + decoder with SHAPE TRACKING.
-
-Companion intuition: 0850_transformer.py
-Positional encoding:   0880_positional_encoding.py
 
 Notation used in comments:
   B  = batch size
@@ -17,7 +12,7 @@ Notation used in comments:
   D_FF = d_ff   (feed-forward hidden width)
 
 Run:
-  conda run -n torch27 python 0910_transformer_code.py
+ conda run -n torch27 python
 """
 
 from __future__ import annotations
@@ -396,7 +391,6 @@ class Seq2SeqTransformer(nn.Module):
     def self_attn_weights_enc(self, layer: int = -1) -> torch.Tensor | None:
         """Return last encoder self-attention weights (B, H, S, S)."""
         return self.encoder.layers[layer].self_attn.last_attn_weights
-
 
 
 # ---------------------------------------------------------------------------

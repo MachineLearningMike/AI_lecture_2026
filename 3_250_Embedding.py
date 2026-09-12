@@ -1,6 +1,4 @@
 """
-0780_Embedding.py
-
 What an embedding is -- from discrete IDs to dense vectors you can compute with.
 
 Intuition:
@@ -17,9 +15,6 @@ Sketch:
   6. Where embeddings show up (tokens, positions, items, ...)
   7. Training moves the rows (tiny seeker)
   8. Takeaway
-
-Companion to 0790_word_vector.py (Word2Vec game), 0560_back_propagation.py,
-0880_positional_encoding.py, 0950_BERT.py.
 """
 
 from __future__ import annotations
@@ -168,7 +163,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Lookup table
 # -------------------------------------------------------
@@ -208,7 +202,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: One-hot matmul == embedding lookup
 # -------------------------------------------------------
@@ -243,7 +236,6 @@ def build_step_3():
     axes3[2].grid(True, alpha=0.3, axis="y")
     fig3.tight_layout(rect=[0, 0.02, 1, 0.90])
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -282,7 +274,6 @@ def build_step_4():
     ax4b.set_xlim(-2.5, 3.0); ax4b.set_ylim(-2.2, 2.4)
     fig4.tight_layout(rect=[0, 0.02, 1, 0.92])
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -351,7 +342,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Where embeddings appear
 # -------------------------------------------------------
@@ -374,7 +364,6 @@ def build_step_6():
                 fontweight="bold", color=edge)
         ax.text(5.0, 4.2, body, ha="center", va="center", fontsize=FS_ANNOT + 1)
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -469,7 +458,6 @@ def build_step_7():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Takeaway
 # -------------------------------------------------------
@@ -500,8 +488,6 @@ def build_step_8():
     return fig8
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -521,6 +507,6 @@ Embedding = learned lookup table E[id] -> vector in R^d.
 One-hot @ E is the same lookup.
 Geometry of rows carries meaning; training moves the rows.
 
-See also: 0790_word_vector.py, 0560_back_propagation.py,
+, ,
           0880_positional_encoding.py, 0950_BERT.py
 """)

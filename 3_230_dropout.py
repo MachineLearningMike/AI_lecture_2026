@@ -1,6 +1,4 @@
 """
-0710_dropout.py
-
 Intuition for Dropout regularization.
 
 Training:
@@ -16,8 +14,6 @@ Why it helps:
     - Stops co-adaptation ("conspiracies" between units)
     - Trains an implicit ensemble of subnetworks
     - Acts like a strong inductive bias toward redundancy
-
-Companion to 0690_inductive_bias.py and 0720_normalize_activations.py.
 """
 
 import matplotlib.pyplot as plt
@@ -168,7 +164,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Different minibatches = different subnetworks
 # -------------------------------------------------------
@@ -207,7 +202,6 @@ def build_step_2():
 
     plt.tight_layout()
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -340,7 +334,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Co-adaptation cartoon + inverted dropout expectation
 # -------------------------------------------------------
@@ -422,8 +415,6 @@ def build_step_4():
     return fig4
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -463,5 +454,5 @@ Typical keep probabilities:
 
 Related ideas:
   DropConnect, Stochastic Depth, and Mixup are cousins -- all inject
-  noise that shapes which solutions SGD prefers (see also 0690_inductive_bias.py).
+ noise that shapes which solutions SGD prefers (see also ).
 """)

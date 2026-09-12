@@ -1,6 +1,4 @@
 """
-0900_model_dimension.py
-
 Model dimension (d_model / width) vs sequence length (T).
 
 Key facts for Transformers / sequence models:
@@ -13,8 +11,6 @@ Key facts for Transformers / sequence models:
   3) Therefore d_model is a primary knob for CAPACITY:
        too small -> underfit
        too large -> overfit (especially with limited data)
-
-Companion to 0850_transformer.py and 0690_inductive_bias.py.
 """
 
 import matplotlib.pyplot as plt
@@ -250,7 +246,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Parameter formula for P(d)
 # -------------------------------------------------------
@@ -302,7 +297,6 @@ def build_step_2():
         bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
     )
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -370,7 +364,6 @@ def build_step_3():
 
     plt.tight_layout()
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -449,7 +442,6 @@ def build_step_4():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Train/test curves vs dimension
 # -------------------------------------------------------
@@ -513,7 +505,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Schematic -- T tokens share the SAME weights
 # -------------------------------------------------------
@@ -553,7 +544,6 @@ def build_step_6():
 
     plt.tight_layout()
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -598,8 +588,6 @@ def build_step_7():
     )
 
     return fig7
-
-
 
 
 run_slide_deck([

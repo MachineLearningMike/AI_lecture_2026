@@ -1,6 +1,4 @@
 """
-191_Mean_Squared_Error.py
-
 Intuitive simulations for Mean Squared Error.
 
 Sketch:
@@ -11,8 +9,6 @@ Sketch:
   5. Same points, different fits: who MSE prefers
   6. Takeaway: MSE is a soft, outlier-sensitive coach
   7. Torch -- from-scratch MSE vs nn.MSELoss
-
-Companion to 0400_loss_functions.py and 190_loss_functions.py.
 """
 
 from __future__ import annotations
@@ -176,7 +172,6 @@ def build_step_1():
     return fig0
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Squaring stretches errors
 # -------------------------------------------------------
@@ -233,7 +228,6 @@ def build_step_2():
 
     fig1.tight_layout(rect=[0, 0, 1, 0.94])
     return fig1
-
 
 
 # -------------------------------------------------------
@@ -316,7 +310,6 @@ def build_step_3():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Outlier dominates the average
 # -------------------------------------------------------
@@ -377,7 +370,6 @@ def build_step_4():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Which fit MSE likes
 # -------------------------------------------------------
@@ -429,7 +421,6 @@ def build_step_5():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Takeaway
 # -------------------------------------------------------
@@ -474,7 +465,6 @@ def build_step_6():
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -540,8 +530,6 @@ def build_step_7():
     return fig_t
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -567,5 +555,5 @@ Step 5: Least squares leans toward outliers because that lowers MSE most.
 Step 6: MSE = smooth, outlier-sensitive training coach.
 Step 7: Torch -- ((yhat-y)**2).mean() matches nn.MSELoss().
 
-See also: 0400_loss_functions.py (definition + 3D bowl), 190_loss_functions.py
+(definition + 3D bowl), 
 """)

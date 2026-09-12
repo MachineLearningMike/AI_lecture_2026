@@ -1,6 +1,4 @@
 """
-0880_positional_encoding.py
-
 Sinusoidal positional encoding (Vaswani et al., 2017) -- intuition.
 
 Problem:
@@ -24,8 +22,6 @@ RoPE (rotary PE) applies the SAME rotation idea directly to Q/K instead
 of adding a PE vector. Same geometric family as sinusoidal PE; RoPE is
 the usual choice in modern decoder LLMs because relative phase lives in
 the attention logit and pairs well with length-transfer recipes.
-
-Companion to 0850_transformer.py and 0980_video_transformer.py.
 """
 
 import matplotlib.pyplot as plt
@@ -186,7 +182,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: The PE heatmap -- sin/cos across dims
 # -------------------------------------------------------
@@ -220,7 +215,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: A few dimensions as waves over position
 # -------------------------------------------------------
@@ -248,7 +242,6 @@ def build_step_3():
 
     plt.tight_layout()
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -300,7 +293,6 @@ def build_step_4():
 
     plt.tight_layout()
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -367,7 +359,6 @@ def build_step_5():
 
     plt.tight_layout()
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -504,7 +495,6 @@ def build_step_6():
     return fig5b
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Adding PE to token embeddings
 # -------------------------------------------------------
@@ -545,7 +535,6 @@ def build_step_7():
 
     plt.tight_layout()
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -639,7 +628,6 @@ def build_step_8():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Beauty of sinusoidal PE -- and is it unavoidable?
 # -------------------------------------------------------
@@ -701,7 +689,6 @@ def build_step_9():
 
     plt.tight_layout()
     return fig8
-
 
 
 # -------------------------------------------------------
@@ -833,8 +820,6 @@ def build_step_10():
 
     fig9.tight_layout(rect=[0, 0.08, 1, 1])
     return fig9
-
-
 
 
 run_slide_deck([

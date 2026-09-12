@@ -1,6 +1,4 @@
 """
-0520_stochastic_ascent.py
-
 Stochastic ascent: each step's direction is a NOISY version of the true
 gradient. Even so, accumulated steps still reach the highest point with
 high probability.
@@ -16,8 +14,6 @@ This is the geometric cousin of SGD (noisy gradients, reliable progress).
 Also writes climbing animations (GIF export skipped if the file already exists; animation is still shown):
     stochastic_ascend_race.gif   -- true vs one noisy climber
     stochastic_ascend_swarm.gif   -- several noisy climbers at once
-
-Companion to 0500_fastest_ascent.py and 0530_momentum.py.
 """
 
 from pathlib import Path
@@ -232,7 +228,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Many noisy runs -- high success probability
 # -------------------------------------------------------
@@ -286,7 +281,6 @@ def build_step_2():
 
     fig2.subplots_adjust(left=0.10, right=0.92, bottom=0.12, top=0.88)
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -413,7 +407,6 @@ else:
     plt.close(fig_r)
 
 
-
 # -------------------------------------------------------
 # ANIMATION B: swarm -- several noisy climbers moving together
 # -------------------------------------------------------
@@ -512,7 +505,6 @@ else:
 plt.close('all')  # clear any GIF figures before the slide deck
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Success probability vs noise level
 # -------------------------------------------------------
@@ -582,7 +574,6 @@ def build_step_3():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Objective value over time -- drift + jitter
 # -------------------------------------------------------
@@ -622,7 +613,6 @@ def build_step_4():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: 3D browsable noisy path
 # -------------------------------------------------------
@@ -652,7 +642,6 @@ def build_step_5():
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.92),
     )
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -715,8 +704,6 @@ def build_step_6():
 
     fig6.tight_layout(rect=[0, 0, 1, 0.94])
     return fig6
-
-
 
 
 # Ensure no leftover GIF/animation figures steal the first deck windows.

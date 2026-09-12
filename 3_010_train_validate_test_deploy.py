@@ -285,7 +285,6 @@ def build_step_1():
     return fig0
 
 
-
 # -------------------------------------------------------
 # FIGURE 1: Mechanism is not assessment
 # -------------------------------------------------------
@@ -319,7 +318,6 @@ def build_step_2():
         ax1.text(x0 + 1.75, y0 + 1.3, body, ha="center", va="center",
                  fontsize=FS_ANNOT + 1)
     return fig1
-
 
 
 # -------------------------------------------------------
@@ -357,7 +355,6 @@ def build_step_3():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Why not train-only / why not one holdout
 # -------------------------------------------------------
@@ -393,7 +390,6 @@ def build_step_4():
         ax3.text(x0 + 1.75, y0 + 1.5, body, ha="center", va="center",
                  fontsize=FS_ANNOT)
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -434,7 +430,6 @@ def build_step_5():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Visual three-way split
 # -------------------------------------------------------
@@ -468,7 +463,6 @@ def build_step_6():
     ax5b.grid(True, alpha=0.3, axis="x")
     fig5.tight_layout(rect=[0, 0.02, 1, 0.92])
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -540,7 +534,6 @@ def build_step_7():
     _u6()
     print("Step 7: drag polynomial degree -- train vs val.")
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -620,7 +613,6 @@ def build_step_8():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Interactive train / val / test fractions
 # -------------------------------------------------------
@@ -683,7 +675,6 @@ def build_step_9():
     return fig8
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: Full arc including deploy
 # -------------------------------------------------------
@@ -714,7 +705,6 @@ def build_step_10():
         fontweight="bold", color="#f9e79f",
     )
     return fig9
-
 
 
 # -------------------------------------------------------
@@ -818,7 +808,6 @@ def build_step_11():
     return fig10
 
 
-
 # -------------------------------------------------------
 # FIGURE 11: Green test not sufficient
 # -------------------------------------------------------
@@ -845,7 +834,6 @@ def build_step_12():
         ax11.text(x0 + 1.75, y0 + 1.15, body, ha="center", va="center",
                   fontsize=FS_ANNOT)
     return fig11
-
 
 
 # -------------------------------------------------------
@@ -889,7 +877,6 @@ def build_step_13():
     return fig12
 
 
-
 # -------------------------------------------------------
 # FIGURE 13: Takeaway map (conceptual labels only)
 # -------------------------------------------------------
@@ -928,7 +915,6 @@ def build_step_14():
         ha="center", va="center", fontsize=FS_ANNOT + 1, fontweight="bold",
     )
     return fig13
-
 
 
 # -------------------------------------------------------
@@ -1008,8 +994,6 @@ def build_step_15():
         ha="center", va="center", fontsize=FS_TICK + 1, color=C_DARK,
     )
     return fig14
-
-
 
 
 run_slide_deck([

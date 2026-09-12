@@ -1,6 +1,4 @@
 """
-0236_agentic_AI_example.py
-
 A concrete example: build an AI agent with an existing LLM -- no training.
 
 Sketch:
@@ -20,8 +18,6 @@ Sketch:
   14. Add verification (environment as critic)
   15. Connection to REINFORCE / trajectories
   16. Three-stage picture + teaching advice
-
-Companion to 9_010_agentic_AI.py (concepts) then this concrete build example.
 """
 
 from __future__ import annotations

@@ -1,9 +1,7 @@
 """
-0270_torch_training.py
+Lecture slides that explain .
 
-Lecture slides that explain 0270_torch_training.ipynb.
-
-The notebook is a conceptual lean version of 070_torch_training.py:
+The notebook is a conceptual lean version of :
   - one parameter w, no bias:  y_hat = w * x
   - MSE loss
   - full-batch gradient descent on 30 noisy points near y = 2x
@@ -21,9 +19,6 @@ Sketch:
   9. Animation -- prediction line fits one step at a time (as in 070)
   10. Mental checklist before richer models
   11. What's wrong with what you just learned? -- goal, field use, generalization
-
-Companion: 0270_torch_training.ipynb, 070_torch_training.py, 0280_model.py,
-0120_intelligence.py.
 """
 
 from __future__ import annotations
@@ -379,7 +374,6 @@ def build_step_1():
     return fig3
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Four pieces
 # -------------------------------------------------------
@@ -421,7 +415,6 @@ def build_step_2():
         ha='center', va='center', fontsize=FS_ANNOT + 1,
     )
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -468,7 +461,6 @@ def build_step_3():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Loop line by line
 # -------------------------------------------------------
@@ -503,7 +495,6 @@ def build_step_4():
         ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
     )
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -606,7 +597,6 @@ def build_step_5():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: Animation (same style as 070)
 # -------------------------------------------------------
@@ -686,7 +676,6 @@ def build_step_6():
     return fig_anim
 
 
-
 # -------------------------------------------------------
 # FIGURE 10: Checklist
 # -------------------------------------------------------
@@ -720,7 +709,6 @@ def build_step_7():
         ha='center', va='center', fontsize=FS_ANNOT + 1, fontweight='bold',
     )
     return fig8
-
 
 
 # -------------------------------------------------------
@@ -808,8 +796,6 @@ def build_step_8():
         ha='center', va='center', fontsize=FS_ANNOT,
     )
     return fig9
-
-
 
 
 run_slide_deck([

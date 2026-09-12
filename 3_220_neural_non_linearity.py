@@ -1,6 +1,4 @@
 """
-0700_neural_non_linearity.py
-
 How neural nets create non-linearity and non-linear manifolds.
 
 Key facts:
@@ -9,8 +7,6 @@ Key facts:
   3) One activated neuron only reshapes HEIGHT along parallel contour lines.
   4) Mixing several neurons (and stacking layers) bends those contours into
      curved level sets -- a non-linear manifold in input space.
-
-Companion to 0280_model.py (simple vs complex net) and 0690_inductive_bias.py.
 """
 
 import matplotlib.pyplot as plt
@@ -253,7 +249,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Typical Deep Learning activations (1D profiles)
 # -------------------------------------------------------
@@ -296,7 +291,6 @@ def build_step_2():
 
     fig2.tight_layout(rect=[0, 0, 1, 0.94])
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -348,7 +342,6 @@ def build_step_3():
 
     fig3.tight_layout(rect=[0, 0, 1, 0.94])
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -431,7 +424,6 @@ def build_step_4():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Layer-by-layer manifold warping (ReLU net)
 # -------------------------------------------------------
@@ -480,7 +472,6 @@ def build_step_5():
 
     fig5.tight_layout(rect=[0, 0, 1, 0.94])
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -596,7 +587,6 @@ def build_step_6():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: 1D curve approximation by piecewise linear ReLU net
 # -------------------------------------------------------
@@ -649,8 +639,6 @@ def build_step_7():
 
     fig7.tight_layout(rect=[0, 0, 1, 0.94])
     return fig7
-
-
 
 
 run_slide_deck([

@@ -1,6 +1,4 @@
 """
-0810_dot_inner_scalar_product.py
-
 Dot / inner / scalar product -- same operation on R^n, three names.
 
 For vectors x, y in R^n:
@@ -31,9 +29,6 @@ Changing b slides the hyperplane parallel to itself.
 Shift formula (derived below):
 
     X(a, b1)  =  X(a, b2)  +  ((b1 - b2) / |a|^2) a
-
-Companion to 0490_derivative.py (gradients / planes) and
-0850_transformer.py (attention scores are scaled dots).
 """
 
 from __future__ import annotations
@@ -253,7 +248,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Intuition board -- what the sign / magnitude say
 # -------------------------------------------------------
@@ -290,7 +284,6 @@ def build_step_2():
 
     fig2.tight_layout(rect=[0, 0, 1, 0.94])
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -353,7 +346,6 @@ def build_step_3():
 
     fig3.tight_layout(rect=[0, 0, 1, 0.94])
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -441,7 +433,6 @@ def build_step_4():
 
     fig4.tight_layout(rect=[0, 0, 1, 0.93])
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -538,7 +529,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: 3D parallel planes X(a,b) for several b
 # -------------------------------------------------------
@@ -595,8 +585,6 @@ def build_step_6():
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.94),
     )
     return fig6
-
-
 
 
 run_slide_deck([

@@ -1,6 +1,4 @@
 """
-0275_learning.py
-
 What "learning" means in this course: from observed pairs to a model
 that predicts the not-yet-observed.
 
@@ -15,8 +13,6 @@ Sketch:
   8. Other working combinations
   9. Alternatives to MLE
   10. Different distributions of Y need different objectives?
-
-Sits between 0270_torch_training.py and 0280 / 0470_maximum_likelihood.py.
 """
 
 from __future__ import annotations
@@ -170,7 +166,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Note on noise
 # -------------------------------------------------------
@@ -206,7 +201,6 @@ def build_step_2():
         ha="center", va="center", fontsize=FS_ANNOT + 1, color="#333333",
     )
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -256,7 +250,6 @@ def build_step_3():
         fontweight="bold", color=C_DARK,
     )
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -311,7 +304,6 @@ def build_step_4():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Past vs future
 # -------------------------------------------------------
@@ -362,7 +354,6 @@ def build_step_5():
         ha="center", va="center", fontsize=FS_ANNOT + 1, color="#333333",
     )
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -416,7 +407,6 @@ def build_step_6():
         fontweight="bold", color=C_OK,
     )
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -476,7 +466,6 @@ def build_step_7():
     return fig7
 
 
-
 # -------------------------------------------------------
 # FIGURE 8: Other combinations
 # -------------------------------------------------------
@@ -510,7 +499,6 @@ def build_step_8():
         ha="center", fontsize=FS_ANNOT, fontweight="bold", color=C_DARK,
     )
     return fig8
-
 
 
 # -------------------------------------------------------
@@ -560,7 +548,6 @@ def build_step_9():
     return fig9
 
 
-
 # -------------------------------------------------------
 # FIGURE 10: Different Y distributions, different objectives
 # -------------------------------------------------------
@@ -602,8 +589,6 @@ def build_step_10():
         ha="center", va="center", fontsize=FS_ANNOT, color="#333333",
     )
     return fig10
-
-
 
 
 run_slide_deck([

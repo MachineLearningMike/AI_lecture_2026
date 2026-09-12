@@ -75,7 +75,6 @@ def plot_pdf_curves(ax, means, stds, colors, title):
     ax.grid(True, alpha=0.3)
 
 
-
 def blank_slide(ax):
     ax.set_xlim(0, 12)
     ax.set_ylim(0, 8)
@@ -96,7 +95,6 @@ C_OK = "#1e8449"
 C_MUTE = "#f4f6f7"
 C_GOAL = "#d4edda"
 C_LOOP = "#2874a6"
-
 
 
 # -------------------------------------------------------
@@ -344,7 +342,6 @@ def build_step_3():
 # FIGURE 3: DISTRIBUTION OF SAMPLE MEANS (same x-scale)
 # For Gaussian data, sample means are exactly N(0, (1/√n)²) = N(0, 1/n).
 # The narrowing shows the Standard Error shrinking — not CLT "kicking in".
-# (See 0610_central_limit_theorem.py for CLT with non-Gaussian sources.)
 # -------------------------------------------------------
 def build_step_4():
     fig3, axes3 = plt.subplots(2, 3, figsize=screen_figsize(), dpi=FIGURE_DPI)
@@ -463,7 +460,7 @@ The CLT says: the distribution of SAMPLE MEANS approaches a Gaussian
 even when the underlying data are NOT Gaussian (given large enough n).
 
 Figure 3 above uses a Gaussian source, so the means are already exactly
-normal for every n -- look at 0610_central_limit_theorem.py for the real CLT
+normal for every n -- look at for the real CLT
 demo with Uniform / Exponential / Bimodal sources.
 
 Why this matters in practice:

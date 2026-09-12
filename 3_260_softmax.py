@@ -1,6 +1,4 @@
 """
-0820_softmax.py
-
 Softmax: differentiable, nonlinear normalization of a vector.
 
 For logits z = (z_1, ..., z_n) and temperature tau > 0:
@@ -22,9 +20,6 @@ Properties worth remembering:
   on negative logits. Softmax always yields a valid distribution and
   keeps a smooth floor under losers -- they shrink but stay positive,
   so gradients can still flow.
-
-Companion to 0850_transformer.py / 0860_QKV_attention.py (attention weights)
-and 0810_dot_inner_scalar_product.py (scores that feed softmax).
 """
 
 from __future__ import annotations
@@ -147,7 +142,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Nonlinear normalization (vs linear normalize)
 # -------------------------------------------------------
@@ -212,7 +206,6 @@ def build_step_2():
 
     fig2.tight_layout(rect=[0, 0, 1, 0.94])
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -280,7 +273,6 @@ def build_step_3():
 
     fig3.tight_layout(rect=[0, 0, 1, 0.94])
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -355,7 +347,6 @@ def build_step_4():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Simulate a deterministic policy (low temperature)
 # -------------------------------------------------------
@@ -418,7 +409,6 @@ def build_step_5():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: 2D simplex path as temperature changes (3-class)
 # -------------------------------------------------------
@@ -469,7 +459,6 @@ def build_step_6():
         bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
     )
     return fig6
-
 
 
 # -------------------------------------------------------
@@ -561,8 +550,6 @@ def build_step_7():
 
     print("Step 7: drag the temperature slider; logits stay fixed.")
     return fig7
-
-
 
 
 run_slide_deck([

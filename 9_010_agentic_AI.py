@@ -1,6 +1,4 @@
 """
-0235_agentic_AI.py
-
 What is an AI agent, and what techniques make one?
 
 Sketch:
@@ -19,9 +17,6 @@ Sketch:
   13. Multi-agent systems (with caution)
   14. The deeper definition
   15. A teaching hierarchy -- Generate to Adapt
-
-Sits after 0232_Vision_Language_Model.py (eyes before action loops)
-and before 0236_agentic_AI_example.py (concrete build-with-existing-LLM lab).
 """
 
 from __future__ import annotations

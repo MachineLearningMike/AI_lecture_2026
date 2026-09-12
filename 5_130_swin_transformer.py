@@ -1,6 +1,4 @@
 """
-0990_swin_transformer.py
-
 Swin Transformer intuition (Shifted WINdow Transformer).
 
 Core ideas vs plain ViT:
@@ -10,8 +8,6 @@ Core ideas vs plain ViT:
      => information crosses window boundaries
   3) HIERARCHICAL stages with patch merging
      => multi-scale feature maps (like a CNN backbone)
-
-Companion to 0850_transformer.py and 0980_video_transformer.py.
 """
 
 import matplotlib.pyplot as plt
@@ -204,7 +200,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Shifted windows connect neighborhoods
 # -------------------------------------------------------
@@ -238,7 +233,6 @@ def build_step_2():
 
     plt.tight_layout(rect=[0, 0.06, 1, 1])
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -293,7 +287,6 @@ def build_step_3():
 
     plt.tight_layout()
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -445,7 +438,6 @@ def build_step_4():
     return fig3b
 
 
-
 # -------------------------------------------------------
 # FIGURE 4: Hierarchical stages / patch merging
 # -------------------------------------------------------
@@ -489,7 +481,6 @@ def build_step_5():
 
     plt.tight_layout()
     return fig4
-
 
 
 # -------------------------------------------------------
@@ -549,7 +540,6 @@ def build_step_6():
     return fig5
 
 
-
 # -------------------------------------------------------
 # FIGURE 6: Block recipe
 # -------------------------------------------------------
@@ -598,7 +588,6 @@ def build_step_7():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Takeaway cards
 # -------------------------------------------------------
@@ -621,8 +610,6 @@ def build_step_8():
         bbox=dict(boxstyle='round', facecolor='#f7f7ff', alpha=0.96),
     )
     return fig7
-
-
 
 
 run_slide_deck([

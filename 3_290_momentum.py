@@ -1,6 +1,4 @@
 """
-0530_momentum.py
-
 Role of momentum in SGD optimizers -- especially under minibatch noise.
 
 Vanilla minibatch SGD:
@@ -199,7 +197,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Loss curves + noisy g vs smoothed v
 # -------------------------------------------------------
@@ -251,7 +248,6 @@ def build_step_2():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Update rules
 # -------------------------------------------------------
@@ -292,7 +288,6 @@ def build_step_3():
 
     plt.tight_layout()
     return fig3
-
 
 
 # -------------------------------------------------------

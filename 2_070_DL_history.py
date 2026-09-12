@@ -1,6 +1,4 @@
 """
-012_historical_achievements_by_DL.py
-
 Historical problems cracked by deep learning -- and the ideas that made them possible.
 
 Pedagogy (adapted and tightened from a historical survey outline):
@@ -186,7 +184,6 @@ def build_step_1():
     return fig0
 
 
-
 # -------------------------------------------------------
 # FIGURE 1: Change of question
 # -------------------------------------------------------
@@ -225,7 +222,6 @@ def build_step_2():
         ha="center", va="center", fontsize=FS_ANNOT + 2, fontweight="bold",
     )
     return fig1
-
 
 
 # -------------------------------------------------------
@@ -307,7 +303,6 @@ def build_step_3():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Five kinds of historically hard problems
 # -------------------------------------------------------
@@ -333,7 +328,6 @@ def build_step_4():
         ax3.text(x0 + 1.75, y0 + 1.0, body, ha="center", va="center",
                  fontsize=FS_TICK + 1)
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -440,7 +434,6 @@ def build_step_5():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Important corrections
 # -------------------------------------------------------
@@ -475,7 +468,6 @@ def build_step_6():
         ax5.text(x0 + _s6_w / 2, y0 + h / 2 - 0.15, body, ha="center", va="center",
                  fontsize=FS_TICK + 1)
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -537,7 +529,6 @@ def build_step_7():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Three pillars
 # -------------------------------------------------------
@@ -567,7 +558,6 @@ def build_step_8():
         ha="center", fontsize=FS_ANNOT + 1, fontweight="bold", color=C_DARK,
     )
     return fig7
-
 
 
 # -------------------------------------------------------
@@ -609,7 +599,6 @@ def build_step_9():
     return fig8
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: Unsolved / open
 # -------------------------------------------------------
@@ -636,7 +625,6 @@ def build_step_10():
         ax9.text(x0 + 1.75, y0 + 1.15, body, ha="center", va="center",
                  fontsize=FS_TICK + 1)
     return fig9
-
 
 
 # -------------------------------------------------------
@@ -672,8 +660,6 @@ def build_step_11():
                 fontweight="bold", color=edge)
         ax.text(5.0, 4.2, body, ha="center", va="center", fontsize=FS_ANNOT + 1)
     return fig10
-
-
 
 
 run_slide_deck([

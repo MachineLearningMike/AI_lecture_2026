@@ -1,9 +1,7 @@
 """
-0941_word_to_vector.py
-
 How to train word-to-vector models (Word2Vec-style).
 
-0790_word_vector.py builds the intuition ("company it keeps").
+ builds the intuition ("company it keeps").
 This lecture is the training recipe: windows -> pairs -> loss -> SGD.
 
 Sketch:
@@ -19,9 +17,6 @@ Sketch:
   10. GloVe glance -- count matrix factorization cousin
   11. Static vectors vs contextual (BERT / GPT bridge)
   12. Takeaway
-
-Companion to 0780_Embedding.py, 0790_word_vector.py,
-0810_dot_inner_scalar_product.py, 0820_softmax.py, 0950_BERT.py.
 """
 
 from __future__ import annotations
@@ -193,7 +188,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Sliding windows
 # -------------------------------------------------------
@@ -242,7 +236,6 @@ def build_step_2():
         ha="center", va="center", fontsize=FS_TICK + 1, fontweight="bold",
     )
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -298,7 +291,6 @@ def build_step_3():
         ha="center", va="center", fontsize=FS_TICK + 1, fontweight="bold",
     )
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -357,7 +349,6 @@ def build_step_4():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Softmax cost
 # -------------------------------------------------------
@@ -411,7 +402,6 @@ def build_step_5():
         bbox=dict(boxstyle="round,pad=0.28", facecolor=C_WARN, edgecolor="#b7950b", alpha=0.95),
     )
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -471,7 +461,6 @@ def build_step_6():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Visual — pairs from window
 # -------------------------------------------------------
@@ -513,7 +502,6 @@ def build_step_7():
         ha="center", va="center", fontsize=FS_TICK + 1, fontweight="bold",
     )
     return fig7
-
 
 
 # -------------------------------------------------------
@@ -580,7 +568,6 @@ def build_step_8():
     return fig8
 
 
-
 # -------------------------------------------------------
 # FIGURE 9: Training loop
 # -------------------------------------------------------
@@ -615,7 +602,6 @@ def build_step_9():
         ha="center", va="center", fontsize=FS_TICK + 1, fontweight="bold",
     )
     return fig9
-
 
 
 # -------------------------------------------------------
@@ -671,7 +657,6 @@ def build_step_10():
     return fig10
 
 
-
 # -------------------------------------------------------
 # FIGURE 11: Bridge to contextual
 # -------------------------------------------------------
@@ -725,7 +710,6 @@ def build_step_11():
     return fig11
 
 
-
 # -------------------------------------------------------
 # FIGURE 12: Takeaway
 # -------------------------------------------------------
@@ -768,8 +752,6 @@ def build_step_12():
     return fig12
 
 
-
-
 run_slide_deck([
     build_step_1,
     build_step_2,
@@ -806,5 +788,5 @@ CBOW:
 GloVe:
   weighted least squares on log co-occurrence counts
 
-See also: 0780_Embedding.py, 0790_word_vector.py, 0820_softmax.py, 0950_BERT.py
+, , , 
 """)

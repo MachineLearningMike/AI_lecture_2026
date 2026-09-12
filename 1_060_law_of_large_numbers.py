@@ -1,6 +1,4 @@
 """
-0600_law_of_large_numbers.py
-
 Law of Large Numbers (LLN) -- the sample average settles on the true mean.
 
   As n grows,  bar{X}_n = (X_1 + ... + X_n) / n   approaches  E[X]
@@ -18,9 +16,6 @@ Sketch:
   6. Error shrinks like 1/sqrt(n) (typical scale)
   7. LLN vs CLT -- two different promises
   8. Takeaway
-
-Companion to 0590_gaussian.py, 0610_central_limit_theorem.py,
-0650_average_of_random.py.
 """
 
 from __future__ import annotations
@@ -123,7 +118,6 @@ def bernoulli_stream(n, rng=None):
     return rng.random(n) < P_TRUE
 
 
-
 # -------------------------------------------------------
 # FIGURE 0 / Step 1: Formal statement
 # -------------------------------------------------------
@@ -216,7 +210,6 @@ def build_step_2():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Running average settles
 # -------------------------------------------------------
@@ -261,7 +254,6 @@ def build_step_3():
     return fig2
 
 
-
 # -------------------------------------------------------
 # FIGURE 3: Many independent paths
 # -------------------------------------------------------
@@ -290,7 +282,6 @@ def build_step_4():
     ax3.grid(True, alpha=0.3)
     fig3.tight_layout(rect=[0, 0.02, 1, 0.92])
     return fig3
-
 
 
 # -------------------------------------------------------
@@ -355,7 +346,6 @@ def build_step_5():
     return fig4
 
 
-
 # -------------------------------------------------------
 # FIGURE 5: Typical error scale 1/sqrt(n)
 # -------------------------------------------------------
@@ -392,7 +382,6 @@ def build_step_6():
     ax5b.grid(True, alpha=0.3, which="both")
     fig5.tight_layout(rect=[0, 0.02, 1, 0.92])
     return fig5
-
 
 
 # -------------------------------------------------------
@@ -438,7 +427,6 @@ def build_step_7():
     return fig6
 
 
-
 # -------------------------------------------------------
 # FIGURE 7: Takeaway
 # -------------------------------------------------------
@@ -461,8 +449,6 @@ def build_step_8():
                 fontweight="bold", color=edge)
         ax.text(5.0, 4.2, body, ha="center", va="center", fontsize=FS_ANNOT + 1)
     return fig7
-
-
 
 
 run_slide_deck([

@@ -12,9 +12,6 @@ Sketch:
   8. Log-likelihood, NLL, and cross-entropy
   9. MLE inside Naive Bayes
   10. MLE vs MAP (add a prior)
-
-Companion: 1_040_gaussian.py, 1_100_naive_bayesian_classifier.py,
-and loss lectures that use NLL / cross-entropy.
 """
 
 import torch
@@ -236,7 +233,6 @@ def build_step_1():
     return fig1
 
 
-
 # -------------------------------------------------------
 # FIGURE 2: Gaussian log-likelihood <-> MSE
 # -------------------------------------------------------
@@ -282,7 +278,6 @@ def build_step_2():
 
     plt.tight_layout()
     return fig2
-
 
 
 # -------------------------------------------------------
@@ -341,7 +336,6 @@ def build_step_3():
 
     plt.tight_layout()
     return fig3
-
 
 
 # -------------------------------------------------------
