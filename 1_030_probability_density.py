@@ -1,5 +1,5 @@
 """
-1_015_probability_density.py
+1_030_probability_density.py
 
 Random variables, probability, CDF, and PDF -- definitions with pictures.
 
@@ -20,7 +20,7 @@ Sketch:
   14. Takeaway
 
 Sits after 1_010_distribution.py (why distributions matter) and before
-1_020_gaussian.py / 1_025_more_distributions.py (concrete families).
+1_040_gaussian.py / 1_050_more_distributions.py (concrete families).
 """
 
 from __future__ import annotations

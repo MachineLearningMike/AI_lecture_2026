@@ -1,10 +1,10 @@
 """
-6_015_policy_iteration.py
+6_030_policy_iteration.py
 
 Policy iteration in detail -- evaluate a policy, improve it, repeat.
 
-Sits after 6_010_Bellman_equality.py (Bellman / PE / PI glance) and before
-6_020_policy_gradient_methods.py.
+Sits after 6_020_Bellman_equality.py (Bellman / PE / PI glance) and before
+6_040_policy_gradient_methods.py.
 
 Sketch:
   1. What policy iteration is

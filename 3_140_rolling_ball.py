@@ -29,6 +29,7 @@ from _config import (
     FIGURE_DPI,
     SCREEN_FRACTION,
     apply_rcparams,
+    maybe_save_animation,
     run_slide_deck,
 )
 apply_rcparams(plt)
@@ -254,16 +255,7 @@ def build_step_1(out_path: Path = OUT_PATH):
         frames=N_FRAMES, interval=1000 / FPS, blit=False,
     )
 
-    if out_path.is_file() and out_path.stat().st_size > 0:
-        print(f'\nSkipping GIF export (already exists): {out_path}')
-    else:
-        print(f'Saving animation to {out_path} ...')
-        try:
-            anim.save(out_path, writer=animation.PillowWriter(fps=FPS))
-            print(f'Saved: {out_path}')
-        except Exception as exc:
-            print(f'Skipping GIF export ({out_path.name}): {exc}')
-            print('Install pillow to enable animation export: pip install pillow')
+    maybe_save_animation(anim, out_path, fps=FPS)
 
     fig._ball_anim = anim  # keep alive for the deck
     return fig

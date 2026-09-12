@@ -1,10 +1,10 @@
 """
-6_005_Markov_Decision_Process.py
+6_010_Markov_Decision_Process.py
 
 The MDP assumption in reinforcement learning -- what it is, why theory needs it,
 and where real problems only approximate it.
 
-Sits before 6_010_Bellman_equality.py.
+Sits before 6_020_Bellman_equality.py.
 
 Sketch:
   1. RL needs a formal stage

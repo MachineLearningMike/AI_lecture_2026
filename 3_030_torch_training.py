@@ -45,6 +45,7 @@ from _config import (
     SCREEN_FRACTION,
     apply_rcparams,
     add_step_footer,
+    maybe_save_animation,
     run_slide_deck,
 )
 apply_rcparams(plt)
@@ -680,16 +681,7 @@ def build_step_6():
         frames=frame_ids, interval=1000 / ANIM_FPS, blit=False,
     )
 
-    if OUT_GIF.is_file() and OUT_GIF.stat().st_size > 0:
-        print(f'\nSkipping GIF export (already exists): {OUT_GIF}')
-    else:
-        print(f'Saving animation to {OUT_GIF} ...')
-        try:
-            anim.save(OUT_GIF, writer=animation.PillowWriter(fps=ANIM_FPS))
-            print(f'Saved: {OUT_GIF}')
-        except Exception as exc:
-            print(f'Skipping GIF export ({OUT_GIF.name}): {exc}')
-            print('Install pillow to enable animation export: pip install pillow')
+    maybe_save_animation(anim, OUT_GIF, fps=ANIM_FPS)
 
     return fig_anim
 

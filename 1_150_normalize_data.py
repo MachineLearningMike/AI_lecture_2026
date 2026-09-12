@@ -546,5 +546,5 @@ Normalization in code (Step 4):
   NumPy:  z = (x - x.mean()) / x.std()
   Torch:  z = (x - x.mean()) / x.std()
 
-See also: 1_010_distribution.py, 2_090_discriminative_generative.py
+See also: 1_010_distribution.py, 2_100_discriminative_generative.py
 """)

@@ -1,7 +1,8 @@
 """
 _config.py
 
-Shared lecture figure fonts, footer, and slide-deck navigation.
+Shared lecture figure fonts, footer, slide-deck navigation, and exploit-style
+slide builders. This is the only project-local module slide files should import.
 
 Baseline matches 0710_dropout.py Step 1 on a full-screen lecture figure.
 Individual modules may still nudge sizes relatively (e.g. FS_AXIS - 2 on a
@@ -11,8 +12,41 @@ to readers even when canvases scale differently.
 
 from __future__ import annotations
 
+import os
 from datetime import date
+from pathlib import Path
 from typing import Callable, Sequence
+
+
+def should_export_gif() -> bool:
+    """GIF export is opt-in so lecture launches reach the first slide quickly.
+
+    Set LECTURE_EXPORT_GIF=1 to write animation GIFs.
+    """
+    return os.environ.get("LECTURE_EXPORT_GIF", "").strip().lower() in {
+        "1", "true", "yes", "on",
+    }
+
+
+def maybe_save_animation(anim, path, *, fps: int) -> bool:
+    """Save a matplotlib animation to GIF only when export is enabled."""
+    out = Path(path)
+    if not should_export_gif():
+        print(f"Skipping GIF export (set LECTURE_EXPORT_GIF=1 to enable): {out.name}")
+        return False
+    if out.is_file() and out.stat().st_size > 0:
+        print(f"Skipping GIF export (already exists): {out}")
+        return False
+    print(f"Saving animation to {out} ...")
+    try:
+        from matplotlib import animation
+        anim.save(out, writer=animation.PillowWriter(fps=fps))
+        print(f"Saved: {out}")
+        return True
+    except Exception as exc:
+        print(f"Skipping GIF export ({out.name}): {exc}")
+        print("Install pillow to enable animation export: pip install pillow")
+        return False
 
 # Baseline (full-screen lecture figures, ~1-2 panels)
 FS_FIGURE_TITLE = 24
@@ -371,3 +405,189 @@ def show_maximized(fig, *, after_footer: Callable | None = None) -> None:
     _harden_interactive_axes(fig)
     prepare_slide(fig, after_footer=after_footer)
     plt.show()
+
+
+# ---------------------------------------------------------------------------
+# Exploit-lecture helpers (formerly _exploit_slides.py)
+# Used by Ch7 stage / progression decks: register builders, then finish.
+# ---------------------------------------------------------------------------
+
+C_DARK, C_NEW, C_OK, C_GOAL = "#1a5276", "#d6eaf8", "#1e8449", "#d4edda"
+C_MUTE, C_ACCENT, C_FUN, C_WARN = "#f4f6f7", "#c0392b", "#8e44ad", "#f8d7da"
+C_OLD, C_CODE = "#fce4d6", "#1e1e1e"
+
+_SLIDE_BUILDERS: list = []
+_EXPLOIT_STYLE_APPLIED = False
+
+
+def _ensure_exploit_style() -> None:
+    """Apply shared rcParams once for exploit-style builders."""
+    global _EXPLOIT_STYLE_APPLIED
+    if _EXPLOIT_STYLE_APPLIED:
+        return
+    import matplotlib.pyplot as plt
+    apply_rcparams(plt)
+    _EXPLOIT_STYLE_APPLIED = True
+
+
+def new_figure(*a, **k):
+    """Create a lecture-sized figure/axes pair for exploit-style slides."""
+    import matplotlib.pyplot as plt
+    _ensure_exploit_style()
+    k.setdefault("figsize", screen_figsize())
+    k.setdefault("dpi", FIGURE_DPI)
+    return plt.subplots(*a, **k)
+
+
+def register_slide(builder):
+    """Append a zero-arg callable that returns a matplotlib Figure."""
+    _SLIDE_BUILDERS.append(builder)
+
+
+def finish_lecture_deck():
+    """Present all registered slides with shared Prev/Next navigation."""
+    builders = list(_SLIDE_BUILDERS)
+    _SLIDE_BUILDERS.clear()
+    if builders:
+        run_slide_deck(builders)
+
+
+def blank(ax):
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 8)
+    ax.axis("off")
+
+
+def box(ax, x, y, w, h, face, edge="0.2", lw=2.0):
+    from matplotlib.patches import FancyBboxPatch
+    return ax.add_patch(FancyBboxPatch(
+        (x, y), w, h,
+        boxstyle="round,pad=0.02,rounding_size=0.12",
+        facecolor=face, edgecolor=edge, linewidth=lw,
+    ))
+
+
+def banner(ax, text, y=6.35, h=1.25):
+    box(ax, 0.4, y, 11.2, h, C_DARK, C_DARK, lw=0)
+    ax.text(6.0, y + h / 2, text, ha="center", va="center",
+            fontsize=FS_ANNOT, fontweight="bold", color="#f9e79f")
+
+
+def note(ax, text, y=0.55):
+    ax.text(
+        6.0, y, text, ha="center", va="center", fontsize=FS_ANNOT - 1,
+        fontweight="bold",
+        bbox=dict(boxstyle="round,pad=0.28", facecolor="lightyellow",
+                  edgecolor="0.55", alpha=0.95),
+    )
+
+
+def concept_slide(title: str, banner_text: str, body_lines: list[str], footer: str = ""):
+    """Generic content slide (used for overview / explanation sub-steps)."""
+    body_lines = list(body_lines)
+
+    def build(title=title, banner_text=banner_text, body_lines=body_lines, footer=footer):
+        fig, ax = new_figure()
+        fig.suptitle(title, fontsize=FS_FIGURE_TITLE - 2, fontweight="bold")
+        blank(ax)
+        banner(ax, banner_text)
+        box(ax, 0.5, 1.2, 11.0, 4.7, C_MUTE, "0.45", 1.6)
+        ax.text(6.0, 3.55, "\n".join(body_lines), ha="center", va="center",
+                fontsize=FS_ANNOT + 1, fontweight="bold")
+        if footer:
+            note(ax, footer)
+        return fig
+
+    register_slide(build)
+
+
+def code_main_step(step_n: int | str, section_title: str, code: str, caption: str = ""):
+    """Main Step N slide: show the code example first."""
+
+    def build(step_n=step_n, section_title=section_title, code=code, caption=caption):
+        fig, ax = new_figure()
+        fig.suptitle(
+            f"Step {step_n}: {section_title}",
+            fontsize=FS_FIGURE_TITLE - 2, fontweight="bold",
+        )
+        blank(ax)
+        # Tall black panel; bottom kept low so long sketches stay inside.
+        box(ax, 0.35, 0.55, 11.3, 6.85, C_CODE, "#111111", 1.5)
+        ax.text(0.7, 7.05, "Code first — then explain on the next slide",
+                ha="left", va="top",
+                fontsize=FS_TICK, fontweight="bold", color="#9cdcfe")
+        ax.text(
+            0.7, 6.55, code.rstrip() + "\n",
+            ha="left", va="top", fontsize=FS_TICK - 1,
+            family="monospace", color="#d4d4d4", linespacing=1.35,
+        )
+        if caption:
+            note(ax, caption, y=0.28)
+        return fig
+
+    register_slide(build)
+
+
+def explain_substep(
+    step_n: int | str,
+    section_title: str,
+    banner_text: str,
+    body_lines: list[str],
+    footer: str = "",
+):
+    """Sub-step N.1: explain the code that was just shown."""
+    concept_slide(
+        f"Step {step_n}.1: Explanation -- {section_title}",
+        banner_text,
+        body_lines,
+        footer,
+    )
+
+
+def code_substep(step_label: str, section_title: str, code: str, caption: str = ""):
+    """Legacy alias; new callers use code_main_step."""
+
+    def build(step_label=step_label, section_title=section_title, code=code, caption=caption):
+        fig, ax = new_figure()
+        fig.suptitle(
+            f"{step_label}: Code example -- {section_title}",
+            fontsize=FS_FIGURE_TITLE - 3, fontweight="bold",
+        )
+        blank(ax)
+        box(ax, 0.35, 0.55, 11.3, 6.85, C_CODE, "#111111", 1.5)
+        ax.text(0.7, 7.05, "API / code sketch", ha="left", va="top",
+                fontsize=FS_TICK, fontweight="bold", color="#9cdcfe")
+        ax.text(
+            0.7, 6.55, code.rstrip() + "\n",
+            ha="left", va="top", fontsize=FS_TICK - 1,
+            family="monospace", color="#d4d4d4", linespacing=1.35,
+        )
+        if caption:
+            note(ax, caption, y=0.28)
+        return fig
+
+    register_slide(build)
+
+
+def overview_cards(title: str, banner_text: str, cards: list[tuple[str, str]], footer: str = ""):
+    cards = list(cards)
+
+    def build(title=title, banner_text=banner_text, cards=cards, footer=footer):
+        fig, ax = new_figure()
+        fig.suptitle(title, fontsize=FS_FIGURE_TITLE - 2, fontweight="bold")
+        blank(ax)
+        banner(ax, banner_text)
+        n = len(cards)
+        width = 11.0 / n - 0.2
+        for i, (a, b) in enumerate(cards):
+            x = 0.5 + i * (width + 0.2)
+            box(ax, x, 2.2, width, 3.2, C_NEW, "#2874a6", 2.0)
+            ax.text(x + width / 2, 4.7, a, ha="center", fontsize=FS_TICK,
+                    fontweight="bold", color="#2874a6")
+            ax.text(x + width / 2, 3.4, b, ha="center", va="center",
+                    fontsize=FS_ANNOT, fontweight="bold")
+        if footer:
+            note(ax, footer)
+        return fig
+
+    register_slide(build)

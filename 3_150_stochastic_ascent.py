@@ -34,7 +34,9 @@ from _config import (
     SCREEN_FRACTION,
     apply_rcparams,
     add_step_footer,
+    maybe_save_animation,
     run_slide_deck,
+    should_export_gif,
 )
 apply_rcparams(plt)
 import matplotlib.patches as patches
@@ -296,8 +298,10 @@ def frame_schedule(n_steps, hold_sec=ANIM_HOLD_SEC, fps=ANIM_FPS):
     return list(range(n_steps)) + [n_steps - 1] * hold
 
 
-# Race GIF: build/export figure only if the GIF is missing.
-if OUT_RACE.is_file() and OUT_RACE.stat().st_size > 0:
+# Race GIF: opt-in export only (skipped during normal lecture launch).
+if not should_export_gif():
+    print('Skipping race GIF (set LECTURE_EXPORT_GIF=1 to enable)')
+elif OUT_RACE.is_file() and OUT_RACE.stat().st_size > 0:
     print(f'Skipping race GIF figure (already exists): {OUT_RACE}')
 else:
     print(f'\nRendering climbing animation -> {OUT_RACE.name} ...')
@@ -404,15 +408,7 @@ else:
         fig_r, update_race, init_func=init_race,
         frames=race_frames, interval=1000 / ANIM_FPS, blit=False,
     )
-    if OUT_RACE.is_file() and OUT_RACE.stat().st_size > 0:
-        print(f'Skipping GIF export (already exists): {OUT_RACE}')
-    else:
-        try:
-            anim_race.save(OUT_RACE, writer=animation.PillowWriter(fps=ANIM_FPS))
-            print(f'Saved: {OUT_RACE}')
-        except Exception as exc:
-            print(f'Skipping GIF export ({OUT_RACE.name}): {exc}')
-            print('Install pillow to enable animation export: pip install pillow')
+    maybe_save_animation(anim_race, OUT_RACE, fps=ANIM_FPS)
     # Do not plt.show() here -- that would display before the slide deck.
     plt.close(fig_r)
 
@@ -421,8 +417,10 @@ else:
 # -------------------------------------------------------
 # ANIMATION B: swarm -- several noisy climbers moving together
 # -------------------------------------------------------
-# Swarm GIF: build/export figure only if the GIF is missing.
-if OUT_SWARM.is_file() and OUT_SWARM.stat().st_size > 0:
+# Swarm GIF: opt-in export only (skipped during normal lecture launch).
+if not should_export_gif():
+    print('Skipping swarm GIF (set LECTURE_EXPORT_GIF=1 to enable)')
+elif OUT_SWARM.is_file() and OUT_SWARM.stat().st_size > 0:
     print(f'Skipping swarm GIF figure (already exists): {OUT_SWARM}')
 else:
     print(f'Rendering swarm animation -> {OUT_SWARM.name} ...')
@@ -507,15 +505,7 @@ else:
         fig_s, update_swarm, init_func=init_swarm,
         frames=swarm_frames, interval=1000 / ANIM_FPS, blit=False,
     )
-    if OUT_SWARM.is_file() and OUT_SWARM.stat().st_size > 0:
-        print(f'Skipping GIF export (already exists): {OUT_SWARM}')
-    else:
-        try:
-            anim_swarm.save(OUT_SWARM, writer=animation.PillowWriter(fps=ANIM_FPS))
-            print(f'Saved: {OUT_SWARM}')
-        except Exception as exc:
-            print(f'Skipping GIF export ({OUT_SWARM.name}): {exc}')
-            print('Install pillow to enable animation export: pip install pillow')
+    maybe_save_animation(anim_swarm, OUT_SWARM, fps=ANIM_FPS)
     # Do not plt.show() here -- that would display before the slide deck.
     plt.close(fig_s)
 
@@ -527,23 +517,35 @@ plt.close('all')  # clear any GIF figures before the slide deck
 # FIGURE 3: Success probability vs noise level
 # -------------------------------------------------------
 noise_grid = np.array([0.0, 0.25, 0.4, 0.55, 0.8, 1.1, 1.6, 2.2])
-n_per = 40
-rates = []
-final_dists = []
-for ns in noise_grid:
-    hits = []
-    dists = []
-    for i in range(n_per):
-        pth, _ = ascent_path(
-            X0, lr=LR, steps=STEPS, noise_std=float(ns),
-            seed=1000 + int(100 * ns) + i,
-        )
-        hits.append(success(pth))
-        dists.append(np.linalg.norm(pth[-1] - X_MAX))
-    rates.append(np.mean(hits))
-    final_dists.append(np.mean(dists))
+_noise_stats = None
+
+
+def _noise_success_stats():
+    """Lazy Monte Carlo for Step 3 -- avoid delaying earlier slides."""
+    global _noise_stats
+    if _noise_stats is not None:
+        return _noise_stats
+    n_per = 40
+    rates = []
+    final_dists = []
+    for ns in noise_grid:
+        hits = []
+        dists = []
+        for i in range(n_per):
+            pth, _ = ascent_path(
+                X0, lr=LR, steps=STEPS, noise_std=float(ns),
+                seed=1000 + int(100 * ns) + i,
+            )
+            hits.append(success(pth))
+            dists.append(np.linalg.norm(pth[-1] - X_MAX))
+        rates.append(np.mean(hits))
+        final_dists.append(np.mean(dists))
+    _noise_stats = (rates, final_dists)
+    return _noise_stats
+
 
 def build_step_3():
+    rates, final_dists = _noise_success_stats()
     fig3, axes3 = plt.subplots(1, 2, figsize=screen_figsize(), dpi=FIGURE_DPI)
     fig3.suptitle(
         'Step 3: More noise => lower success, but moderate noise is still fine',

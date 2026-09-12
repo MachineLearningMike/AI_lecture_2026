@@ -1,9 +1,9 @@
 """
-1_025_more_distributions.py
+1_050_more_distributions.py
 
 Major probability distributions used in ML -- formulas and when to use them.
 
-Gaussian is covered in 1_020_gaussian.py.  This lecture surveys the rest of
+Gaussian is covered in 1_040_gaussian.py.  This lecture surveys the rest of
 the core toolkit:
 
   Discrete:  Bernoulli, Binomial, Categorical, Multinomial, Poisson
@@ -22,7 +22,7 @@ Sketch:
   9. Dirichlet
   10. Cheat sheet -- which distribution when
 
-Sits after 1_020_gaussian.py and before 1_030_law_of_large_numbers.py.
+Sits after 1_040_gaussian.py and before 1_060_law_of_large_numbers.py.
 """
 
 from __future__ import annotations
@@ -691,5 +691,5 @@ Poisson(l):       P(X=k)=l^k e^{-l} / k!
 Beta(a,b):        f(x) ~ x^{a-1}(1-x)^{b-1} on (0,1)
 Dirichlet(a):     f(p) ~ prod p_k^{a_k-1} on the simplex
 
-Gaussian: see 1_020_gaussian.py
+Gaussian: see 1_040_gaussian.py
 """)

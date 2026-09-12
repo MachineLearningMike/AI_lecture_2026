@@ -13,7 +13,7 @@ Sketch:
   9. MLE inside Naive Bayes
   10. MLE vs MAP (add a prior)
 
-Companion: 1_020_gaussian.py, 1_065_naive_bayesian_classifier.py,
+Companion: 1_040_gaussian.py, 1_100_naive_bayesian_classifier.py,
 and loss lectures that use NLL / cross-entropy.
 """
 

@@ -1,5 +1,5 @@
 """
-1_065_naive_bayesian_classifier.py
+1_100_naive_bayesian_classifier.py
 
 Naive Bayes classifier -- Bayes' theorem with a deliberately strong assumption:
 given the class, features are conditionally independent.
@@ -17,7 +17,7 @@ Sketch:
   10. Tiny code sketch
   11. Takeaway
 
-Sits after 1_060_Bayes_theorem.py (update beliefs) and before averages /
+Sits after 1_090_Bayes_theorem.py (update beliefs) and before averages /
 product-of-randoms. Ties to discriminative vs generative (2_090).
 """
 

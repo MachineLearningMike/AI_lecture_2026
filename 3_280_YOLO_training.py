@@ -1,5 +1,5 @@
 """
-3_270_YOLO_training.py
+3_280_YOLO_training.py
 
 Training algorithm of YOLO -- from YOLOv1 intuition to a modern pipeline.
 
@@ -18,7 +18,7 @@ Sketch:
   9. Modern training algorithm (pseudocode)
   10. Takeaway
 
-Sits after 3_265_data_pipeline.py (Dataset/DataLoader) -- detectors use the
+Sits after 3_270_data_pipeline.py (Dataset/DataLoader) -- detectors use the
 same pipeline pattern with a richer sample and a richer loss.
 """
 

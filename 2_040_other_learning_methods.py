@@ -1,5 +1,5 @@
 """
-2_035_other_learning_methods.py
+2_040_other_learning_methods.py
 
 Is MLE the only method of learning?  No.
 
@@ -18,7 +18,7 @@ Sketch:
   9. Modern AI combines all three
   10. Conceptual map / takeaway
 
-Companion to 2_030_maximum_likelihood_estimation.py and 2_040_SL_UL_RL.py.
+Companion to 2_030_maximum_likelihood_estimation.py and 2_050_SL_UL_RL.py.
 """
 
 from __future__ import annotations

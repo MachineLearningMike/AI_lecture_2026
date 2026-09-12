@@ -1,5 +1,5 @@
 """
-1_080_product_of_randomity.py
+1_130_product_of_randomity.py
 
 Intuition for the PRODUCT of two random variables.
 
@@ -20,7 +20,7 @@ Unlike sums of Gaussians (which stay Gaussian), a product of Gaussians
 is peaked near 0 with HEAVY tails. For positive variables, taking logs
 turns products into sums -- the bridge to log-normal thinking.
 
-Companion to 1_067_sum_of_randomity.py and 1_070_average_of_randomity.py.
+Companion to 1_110_sum_of_randomity.py and 1_120_average_of_randomity.py.
 """
 
 import torch
@@ -522,7 +522,7 @@ Geometry (Step 3):
     |P| large only in the corners (both |X| and |Y| large) -- rare.
     Near an axis, one factor is ~0, so P piles up near 0 -- common.
 
-Contrast with sums (Step 4 / 1_067_sum_of_randomity.py):
+Contrast with sums (Step 4 / 1_110_sum_of_randomity.py):
     X+Y of Gaussians stays Gaussian (variance adds).
     X*Y of Gaussians does NOT stay Gaussian.
 

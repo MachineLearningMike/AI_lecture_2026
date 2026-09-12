@@ -1,5 +1,5 @@
 """
-1_012_probability_statistics_terms.py
+1_020_probability_statistics_terms.py
 
 A speaking / reference bank for core probability and statistics terms.
 

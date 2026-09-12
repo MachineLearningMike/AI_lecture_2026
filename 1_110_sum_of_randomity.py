@@ -1,5 +1,5 @@
 """
-1_067_sum_of_randomity.py
+1_110_sum_of_randomity.py
 
 Sum of random variables -- formulas and proofs.
 
@@ -24,7 +24,7 @@ Sketch:
   10. Takeaway
 
 Sits after Bayes / density formalisms and before
-1_070_average_of_randomity.py and 1_080_product_of_randomity.py.
+1_120_average_of_randomity.py and 1_130_product_of_randomity.py.
 """
 
 from __future__ import annotations

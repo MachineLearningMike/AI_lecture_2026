@@ -30,10 +30,11 @@ from _config import (
     FS_ANNOT,
     FS_LEGEND,
     FIGURE_DPI,
-    SCREEN_FRACTION,
     apply_rcparams,
-    add_step_footer,
+    maybe_save_animation,
     run_slide_deck,
+    screen_figsize,
+    should_export_gif,
 )
 apply_rcparams(plt)
 import matplotlib.patches as patches
@@ -50,43 +51,10 @@ FPS = 20
 OUT_GIF = Path(__file__).resolve().parent / 'momentum_sgd.gif'
 
 
-def screen_figsize(fraction=SCREEN_FRACTION, dpi=FIGURE_DPI):
-    try:
-        import tkinter as tk
-        root = tk.Tk()
-        root.withdraw()
-        w = root.winfo_screenwidth()
-        h = root.winfo_screenheight()
-        root.destroy()
-        return (w / dpi * fraction, h / dpi * fraction)
-    except Exception:
-        return (16 * fraction / 0.95, 9 * fraction / 0.95)
-
-
 def new_figure(*args, **kwargs):
     kwargs.setdefault('figsize', screen_figsize())
     kwargs.setdefault('dpi', FIGURE_DPI)
     return plt.subplots(*args, **kwargs)
-
-
-def show_maximized(fig):
-    fig.set_dpi(FIGURE_DPI)
-    fig.set_size_inches(screen_figsize(), forward=True)
-    fig.canvas.draw_idle()
-    manager = getattr(fig.canvas, 'manager', None)
-    if manager is not None:
-        try:
-            manager.window.state('zoomed')
-        except Exception:
-            try:
-                manager.window.showMaximized()
-            except Exception:
-                try:
-                    manager.frame.Maximize(True)
-                except Exception:
-                    pass
-    add_step_footer(fig)
-    plt.show()
 
 
 def add_vcenter_legend_and_note(ax, note, facecolor='white'):
@@ -202,7 +170,7 @@ def build_step_1():
     )
 
     cs = ax1.contour(GX, GY, GZ, levels=20, cmap='terrain', linewidths=1.0)
-    ax1.clabel(cs, inline=True, fontsize=FS_TICK - 4, fmt='%.1f')
+    ax1.clabel(cs, inline=True, fontsize=FS_TICK, fmt='%.1f')
 
     ax1.plot(path_sgd[:, 0], path_sgd[:, 1], '-', color='crimson',
              linewidth=1.6, alpha=0.9, label='Minibatch SGD')
@@ -328,123 +296,106 @@ def build_step_3():
 
 
 # -------------------------------------------------------
-# ANIMATION: two balls, stochastic pushes, momentum inertia
+# Optional GIF export (opt-in; skipped during normal lecture launch)
 # -------------------------------------------------------
-print(f'\nRendering animation to {OUT_GIF} ...')
+if should_export_gif():
+    print(f'\nRendering animation to {OUT_GIF} ...')
 
-fig_a, ax_a = plt.subplots(figsize=(9, 7), dpi=ANIM_DPI)
-# Smaller canvas than full-screen slides -- use reduced type so it matches
-# the visual weight of other lecture figures.
-fig_a.suptitle(
-    'Stochastic minibatches shake the SGD ball;\n'
-    'momentum keeps the other ball rolling',
-    fontsize=FS_AX_TITLE - 4, fontweight='bold', y=0.98,
-)
-
-ax_a.contour(GX, GY, GZ, levels=20, cmap='terrain', linewidths=1.0)
-ax_a.scatter([0], [0], c='k', s=90, marker='*', zorder=5, label='minimum')
-ax_a.scatter([X0[0]], [X0[1]], c='orange', s=55, zorder=5, label='start')
-
-line_s, = ax_a.plot([], [], '-', color='crimson', linewidth=1.8, alpha=0.85, label='SGD ball')
-line_m, = ax_a.plot([], [], '-', color='royalblue', linewidth=2.0, alpha=0.9, label='Momentum ball')
-
-BALL_R = 0.05
-pt_s = patches.Circle(X0, BALL_R, facecolor='crimson', edgecolor='darkred',
-                      linewidth=1.5, zorder=6)
-pt_m = patches.Circle(X0, BALL_R, facecolor='royalblue', edgecolor='navy',
-                      linewidth=1.5, zorder=6)
-ax_a.add_patch(pt_s)
-ax_a.add_patch(pt_m)
-
-# Noisy minibatch force on SGD ball; velocity on momentum ball
-arr_g = ax_a.annotate(
-    '', xy=X0, xytext=X0,
-    arrowprops=dict(arrowstyle='->', color='crimson', lw=2.0, alpha=0.9),
-    zorder=7,
-)
-arr_v = ax_a.annotate(
-    '', xy=X0, xytext=X0,
-    arrowprops=dict(arrowstyle='->', color='navy', lw=2.2),
-    zorder=7,
-)
-
-hud = ax_a.text(
-    0.02, 0.98, '', transform=ax_a.transAxes, va='top', ha='left',
-    fontsize=FS_ANNOT - 3,
-    bbox=dict(boxstyle='round', facecolor='white', alpha=0.92),
-)
-ax_a.text(
-    0.98, 0.02,
-    'red arrow: minibatch gradient (noisy)\n'
-    'blue arrow: momentum velocity (smoothed)',
-    transform=ax_a.transAxes, va='bottom', ha='right', fontsize=FS_ANNOT - 3,
-    bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
-)
-
-ax_a.set_xlim(-1.3, 1.3)
-ax_a.set_ylim(-1.3, 1.3)
-ax_a.set_aspect('equal')
-ax_a.set_xlabel('x', fontsize=FS_AXIS - 2)
-ax_a.set_ylabel('y', fontsize=FS_AXIS - 2)
-ax_a.legend(loc='upper right', fontsize=FS_LEGEND - 2)
-ax_a.grid(True, alpha=0.3)
-fig_a.subplots_adjust(left=0.12, right=0.98, bottom=0.10, top=0.86)
-
-n_anim = len(path_sgd)
-
-
-def init_anim():
-    line_s.set_data([], [])
-    line_m.set_data([], [])
-    return line_s, line_m, pt_s, pt_m, hud, arr_g, arr_v
-
-
-def update_anim(i):
-    line_s.set_data(path_sgd[: i + 1, 0], path_sgd[: i + 1, 1])
-    line_m.set_data(path_mom[: i + 1, 0], path_mom[: i + 1, 1])
-    pt_s.center = (path_sgd[i, 0], path_sgd[i, 1])
-    pt_m.center = (path_mom[i, 0], path_mom[i, 1])
-
-    # arrows use the gradient/velocity that produced the step into this state
-    j = min(i, SGD_STEPS - 1)
-    g = grads_sgd[j]
-    v = vel_mom[j + 1] if i > 0 else vel_mom[0]
-
-    g_scale = 0.04
-    v_scale = 0.04
-    arr_g.set_position((path_sgd[i, 0], path_sgd[i, 1]))
-    arr_g.xy = (path_sgd[i, 0] + g_scale * g[0], path_sgd[i, 1] + g_scale * g[1])
-
-    arr_v.set_position((path_mom[i, 0], path_mom[i, 1]))
-    arr_v.xy = (path_mom[i, 0] + v_scale * v[0], path_mom[i, 1] + v_scale * v[1])
-
-    hud.set_text(
-        f'SGD step {i}/{n_anim - 1}   batch={BATCH_SIZE}/{N_DATA}\n'
-        f'L_SGD = {loss_full(path_sgd[i]):.3f}\n'
-        f'L_Mom = {loss_full(path_mom[i]):.3f}\n'
-        f'|g_batch| = {np.linalg.norm(g):.2f}\n'
-        f'|v_mom|   = {np.linalg.norm(v):.2f}'
+    fig_a, ax_a = plt.subplots(figsize=(9, 7), dpi=ANIM_DPI)
+    fig_a.suptitle(
+        'Stochastic minibatches shake the SGD ball;\n'
+        'momentum keeps the other ball rolling',
+        fontsize=FS_AX_TITLE, fontweight='bold', y=0.98,
     )
-    return line_s, line_m, pt_s, pt_m, hud, arr_g, arr_v
 
+    ax_a.contour(GX, GY, GZ, levels=20, cmap='terrain', linewidths=1.0)
+    ax_a.scatter([0], [0], c='k', s=90, marker='*', zorder=5, label='minimum')
+    ax_a.scatter([X0[0]], [X0[1]], c='orange', s=55, zorder=5, label='start')
 
-anim = animation.FuncAnimation(
-    fig_a, update_anim, init_func=init_anim,
-    frames=n_anim, interval=1000 / FPS, blit=False,
-)
-if OUT_GIF.is_file() and OUT_GIF.stat().st_size > 0:
-    print(f'Skipping GIF export (already exists): {OUT_GIF}')
-else:
-    try:
-        anim.save(OUT_GIF, writer=animation.PillowWriter(fps=FPS))
-        print(f'Saved: {OUT_GIF}')
-    except Exception as exc:
-        print(f'Skipping GIF export ({OUT_GIF.name}): {exc}')
-        print('Install pillow to enable animation export: pip install pillow')
-# Do not plt.show() here -- that would display before the slide deck.
-plt.close(fig_a)
+    line_s, = ax_a.plot([], [], '-', color='crimson', linewidth=1.8, alpha=0.85, label='SGD ball')
+    line_m, = ax_a.plot([], [], '-', color='royalblue', linewidth=2.0, alpha=0.9, label='Momentum ball')
 
+    BALL_R = 0.05
+    pt_s = patches.Circle(X0, BALL_R, facecolor='crimson', edgecolor='darkred',
+                          linewidth=1.5, zorder=6)
+    pt_m = patches.Circle(X0, BALL_R, facecolor='royalblue', edgecolor='navy',
+                          linewidth=1.5, zorder=6)
+    ax_a.add_patch(pt_s)
+    ax_a.add_patch(pt_m)
 
+    arr_g = ax_a.annotate(
+        '', xy=X0, xytext=X0,
+        arrowprops=dict(arrowstyle='->', color='crimson', lw=2.0, alpha=0.9),
+        zorder=7,
+    )
+    arr_v = ax_a.annotate(
+        '', xy=X0, xytext=X0,
+        arrowprops=dict(arrowstyle='->', color='navy', lw=2.2),
+        zorder=7,
+    )
+
+    hud = ax_a.text(
+        0.02, 0.98, '', transform=ax_a.transAxes, va='top', ha='left',
+        fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.92),
+    )
+    ax_a.text(
+        0.98, 0.02,
+        'red arrow: minibatch gradient (noisy)\n'
+        'blue arrow: momentum velocity (smoothed)',
+        transform=ax_a.transAxes, va='bottom', ha='right', fontsize=FS_ANNOT,
+        bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.95),
+    )
+
+    ax_a.set_xlim(-1.3, 1.3)
+    ax_a.set_ylim(-1.3, 1.3)
+    ax_a.set_aspect('equal')
+    ax_a.set_xlabel('x', fontsize=FS_AXIS)
+    ax_a.set_ylabel('y', fontsize=FS_AXIS)
+    ax_a.legend(loc='upper right', fontsize=FS_LEGEND)
+    ax_a.grid(True, alpha=0.3)
+    fig_a.subplots_adjust(left=0.12, right=0.98, bottom=0.10, top=0.86)
+
+    n_anim = len(path_sgd)
+
+    def init_anim():
+        line_s.set_data([], [])
+        line_m.set_data([], [])
+        return line_s, line_m, pt_s, pt_m, hud, arr_g, arr_v
+
+    def update_anim(i):
+        line_s.set_data(path_sgd[: i + 1, 0], path_sgd[: i + 1, 1])
+        line_m.set_data(path_mom[: i + 1, 0], path_mom[: i + 1, 1])
+        pt_s.center = (path_sgd[i, 0], path_sgd[i, 1])
+        pt_m.center = (path_mom[i, 0], path_mom[i, 1])
+
+        j = min(i, SGD_STEPS - 1)
+        g = grads_sgd[j]
+        v = vel_mom[j + 1] if i > 0 else vel_mom[0]
+
+        g_scale = 0.04
+        v_scale = 0.04
+        arr_g.set_position((path_sgd[i, 0], path_sgd[i, 1]))
+        arr_g.xy = (path_sgd[i, 0] + g_scale * g[0], path_sgd[i, 1] + g_scale * g[1])
+
+        arr_v.set_position((path_mom[i, 0], path_mom[i, 1]))
+        arr_v.xy = (path_mom[i, 0] + v_scale * v[0], path_mom[i, 1] + v_scale * v[1])
+
+        hud.set_text(
+            f'SGD step {i}/{n_anim - 1}   batch={BATCH_SIZE}/{N_DATA}\n'
+            f'L_SGD = {loss_full(path_sgd[i]):.3f}\n'
+            f'L_Mom = {loss_full(path_mom[i]):.3f}\n'
+            f'|g_batch| = {np.linalg.norm(g):.2f}\n'
+            f'|v_mom|   = {np.linalg.norm(v):.2f}'
+        )
+        return line_s, line_m, pt_s, pt_m, hud, arr_g, arr_v
+
+    anim = animation.FuncAnimation(
+        fig_a, update_anim, init_func=init_anim,
+        frames=n_anim, interval=1000 / FPS, blit=False,
+    )
+    maybe_save_animation(anim, OUT_GIF, fps=FPS)
+    plt.close(fig_a)
 
 
 run_slide_deck([

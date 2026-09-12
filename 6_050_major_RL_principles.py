@@ -1,5 +1,5 @@
 """
-6_030_major_RL_principles.py
+6_050_major_RL_principles.py
 
 Major principles that organize modern RL -- without re-deriving MDPs,
 Bellman equations, policy/value iteration, or policy-gradient formulas
