@@ -5,6 +5,9 @@ __pycache__/
 
 # Lecture dashboard local state
 _dashboard_last.txt
+_dashboard_notebook.code-workspace
+_dashboard_vscode_data/
+_dashboard_jupyter/
 
 # C extensions
 *.so
