@@ -1,0 +1,35 @@
+
+Project Management/Implementation/Leadership
+
+Software System Analysis/Architecture/Quality Assurance
+
+Probabilty & Statistics in AI
+
+Neural Network Architecture Design
+
+Probabilistic Generative Models
+
+Deep Learning (neural design & training)
+
+Deep Reinforcement Learning
+
+AI Agent (LangGraph, MCP, neural graph)
+
+Blockchain/Smart Contracts/Ethereum/Solidity
+
+Object-Oriented Programming (OOP)/UML Tools
+
+JavaScript/node.js
+
+Python/PyTorch/TensorFlow/NumPy/Pandas/Scikit/...
+
+C/C++/C#...
+
+
+
+
+
+
+
+
+

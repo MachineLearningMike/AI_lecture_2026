@@ -63,7 +63,7 @@ def draw(w_scale, spread, x0, y0):
     ax.plot_wireframe(
         X, Y, Z,
         rstride=1, cstride=1,
-        color='steelblue', linewidth=0.25, alpha=0.35,
+        color='steelblue', linewidth=1.5, alpha=0.35,
     )
 
     # Joint density along the two slice lines

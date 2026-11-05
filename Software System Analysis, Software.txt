@@ -1,0 +1,20 @@
+Software System Analysis, Software System Arch, OOP, MUL, c++, C#, JavaScript, node js, Solidity
+
+
+Probability & statistics, neural network design. training regularization, GPU optimization, 
+
+Deep Reinforcement Learning, Neural Network Training (GPU optimization, regularization, LLM(pre-train, SFT, HFRL), 
+Agentic AI (LangGraph, MCP), Generative models
+
+
+Personal Recommendation — devised generative algorithms that enable neural networks to learn the joint probability of (future purchases, past purchases) 30+% more efficiently while reducing the cost of sampling (recommending goods in trial), ultimately yielding a clearer estimate of the conditional probability of (future purchases | past purchases).
+
+Football betting AI — modeled a sports match as a time-decaying conductor through which a current of team representations flows while being implicitly transformed, turning the entire match history into a graph of conductors working under Ohm's law and yielding many indirect matchups between teams.
+
+Financial forecasting — identified the unifying smooth transition between supervised and reinforcement learning, then took a midpoint approach to draw on both. Neural-optimized the strategy of learning "least" sufficiently with "most" data, and assumed non-stationarity.
+
+
+
+
+
+
